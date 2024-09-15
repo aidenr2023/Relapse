@@ -1,0 +1,54 @@
+{
+    "name": "UiControls",
+    "maps": [
+        {
+            "name": "UiToggles",
+            "id": "23a69dc5-d543-4def-855c-7bd56491aba0",
+            "actions": [
+                {
+                    "name": "pToggle",
+                    "type": "Button",
+                    "id": "372673fe-e170-41f8-a972-f6f7dc43b219",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "oToggle",
+                    "type": "Button",
+                    "id": "57af8f65-9be4-4a82-b505-35f00d194258",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "1b130323-6dc2-4232-a164-f8bc7407d4d0",
+                    "path": "<Keyboard>/p",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "pToggle",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "27ae691b-a51a-46f1-bf97-864d86d8db38",
+                    "path": "<Keyboard>/o",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "oToggle",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
