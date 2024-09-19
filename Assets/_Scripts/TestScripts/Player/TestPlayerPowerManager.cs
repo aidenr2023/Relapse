@@ -12,7 +12,8 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
     private HashSet<PowerScriptableObject> _drugsSet;
     private HashSet<PowerScriptableObject> _medsSet;
 
-    [SerializeField] private PowerScriptableObject currentPower;
+    private int _currentPowerIndex;
+    private PowerScriptableObject CurrentPower => powers[_currentPowerIndex];
 
     private bool _isChargingPower;
 
@@ -38,7 +39,10 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
     {
         InputManager.Instance.PlayerControls.GamePlay.Brand.performed += OnPowerPerformed;
         InputManager.Instance.PlayerControls.GamePlay.Brand.canceled += OnPowerCanceled;
+
+        InputManager.Instance.PlayerControls.GamePlay.Objectives.performed += OnPowerChanged;
     }
+
 
     private void InitializePowerCollections()
     {
@@ -53,36 +57,76 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 
     #region Input Functions
 
+    private void OnPowerChanged(InputAction.CallbackContext obj)
+    {
+        // Return if the powers array is empty
+        if (powers.Length == 0)
+            return;
+        
+        // Don't change the power if the current power is active
+        if (_powerTokens[CurrentPower].IsActive)
+            return;
+
+        // Set the current power index to the next power
+        _currentPowerIndex = (_currentPowerIndex + 1) % powers.Length;
+    }
+
     private void OnPowerPerformed(InputAction.CallbackContext obj)
     {
         // Return if the current power is null
-        if (currentPower == null)
+        if (CurrentPower == null)
+            return;
+
+        // Return if the power is currently cooling down
+        if (_powerTokens[CurrentPower].IsCoolingDown)
+            return;
+
+        // Return if the power is currently active
+        if (_powerTokens[CurrentPower].IsActive)
             return;
 
         // Set the is charging power flag to true
         _isChargingPower = true;
 
         // Call the current power's start charge method
-        var startedChargingThisFrame = _powerTokens[currentPower].ChargePercentage == 0;
-        currentPower.PowerLogic.StartCharge(this, _powerTokens[currentPower], startedChargingThisFrame);
+        var startedChargingThisFrame = _powerTokens[CurrentPower].ChargePercentage == 0;
+        CurrentPower.PowerLogic.StartCharge(this, _powerTokens[CurrentPower], startedChargingThisFrame);
+
+        // Set the charging flag to true
+        _powerTokens[CurrentPower].SetChargingFlag(true);
     }
 
     private void OnPowerCanceled(InputAction.CallbackContext obj)
     {
         // return if the current power is null
-        if (currentPower == null)
+        if (CurrentPower == null)
             return;
 
         // Set the is charging power flag to false
         _isChargingPower = false;
 
         // Call the current power's release method
-        var isChargeComplete = _powerTokens[currentPower].ChargePercentage >= 1;
-        currentPower.PowerLogic.Release(this, _powerTokens[currentPower], isChargeComplete);
+        var isChargeComplete = _powerTokens[CurrentPower].ChargePercentage >= 1;
+        CurrentPower.PowerLogic.Release(this, _powerTokens[CurrentPower], isChargeComplete);
 
-        // If the charge is complete, use the power
+        // Set the charging flag to false
+        _powerTokens[CurrentPower].SetChargingFlag(false);
+
+        // Reset the charge duration if the power is not charging
+        _powerTokens[CurrentPower].ResetChargeDuration();
+
+        // If the charge is complete
         if (isChargeComplete)
-            currentPower.PowerLogic.Use(this, _powerTokens[currentPower]);
+        {
+            // use the power
+            CurrentPower.PowerLogic.Use(this, _powerTokens[CurrentPower]);
+
+            // Set the active flag to true
+            _powerTokens[CurrentPower].SetActiveFlag(true);
+
+            // Reset the active duration
+            _powerTokens[CurrentPower].ResetActiveDuration();
+        }
     }
 
     #endregion
@@ -92,20 +136,85 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
     {
         // Update the charge
         UpdateCharge();
+
+        // Update the active powers
+        UpdateActivePowers();
+
+        // Update the cooldowns
+        UpdateCooldowns();
     }
 
     private void UpdateCharge()
     {
         // Skip if the current power is null
-        if (currentPower == null)
+        if (CurrentPower == null)
             return;
 
         // Skip if the power is not charging
         if (!_isChargingPower)
             return;
 
+        // Update the charge duration
+        _powerTokens[CurrentPower].ChargePowerDuration();
+
         // Call the current power's charge method
-        currentPower.PowerLogic.Charge(this, _powerTokens[currentPower]);
+        CurrentPower.PowerLogic.Charge(this, _powerTokens[CurrentPower]);
+    }
+
+    private void UpdateActivePowers()
+    {
+        foreach (var power in _powerTokens.Keys)
+        {
+            // Get the current power token
+            var cToken = _powerTokens[power];
+
+            // Skip if the power is not active
+            if (!cToken.IsActive)
+                continue;
+
+            // Update the active duration
+            cToken.ActivePowerDuration();
+
+            // Call the current power's active method
+            power.PowerLogic.Active(this, cToken);
+
+            // If the active percentage is 1, set the active flag to false
+            if (cToken.ActivePercentage >= 1)
+            {
+                cToken.SetActiveFlag(false);
+
+                // Set the cooldown flag to true
+                _powerTokens[CurrentPower].SetCooldownFlag(true);
+
+                // Set the cooldown duration to 0
+                _powerTokens[CurrentPower].SetCooldownDuration(0);
+            }
+        }
+    }
+
+    private void UpdateCooldowns()
+    {
+        foreach (var power in _powerTokens.Keys)
+        {
+            // Get the current power token
+            var cToken = _powerTokens[power];
+
+            // Skip if the power is not cooling down
+            if (!cToken.IsCoolingDown)
+                continue;
+
+            // Skip if the power is active (Redundant, but here to be safe)
+            if (cToken.IsActive)
+                continue;
+
+            // Update the cooldown
+            cToken.CooldownPowerDuration();
+
+            // If the cooldown percentage is 1, set the cooldown flag to false
+            // TODO: Create an event or something for when the cooldown stops
+            if (cToken.CooldownPercentage >= 1)
+                cToken.SetCooldownFlag(false);
+        }
     }
 
     /// <summary>
@@ -147,11 +256,11 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         }
 
         // Skip if the current power is already set or if there are no powers
-        if (currentPower != null || powers.Length == 0)
+        if (CurrentPower != null || powers.Length == 0)
             return;
 
         // Set the current power to the first power in the array
-        currentPower = powers[0];
+        _currentPowerIndex = 0;
     }
 
     public void AddPower(PowerScriptableObject powerScriptableObject)
@@ -178,18 +287,44 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 
     public string GetDebugText()
     {
-        if (currentPower == null)
+        if (CurrentPower == null)
             return "No Power Selected!\n";
 
         StringBuilder debugString = new();
 
-        debugString.Append($"Current Power: {currentPower.name}\n");
-        debugString.Append($"\tIs Charging? {_powerTokens[currentPower].IsCharging}\n");
+        debugString.Append($"Current Power: {CurrentPower.name}\n");
+        debugString.Append($"\tPurity (Level): {_powerTokens[CurrentPower].CurrentLevel}\n");
+        debugString.Append($"\tTolerance Impact: {_powerTokens[CurrentPower].ToleranceMeterImpact}\n");
 
-        if (_powerTokens[currentPower].IsCharging)
-            debugString.Append($"\tCharge: {_powerTokens[currentPower].ChargePercentage * 100:0.00}\n");
+        // Charging Logic
+        debugString.Append($"\tIs Charging? {_powerTokens[CurrentPower].IsCharging}\n");
 
-        debugString.Append($"\tCooldown: {_powerTokens[currentPower].CooldownPercentage * 100:0.00}\n");
+        if (_powerTokens[CurrentPower].IsCharging)
+        {
+            debugString.Append($"\t\tCharge: {_powerTokens[CurrentPower].ChargePercentage * 100:0.00}%\n");
+            debugString.Append(
+                $"\t\tCharge Duration: {_powerTokens[CurrentPower].ChargeDuration:0.00}s / {CurrentPower.ChargeDuration:0.00}s\n");
+        }
+
+        // Active Logic
+        debugString.Append($"\tIs Active? {_powerTokens[CurrentPower].IsActive}\n");
+
+        if (_powerTokens[CurrentPower].IsActive)
+        {
+            debugString.Append($"\t\tActive: {_powerTokens[CurrentPower].ActivePercentage * 100:0.00}%\n");
+            debugString.Append(
+                $"\t\tActive Duration: {_powerTokens[CurrentPower].ActiveDuration:0.00}s / {CurrentPower.ActiveDuration:0.00}s\n");
+        }
+
+        // Cooldown Logic
+        debugString.Append($"\tIs Cooling Down? {_powerTokens[CurrentPower].IsCoolingDown}\n");
+
+        if (_powerTokens[CurrentPower].IsCoolingDown)
+        {
+            debugString.Append($"\t\tCooldown: {_powerTokens[CurrentPower].CooldownPercentage * 100:0.00}%\n");
+            debugString.Append(
+                $"\t\tCooldown Duration: {_powerTokens[CurrentPower].CooldownDuration:0.00}s / {CurrentPower.Cooldown:0.00}s\n");
+        }
 
         return debugString.ToString();
     }

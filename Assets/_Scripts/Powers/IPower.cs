@@ -8,13 +8,6 @@ public interface IPower
     public PowerScriptableObject PowerScriptableObject { get; set; }
 
     /// <summary>
-    /// Used to increment or decrement the tolerance meter.
-    /// This value should always be positive.
-    /// Whether this value is added or subtracted is determined elsewhere.
-    /// </summary>
-    public float ToleranceMeterImpact { get; }
-
-    /// <summary>
     /// Logic for what happens when the player starts charging the power.
     /// </summary>
     /// <param name="startedChargingThisFrame">Whether the charge started this frame</param>
@@ -43,6 +36,14 @@ public interface IPower
     /// This is where any projectiles may be fired or other effects may be triggered.
     /// </summary>
     public void Use(TestPlayerPowerManager powerManager, PowerToken pToken);
+
+    /// <summary>
+    /// What happens while the power is active.
+    /// This is where continuous effects are applied.
+    /// </summary>
+    /// <param name="powerManager"></param>
+    /// <param name="pToken"></param>
+    public void Active(TestPlayerPowerManager powerManager, PowerToken pToken);
 }
 
 public static class IPowerExtensions
@@ -58,23 +59,25 @@ public static class IPowerExtensions
     }
 
     /// <summary>
-    /// Common logic to charge a power.
-    /// NOTE: This method should only be called in the UPDATE function of the class that implements IPower.
+    /// Common logic to update clock-based durations.
     /// </summary>
-    /// <param name="power">The power that is being charged</param>
-    /// <param name="currentChargeDuration">A reference to a float that represents the current duration that the spell has been charged.</param>
-    public static void ChargePowerDuration(this IPower power, ref float currentChargeDuration)
+    /// <param name="currentDuration">A reference to a float that represents the current duration</param>
+    /// <param name="maxDuration">The maximum duration of the time span</param>
+    /// <param name="amount">The amount that is added to the current duration</param>
+    public static void UpdateDuration(ref float currentDuration, float maxDuration, float amount)
     {
-        // Get the maximum charge duration
-        var maxChargeDuration = power.PowerScriptableObject.ChargeDuration;
-
-        // Increment the charge duration by the time since the last frame
-        currentChargeDuration += Time.deltaTime;
+        // Increment the charge duration by the amount
+        currentDuration += amount;
 
         // Clamp the charge duration to the maximum charge duration
-        if (maxChargeDuration > 0)
-            currentChargeDuration = Mathf.Clamp(currentChargeDuration, 0, maxChargeDuration);
+        if (maxDuration > 0)
+            currentDuration = Mathf.Clamp(currentDuration, 0, maxDuration);
         else
-            currentChargeDuration = 1;
+            currentDuration = 1;
+    }
+    
+    public static int ToleranceMultiplier(this PowerType powerType)
+    {
+        return powerType == PowerType.Drug ? 1 : -1;
     }
 }

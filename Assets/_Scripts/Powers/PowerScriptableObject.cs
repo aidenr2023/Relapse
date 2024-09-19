@@ -13,8 +13,8 @@ public class PowerScriptableObject : ScriptableObject
     [SerializeField] [TextArea(3, 10)] private string description;
 
     [Header("Stats")] [SerializeField] private float chargeDuration;
-    [SerializeField] private float cooldown;
     [SerializeField] private float activeDuration;
+    [SerializeField] private float cooldown;
     [SerializeField] private float baseToleranceMeterImpact;
     [SerializeField] private float[] toleranceMeterLevelMultiplier;
 
