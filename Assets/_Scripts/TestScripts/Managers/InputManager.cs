@@ -23,6 +23,9 @@ public class InputManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // Hide & Lock the cursor
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     #endregion
