@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class TestPlayerPowerManager : MonoBehaviour
+[RequireComponent(typeof(TestPlayer))]
+public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 {
     [SerializeField] private PowerScriptableObject[] powers;
+    private Dictionary<PowerScriptableObject, PowerToken> _powerTokens;
     private HashSet<PowerScriptableObject> _drugsSet;
     private HashSet<PowerScriptableObject> _medsSet;
 
@@ -26,6 +29,9 @@ public class TestPlayerPowerManager : MonoBehaviour
     {
         // Initialize the input
         InitializeInput();
+
+        // Add this to the debug managed objects
+        DebugManager.Instance.AddDebugManaged(this);
     }
 
     private void InitializeInput()
@@ -38,6 +44,7 @@ public class TestPlayerPowerManager : MonoBehaviour
     {
         _drugsSet = new HashSet<PowerScriptableObject>();
         _medsSet = new HashSet<PowerScriptableObject>();
+        _powerTokens = new Dictionary<PowerScriptableObject, PowerToken>();
         UpdatePowerCollections(powers);
     }
 
@@ -56,8 +63,8 @@ public class TestPlayerPowerManager : MonoBehaviour
         _isChargingPower = true;
 
         // Call the current power's start charge method
-        var startedChargingThisFrame = currentPower.PowerLogic.ChargePercentage == 0;
-        currentPower.PowerLogic.StartCharge(startedChargingThisFrame);
+        var startedChargingThisFrame = _powerTokens[currentPower].ChargePercentage == 0;
+        currentPower.PowerLogic.StartCharge(this, _powerTokens[currentPower], startedChargingThisFrame);
     }
 
     private void OnPowerCanceled(InputAction.CallbackContext obj)
@@ -70,12 +77,12 @@ public class TestPlayerPowerManager : MonoBehaviour
         _isChargingPower = false;
 
         // Call the current power's release method
-        var isChargeComplete = currentPower.PowerLogic.ChargePercentage >= 1;
-        currentPower.PowerLogic.Release(isChargeComplete);
+        var isChargeComplete = _powerTokens[currentPower].ChargePercentage >= 1;
+        currentPower.PowerLogic.Release(this, _powerTokens[currentPower], isChargeComplete);
 
         // If the charge is complete, use the power
         if (isChargeComplete)
-            currentPower.PowerLogic.Use();
+            currentPower.PowerLogic.Use(this, _powerTokens[currentPower]);
     }
 
     #endregion
@@ -98,7 +105,7 @@ public class TestPlayerPowerManager : MonoBehaviour
             return;
 
         // Call the current power's charge method
-        currentPower.PowerLogic.Charge();
+        currentPower.PowerLogic.Charge(this, _powerTokens[currentPower]);
     }
 
     /// <summary>
@@ -134,6 +141,9 @@ public class TestPlayerPowerManager : MonoBehaviour
 
             // Add the power to the correct collection
             addSet.Add(power);
+
+            // Add the power to the power usage tokens
+            _powerTokens.Add(power, new PowerToken(power));
         }
 
         // Skip if the current power is already set or if there are no powers
@@ -163,5 +173,24 @@ public class TestPlayerPowerManager : MonoBehaviour
 
         // Update the power collections
         UpdatePowerCollections(powerScriptableObject);
+    }
+
+
+    public string GetDebugText()
+    {
+        if (currentPower == null)
+            return "No Power Selected!\n";
+
+        StringBuilder debugString = new();
+
+        debugString.Append($"Current Power: {currentPower.name}\n");
+        debugString.Append($"\tIs Charging? {_powerTokens[currentPower].IsCharging}\n");
+
+        if (_powerTokens[currentPower].IsCharging)
+            debugString.Append($"\tCharge: {_powerTokens[currentPower].ChargePercentage * 100:0.00}\n");
+
+        debugString.Append($"\tCooldown: {_powerTokens[currentPower].CooldownPercentage * 100:0.00}\n");
+
+        return debugString.ToString();
     }
 }

@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class TestDrug : MonoBehaviour, IPower
 {
-    private bool _isCharging;
-    private float _currentChargeDuration;
-
     public PowerScriptableObject PowerScriptableObject { get; set; }
 
     /// <summary>
@@ -14,34 +11,9 @@ public class TestDrug : MonoBehaviour, IPower
     /// </summary>
     public float ToleranceMeterImpact => 1;
 
-    public float ChargePercentage
-    {
-        get
-        {
-            // If there is no charge duration, return 0 or 1
-            if (PowerScriptableObject.ChargeDuration == 0)
-                return _currentChargeDuration > 0 ? 1 : 0;
-
-            // Otherwise, return the charge percentage
-            return _currentChargeDuration / PowerScriptableObject.ChargeDuration;
-        }
-    }
-
-
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
-
     #region IPower
 
-    public void StartCharge(bool startedChargingThisFrame)
+    public void StartCharge(TestPlayerPowerManager powerManager, PowerToken pToken, bool startedChargingThisFrame)
     {
         Debug.Log(
             startedChargingThisFrame
@@ -50,18 +22,16 @@ public class TestDrug : MonoBehaviour, IPower
         );
 
         // Set the charging flag to true
-        _isCharging = true;
+        pToken.SetChargingFlag(true);
     }
 
-    public void Charge()
+    public void Charge(TestPlayerPowerManager powerManager, PowerToken pToken)
     {
         // Charge the power
-        this.ChargePowerDuration(ref _currentChargeDuration);
-
-        Debug.Log($"Charging This: {ChargePercentage}!");
+        pToken.ChargePowerDuration();
     }
 
-    public void Release(bool isCharged)
+    public void Release(TestPlayerPowerManager powerManager, PowerToken pToken, bool isCharged)
     {
         Debug.Log(
             isCharged
@@ -70,18 +40,18 @@ public class TestDrug : MonoBehaviour, IPower
         );
 
         // Set the charging flag to false
-        _isCharging = false;
+        pToken.SetChargingFlag(false);
 
         // Reset the charge duration if the power is not charging
-        _currentChargeDuration = 0;
+        pToken.ResetChargeDuration();
     }
 
-    public void Use()
+    public void Use(TestPlayerPowerManager powerManager, PowerToken pToken)
     {
         Debug.Log($"Using This!");
 
-        // Reset the charge duration if the power is not charging
-        _currentChargeDuration = 0;
+        // // Reset the charge duration if the power is not charging
+        // _currentChargeDuration = 0;
     }
 
     #endregion

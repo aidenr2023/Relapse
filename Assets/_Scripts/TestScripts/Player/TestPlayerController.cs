@@ -24,10 +24,6 @@ public class TestPlayerController : MonoBehaviour
     [SerializeField] private bool invertVerticalLook;
     [SerializeField] private bool invertHorizontalLook;
 
-    #region Getters
-
-    #endregion
-
     #region Initialization Functions
 
     private void Awake()
@@ -107,9 +103,9 @@ public class TestPlayerController : MonoBehaviour
         );
 
         // Apply the clamped rotation
-        cameraPivot.transform.eulerAngles = new Vector3(
+        cameraPivot.transform.localEulerAngles = new Vector3(
             xRotation,
-            cameraPivot.transform.eulerAngles.y,
+            0,
             0
         );
     }

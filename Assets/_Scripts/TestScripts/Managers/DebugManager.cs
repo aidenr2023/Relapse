@@ -33,7 +33,7 @@ public class DebugManager : MonoBehaviour, IDebugManaged
         _debugManagedObjects = new HashSet<IDebugManaged>();
 
         // Add this to the debug managed objects
-        _debugManagedObjects.Add(this);
+        AddDebugManaged(this);
     }
 
     // Start is called before the first frame update
@@ -89,6 +89,18 @@ public class DebugManager : MonoBehaviour, IDebugManaged
     {
         // Set the debug canvas's visibility
         debugCanvas.enabled = isVisible;
+    }
+    
+    public void AddDebugManaged(IDebugManaged debugManaged)
+    {
+        // Add the debug managed object to the hash set
+        _debugManagedObjects.Add(debugManaged);
+    }
+    
+    public void RemoveDebugManaged(IDebugManaged debugManaged)
+    {
+        // Remove the debug managed object from the hash set
+        _debugManagedObjects.Remove(debugManaged);
     }
 
     public string GetDebugText()

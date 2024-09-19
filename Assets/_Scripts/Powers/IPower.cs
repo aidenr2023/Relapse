@@ -15,19 +15,10 @@ public interface IPower
     public float ToleranceMeterImpact { get; }
 
     /// <summary>
-    /// A float between 0 and 1.
-    /// This is used to determine how much the power is charged.
-    /// Powers that don't need to charge should NEVER just return 1.
-    /// Instead, use normal logic to determine the charge percentage,
-    /// but make the charge duration 0 in the power's scriptable object.
-    /// </summary>
-    public float ChargePercentage { get; }
-
-    /// <summary>
     /// Logic for what happens when the player starts charging the power.
     /// </summary>
     /// <param name="startedChargingThisFrame">Whether the charge started this frame</param>
-    public void StartCharge(bool startedChargingThisFrame);
+    public void StartCharge(TestPlayerPowerManager powerManager, PowerToken pToken, bool startedChargingThisFrame);
 
     /// <summary>
     /// What happens when the player holds down the power button.
@@ -35,7 +26,7 @@ public interface IPower
     /// However, some powers may not need to charge, in which case this method should be empty.
     /// Some custom logic can be added to this method for cool effects.
     /// </summary>
-    public void Charge();
+    public void Charge(TestPlayerPowerManager powerManager, PowerToken pToken);
 
     /// <summary>
     /// What happens when the player releases the power button.
@@ -45,13 +36,13 @@ public interface IPower
     /// NOTE: This method SHOULD NOT call the Use method! 
     /// </summary>
     /// <param name="isCharged"></param>
-    public void Release(bool isCharged);
+    public void Release(TestPlayerPowerManager powerManager, PowerToken pToken, bool isCharged);
 
     /// <summary>
     /// What happens when the player releases the power when they are done charging.
     /// This is where any projectiles may be fired or other effects may be triggered.
     /// </summary>
-    public void Use();
+    public void Use(TestPlayerPowerManager powerManager, PowerToken pToken);
 }
 
 public static class IPowerExtensions
