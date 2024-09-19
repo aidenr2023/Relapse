@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class TestPlayerPowerManager : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class TestPlayerPowerManager : MonoBehaviour
     private HashSet<PowerScriptableObject> _medsSet;
 
     [SerializeField] private PowerScriptableObject currentPower;
+
+    private bool _isChargingPower;
 
     #region Initialization Functions
 
@@ -21,6 +24,14 @@ public class TestPlayerPowerManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // Initialize the input
+        InitializeInput();
+    }
+
+    private void InitializeInput()
+    {
+        InputManager.Instance.PlayerControls.GamePlay.Brand.performed += OnPowerPerformed;
+        InputManager.Instance.PlayerControls.GamePlay.Brand.canceled += OnPowerCanceled;
     }
 
     private void InitializePowerCollections()
@@ -33,9 +44,61 @@ public class TestPlayerPowerManager : MonoBehaviour
     #endregion
 
 
+    #region Input Functions
+
+    private void OnPowerPerformed(InputAction.CallbackContext obj)
+    {
+        // Return if the current power is null
+        if (currentPower == null)
+            return;
+
+        // Set the is charging power flag to true
+        _isChargingPower = true;
+
+        // Call the current power's start charge method
+        var startedChargingThisFrame = currentPower.PowerLogic.ChargePercentage == 0;
+        currentPower.PowerLogic.StartCharge(startedChargingThisFrame);
+    }
+
+    private void OnPowerCanceled(InputAction.CallbackContext obj)
+    {
+        // return if the current power is null
+        if (currentPower == null)
+            return;
+
+        // Set the is charging power flag to false
+        _isChargingPower = false;
+
+        // Call the current power's release method
+        var isChargeComplete = currentPower.PowerLogic.ChargePercentage >= 1;
+        currentPower.PowerLogic.Release(isChargeComplete);
+
+        // If the charge is complete, use the power
+        if (isChargeComplete)
+            currentPower.PowerLogic.Use();
+    }
+
+    #endregion
+
     // Update is called once per frame
     void Update()
     {
+        // Update the charge
+        UpdateCharge();
+    }
+
+    private void UpdateCharge()
+    {
+        // Skip if the current power is null
+        if (currentPower == null)
+            return;
+
+        // Skip if the power is not charging
+        if (!_isChargingPower)
+            return;
+
+        // Call the current power's charge method
+        currentPower.PowerLogic.Charge();
     }
 
     /// <summary>
@@ -60,7 +123,7 @@ public class TestPlayerPowerManager : MonoBehaviour
         {
             if (power == null)
                 continue;
-            
+
             // Determine which collection to add the power to
             var addSet = power.PowerType switch
             {

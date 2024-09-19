@@ -7,19 +7,22 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6cfb2a6815644269acb7f25676adc9c7, type: 3}
   m_Name: Test Power
   m_EditorClassIdentifier: 
-  name: Test Power
+  powerName: Test Power (Drug)
   powerType: 0
   icon: {fileID: 0}
   description: Test Power.
+  chargeDuration: 3
   cooldown: 0
   activeDuration: 0
   baseToleranceMeterImpact: 0
-  levelToleranceMultiplier:
+  toleranceMeterLevelMultiplier:
   - 1
   - 0.75
   - 0.5
+  powerLogicPrefab: {fileID: 3058926612469710390, guid: b16172358bbbc53959ffd8656641252b,
+    type: 3}
