@@ -1,14 +1,26 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class DebugManager : MonoBehaviour
+public class DebugManager : MonoBehaviour, IDebugManaged
 {
     public static DebugManager Instance { get; private set; }
 
     public bool IsDebugMode { get; private set; }
+
+    private HashSet<IDebugManaged> _debugManagedObjects;
+
+
+    [Tooltip("A Canvas object to display debug text")] [SerializeField]
+    private Canvas debugCanvas;
+
+    [Tooltip("A TMP_Text object to display debug text")] [SerializeField]
+    private TMP_Text debugText;
+
 
     #region Initialization Functions
 
@@ -16,13 +28,22 @@ public class DebugManager : MonoBehaviour
     {
         // Set the instance to this
         Instance = this;
+
+        // Create the debug managed objects hash set
+        _debugManagedObjects = new HashSet<IDebugManaged>();
+
+        // Add this to the debug managed objects
+        _debugManagedObjects.Add(this);
     }
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         // Initialize the input
         InitializeInput();
+
+        // Set the visibility of the debug text
+        SetDebugVisibility(IsDebugMode);
     }
 
     private void InitializeInput()
@@ -34,14 +55,44 @@ public class DebugManager : MonoBehaviour
     #endregion
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
+        // Update the text
+        UpdateText();
+    }
+
+    private void UpdateText()
+    {
+        // If the debug text is null, return
+        if (debugText == null)
+            return;
+
+        // Create a new string from the debug managed objects
+        StringBuilder textString = new();
+        foreach (var obj in _debugManagedObjects)
+            textString.Append($"{obj.GetDebugText()}\n");
+
+        // Set the text
+        debugText.text = textString.ToString();
     }
 
     private void ToggleDebugMode(InputAction.CallbackContext ctx)
     {
+        // Toggle the debug mode
         IsDebugMode = !IsDebugMode;
-        
-        Debug.Log($"Debug Mode: {IsDebugMode}");
+
+        // Set the debug text visibility
+        SetDebugVisibility(IsDebugMode);
+    }
+
+    private void SetDebugVisibility(bool isVisible)
+    {
+        // Set the debug canvas's visibility
+        debugCanvas.enabled = isVisible;
+    }
+
+    public string GetDebugText()
+    {
+        return "PRESS F1 TO TOGGLE DEBUG MODE\n";
     }
 }

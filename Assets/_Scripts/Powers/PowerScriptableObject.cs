@@ -65,8 +65,6 @@ public class PowerScriptableObject : ScriptableObject
 
         // Attach the PowerScriptableObject to the PowerLogic
         _powerLogic.AttachToScriptableObject(this);
-
-        Debug.Log($"PowerLogic: {_powerLogic}");
     }
 
     /// <summary>
