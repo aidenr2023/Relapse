@@ -26,8 +26,6 @@ public class TestPlayerController : MonoBehaviour
 
     #region Getters
 
-    public float AimSensitivity => aimSensitivity;
-
     #endregion
 
     #region Initialization Functions
@@ -76,7 +74,7 @@ public class TestPlayerController : MonoBehaviour
 
     private void OnLookPerformed(InputAction.CallbackContext obj)
     {
-        const float SENSITIVITY_MOD = 0.25f;
+        const float sensitivityMod = 0.25f;
 
         // Get the look input
         var lookInput = obj.ReadValue<Vector2>();
@@ -86,10 +84,10 @@ public class TestPlayerController : MonoBehaviour
         var invertY = invertVerticalLook ? -1 : 1;
 
         // Rotate the player object for horizontal look
-        transform.Rotate(Vector3.up, lookInput.x * aimSensitivity * SENSITIVITY_MOD * invertX);
-        
+        transform.Rotate(Vector3.up, lookInput.x * aimSensitivity * sensitivityMod * invertX);
+
         // Rotate the camera pivot for vertical look
-        cameraPivot.transform.Rotate(Vector3.left, lookInput.y * aimSensitivity * SENSITIVITY_MOD * invertY);
+        cameraPivot.transform.Rotate(Vector3.left, lookInput.y * aimSensitivity * sensitivityMod * invertY);
 
         // Clamp the rotation around the x-axis
         var xRotation = cameraPivot.transform.eulerAngles.x;
@@ -114,16 +112,6 @@ public class TestPlayerController : MonoBehaviour
             cameraPivot.transform.eulerAngles.y,
             0
         );
-
-        // Create a new forward vector representing the player's new forward direction
-        var newForward = new Vector3(
-            cameraPivot.transform.forward.x,
-            0,
-            cameraPivot.transform.forward.z
-        );
-
-        // Set the new forward direction
-        // transform.forward = newForward;
     }
 
     #endregion
