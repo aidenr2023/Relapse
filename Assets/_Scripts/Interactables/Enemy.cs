@@ -29,7 +29,7 @@ public class Enemy : MonoBehaviour
         Playerinfo playerHealth = player.GetComponent<Playerinfo>();
         if (playerHealth != null)
         {
-            playerHealth.TakeDamage(1);
+            playerHealth.TakeDamage(1f);
         }
         // Instantiate the explosion effect at the enemy's position
         if (explosionEffect != null)

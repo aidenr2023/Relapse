@@ -4,12 +4,18 @@ using UnityEngine;
 
 public class Playerinfo : MonoBehaviour
 {
-    public int health = 3;
+    public float maxHealth = 3f;
+    public float health;
     public WinLose winLose; // Reference to the WinLose script
 
-    public void TakeDamage(int damageAmount)
+    void Start()
+    {
+        health = maxHealth;
+    }
+
     {
         health -= damageAmount;
+        health = Mathf.Clamp(health, 0, maxHealth);
 
         if (health <= 0)
         {
