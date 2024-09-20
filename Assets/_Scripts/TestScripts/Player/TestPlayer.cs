@@ -4,7 +4,6 @@ using UnityEngine;
 /// This class is mainly used as a hub to connect all the player components together.
 /// </summary>
 [RequireComponent(typeof(Playerinfo))]
-[RequireComponent(typeof(TestPlayerController))]
 [RequireComponent(typeof(TestPlayerPowerManager))]
 public class TestPlayer : MonoBehaviour
 {

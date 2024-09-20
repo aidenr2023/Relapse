@@ -33,7 +33,7 @@ public class Fireball : MonoBehaviour, IPower
         var projectileScript = CreateProjectile(firePosition, fireForward);
 
         // Set up the projectile
-        SetUpProjectile(projectileScript);
+        SetUpProjectile(powerManager, projectileScript);
     }
 
     private ScriptExtender CreateProjectile(Vector3 pos, Vector3 forward)
@@ -61,7 +61,7 @@ public class Fireball : MonoBehaviour, IPower
         return scriptExtender;
     }
 
-    private void SetUpProjectile(ScriptExtender scriptExtender)
+    private void SetUpProjectile(TestPlayerPowerManager powerManager, ScriptExtender scriptExtender)
     {
         // Add a function to the script extender that runs when the projectile is updated
         scriptExtender.OnObjectFixedUpdate += FireballMovement;
@@ -85,6 +85,10 @@ public class Fireball : MonoBehaviour, IPower
 
         void FireballTriggerEnter(ScriptExtender obj, Collider other)
         {
+            // Return if the projectile hits sender of the projectile
+            if (other.gameObject == powerManager.gameObject) 
+                return;
+            
             // Destroy the projectile when it hits something
             Debug.Log($"BOOM! {obj.name} hit {other.name}");
             Destroy(obj.gameObject);

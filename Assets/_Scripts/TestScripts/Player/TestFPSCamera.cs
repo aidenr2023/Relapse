@@ -13,9 +13,6 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(CinemachineVirtualCamera))]
 public class TestFPSCamera : MonoBehaviour
 {
-    // Reference to the player controller on the player object
-    [SerializeField] private TestPlayerController _playerController;
-
     // Reference to the Cinemachine Virtual Camera
     private CinemachineVirtualCamera _vcam;
 
