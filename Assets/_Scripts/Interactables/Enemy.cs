@@ -14,7 +14,7 @@ public class Enemy : MonoBehaviour
     public Playerinfo Playerinfo;
     private bool isExploding = false;
     public AudioSource explosionSound;
-    
+
     private void Start()
     {
         // Ensure the enemy has a SphereCollider set as a trigger
@@ -27,11 +27,12 @@ public class Enemy : MonoBehaviour
     {
         isExploding = true;
         Playerinfo playerHealth = player.GetComponent<Playerinfo>();
-        
+
         if (playerHealth != null)
         {
             playerHealth.TakeDamage(1);
         }
+
         // Instantiate the explosion effect at the enemy's position
         if (explosionEffect != null)
         {
@@ -49,9 +50,9 @@ public class Enemy : MonoBehaviour
                 Destroy(explosion, 2f); // Fallback in case there's no ParticleSystem component
             }
         }
+
         // Deactivate the enemy
         Destroy(gameObject);
-        
     }
 
     public void enemyTakeDamage(int damageAmount)

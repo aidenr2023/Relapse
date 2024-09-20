@@ -1,19 +1,22 @@
 using UnityEngine;
 
+/// <summary>
+/// This class is mainly used as a hub to connect all the player components together.
+/// </summary>
 [RequireComponent(typeof(Playerinfo))]
 [RequireComponent(typeof(TestPlayerController))]
 [RequireComponent(typeof(TestPlayerPowerManager))]
 public class TestPlayer : MonoBehaviour
 {
     private Playerinfo _playerInfo;
-    private TestPlayerController _playerController;
+    private IPlayerController _playerController;
     private TestPlayerPowerManager _playerPowerManager;
 
     #region Getters
 
     public Playerinfo PlayerInfo => _playerInfo;
 
-    public TestPlayerController PlayerController => _playerController;
+    public IPlayerController PlayerController => _playerController;
 
     public TestPlayerPowerManager PlayerPowerManager => _playerPowerManager;
 
@@ -29,25 +32,15 @@ public class TestPlayer : MonoBehaviour
 
     private void InitializeComponents()
     {
-        // Get the Playerinfo component
+        // Get the Player Info component
         _playerInfo = GetComponent<Playerinfo>();
-        
+
         // Get the TestPlayerController component
-        _playerController = GetComponent<TestPlayerController>();
+        _playerController = GetComponent<IPlayerController>();
 
         // Get the TestPlayerPowerManager component
         _playerPowerManager = GetComponent<TestPlayerPowerManager>();
     }
 
     #endregion
-
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-    }
 }

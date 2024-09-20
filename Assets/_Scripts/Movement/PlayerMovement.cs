@@ -12,33 +12,33 @@ public enum MovementState
     climbing,
 }
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, IPlayerController
 {
-    [Header("Movement")]
-    private float moveSpeed;  // The current speed of the player
-    public float walkSpeed;   // The speed when the player is walking
+    #region Fields
+
+    [Header("Movement")] private float moveSpeed; // The current speed of the player
+    public float walkSpeed; // The speed when the player is walking
     public float sprintSpeed; // The speed when the player is sprinting
     public float wallrunSpeed; // The speed when the player is wall running
-    public float groundDrag;  // Drag applied to the player when grounded
-    public float jumpForce;   // The force applied when the player jumps
+    public float groundDrag; // Drag applied to the player when grounded
+    public float jumpForce; // The force applied when the player jumps
     public float jumpCooldown; // The cooldown time between jumps
     public float airMultiplier; // Multiplier for movement speed when in the air
     public bool readyToJump = true; // Flag to check if the player is ready to jump
     public AudioSource footsteps;
     public AudioSource wallFootSteps;
-    
+
     [Header("References")]
     //public Climbing cm; // Reference to the Climbing script (if applicable)
     public WallRunning wallRunning; // Reference to the WallRunning script
+
     public Dash dash;
-    
-    [Header("Input Actions")]
-    public InputActionReference moveAction;   // Input action for movement
-    public InputActionReference jumpAction;   // Input action for jumping
+
+    [Header("Input Actions")] public InputActionReference moveAction; // Input action for movement
+    public InputActionReference jumpAction; // Input action for jumping
     public InputActionReference sprintAction; // Input action for sprinting
 
-    [Header("Ground Check")]
-    public float playerHeight;  // Height of the player for ground checking
+    [Header("Ground Check")] public float playerHeight; // Height of the player for ground checking
     public LayerMask whatIsGround; // LayerMask to define what is considered ground
     [HideInInspector] public bool grounded; // Flag to check if the player is grounded
 
@@ -50,6 +50,11 @@ public class PlayerMovement : MonoBehaviour
     public MovementState state; // The current movement state of the player
     [HideInInspector] public bool isWallRunning; // Flag to check if the player is wall running
     public bool climbing; // Flag to check if the player is climbing
+
+    #endregion
+
+    public GameObject CameraPivot => orientation.gameObject;
+
 
     private void Awake()
     {
@@ -185,15 +190,14 @@ public class PlayerMovement : MonoBehaviour
             default:
                 break;
         }
+
         // Automatically switch states based on conditions
         if (isWallRunning)
         {
             state = MovementState.wallrunning;
-            
         }
         else if (grounded)
         {
-            
             if (sprintAction.action.IsPressed())
             {
                 state = MovementState.sprinting;
@@ -201,13 +205,11 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 state = MovementState.walking;
-                
             }
         }
         else
         {
             state = MovementState.air;
-            
         }
     }
 }

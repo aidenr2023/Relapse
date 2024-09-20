@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CharacterController))]
-public class TestPlayerController : MonoBehaviour
+public class TestPlayerController : MonoBehaviour, IPlayerController
 {
     private CharacterController _characterController;
 
