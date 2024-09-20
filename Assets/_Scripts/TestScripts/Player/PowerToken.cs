@@ -20,17 +20,27 @@ public class PowerToken
     /// <summary>
     /// How far along the charge is.
     /// </summary>
-    private float _currentChargeDuration;
+    private float currentCurrentChargeDuration;
 
     /// <summary>
     /// A flag to determine if the power is active.
     /// </summary>
-    private bool _isActive;
+    private bool _isActiveEffectOn;
 
     /// <summary>
     /// How far along the active duration is.
     /// </summary>
-    private float _currentActiveDuration;
+    private float currentCurrentActiveDuration;
+
+    /// <summary>
+    /// A flag to determine if the power is passively affecting the player.
+    /// </summary>
+    private bool _isPassiveEffectOn;
+
+    /// <summary>
+    /// How far along the passive duration is.
+    /// </summary>
+    private float _currentPassiveDuration;
 
     /// <summary>
     /// Flag to determine if the power is cooling down.
@@ -40,7 +50,7 @@ public class PowerToken
     /// <summary>
     /// How far along the cooldown is.
     /// </summary>
-    private float _currentCooldownDuration;
+    private float currentCurrentCooldownDuration;
 
     #region Getters
 
@@ -52,20 +62,26 @@ public class PowerToken
                                          PowerScriptableObject.PowerType.ToleranceMultiplier();
 
     public bool IsCharging => _isCharging;
-    public float ChargePercentage => _currentChargeDuration / _powerScriptableObject.ChargeDuration;
+    public float ChargePercentage => currentCurrentChargeDuration / _powerScriptableObject.ChargeDuration;
 
-    public float ChargeDuration => _currentChargeDuration;
+    public float CurrentChargeDuration => currentCurrentChargeDuration;
 
-    public bool IsActive => _isActive;
+    public bool IsActiveEffectOn => _isActiveEffectOn;
 
-    public float ActivePercentage => _currentActiveDuration / _powerScriptableObject.ActiveDuration;
+    public float ActivePercentage => currentCurrentActiveDuration / _powerScriptableObject.ActiveEffectDuration;
 
-    public float ActiveDuration => _currentActiveDuration;
+    public float CurrentActiveDuration => currentCurrentActiveDuration;
+
+    public bool IsPassiveEffectOn => _isPassiveEffectOn;
+
+    public float PassivePercentage => _currentPassiveDuration / _powerScriptableObject.PassiveEffectDuration;
+
+    public float CurrentPassiveDuration => _currentPassiveDuration;
 
     public bool IsCoolingDown => _isCoolingDown;
-    public float CooldownPercentage => _currentCooldownDuration / _powerScriptableObject.Cooldown;
+    public float CooldownPercentage => currentCurrentCooldownDuration / _powerScriptableObject.Cooldown;
 
-    public float CooldownDuration => _currentCooldownDuration;
+    public float CurrentCooldownDuration => currentCurrentCooldownDuration;
 
     #endregion
 
@@ -83,7 +99,7 @@ public class PowerToken
     {
         // Update the charge duration
         IPowerExtensions.UpdateDuration(
-            ref _currentChargeDuration,
+            ref currentCurrentChargeDuration,
             _powerScriptableObject.ChargeDuration,
             Time.deltaTime
         );
@@ -91,27 +107,47 @@ public class PowerToken
 
     public void ResetChargeDuration()
     {
-        _currentChargeDuration = 0;
+        currentCurrentChargeDuration = 0;
     }
 
     public void SetActiveFlag(bool isActive)
     {
-        _isActive = isActive;
+        _isActiveEffectOn = isActive;
     }
 
     public void ActivePowerDuration()
     {
         // Update the active duration
         IPowerExtensions.UpdateDuration(
-            ref _currentActiveDuration,
-            _powerScriptableObject.ActiveDuration,
+            ref currentCurrentActiveDuration,
+            _powerScriptableObject.ActiveEffectDuration,
             Time.deltaTime
         );
     }
-    
+
     public void ResetActiveDuration()
     {
-        _currentActiveDuration = 0;
+        currentCurrentActiveDuration = 0;
+    }
+
+    public void SetPassiveFlag(bool isPassive)
+    {
+        _isPassiveEffectOn = isPassive;
+    }
+
+    public void PassivePowerDuration()
+    {
+        // Update the passive duration
+        IPowerExtensions.UpdateDuration(
+            ref _currentPassiveDuration,
+            _powerScriptableObject.PassiveEffectDuration,
+            Time.deltaTime
+        );
+    }
+
+    public void ResetPassiveDuration()
+    {
+        _currentPassiveDuration = 0;
     }
 
     public void SetCooldownFlag(bool isCoolingDown)
@@ -123,7 +159,7 @@ public class PowerToken
     {
         // Update the cooldown duration
         IPowerExtensions.UpdateDuration(
-            ref _currentCooldownDuration,
+            ref currentCurrentCooldownDuration,
             _powerScriptableObject.Cooldown,
             Time.deltaTime
         );
@@ -131,6 +167,6 @@ public class PowerToken
 
     public void SetCooldownDuration(float amount)
     {
-        _currentCooldownDuration = amount;
+        currentCurrentCooldownDuration = amount;
     }
 }

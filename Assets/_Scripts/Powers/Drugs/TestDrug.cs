@@ -35,7 +35,11 @@ public class TestDrug : MonoBehaviour, IPower
         Debug.Log($"Using This!");
     }
 
-    public void Active(TestPlayerPowerManager powerManager, PowerToken pToken)
+    public void ActiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken)
+    {
+    }
+
+    public void PassiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken)
     {
     }
 

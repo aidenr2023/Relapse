@@ -62,9 +62,9 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         // Return if the powers array is empty
         if (powers.Length == 0)
             return;
-        
+
         // Don't change the power if the current power is active
-        if (_powerTokens[CurrentPower].IsActive)
+        if (_powerTokens[CurrentPower].IsActiveEffectOn)
             return;
 
         // Set the current power index to the next power
@@ -82,7 +82,7 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
             return;
 
         // Return if the power is currently active
-        if (_powerTokens[CurrentPower].IsActive)
+        if (_powerTokens[CurrentPower].IsActiveEffectOn)
             return;
 
         // Set the is charging power flag to true
@@ -126,6 +126,12 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 
             // Reset the active duration
             _powerTokens[CurrentPower].ResetActiveDuration();
+
+            // Set the passive flag to true
+            _powerTokens[CurrentPower].SetPassiveFlag(true);
+
+            // Reset the passive duration
+            _powerTokens[CurrentPower].ResetPassiveDuration();
         }
     }
 
@@ -139,6 +145,9 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 
         // Update the active powers
         UpdateActivePowers();
+        
+        // Update the passive powers
+        UpdatePassivePowers();
 
         // Update the cooldowns
         UpdateCooldowns();
@@ -169,14 +178,14 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
             var cToken = _powerTokens[power];
 
             // Skip if the power is not active
-            if (!cToken.IsActive)
+            if (!cToken.IsActiveEffectOn)
                 continue;
 
             // Update the active duration
             cToken.ActivePowerDuration();
 
             // Call the current power's active method
-            power.PowerLogic.Active(this, cToken);
+            power.PowerLogic.ActiveEffect(this, cToken);
 
             // If the active percentage is 1, set the active flag to false
             if (cToken.ActivePercentage >= 1)
@@ -192,6 +201,29 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         }
     }
 
+    private void UpdatePassivePowers()
+    {
+        foreach (var power in _powerTokens.Keys)
+        {
+            // Get the current power token
+            var cToken = _powerTokens[power];
+
+            // Skip if the power's passive effect is not active
+            if (!cToken.IsPassiveEffectOn)
+                continue;
+
+            // Update the passive duration
+            cToken.PassivePowerDuration();
+
+            // Call the current power's passive method
+            power.PowerLogic.PassiveEffect(this, cToken);
+
+            // If the passive percentage is 1, set the passive flag to false
+            if (cToken.PassivePercentage >= 1)
+                cToken.SetPassiveFlag(false);
+        }
+    }
+
     private void UpdateCooldowns()
     {
         foreach (var power in _powerTokens.Keys)
@@ -204,7 +236,7 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
                 continue;
 
             // Skip if the power is active (Redundant, but here to be safe)
-            if (cToken.IsActive)
+            if (cToken.IsActiveEffectOn)
                 continue;
 
             // Update the cooldown
@@ -303,17 +335,27 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         {
             debugString.Append($"\t\tCharge: {_powerTokens[CurrentPower].ChargePercentage * 100:0.00}%\n");
             debugString.Append(
-                $"\t\tCharge Duration: {_powerTokens[CurrentPower].ChargeDuration:0.00}s / {CurrentPower.ChargeDuration:0.00}s\n");
+                $"\t\tDuration: {_powerTokens[CurrentPower].CurrentChargeDuration:0.00}s / {CurrentPower.ChargeDuration:0.00}s\n");
         }
 
         // Active Logic
-        debugString.Append($"\tIs Active? {_powerTokens[CurrentPower].IsActive}\n");
+        debugString.Append($"\tIs Active? {_powerTokens[CurrentPower].IsActiveEffectOn}\n");
 
-        if (_powerTokens[CurrentPower].IsActive)
+        if (_powerTokens[CurrentPower].IsActiveEffectOn)
         {
-            debugString.Append($"\t\tActive: {_powerTokens[CurrentPower].ActivePercentage * 100:0.00}%\n");
+            debugString.Append($"\t\tOn: {_powerTokens[CurrentPower].ActivePercentage * 100:0.00}%\n");
             debugString.Append(
-                $"\t\tActive Duration: {_powerTokens[CurrentPower].ActiveDuration:0.00}s / {CurrentPower.ActiveDuration:0.00}s\n");
+                $"\t\tDuration: {_powerTokens[CurrentPower].CurrentActiveDuration:0.00}s / {CurrentPower.ActiveEffectDuration:0.00}s\n");
+        }
+
+        // Passive Logic
+        debugString.Append($"\tPassive Effect? {_powerTokens[CurrentPower].IsActiveEffectOn}\n");
+
+        if (_powerTokens[CurrentPower].IsPassiveEffectOn)
+        {
+            debugString.Append($"\t\tOn: {_powerTokens[CurrentPower].PassivePercentage * 100:0.00}%\n");
+            debugString.Append(
+                $"\t\tDuration: {_powerTokens[CurrentPower].CurrentPassiveDuration:0.00}s / {CurrentPower.PassiveEffectDuration:0.00}s\n");
         }
 
         // Cooldown Logic
@@ -323,7 +365,7 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         {
             debugString.Append($"\t\tCooldown: {_powerTokens[CurrentPower].CooldownPercentage * 100:0.00}%\n");
             debugString.Append(
-                $"\t\tCooldown Duration: {_powerTokens[CurrentPower].CooldownDuration:0.00}s / {CurrentPower.Cooldown:0.00}s\n");
+                $"\t\tDuration: {_powerTokens[CurrentPower].CurrentCooldownDuration:0.00}s / {CurrentPower.Cooldown:0.00}s\n");
         }
 
         return debugString.ToString();

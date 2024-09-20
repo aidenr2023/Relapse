@@ -43,7 +43,15 @@ public interface IPower
     /// </summary>
     /// <param name="powerManager"></param>
     /// <param name="pToken"></param>
-    public void Active(TestPlayerPowerManager powerManager, PowerToken pToken);
+    public void ActiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken);
+
+    /// <summary>
+    /// Passive effects that are applied after the player uses the power.
+    /// Think of statistic modifiers or other continuous effects.
+    /// </summary>
+    /// <param name="powerManager"></param>
+    /// <param name="pToken"></param>
+    public void PassiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken);
 }
 
 public static class IPowerExtensions
@@ -75,7 +83,7 @@ public static class IPowerExtensions
         else
             currentDuration = 1;
     }
-    
+
     public static int ToleranceMultiplier(this PowerType powerType)
     {
         return powerType == PowerType.Drug ? 1 : -1;

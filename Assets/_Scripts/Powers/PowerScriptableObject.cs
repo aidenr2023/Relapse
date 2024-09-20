@@ -13,7 +13,8 @@ public class PowerScriptableObject : ScriptableObject
     [SerializeField] [TextArea(3, 10)] private string description;
 
     [Header("Stats")] [SerializeField] private float chargeDuration;
-    [SerializeField] private float activeDuration;
+    [SerializeField] private float activeEffectDuration;
+    [SerializeField] private float passiveEffectDuration;
     [SerializeField] private float cooldown;
     [SerializeField] private float baseToleranceMeterImpact;
     [SerializeField] private float[] toleranceMeterLevelMultiplier;
@@ -30,7 +31,8 @@ public class PowerScriptableObject : ScriptableObject
     public string Description => description;
     public float ChargeDuration => chargeDuration;
     public float Cooldown => cooldown;
-    public float ActiveDuration => activeDuration;
+    public float ActiveEffectDuration => activeEffectDuration;
+    public float PassiveEffectDuration => passiveEffectDuration;
     public float BaseToleranceMeterImpact => baseToleranceMeterImpact;
     public float[] ToleranceMeterLevelMultiplier => toleranceMeterLevelMultiplier;
     public GameObject PowerLogicPrefab => powerLogicPrefab;
