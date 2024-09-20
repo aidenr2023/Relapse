@@ -41,6 +41,9 @@ public class DebugManager : MonoBehaviour, IDebugManaged
     {
         // Initialize the input
         InitializeInput();
+        
+        // Set debug mode to true by default
+        IsDebugMode = true;
 
         // Set the visibility of the debug text
         SetDebugVisibility(IsDebugMode);

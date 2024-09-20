@@ -89,6 +89,33 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Shoot"",
+                    ""type"": ""Button"",
+                    ""id"": ""52cfe432-c9af-48fc-9e0a-862127d03260"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Power"",
+                    ""type"": ""Button"",
+                    ""id"": ""895e9f9c-0250-406d-b48f-d9c0e99d716e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ChangePower"",
+                    ""type"": ""Value"",
+                    ""id"": ""eb1b7cec-cdbc-4002-8ac8-81f3aaba544e"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -322,6 +349,61 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Objectives"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e0aa928d-b256-4fa8-b3eb-eb0b60d60dc9"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyBoard"",
+                    ""action"": ""Shoot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""38660144-ec56-4b89-b1b1-db12998bae61"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyBoard"",
+                    ""action"": ""Power"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""Scroll Wheel"",
+                    ""id"": ""d28f6e44-4d61-419b-9157-8e4f275e52df"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ChangePower"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""67eb3517-c664-4bf7-b829-de8d108e18c1"",
+                    ""path"": ""<Mouse>/scroll/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyBoard"",
+                    ""action"": ""ChangePower"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""73793f6e-3f5b-4cff-b006-12308c464d68"",
+                    ""path"": ""<Mouse>/scroll/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KeyBoard"",
+                    ""action"": ""ChangePower"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -371,6 +453,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_GamePlay_dash = m_GamePlay.FindAction("dash", throwIfNotFound: true);
         m_GamePlay_Brand = m_GamePlay.FindAction("Brand", throwIfNotFound: true);
         m_GamePlay_Objectives = m_GamePlay.FindAction("Objectives", throwIfNotFound: true);
+        m_GamePlay_Shoot = m_GamePlay.FindAction("Shoot", throwIfNotFound: true);
+        m_GamePlay_Power = m_GamePlay.FindAction("Power", throwIfNotFound: true);
+        m_GamePlay_ChangePower = m_GamePlay.FindAction("ChangePower", throwIfNotFound: true);
         // Debug
         m_Debug = asset.FindActionMap("Debug", throwIfNotFound: true);
         m_Debug_ToggleDebug = m_Debug.FindAction("ToggleDebug", throwIfNotFound: true);
@@ -442,6 +527,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_dash;
     private readonly InputAction m_GamePlay_Brand;
     private readonly InputAction m_GamePlay_Objectives;
+    private readonly InputAction m_GamePlay_Shoot;
+    private readonly InputAction m_GamePlay_Power;
+    private readonly InputAction m_GamePlay_ChangePower;
     public struct GamePlayActions
     {
         private @PlayerControls m_Wrapper;
@@ -453,6 +541,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @dash => m_Wrapper.m_GamePlay_dash;
         public InputAction @Brand => m_Wrapper.m_GamePlay_Brand;
         public InputAction @Objectives => m_Wrapper.m_GamePlay_Objectives;
+        public InputAction @Shoot => m_Wrapper.m_GamePlay_Shoot;
+        public InputAction @Power => m_Wrapper.m_GamePlay_Power;
+        public InputAction @ChangePower => m_Wrapper.m_GamePlay_ChangePower;
         public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -483,6 +574,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Objectives.started += instance.OnObjectives;
             @Objectives.performed += instance.OnObjectives;
             @Objectives.canceled += instance.OnObjectives;
+            @Shoot.started += instance.OnShoot;
+            @Shoot.performed += instance.OnShoot;
+            @Shoot.canceled += instance.OnShoot;
+            @Power.started += instance.OnPower;
+            @Power.performed += instance.OnPower;
+            @Power.canceled += instance.OnPower;
+            @ChangePower.started += instance.OnChangePower;
+            @ChangePower.performed += instance.OnChangePower;
+            @ChangePower.canceled += instance.OnChangePower;
         }
 
         private void UnregisterCallbacks(IGamePlayActions instance)
@@ -508,6 +608,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Objectives.started -= instance.OnObjectives;
             @Objectives.performed -= instance.OnObjectives;
             @Objectives.canceled -= instance.OnObjectives;
+            @Shoot.started -= instance.OnShoot;
+            @Shoot.performed -= instance.OnShoot;
+            @Shoot.canceled -= instance.OnShoot;
+            @Power.started -= instance.OnPower;
+            @Power.performed -= instance.OnPower;
+            @Power.canceled -= instance.OnPower;
+            @ChangePower.started -= instance.OnChangePower;
+            @ChangePower.performed -= instance.OnChangePower;
+            @ChangePower.canceled -= instance.OnChangePower;
         }
 
         public void RemoveCallbacks(IGamePlayActions instance)
@@ -589,6 +698,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnDash(InputAction.CallbackContext context);
         void OnBrand(InputAction.CallbackContext context);
         void OnObjectives(InputAction.CallbackContext context);
+        void OnShoot(InputAction.CallbackContext context);
+        void OnPower(InputAction.CallbackContext context);
+        void OnChangePower(InputAction.CallbackContext context);
     }
     public interface IDebugActions
     {

@@ -55,10 +55,10 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 
     private void InitializeInput()
     {
-        InputManager.Instance.PlayerControls.GamePlay.Brand.performed += OnPowerPerformed;
-        InputManager.Instance.PlayerControls.GamePlay.Brand.canceled += OnPowerCanceled;
+        InputManager.Instance.PlayerControls.GamePlay.Power.performed += OnPowerPerformed;
+        InputManager.Instance.PlayerControls.GamePlay.Power.canceled += OnPowerCanceled;
 
-        InputManager.Instance.PlayerControls.GamePlay.Objectives.performed += OnPowerChanged;
+        InputManager.Instance.PlayerControls.GamePlay.ChangePower.performed += OnPowerChanged;
     }
 
 
@@ -85,8 +85,18 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         if (_powerTokens[CurrentPower].IsActiveEffectOn)
             return;
 
+        // Get the float value of the change power input
+        var changePowerValue = obj.ReadValue<float>();
+
+        Debug.Log($"{changePowerValue}");
+
+        // Scroll up or down based on the input
+        var direction = changePowerValue > 0 ? 1 : -1;
+
         // Set the current power index to the next power
-        _currentPowerIndex = (_currentPowerIndex + 1) % powers.Length;
+        _currentPowerIndex = (_currentPowerIndex + direction) % powers.Length;
+        if (_currentPowerIndex < 0)
+            _currentPowerIndex += powers.Length;
     }
 
     private void OnPowerPerformed(InputAction.CallbackContext obj)
@@ -373,7 +383,7 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         }
 
         // Active Logic
-        debugString.Append($"\tIs Active? {_powerTokens[CurrentPower].IsActiveEffectOn}\n");
+        debugString.Append($"\tActive Effect? {_powerTokens[CurrentPower].IsActiveEffectOn}\n");
 
         if (_powerTokens[CurrentPower].IsActiveEffectOn)
         {

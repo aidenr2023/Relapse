@@ -12,34 +12,35 @@ public class TestDrug : MonoBehaviour, IPower
 
     public void StartCharge(TestPlayerPowerManager powerManager, PowerToken pToken, bool startedChargingThisFrame)
     {
-        Debug.Log(
-            startedChargingThisFrame
-                ? $"Started Charging This Frame!"
-                : $"Started Charging This Some Other Frame!"
-        );
+        // Debug.Log(
+        //     startedChargingThisFrame
+        //         ? $"Started Charging This Frame!"
+        //         : $"Started Charging This Some Other Frame!"
+        // );
     }
 
     public void Charge(TestPlayerPowerManager powerManager, PowerToken pToken)
     {
-        Debug.Log($"Charging This!");
+        // Debug.Log($"Charging This!");
     }
 
     public void Release(TestPlayerPowerManager powerManager, PowerToken pToken, bool isCharged)
     {
-        Debug.Log(isCharged
-            ? $"Released This Fully Charged!"
-            : $"Released This Not Fully Charged!"
-        );
+        // Debug.Log(isCharged
+        //     ? $"Released This Fully Charged!"
+        //     : $"Released This Not Fully Charged!"
+        // );
     }
 
     public void Use(TestPlayerPowerManager powerManager, PowerToken pToken)
     {
-        Debug.Log($"Using This!");
+        // Debug.Log($"Using This!");
+        Debug.Log($"This DRUG does nothing!");
     }
 
     public void StartActiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken)
     {
-        Debug.Log($"Starting Active Effect!");
+        // Debug.Log($"Starting Active Effect!");
     }
 
     public void UpdateActiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken)
@@ -48,12 +49,12 @@ public class TestDrug : MonoBehaviour, IPower
 
     public void EndActiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken)
     {
-        Debug.Log($"Ending Active Effect!");
+        // Debug.Log($"Ending Active Effect!");
     }
 
     public void StartPassiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken)
     {
-        Debug.Log($"Starting Passive Effect!");
+        // Debug.Log($"Starting Passive Effect!");
     }
 
     public void UpdatePassiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken)
@@ -62,7 +63,7 @@ public class TestDrug : MonoBehaviour, IPower
 
     public void EndPassiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken)
     {
-        Debug.Log($"Ending Passive Effect!");
+        // Debug.Log($"Ending Passive Effect!");
     }
 
     #endregion
