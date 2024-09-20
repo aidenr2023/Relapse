@@ -15,6 +15,7 @@ public class PlayerHealth : MonoBehaviour
     {
         healthSlider.maxValue = Playerinfo.maxHealth;
         easeHealthSlider.maxValue = Playerinfo.maxHealth;
+        
         healthSlider.value = Playerinfo.health;
         easeHealthSlider.value = Playerinfo.health;
     }
@@ -22,8 +23,7 @@ public class PlayerHealth : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-      
-            healthSlider.value = Playerinfo.health;
+        healthSlider.value = Playerinfo.health;
 
 
         if (healthSlider.value != easeHealthSlider.value)
@@ -31,6 +31,4 @@ public class PlayerHealth : MonoBehaviour
             easeHealthSlider.value = Mathf.Lerp(easeHealthSlider.value, Playerinfo.health, lerpSpeed);
         }
     }
-
-    
 }

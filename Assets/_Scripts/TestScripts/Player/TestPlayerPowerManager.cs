@@ -368,6 +368,14 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 
         StringBuilder debugString = new();
 
+        float tolerancePercentage;
+        if (_player.PlayerInfo.MaxTolerance == 0)
+            tolerancePercentage = 0;
+        else
+            tolerancePercentage = _player.PlayerInfo.CurrentTolerance / _player.PlayerInfo.MaxTolerance * 100;
+        
+        debugString.Append($"Tolerance: {_player.PlayerInfo.CurrentTolerance:0.00} / {_player.PlayerInfo.MaxTolerance:0.00} ({tolerancePercentage:0.00})\n");
+
         debugString.Append($"Current Power: {CurrentPower.name}\n");
         debugString.Append($"\tPurity (Level): {_powerTokens[CurrentPower].CurrentLevel}\n");
         debugString.Append($"\tTolerance Impact: {_powerTokens[CurrentPower].ToleranceMeterImpact}\n");

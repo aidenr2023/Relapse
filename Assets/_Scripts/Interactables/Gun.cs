@@ -7,8 +7,8 @@ public class Gun : MonoBehaviour
     [SerializeField] private bool bulletSpread = true;
 
     [SerializeField] private Vector3 bulletSpreadVariance = new Vector3(2f, 2f, 2f);
-    
-    
+
+
     public ParticleSystem impactParticleSystem;
 
     public Transform bulletSpawnLocation;
@@ -36,13 +36,15 @@ public class Gun : MonoBehaviour
     private Vector3 GetBulletTrajectory()
     {
         Vector3 direction = transform.forward;
+        
         // means of calculating bullet spread based on a range of a objects normal
         if (bulletSpread)
         {
             direction += new Vector3(
                 Random.Range(-bulletSpreadVariance.x, bulletSpreadVariance.x),
                 Random.Range(-bulletSpreadVariance.y, bulletSpreadVariance.y),
-                Random.Range(-bulletSpreadVariance.z, bulletSpreadVariance.z));
+                Random.Range(-bulletSpreadVariance.z, bulletSpreadVariance.z)
+            );
 
             direction.Normalize();
         }
@@ -59,14 +61,14 @@ public class Gun : MonoBehaviour
             Enemy enemyHealth = hit.collider.GetComponent<Enemy>();
             if (enemyHealth != null)
             {
-                enemyHealth.enemyTakeDamage(2); // Deal 2 points of damage, adjust as needed
+                // Deal 2 points of damage, adjust as needed
+                enemyHealth.ChangeHealth(-2);
             }
 
             // if (hitSound != null)
             // {
             //     hitSound.Play();
             // }
-
         }
     }
 }

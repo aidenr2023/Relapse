@@ -3,21 +3,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Playerinfo : MonoBehaviour
+public class Playerinfo : MonoBehaviour, IActor
 {
     public WinLose winLose; // Reference to the WinLose script
 
-    [Header("Health Settings")]
-    public float maxHealth = 3f;
+    [Header("Health Settings")] public float maxHealth = 3f;
     public float health;
 
     // TODO: Eventually, I might move this code to another script.
     // For now though, I'm keeping this here to make things easier
     // -Dimitri
-    [Header("Tolerance Meter Settings")]
-    [SerializeField] private float maxTolerance;
+    [Header("Tolerance Meter Settings")] [SerializeField]
+    private float maxTolerance;
+
     [SerializeField] private float currentTolerance;
-    
+
+    #region Getters
+
+    public float MaxHealth => maxHealth;
+
+    public float CurrentHealth => health;
+
+    public float MaxTolerance => maxTolerance;
+
+    public float CurrentTolerance => currentTolerance;
+
+    #endregion
+
     void Start()
     {
         health = maxHealth;
@@ -29,10 +41,9 @@ public class Playerinfo : MonoBehaviour
         ClampTolerance();
     }
 
-    public void TakeDamage(int damageAmount)
+    private void TakeDamage(float damageAmount)
     {
-        health -= damageAmount;
-        health = Mathf.Clamp(health, 0, maxHealth);
+        health = Mathf.Clamp(health - damageAmount, 0, maxHealth);
 
         if (health <= 0)
         {
@@ -48,5 +59,16 @@ public class Playerinfo : MonoBehaviour
     private void ClampTolerance()
     {
         currentTolerance = Mathf.Clamp(currentTolerance, 0, maxTolerance);
+    }
+
+    public void ChangeHealth(float amount)
+    {
+        // If the amount is negative, the player is taking damage
+        if (amount < 0)
+            TakeDamage(-amount);
+
+        // If the amount is positive, the player is gaining health
+        else
+            health = Mathf.Clamp(health + amount, 0, maxHealth);
     }
 }

@@ -55,9 +55,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     // A flag to check if the player is sprinting
     private bool _isSprinting;
 
+    private PlayerCam _playerCam;
+    
     #endregion
 
-    public GameObject CameraPivot => orientation.gameObject;
+    public GameObject CameraPivot { get; private set; }
 
     #region Input System Rework
 
@@ -127,6 +129,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         _rb = GetComponent<Rigidbody>(); // Get the Rigidbody component
         _rb.freezeRotation = true; // Prevent the Rigidbody from rotating
+        
+        // Find the player cam component in the children
+        CameraPivot = GetComponentInChildren<PlayerCam>().gameObject;
     }
 
     private void Start()

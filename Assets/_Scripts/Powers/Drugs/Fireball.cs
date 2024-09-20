@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Fireball : MonoBehaviour, IPower
 {
+    // TODO: Create a field for a projectile prefab
+    
     public GameObject GameObject => gameObject;
     public PowerScriptableObject PowerScriptableObject { get; set; }
 
@@ -89,9 +91,15 @@ public class Fireball : MonoBehaviour, IPower
             if (other.gameObject == powerManager.gameObject) 
                 return;
             
+            // If the projectile hits something with an IActor component, deal damage
+            if (other.TryGetComponent(out IActor actor))
+                actor.ChangeHealth(-100);
+            
             // Destroy the projectile when it hits something
             Debug.Log($"BOOM! {obj.name} hit {other.name}");
             Destroy(obj.gameObject);
+            
+            // TODO: Make an explosion of some sort
         }
     }
 
