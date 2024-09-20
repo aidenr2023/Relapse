@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class WinLose : MonoBehaviour
 {
     public GameObject loseScreen; // Assign a UI panel or image for the lose screen
-    public float restartDelay = 3f; // Time delay before restarting the game
+    public float restartDelay = 1f; // Time delay before restarting the game
 
     private void Start()
     {
