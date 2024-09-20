@@ -100,11 +100,6 @@ public class PlayerMovement : MonoBehaviour
             Jump(); // Perform jump
             Invoke(nameof(ResetJump), jumpCooldown); // Reset jump after cooldown
         }
-        // else if (jumpAction.action.triggered && isWallRunning)
-        // {
-        //     wallRunning.JumpOffWall(); // Perform wall jump
-        //     Invoke(nameof(ResetJump), jumpCooldown); // Reset jump after cooldown
-        // }
     }
 
     public void MovePlayer()
@@ -194,12 +189,11 @@ public class PlayerMovement : MonoBehaviour
         if (isWallRunning)
         {
             state = MovementState.wallrunning;
-            // footsteps.Stop();
-            // wallFootSteps.Play();
+            
         }
         else if (grounded)
         {
-            // wallFootSteps.Stop();
+            
             if (sprintAction.action.IsPressed())
             {
                 state = MovementState.sprinting;
@@ -207,13 +201,13 @@ public class PlayerMovement : MonoBehaviour
             else
             {
                 state = MovementState.walking;
-                // footsteps.Stop();
+                
             }
         }
         else
         {
             state = MovementState.air;
-            // footsteps.Stop();
+            
         }
     }
 }

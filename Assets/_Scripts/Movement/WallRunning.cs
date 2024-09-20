@@ -68,13 +68,20 @@ public class WallRunning : MonoBehaviour
             return;
         }
         
-        // Check for walls on the right
+        // Check for walls on the right 
         bool wallRight = Physics.RaycastNonAlloc(new Ray(transform.position, transform.right), hits, wallCheckDistance, wallLayer) > 0;
 
-        // Check for walls on the left
+        // Check for walls on the left 
         bool wallLeft = Physics.RaycastNonAlloc(new Ray(transform.position, -transform.right), hits, wallCheckDistance, wallLayer) > 0;
+        
+        //checks for walls on the forward 
+        bool wallForward = Physics.RaycastNonAlloc(new Ray(transform.position, transform.forward), hits, wallCheckDistance, wallLayer) > 0;
 
-        if (wallRight || wallLeft)
+        //checks for walls on the backward 
+        bool wallBackward = Physics.RaycastNonAlloc(new Ray(transform.position, -transform.forward), hits, wallCheckDistance, wallLayer) > 0;
+        
+        //checks for walls for z and x axis
+        if (wallRight || wallLeft || wallForward || wallBackward )
         {
             lastWallNormal = hits[0].normal; // Update wall normal based on the first hit
             StartWallRun();
@@ -171,6 +178,14 @@ public class WallRunning : MonoBehaviour
         if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             isGrounded = false;
+        }
+    }
+    void OnDrawGizmos()
+    {
+        if (pm.isWallRunning)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position, transform.position + lastWallNormal);
         }
     }
 }
