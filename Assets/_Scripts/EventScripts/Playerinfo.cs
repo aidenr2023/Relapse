@@ -71,4 +71,9 @@ public class Playerinfo : MonoBehaviour, IActor
         else
             health = Mathf.Clamp(health + amount, 0, maxHealth);
     }
+    
+    public void ChangeTolerance(float amount)
+    {
+        currentTolerance = Mathf.Clamp(currentTolerance + amount, 0, maxTolerance);
+    }
 }

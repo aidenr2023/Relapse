@@ -166,6 +166,9 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 
             // Start the passive effect
             CurrentPower.PowerLogic.StartPassiveEffect(this, _powerTokens[CurrentPower]);
+            
+            // Change the player's tolerance
+            _player.PlayerInfo.ChangeTolerance(_powerTokens[CurrentPower].ToleranceMeterImpact);
         }
     }
 
@@ -374,7 +377,7 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         else
             tolerancePercentage = _player.PlayerInfo.CurrentTolerance / _player.PlayerInfo.MaxTolerance * 100;
         
-        debugString.Append($"Tolerance: {_player.PlayerInfo.CurrentTolerance:0.00} / {_player.PlayerInfo.MaxTolerance:0.00} ({tolerancePercentage:0.00})\n");
+        debugString.Append($"Tolerance: {_player.PlayerInfo.CurrentTolerance:0.00} / {_player.PlayerInfo.MaxTolerance:0.00} ({tolerancePercentage:0.00}%)\n\n");
 
         debugString.Append($"Current Power: {CurrentPower.name}\n");
         debugString.Append($"\tPurity (Level): {_powerTokens[CurrentPower].CurrentLevel}\n");
