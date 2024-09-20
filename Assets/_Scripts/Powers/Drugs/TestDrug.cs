@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class TestDrug : MonoBehaviour, IPower
 {
+    public GameObject GameObject => gameObject;
+
     public PowerScriptableObject PowerScriptableObject { get; set; }
 
     #region IPower
@@ -35,12 +37,32 @@ public class TestDrug : MonoBehaviour, IPower
         Debug.Log($"Using This!");
     }
 
-    public void ActiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken)
+    public void StartActiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken)
+    {
+        Debug.Log($"Starting Active Effect!");
+    }
+
+    public void UpdateActiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken)
     {
     }
 
-    public void PassiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken)
+    public void EndActiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken)
     {
+        Debug.Log($"Ending Active Effect!");
+    }
+
+    public void StartPassiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken)
+    {
+        Debug.Log($"Starting Passive Effect!");
+    }
+
+    public void UpdatePassiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken)
+    {
+    }
+
+    public void EndPassiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken)
+    {
+        Debug.Log($"Ending Passive Effect!");
     }
 
     #endregion

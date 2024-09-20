@@ -24,6 +24,12 @@ public class TestPlayerController : MonoBehaviour
     [SerializeField] private bool invertVerticalLook;
     [SerializeField] private bool invertHorizontalLook;
 
+    #region Getters
+    
+    public GameObject CameraPivot => cameraPivot;
+    
+    #endregion
+    
     #region Initialization Functions
 
     private void Awake()

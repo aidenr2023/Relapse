@@ -17,7 +17,7 @@ public class PowerScriptableObject : ScriptableObject
     [SerializeField] private float passiveEffectDuration;
     [SerializeField] private float cooldown;
     [SerializeField] private float baseToleranceMeterImpact;
-    [SerializeField] private float[] toleranceMeterLevelMultiplier;
+    [SerializeField, Range(0, 1)] private float[] toleranceMeterLevelMultiplier;
 
     [SerializeField] private GameObject powerLogicPrefab;
 
@@ -50,10 +50,6 @@ public class PowerScriptableObject : ScriptableObject
 
     #endregion
 
-    private void Awake()
-    {
-    }
-
     private void OnValidate()
     {
         // Validate the power
@@ -67,6 +63,9 @@ public class PowerScriptableObject : ScriptableObject
 
         // Attach the PowerScriptableObject to the PowerLogic
         _powerLogic.AttachToScriptableObject(this);
+
+        // Hide the PowerLogic object in the hierarchy
+        _powerLogic.GameObject.hideFlags = HideFlags.HideInHierarchy;
     }
 
     /// <summary>
@@ -74,10 +73,10 @@ public class PowerScriptableObject : ScriptableObject
     /// </summary>
     private void ValidatePower()
     {
-        // Make sure the PowerLogic is not null
-        Debug.Assert(powerLogicPrefab != null,
-            "PowerLogic is null. Please assign a PowerLogic prefab to the PowerScriptableObject."
-        );
+        // // Make sure the PowerLogic is not null
+        // Debug.Assert(powerLogicPrefab != null,
+        //     "PowerLogic is null. Please assign a PowerLogic prefab to the PowerScriptableObject."
+        // );
     }
 
     /// <summary>

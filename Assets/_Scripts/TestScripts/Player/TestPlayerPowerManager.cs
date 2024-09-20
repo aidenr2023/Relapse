@@ -7,20 +7,31 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(TestPlayer))]
 public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 {
+    private TestPlayer _player;
+
     [SerializeField] private PowerScriptableObject[] powers;
     private Dictionary<PowerScriptableObject, PowerToken> _powerTokens;
     private HashSet<PowerScriptableObject> _drugsSet;
     private HashSet<PowerScriptableObject> _medsSet;
 
     private int _currentPowerIndex;
-    private PowerScriptableObject CurrentPower => powers[_currentPowerIndex];
 
     private bool _isChargingPower;
+
+    #region Getters
+
+    public TestPlayer Player => _player;
+
+    private PowerScriptableObject CurrentPower => powers[_currentPowerIndex];
+
+    #endregion
 
     #region Initialization Functions
 
     private void Awake()
     {
+        InitializeComponents();
+
         // Initialize the power collections
         InitializePowerCollections();
     }
@@ -34,6 +45,13 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         // Add this to the debug managed objects
         DebugManager.Instance.AddDebugManaged(this);
     }
+
+    private void InitializeComponents()
+    {
+        // Get the TestPlayer component
+        _player = GetComponent<TestPlayer>();
+    }
+
 
     private void InitializeInput()
     {
@@ -132,20 +150,26 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 
             // Reset the passive duration
             _powerTokens[CurrentPower].ResetPassiveDuration();
+
+            // Start the active effect
+            CurrentPower.PowerLogic.StartActiveEffect(this, _powerTokens[CurrentPower]);
+
+            // Start the passive effect
+            CurrentPower.PowerLogic.StartPassiveEffect(this, _powerTokens[CurrentPower]);
         }
     }
 
     #endregion
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         // Update the charge
         UpdateCharge();
 
         // Update the active powers
         UpdateActivePowers();
-        
+
         // Update the passive powers
         UpdatePassivePowers();
 
@@ -185,12 +209,15 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
             cToken.ActivePowerDuration();
 
             // Call the current power's active method
-            power.PowerLogic.ActiveEffect(this, cToken);
+            power.PowerLogic.UpdateActiveEffect(this, cToken);
 
             // If the active percentage is 1, set the active flag to false
             if (cToken.ActivePercentage >= 1)
             {
                 cToken.SetActiveFlag(false);
+
+                // Call the current power's end active method
+                power.PowerLogic.EndActiveEffect(this, cToken);
 
                 // Set the cooldown flag to true
                 _powerTokens[CurrentPower].SetCooldownFlag(true);
@@ -216,11 +243,17 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
             cToken.PassivePowerDuration();
 
             // Call the current power's passive method
-            power.PowerLogic.PassiveEffect(this, cToken);
+            power.PowerLogic.UpdatePassiveEffect(this, cToken);
 
-            // If the passive percentage is 1, set the passive flag to false
+            // If the passive percentage is 1, 
             if (cToken.PassivePercentage >= 1)
+            {
+                // set the passive flag to false
                 cToken.SetPassiveFlag(false);
+
+                // Call the current power's end passive method
+                power.PowerLogic.EndPassiveEffect(this, cToken);
+            }
         }
     }
 
@@ -295,6 +328,8 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         _currentPowerIndex = 0;
     }
 
+    #region Public Methods
+
     public void AddPower(PowerScriptableObject powerScriptableObject)
     {
         // Check if the power is already in one of the hash sets
@@ -315,7 +350,6 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         // Update the power collections
         UpdatePowerCollections(powerScriptableObject);
     }
-
 
     public string GetDebugText()
     {
@@ -370,4 +404,6 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 
         return debugString.ToString();
     }
+
+    #endregion
 }

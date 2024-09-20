@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cfb2a6815644269acb7f25676adc9c7, type: 3}
+  m_Name: Fireball
+  m_EditorClassIdentifier: 
+  powerName: Fireball
+  powerType: 0
+  icon: {fileID: 0}
+  description: 
+  chargeDuration: 0.25
+  activeEffectDuration: 0
+  passiveEffectDuration: 0
+  cooldown: 3
+  baseToleranceMeterImpact: 10
+  toleranceMeterLevelMultiplier:
+  - 1
+  - 0.75
+  - 0.5
+  powerLogicPrefab: {fileID: 3058926612469710390, guid: 608ee9c927b73bf36862c2d7ff3342f2,
+    type: 3}

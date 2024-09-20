@@ -3,6 +3,11 @@ using UnityEngine;
 public interface IPower
 {
     /// <summary>
+    /// The game object that contains this power.
+    /// </summary>
+    public GameObject GameObject { get; }
+
+    /// <summary>
     /// The scriptable object that contains this power.
     /// </summary>
     public PowerScriptableObject PowerScriptableObject { get; set; }
@@ -38,12 +43,33 @@ public interface IPower
     public void Use(TestPlayerPowerManager powerManager, PowerToken pToken);
 
     /// <summary>
+    /// A function that runs once when the power is activated.
+    /// </summary>
+    /// <param name="powerManager"></param>
+    /// <param name="pToken"></param>
+    public void StartActiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken);
+
+    /// <summary>
     /// What happens while the power is active.
     /// This is where continuous effects are applied.
     /// </summary>
     /// <param name="powerManager"></param>
     /// <param name="pToken"></param>
-    public void ActiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken);
+    public void UpdateActiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken);
+
+    /// <summary>
+    /// A function that runs once when the power is deactivated.
+    /// </summary>
+    /// <param name="powerManager"></param>
+    /// <param name="pToken"></param>
+    public void EndActiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken);
+
+    /// <summary>
+    /// A function that runs once when the power starts passively affecting the player.
+    /// </summary>
+    /// <param name="powerManager"></param>
+    /// <param name="pToken"></param>
+    public void StartPassiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken);
 
     /// <summary>
     /// Passive effects that are applied after the player uses the power.
@@ -51,7 +77,14 @@ public interface IPower
     /// </summary>
     /// <param name="powerManager"></param>
     /// <param name="pToken"></param>
-    public void PassiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken);
+    public void UpdatePassiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken);
+
+    /// <summary>
+    /// A function that runs once when the power stops passively affecting the player.
+    /// </summary>
+    /// <param name="powerManager"></param>
+    /// <param name="pToken"></param>
+    public void EndPassiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken);
 }
 
 public static class IPowerExtensions
