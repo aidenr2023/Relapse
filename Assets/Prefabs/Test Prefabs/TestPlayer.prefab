@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7949654481512483651}
   - component: {fileID: 2323243449827396385}
   - component: {fileID: 3616082776886980270}
+  - component: {fileID: 4273625826522646565}
   - component: {fileID: 7449127368499047625}
   - component: {fileID: 7794442794561962255}
   m_Layer: 0
@@ -151,6 +152,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f220fffecabb47649091accdac1b8e0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4273625826522646565
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5594657467336307478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c95b9bc13bcc84644930bdfa9f40055c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  winLose: {fileID: 0}
+  maxHealth: 3
+  health: 0
+  maxTolerance: 0
+  currentTolerance: 0
 --- !u!114 &7449127368499047625
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -181,9 +199,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa03a7b8477941a4bf8821e2f2eb5bee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  drugs: []
-  meds: []
-  currentPower: {fileID: 0}
+  powers: []
 --- !u!1 &5975874823359613548
 GameObject:
   m_ObjectHideFlags: 0

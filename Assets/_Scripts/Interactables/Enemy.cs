@@ -27,9 +27,10 @@ public class Enemy : MonoBehaviour
     {
         isExploding = true;
         Playerinfo playerHealth = player.GetComponent<Playerinfo>();
+        
         if (playerHealth != null)
         {
-            playerHealth.TakeDamage(1f);
+            playerHealth.TakeDamage(1);
         }
         // Instantiate the explosion effect at the enemy's position
         if (explosionEffect != null)

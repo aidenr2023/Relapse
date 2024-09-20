@@ -1,12 +1,17 @@
 using UnityEngine;
 
-[RequireComponent(typeof(TestPlayerController)), RequireComponent(typeof(TestPlayerPowerManager))]
+[RequireComponent(typeof(Playerinfo))]
+[RequireComponent(typeof(TestPlayerController))]
+[RequireComponent(typeof(TestPlayerPowerManager))]
 public class TestPlayer : MonoBehaviour
 {
+    private Playerinfo _playerInfo;
     private TestPlayerController _playerController;
     private TestPlayerPowerManager _playerPowerManager;
 
     #region Getters
+
+    public Playerinfo PlayerInfo => _playerInfo;
 
     public TestPlayerController PlayerController => _playerController;
 
@@ -24,6 +29,9 @@ public class TestPlayer : MonoBehaviour
 
     private void InitializeComponents()
     {
+        // Get the Playerinfo component
+        _playerInfo = GetComponent<Playerinfo>();
+        
         // Get the TestPlayerController component
         _playerController = GetComponent<TestPlayerController>();
 
