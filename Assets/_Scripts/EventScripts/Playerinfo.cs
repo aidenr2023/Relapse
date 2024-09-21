@@ -16,6 +16,8 @@ public class Playerinfo : MonoBehaviour, IActor
     [Header("Tolerance Meter Settings")] [SerializeField]
     private float maxTolerance;
 
+    public TolereanceMeter tolereanceMeter;
+
     [SerializeField] private float currentTolerance;
 
     #region Getters
@@ -33,12 +35,27 @@ public class Playerinfo : MonoBehaviour, IActor
     void Start()
     {
         health = maxHealth;
+        if (tolereanceMeter == null)
+        {
+            tolereanceMeter = FindObjectOfType<TolereanceMeter>();
+        }
+
+        if (tolereanceMeter == null)
+        {
+            Debug.LogError("TolereanceMeter is not assigned and could not be found.");
+        }
     }
 
     private void Update()
     {
         // Prevent the tolerance from going below 0 or above the max value
         ClampTolerance();
+
+        if (maxTolerance > 0)
+        {
+            tolereanceMeter.UpdateDial(currentTolerance / maxTolerance); // Scale to 0-1
+        }
+
     }
 
     private void TakeDamage(float damageAmount)
@@ -75,5 +92,7 @@ public class Playerinfo : MonoBehaviour, IActor
     public void ChangeTolerance(float amount)
     {
         currentTolerance = Mathf.Clamp(currentTolerance + amount, 0, maxTolerance);
+        tolereanceMeter.UpdateDial(currentTolerance / maxTolerance); // Scale the dial
     }
+
 }

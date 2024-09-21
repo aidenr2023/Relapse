@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(TestPlayer))]
 public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
@@ -15,7 +16,10 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
     private HashSet<PowerScriptableObject> _medsSet;
 
     private int _currentPowerIndex;
-
+    public PowerScroll powerScroll;
+    public Image[] powerIcons;
+    public Image activePowerIcon;
+    public Sprite[] powerSprites;
     private bool _isChargingPower;
 
     #region Getters
@@ -97,6 +101,10 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         _currentPowerIndex = (_currentPowerIndex + direction) % powers.Length;
         if (_currentPowerIndex < 0)
             _currentPowerIndex += powers.Length;
+
+        // Update the active power icon for the newly selected power
+        UpdateActivePowerIcon(powers[_currentPowerIndex]);
+        RefreshPowerIcons();
     }
 
     private void OnPowerPerformed(InputAction.CallbackContext obj)
@@ -161,6 +169,9 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
             // Reset the passive duration
             _powerTokens[CurrentPower].ResetPassiveDuration();
 
+            // After using the power, reset the charge duration
+            _powerTokens[CurrentPower].ResetChargeDuration();
+
             // Start the active effect
             CurrentPower.PowerLogic.StartActiveEffect(this, _powerTokens[CurrentPower]);
 
@@ -173,6 +184,8 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
     }
 
     #endregion
+
+    
 
     // Update is called once per frame
     private void Update()
@@ -188,6 +201,9 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 
         // Update the cooldowns
         UpdateCooldowns();
+
+        UpdatePowerUI();
+
     }
 
     private void UpdateCharge()
@@ -205,6 +221,15 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 
         // Call the current power's charge method
         CurrentPower.PowerLogic.Charge(this, _powerTokens[CurrentPower]);
+    }
+
+    private void UpdatePowerUI()
+    {
+        if (powerScroll != null)
+        {
+            powerScroll.UpdatePowerUI(CurrentPower, _powerTokens[CurrentPower]);
+        }
+       
     }
 
     private void UpdateActivePowers()
@@ -270,6 +295,41 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         }
     }
 
+    private void UpdateActivePowerIcon(PowerScriptableObject currentPower)
+    {
+        // Find the index of the current power in the array
+        int powerIndex = System.Array.IndexOf(powers, currentPower);
+        Debug.Log($"Updating active power icon. Current Power: {currentPower.name}, Index: {powerIndex}");
+
+        if (powerIndex >= 0 && powerIndex < powerSprites.Length)
+        {
+            activePowerIcon.sprite = powerSprites[powerIndex];
+            Debug.Log("Active power icon updated successfully.");
+        }
+        else
+        {
+            Debug.LogError("Invalid power index: " + powerIndex);
+        }
+    }
+
+    // Force refresh of all power icons (useful if switching isn't working)
+    private void RefreshPowerIcons()
+    {
+        for (int i = 0; i < powerIcons.Length; i++)
+        {
+            if (i < powers.Length && i < powerSprites.Length)
+            {
+                powerIcons[i].sprite = powerSprites[i];
+            }
+        }
+
+        // Set the active power icon for the currently selected power
+        if (activePowerIcon != null && _currentPowerIndex >= 0)
+        {
+            activePowerIcon.sprite = powerSprites[_currentPowerIndex];
+        }
+    }
+
     private void UpdateCooldowns()
     {
         foreach (var power in _powerTokens.Keys)
@@ -292,6 +352,8 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
             // TODO: Create an event or something for when the cooldown stops
             if (cToken.CooldownPercentage >= 1)
                 cToken.SetCooldownFlag(false);
+            
+                powerScroll.UpdatePowerUI(CurrentPower, cToken); // Update the UI here
         }
     }
 
@@ -339,6 +401,9 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 
         // Set the current power to the first power in the array
         _currentPowerIndex = 0;
+
+        // Update the UI with the selected power
+        UpdateActivePowerIcon(powers[0]);
     }
 
     #region Public Methods
@@ -362,6 +427,23 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 
         // Update the power collections
         UpdatePowerCollections(powerScriptableObject);
+    }
+
+    public void SwitchPower(int newIndex)
+    {
+        if (newIndex >= 0 && newIndex < powers.Length)
+        {
+            // Switch to the new power
+            _currentPowerIndex = newIndex;
+     
+
+            // Update the active power icon
+            UpdateActivePowerIcon(CurrentPower);
+
+            // Ensure all icons update properly (if necessary)
+            RefreshPowerIcons();
+        }
+        Debug.Log("Switching to power: " + CurrentPower.name);
     }
 
     public string GetDebugText()
