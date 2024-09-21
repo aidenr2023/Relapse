@@ -53,7 +53,7 @@ public class Playerinfo : MonoBehaviour, IActor
 
         if (maxTolerance > 0)
         {
-            tolereanceMeter.UpdateDial(currentTolerance / maxTolerance); // Scale to 0-1
+            tolereanceMeter.UpdateToleranceUI(currentTolerance / maxTolerance); // Scale to 0-1
         }
 
     }
@@ -92,7 +92,7 @@ public class Playerinfo : MonoBehaviour, IActor
     public void ChangeTolerance(float amount)
     {
         currentTolerance = Mathf.Clamp(currentTolerance + amount, 0, maxTolerance);
-        tolereanceMeter.UpdateDial(currentTolerance / maxTolerance); // Scale the dial
+        tolereanceMeter.UpdateToleranceUI(currentTolerance / maxTolerance); // Scale the dial
     }
 
 }
