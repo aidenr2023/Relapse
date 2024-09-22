@@ -31,7 +31,7 @@ public class AustinPC : MonoBehaviour
     void Update()
     {
         //Quit the game
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetButton("Escape"))
         {
             Application.Quit();
         }
@@ -39,7 +39,7 @@ public class AustinPC : MonoBehaviour
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         Vector3 right = transform.TransformDirection(Vector3.right);
 
-        bool isRunning = Input.GetKey(KeyCode.LeftShift);
+        bool isRunning = Input.GetButton("Sprint");
 
         float curSpeedX = canMove ? (isRunning ? runSpeed : walkSpeed) * Input.GetAxis("Vertical") : 0;
         float curSpeedY = canMove ? (isRunning ? runSpeed : walkSpeed) * Input.GetAxis("Horizontal") : 0;
@@ -47,7 +47,7 @@ public class AustinPC : MonoBehaviour
         moveDirection = (forward * curSpeedX) + (right * curSpeedY);
 
         //Jumping
-        if (Input.GetButtonDown("Jump") && canMove && characterController.isGrounded)
+        if (Input.GetButton("Jump") && canMove && characterController.isGrounded)
         {
             moveDirection.y = jumpPower;
         }
