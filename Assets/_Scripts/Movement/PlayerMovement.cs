@@ -2,64 +2,98 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
-public enum MovementState
-{
-    walking,
-    sprinting,
-    wallrunning,
-    air,
-    climbing,
-}
+using UnityEngine.Serialization;
 
 public class PlayerMovement : MonoBehaviour, IPlayerController
 {
+    public enum MovementState
+    {
+        Walking,
+        Sprinting,
+        WallRunning,
+        Air,
+        Climbing,
+    }
+
     #region Fields
 
-    [Header("Movement")] private float moveSpeed; // The current speed of the player
-    public float walkSpeed; // The speed when the player is walking
-    public float sprintSpeed; // The speed when the player is sprinting
-    public float wallrunSpeed; // The speed when the player is wall running
-    public float groundDrag; // Drag applied to the player when grounded
-    public float jumpForce; // The force applied when the player jumps
-    public float jumpCooldown; // The cooldown time between jumps
-    public float airMultiplier; // Multiplier for movement speed when in the air
-    public bool readyToJump = true; // Flag to check if the player is ready to jump
-    public AudioSource footsteps;
-    public AudioSource wallFootSteps;
+    private Vector3 _moveDirection; // Direction of the player's movement
+    [SerializeField] private MovementState movementState; // The current movement state of the player
+    [SerializeField] private Transform orientation; // Reference to the player's orientation transform
 
-    [Header("References")]
-    //public Climbing cm; // Reference to the Climbing script (if applicable)
-    public WallRunning wallRunning; // Reference to the WallRunning script
+    // The speed when the player is walking
+    [Header("Movement")] [SerializeField] private float walkSpeed;
 
-    public Dash dash;
+    // The speed when the player is sprinting
+    [SerializeField] private float sprintSpeed;
 
-    [Header("Ground Check")] public float playerHeight; // Height of the player for ground checking
-    public LayerMask whatIsGround; // LayerMask to define what is considered ground
-    [HideInInspector] public bool grounded; // Flag to check if the player is grounded
+    // The speed when the player is wall running
+    [SerializeField] private float wallrunSpeed;
+
+    // Drag applied to the player when grounded
+    [SerializeField] private float groundDrag;
+
+    // The current speed of the player
+    private float _moveSpeed;
+
+    // The force applied when the player jumps
+    [SerializeField] private float jumpForce;
+
+    // The cooldown time between jumps
+    [SerializeField] private float jumpCooldown;
+
+    // Multiplier for movement speed when in the air
+    [SerializeField] private float airMultiplier;
+
+    // Flag to check if the player is ready to jump
+    private bool _readyToJump = true;
+
+    [Header("Sound")] [SerializeField] private AudioSource footsteps;
+    [SerializeField] private AudioSource wallFootSteps;
+
+    [Header("Movement References")]
+    // // Reference to the Climbing script (if applicable)
+    // public Climbing cm; 
+
+    // Reference to the WallRunning script
+    [SerializeField] private WallRunning wallRunning;
+    [SerializeField] private Dash dash;
+
+    [Header("Ground Check")] [SerializeField]
+    private float playerHeight; // Height of the player for ground checking
+
+    [SerializeField] private LayerMask whatIsGround; // LayerMask to define what is considered ground
+    private bool _isGrounded; // Flag to check if the player is grounded
 
     private Rigidbody _rb; // Reference to the player's Rigidbody component
-    public Transform orientation; // Reference to the player's orientation transform
 
-    [HideInInspector] public Vector3 moveDirection; // Direction of the player's movement
-    public MovementState state; // The current movement state of the player
-    [HideInInspector] public bool isWallRunning; // Flag to check if the player is wall running
-    public bool climbing; // Flag to check if the player is climbing
+    // Flag to check if the player is climbing
+    private bool _isClimbing;
 
     // Horizontal input value
-    private float horizontalInput;
+    private float _horizontalInput;
 
     // Vertical input value
-    private float verticalInput;
+    private float _verticalInput;
 
     // A flag to check if the player is sprinting
     private bool _isSprinting;
 
     private PlayerCam _playerCam;
-    
+
     #endregion
 
+    #region Getters
+
     public GameObject CameraPivot { get; private set; }
+
+    public bool IsGrounded => _isGrounded;
+
+    public bool IsWallRunning => wallRunning.IsWallRunning;
+
+    public bool IsClimbing { get; set; }
+
+    #endregion
 
     #region Input System Rework
 
@@ -82,11 +116,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private void OnJumpPerformed(InputAction.CallbackContext obj)
     {
         // If the player is not ready to jump or not grounded, return
-        if (!readyToJump || !grounded)
+        if (!_readyToJump || !_isGrounded)
             return;
 
         // Set the ready to jump flag to false
-        readyToJump = false;
+        _readyToJump = false;
 
         // Perform jump
         Jump();
@@ -99,14 +133,14 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         var moveInput = obj.ReadValue<Vector2>();
 
-        horizontalInput = moveInput.x;
-        verticalInput = moveInput.y;
+        _horizontalInput = moveInput.x;
+        _verticalInput = moveInput.y;
     }
 
     private void OnMoveCanceled(InputAction.CallbackContext obj)
     {
-        horizontalInput = 0;
-        verticalInput = 0;
+        _horizontalInput = 0;
+        _verticalInput = 0;
     }
 
 
@@ -127,11 +161,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void Awake()
     {
-        _rb = GetComponent<Rigidbody>(); // Get the Rigidbody component
-        _rb.freezeRotation = true; // Prevent the Rigidbody from rotating
-        
-        // Find the player cam component in the children
-        CameraPivot = GetComponentInChildren<PlayerCam>().gameObject;
+        // Initialize the Components
+        InitializeComponents();
     }
 
     private void Start()
@@ -139,19 +170,37 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         InitializeInput();
     }
 
+    private void InitializeComponents()
+    {
+        // Get the Rigidbody component
+        _rb = GetComponent<Rigidbody>();
+
+        // Prevent the Rigidbody from rotating
+        _rb.freezeRotation = true;
+
+        // Find the player cam component in the children
+        CameraPivot = GetComponentInChildren<PlayerCam>().gameObject;
+
+        // Get the Dash component
+        dash = GetComponent<Dash>();
+
+        // Get the WallRunning component
+        wallRunning = GetComponent<WallRunning>();
+    }
+
     private void Update()
     {
         // Check if the player is grounded by casting a ray downward
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
+        _isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
 
         // Control the player's speed
         SpeedControl();
-        
+
         // Handle the player's movement state
-        StateHandler(); 
+        StateHandler();
 
         // Handle drag based on whether the player is grounded and not wall running
-        if (grounded && !isWallRunning)
+        if (_isGrounded && !IsWallRunning)
             _rb.drag = groundDrag;
         else
             _rb.drag = 0;
@@ -166,25 +215,25 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void MovePlayer()
     {
         // Calculate the move direction based on input and orientation
-        moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
+        _moveDirection = orientation.forward * _verticalInput + orientation.right * _horizontalInput;
 
         // Move the player on the ground
-        if (grounded && !isWallRunning)
-            _rb.AddForce(moveDirection.normalized * (moveSpeed * 10f), ForceMode.Force);
+        if (_isGrounded && !IsWallRunning)
+            _rb.AddForce(_moveDirection.normalized * (_moveSpeed * 10f), ForceMode.Force);
 
         // Move the player in the air
-        else if (!grounded && !isWallRunning)
-            _rb.AddForce(moveDirection.normalized * (moveSpeed * 10f * airMultiplier), ForceMode.Force);
+        else if (!_isGrounded && !IsWallRunning)
+            _rb.AddForce(_moveDirection.normalized * (_moveSpeed * 10f * airMultiplier), ForceMode.Force);
     }
 
     private void SpeedControl()
     {
         // Control the player's speed to prevent exceeding the maximum speed
-        Vector3 flatVel = new Vector3(_rb.velocity.x, 0f, _rb.velocity.z);
+        var flatVel = new Vector3(_rb.velocity.x, 0f, _rb.velocity.z);
 
-        if (flatVel.magnitude > moveSpeed)
+        if (flatVel.magnitude > _moveSpeed)
         {
-            Vector3 limitedVel = flatVel.normalized * moveSpeed;
+            var limitedVel = flatVel.normalized * _moveSpeed;
             _rb.velocity = new Vector3(limitedVel.x, _rb.velocity.y, limitedVel.z);
         }
     }
@@ -199,16 +248,16 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private void ResetJump()
     {
         // Allow the player to jump again after cooldown
-        readyToJump = true; 
+        _readyToJump = true;
     }
 
     private void StateHandler()
     {
         // Handle the player's movement state using a switch case
-        switch (state)
+        switch (movementState)
         {
-            case MovementState.walking:
-                moveSpeed = walkSpeed; // Set move speed to walk speed
+            case MovementState.Walking:
+                _moveSpeed = walkSpeed; // Set move speed to walk speed
                 dash.canDash = true;
 
                 if (footsteps.isPlaying)
@@ -218,8 +267,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
                 break;
 
-            case MovementState.sprinting:
-                moveSpeed = sprintSpeed; // Set move speed to sprint speed
+            case MovementState.Sprinting:
+                _moveSpeed = sprintSpeed; // Set move speed to sprint speed
                 dash.canDash = true;
 
                 if (!footsteps.isPlaying)
@@ -229,8 +278,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
                 break;
 
-            case MovementState.wallrunning:
-                moveSpeed = wallrunSpeed; // Set move speed to wall run speed
+            case MovementState.WallRunning:
+                _moveSpeed = wallrunSpeed; // Set move speed to wall run speed
                 dash.canDash = false; // disable dashing while wallrunning
                 _rb.drag = 0; // Disable drag during wall running
 
@@ -241,9 +290,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
                 break;
 
-            case MovementState.air:
+            case MovementState.Air:
                 // Apply air drag and set move speed
-                moveSpeed = walkSpeed * airMultiplier;
+                _moveSpeed = walkSpeed * airMultiplier;
                 dash.canDash = true;
 
                 if (footsteps.isPlaying)
@@ -253,7 +302,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
                 break;
 
-            case MovementState.climbing:
+            case MovementState.Climbing:
                 //moveSpeed = cm.climbSpeed; // Set move speed to climb speed
                 break;
 
@@ -262,19 +311,19 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         }
 
         // Automatically switch states based on conditions
-        if (isWallRunning)
-            state = MovementState.wallrunning;
-        
-        else if (grounded)
+        if (IsWallRunning)
+            movementState = MovementState.WallRunning;
+
+        else if (_isGrounded)
         {
             if (_isSprinting)
-                state = MovementState.sprinting;
+                movementState = MovementState.Sprinting;
 
             else
-                state = MovementState.walking;
+                movementState = MovementState.Walking;
         }
 
         else
-            state = MovementState.air;
+            movementState = MovementState.Air;
     }
 }

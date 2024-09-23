@@ -83,7 +83,7 @@ public class Climbing : MonoBehaviour
         wallFront = Physics.SphereCast(transform.position, sphereCastRadius, orientation.forward, out frontWallHit, detectionLength, whatIsWall);
         wallLookAngle = Vector3.Angle(orientation.forward, -frontWallHit.normal);  // Calculate the angle between the player's forward direction and the wall
 
-        if (pm.grounded)
+        if (pm.IsGrounded)
         {
             climbTimer = maxClimbTime;  // Reset the climbing timer if the player is grounded
         }
@@ -91,7 +91,7 @@ public class Climbing : MonoBehaviour
 
     private void StartClimbing()
     {
-        pm.climbing = true;  // Set the climbing flag in PlayerMovement script
+        pm.IsClimbing = true;  // Set the climbing flag in PlayerMovement script
         ClimbingMovement();  // Move the player up the wall
     }
 

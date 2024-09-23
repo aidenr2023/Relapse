@@ -1266,6 +1266,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea58ce05523912e4491b1e61a3139105, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movementState: 0
+  orientation: {fileID: 5224293575626551686}
   walkSpeed: 5
   sprintSpeed: 10
   wallrunSpeed: 11
@@ -1273,7 +1275,6 @@ MonoBehaviour:
   jumpForce: 7
   jumpCooldown: 0.7
   airMultiplier: 1.5
-  readyToJump: 1
   footsteps: {fileID: 0}
   wallFootSteps: {fileID: 0}
   wallRunning: {fileID: 8643039872945194306}
@@ -1282,12 +1283,6 @@ MonoBehaviour:
   whatIsGround:
     serializedVersion: 2
     m_Bits: 128
-  grounded: 0
-  orientation: {fileID: 5224293575626551686}
-  moveDirection: {x: 0, y: 0, z: 0}
-  state: 0
-  isWallRunning: 0
-  climbing: 0
 --- !u!114 &2105614208762614852
 MonoBehaviour:
   m_ObjectHideFlags: 0
