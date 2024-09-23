@@ -23,6 +23,12 @@ public class WallRunning : MonoBehaviour
     private RaycastHit[] hits = new RaycastHit[1]; // Array to store the results of the raycast
     private PlayerControls playerInputActions;
 
+    #region Properties
+    
+    public bool IsWallRunning { get; private set; }
+    
+    #endregion
+    
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -50,7 +56,7 @@ public class WallRunning : MonoBehaviour
         }
         
         CheckForWall();
-        if (pm.isWallRunning)
+        if (pm.IsWallRunning)
         {
             PerformWallRun();
         }
@@ -94,9 +100,9 @@ public class WallRunning : MonoBehaviour
 
     private void StartWallRun()
     {
-        if (!pm.isWallRunning)
+        if (!pm.IsWallRunning)
         {
-            pm.isWallRunning = true;
+            IsWallRunning = true;
             wallRunTimer = 0f;
             rb.useGravity = false; // Disable gravity while wall running
         }
@@ -138,13 +144,13 @@ public class WallRunning : MonoBehaviour
 
     private void StopWallRun()
     {
-        pm.isWallRunning = false;
+        IsWallRunning = false;
         rb.useGravity = true; // Re-enable gravity
     }
 
     private void OnJumpPerformed(InputAction.CallbackContext context)
     {
-        if (pm.isWallRunning)
+        if (pm.IsWallRunning)
         {
             WallJump();
         }
@@ -182,7 +188,10 @@ public class WallRunning : MonoBehaviour
     }
     void OnDrawGizmos()
     {
-        if (pm.isWallRunning)
+        if (pm == null)
+            return;
+        
+        if (pm.IsWallRunning)
         {
             Gizmos.color = Color.red;
             Gizmos.DrawLine(transform.position, transform.position + lastWallNormal);
