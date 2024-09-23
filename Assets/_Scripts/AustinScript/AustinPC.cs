@@ -1,10 +1,51 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(CharacterController))]
 public class AustinPC : MonoBehaviour
 {
+    private DefaultPlayerActions _defaultPlayerActions;
+    private InputAction _moveAction;
+    private InputAction _lookAction;
+
+    private void Awake()
+    {
+        _defaultPlayerActions = new DefaultPlayerActions();
+    }
+
+    private void OnEnable()
+    {
+        _moveAction = _defaultPlayerActions.Player.Move;
+        _moveAction.Enable();
+
+        _lookAction = _defaultPlayerActions.Player.Look;
+        _lookAction.Enable();
+
+        _defaultPlayerActions.Player.Jump.performed += OnJump;
+        _defaultPlayerActions.Player.Jump.Enable();
+    }
+    private void OnDisable()
+    {
+        _moveAction.Disable();
+        _lookAction.Disable();
+
+        _defaultPlayerActions.Player.Jump.performed -= OnJump;
+        _defaultPlayerActions.Player.Jump.Disable();
+    }
+
+    private void FixedUpdate()
+    {
+        Vector2 moveDir = _moveAction.ReadValue<Vector2>();
+        Vector2 lookDir = _moveAction.ReadValue<Vector2>();
+    }
+    private void OnJump(InputAction.CallbackContext context)
+    {
+        Debug.Log("Jump has been pressed");
+    }
+
+
     public Camera playerCamera;
     public float walkSpeed = 6f;
     public float runSpeed = 12f;
