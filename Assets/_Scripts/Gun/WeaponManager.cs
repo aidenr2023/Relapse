@@ -195,6 +195,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
             
             // Also enable the collider
             _equippedGun.Collider.enabled = true;
+            
+            // Add a force to the gun
+            rb.AddForce(transform.forward * 5, ForceMode.Impulse);
         }
 
         _equippedGun = null;
