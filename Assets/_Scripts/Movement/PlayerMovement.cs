@@ -85,7 +85,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     #region Getters
 
-    public GameObject CameraPivot { get; private set; }
+    public GameObject CameraPivot => orientation.gameObject;
 
     public bool IsGrounded => _isGrounded;
 
@@ -178,9 +178,6 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         // Prevent the Rigidbody from rotating
         _rb.freezeRotation = true;
 
-        // Find the player cam component in the children
-        CameraPivot = GetComponentInChildren<PlayerCam>().gameObject;
-
         // Get the Dash component
         dash = GetComponent<Dash>();
 
@@ -215,15 +212,18 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void MovePlayer()
     {
         // Calculate the move direction based on input and orientation
-        _moveDirection = orientation.forward * _verticalInput + orientation.right * _horizontalInput;
+        _moveDirection = (orientation.forward * _verticalInput + orientation.right * _horizontalInput).normalized;
 
+        // Remove the y component of the move direction to prevent vertical movement
+        _moveDirection = new Vector3(_moveDirection.x, 0f, _moveDirection.z);
+        
         // Move the player on the ground
         if (_isGrounded && !IsWallRunning)
-            _rb.AddForce(_moveDirection.normalized * (_moveSpeed * 10f), ForceMode.Force);
+            _rb.AddForce(_moveDirection * (_moveSpeed * 10f), ForceMode.Force);
 
         // Move the player in the air
         else if (!_isGrounded && !IsWallRunning)
-            _rb.AddForce(_moveDirection.normalized * (_moveSpeed * 10f * airMultiplier), ForceMode.Force);
+            _rb.AddForce(_moveDirection * (_moveSpeed * 10f * airMultiplier), ForceMode.Force);
     }
 
     private void SpeedControl()
