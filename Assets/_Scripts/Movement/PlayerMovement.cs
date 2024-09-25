@@ -79,7 +79,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     // A flag to check if the player is sprinting
     private bool _isSprinting;
 
-    private PlayerCam _playerCam;
+    private PlayerLook _playerCam;
 
     #endregion
 

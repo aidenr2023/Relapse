@@ -4,12 +4,14 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization; // Include the new Input System namespace
 
-public class PlayerCam : MonoBehaviour
+public class PlayerLook : MonoBehaviour
 {
-    [Header("Settings")]
     // Mouse sensitivity
-    [SerializeField] private float sensX;
-    [SerializeField] private float sensY;
+    [Header("Settings")] [SerializeField] [Min(1)]
+    private float sensitivityMultiplier = 50;
+
+    [SerializeField] [Range(0.01f, 1)] private float sensX = 1;
+    [SerializeField] [Range(0.01f, 1)] private float sensY = 1;
 
     [Header("References")]
     // Reference to PlayerMovement script
@@ -22,19 +24,14 @@ public class PlayerCam : MonoBehaviour
     // Reference to the player's orientation transform
     [SerializeField] private Transform orientation;
 
-    private float _xRotation; // Current rotation around the X axis
-    private float _yRotation; // Current rotation around the Y axis
+    // Current rotation around the X axis
+    private float _xRotation;
 
-    // [Header("Input Actions")]
-    // public InputActionReference lookAction;  // Input action for looking around
+    // Current rotation around the Y axis
+    private float _yRotation;
 
     private void Start()
     {
-        // // Lock the cursor to the center of the screen and make it invisible
-        // Cursor.lockState = CursorLockMode.Locked;
-        // Cursor.visible = false;
-        // lookAction.action.Enable();  // Enable the input action for looking around
-
         // Initialize the input
         InitializeInput();
     }
@@ -48,31 +45,29 @@ public class PlayerCam : MonoBehaviour
     private void OnLook(InputAction.CallbackContext obj)
     {
         var lookInput = obj.ReadValue<Vector2>();
-        
+
+        // Calculate the constant sensitivity multiplier that does not 
+        // depend on x or y sensitivity / input
+        var constantSense = sensitivityMultiplier * Time.deltaTime;
+
         // Adjust rotation based on mouse input
-        _yRotation += lookInput.x * Time.deltaTime * sensX;
-        _xRotation -= lookInput.y * Time.deltaTime * sensY;
-        
+        _yRotation += lookInput.x * sensX * constantSense;
+        _xRotation -= lookInput.y * sensY * constantSense;
+
         // Clamp the X rotation to prevent over-rotation
         _xRotation = Mathf.Clamp(_xRotation, -90f, 90f);
-        
+
         // Rotate the camera
         orientation.transform.rotation = Quaternion.Euler(_xRotation, _yRotation, 0f);
-        
-        // Update the orientation to match the camera's forward direction
-        // orientation.transform.forward = new Vector3(transform.forward.x, 0f, transform.forward.z);
     }
 
     private void OnDestroy()
     {
-        // // Disable the input action when the script is destroyed
-        // lookAction.action.Disable();  
+        InputManager.Instance.PlayerControls.GamePlay.Look.performed -= OnLook;
     }
 
     private void Update()
     {
-        // OldCameraRotate();
-
         // Adjust camera angle based on wall running state
         // if (pm.isWallRunning && wr.wallRight)
         // {
@@ -82,6 +77,5 @@ public class PlayerCam : MonoBehaviour
         // {
         //     transform.rotation = Quaternion.Euler(xRotation, yRotation, 25f);
         // }
-
     }
 }
