@@ -11,9 +11,5 @@ public interface IGun
     /// </summary>
     public GameObject GameObject { get; }
 
-    public void Fire(
-        WeaponManager weaponManager,
-        Vector3 startingPosition,
-        Vector3 direction
-    );
+    public void Fire(WeaponManager weaponManager, Vector3 startingPosition, Vector3 direction);
 }

@@ -10,13 +10,13 @@ public class PlayerActions : MonoBehaviour
 
     private void OnEnable()
     {
-        InputManager.Instance.PlayerControls.GamePlay.Shoot.performed += OnShoot;
+        // InputManager.Instance.PlayerControls.GamePlay.Shoot.performed += OnShoot;
     }
 
     private void OnDisable()
     {
         // Unbind the shoot action to avoid memory leaks
-        InputManager.Instance.PlayerControls.GamePlay.Shoot.performed -= OnShoot;
+        // InputManager.Instance.PlayerControls.GamePlay.Shoot.performed -= OnShoot;
     }
 
     private void OnShoot(InputAction.CallbackContext context)

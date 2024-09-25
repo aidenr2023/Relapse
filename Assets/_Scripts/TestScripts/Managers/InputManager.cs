@@ -9,6 +9,8 @@ public class InputManager : MonoBehaviour
 
     public PlayerControls PlayerControls { get; private set; }
 
+    private HashSet<IUsesInput> _registeredItems;
+    
     #region Initialization Functions
 
     private void Awake()
@@ -18,6 +20,9 @@ public class InputManager : MonoBehaviour
 
         // Create a new instance of the PlayerControls
         PlayerControls = new PlayerControls();
+        
+        // Initialize the registered items
+        _registeredItems = new HashSet<IUsesInput>();
     }
 
     // Start is called before the first frame update
@@ -42,8 +47,23 @@ public class InputManager : MonoBehaviour
         PlayerControls.Disable();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Register(IUsesInput item)
     {
+        // If the item is already in the registered items, return
+        if (!_registeredItems.Add(item))
+            return;
+        
+        // Add the item to the registered items
+        item.InitializeInput();        
     }
+    
+    public void Unregister(IUsesInput item)
+    {
+        // If the item is not in the registered items, return
+        if (!_registeredItems.Remove(item))
+            return;
+        
+        item.RemoveInput();
+    }
+    
 }

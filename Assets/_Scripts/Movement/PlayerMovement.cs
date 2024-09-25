@@ -17,9 +17,17 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     #region Fields
 
-    private Vector3 _moveDirection; // Direction of the player's movement
-    [SerializeField] private MovementState movementState; // The current movement state of the player
-    [SerializeField] private Transform orientation; // Reference to the player's orientation transform
+    // Direction of the player's movement
+    private Vector3 _moveDirection;
+
+    // The current movement state of the player
+    private MovementState _movementState;
+
+    // Reference to the player's camera pivot
+    [SerializeField] private Transform cameraPivot;
+
+    // Reference to the player's orientation transform
+    [SerializeField] private Transform orientation;
 
     // The speed when the player is walking
     [Header("Movement")] [SerializeField] private float walkSpeed;
@@ -56,7 +64,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     // public Climbing cm; 
 
     // Reference to the WallRunning script
-    [SerializeField] private WallRunning wallRunning;
+    [SerializeField]
+    private WallRunning wallRunning;
+
     [SerializeField] private Dash dash;
 
     [Header("Ground Check")] [SerializeField]
@@ -85,7 +95,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     #region Getters
 
-    public GameObject CameraPivot => orientation.gameObject;
+    public GameObject CameraPivot => cameraPivot.gameObject;
 
     public bool IsGrounded => _isGrounded;
 
@@ -216,7 +226,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
         // Remove the y component of the move direction to prevent vertical movement
         _moveDirection = new Vector3(_moveDirection.x, 0f, _moveDirection.z);
-        
+
         // Move the player on the ground
         if (_isGrounded && !IsWallRunning)
             _rb.AddForce(_moveDirection * (_moveSpeed * 10f), ForceMode.Force);
@@ -254,28 +264,22 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     private void StateHandler()
     {
         // Handle the player's movement state using a switch case
-        switch (movementState)
+        switch (_movementState)
         {
             case MovementState.Walking:
                 _moveSpeed = walkSpeed; // Set move speed to walk speed
                 dash.canDash = true;
 
-                if (footsteps.isPlaying)
-                    footsteps.Stop();
-                if (wallFootSteps.isPlaying)
-                    wallFootSteps.Stop();
-
+                SetSoundState(footsteps, false);
+                SetSoundState(wallFootSteps, false);
                 break;
 
             case MovementState.Sprinting:
                 _moveSpeed = sprintSpeed; // Set move speed to sprint speed
                 dash.canDash = true;
 
-                if (!footsteps.isPlaying)
-                    footsteps.Play();
-                if (wallFootSteps.isPlaying)
-                    wallFootSteps.Stop();
-
+                SetSoundState(footsteps, true);
+                SetSoundState(wallFootSteps, false);
                 break;
 
             case MovementState.WallRunning:
@@ -283,11 +287,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 dash.canDash = false; // disable dashing while wallrunning
                 _rb.drag = 0; // Disable drag during wall running
 
-                if (footsteps.isPlaying)
-                    footsteps.Stop();
-                if (!wallFootSteps.isPlaying)
-                    wallFootSteps.Play();
-
+                SetSoundState(footsteps, false);
+                SetSoundState(wallFootSteps, true);
                 break;
 
             case MovementState.Air:
@@ -295,11 +296,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 _moveSpeed = walkSpeed * airMultiplier;
                 dash.canDash = true;
 
-                if (footsteps.isPlaying)
-                    footsteps.Stop();
-                if (wallFootSteps.isPlaying)
-                    wallFootSteps.Stop();
 
+                SetSoundState(footsteps, false);
+                SetSoundState(wallFootSteps, false);
                 break;
 
             case MovementState.Climbing:
@@ -312,18 +311,33 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
         // Automatically switch states based on conditions
         if (IsWallRunning)
-            movementState = MovementState.WallRunning;
+            _movementState = MovementState.WallRunning;
 
         else if (_isGrounded)
         {
             if (_isSprinting)
-                movementState = MovementState.Sprinting;
+                _movementState = MovementState.Sprinting;
 
             else
-                movementState = MovementState.Walking;
+                _movementState = MovementState.Walking;
         }
 
         else
-            movementState = MovementState.Air;
+            _movementState = MovementState.Air;
+    }
+
+    private void SetSoundState(AudioSource source, bool active)
+    {
+        // Return if the source is null
+        if (source == null)
+            return;
+
+        // Start the sound if active is true
+        if (active)
+            source.Play();
+
+        // Stop the sound if active is false
+        else
+            source.Stop();
     }
 }
