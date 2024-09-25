@@ -6,6 +6,8 @@ public interface IGun
 {
     public GunInformation GunInformation { get; }
 
+    public Collider Collider { get; }
+
     /// <summary>
     /// A reference to the game object that the gun script is attached to.
     /// </summary>

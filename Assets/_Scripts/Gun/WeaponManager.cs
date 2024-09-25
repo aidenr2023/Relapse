@@ -24,7 +24,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     /// A prefab that immediately equips the player with a gun.
     /// </summary>
     [SerializeField] private GameObject initialGunPrefab;
-    
+
     #endregion
 
     #region Getters
@@ -51,7 +51,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
             var gun = Instantiate(initialGunPrefab).GetComponent<IGun>();
             EquipGun(gun);
         }
-        
+
         DebugManager.Instance.AddDebugManaged(this);
     }
 
@@ -159,15 +159,24 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
 
         // Set the current gun to the gun that was passed in
         _equippedGun = gun;
-        
+
         // Set the gun's parent to the gun holder
         gun.GameObject.transform.SetParent(gunHolder);
-        
+
         // Set the local position of the gun to the gun holder's local position
         gun.GameObject.transform.localPosition = Vector3.zero;
-        
+
         // Set the local rotation of the gun to the gun holder's local rotation
         gun.GameObject.transform.localRotation = Quaternion.identity;
+
+        // Make the weapon kinematic (if it has a rigidbody)
+        if (gun.GameObject.TryGetComponent(out Rigidbody rb))
+        {
+            rb.isKinematic = true;
+
+            // Also disable the collider
+            gun.Collider.enabled = false;
+        }
     }
 
     public void RemoveGun()
@@ -175,9 +184,18 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
         // Set the current gun to null
         if (_equippedGun == null)
             return;
-        
+
         // Set the equipped gun's parent to null
         _equippedGun.GameObject.transform.SetParent(null);
+
+        // Make the weapon non-kinematic (if it has a rigidbody)
+        if (_equippedGun.GameObject.TryGetComponent(out Rigidbody rb))
+        {
+            rb.isKinematic = false;
+            
+            // Also enable the collider
+            _equippedGun.Collider.enabled = true;
+        }
 
         _equippedGun = null;
     }
