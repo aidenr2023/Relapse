@@ -2,16 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IGun
+public interface IGun : IInteractable
 {
     public GunInformation GunInformation { get; }
 
     public Collider Collider { get; }
-
-    /// <summary>
-    /// A reference to the game object that the gun script is attached to.
-    /// </summary>
-    public GameObject GameObject { get; }
 
     public float ReloadingPercentage { get; }
 

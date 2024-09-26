@@ -180,6 +180,7 @@ GameObject:
   - component: {fileID: 8740482916909296334}
   - component: {fileID: 8237298286555941285}
   - component: {fileID: 5203053287727495698}
+  - component: {fileID: 6193907797095220962}
   - component: {fileID: 2105614208762614852}
   - component: {fileID: 8643039872945194306}
   - component: {fileID: 7397322249217950785}
@@ -330,6 +331,19 @@ MonoBehaviour:
   playerMovement: {fileID: 8237298286555941285}
   wallRunning: {fileID: 8643039872945194306}
   orientation: {fileID: 5224293575626551686}
+--- !u!114 &6193907797095220962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3703685084401515452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20a4918e820e44cbb8bf591a9beab5ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactDistance: 3
 --- !u!114 &2105614208762614852
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -307,4 +307,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
         // Emit the particles
         system.Emit(emitParams, count);
     }
+
+    public void Interact(PlayerInteraction playerInteraction)
+    {
+        // Equip the gun
+        playerInteraction.Player.WeaponManager.EquipGun(this);
+    }
 }

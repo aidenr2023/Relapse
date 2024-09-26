@@ -11,16 +11,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     private Playerinfo _playerInfo;
     private IGun _equippedGun;
 
-    /// <summary>
-    /// A variable that stores the gun that the player is currently looking at.
-    /// Used w/ the equip gun function.
-    /// </summary>
-    private IGun _currentLookedAtGun;
-
     [Tooltip("The position that the gun will fire from.")] [SerializeField]
     private Transform fireTransform;
-
-    [SerializeField] private float gunInteractDistance;
 
     [SerializeField] private Transform gunHolder;
 
@@ -87,9 +79,6 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
 
         // Reload
         InputManager.Instance.PlayerControls.GamePlay.Reload.performed += OnReload;
-
-        // Pick up weapon input
-        InputManager.Instance.PlayerControls.GamePlay.Interact.performed += OnPickUpWeapon;
     }
 
     public void RemoveInput()
@@ -99,19 +88,6 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
         InputManager.Instance.PlayerControls.GamePlay.Shoot.canceled -= OnShootCanceled;
 
         InputManager.Instance.PlayerControls.GamePlay.Reload.performed -= OnReload;
-
-        InputManager.Instance.PlayerControls.GamePlay.Interact.performed -= OnPickUpWeapon;
-    }
-
-
-    private void OnPickUpWeapon(InputAction.CallbackContext obj)
-    {
-        // Return if the player is not currently looking at a gun
-        if (_currentLookedAtGun == null)
-            return;
-
-        // Equip the gun that the player is currently looking at
-        EquipGun(_currentLookedAtGun);
     }
 
     private void OnShoot(InputAction.CallbackContext obj)
@@ -148,45 +124,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
 
     private void Update()
     {
-        UpdateLookedAtGun();
-
         // TODO: Remove this and replace it with a bar or something
         UpdateReloadText();
-    }
-
-    private void UpdateLookedAtGun()
-    {
-        var cameraPivot = _player.PlayerController.CameraPivot.transform;
-
-        // Is there a ray cast hit within the gun interact distance?
-        var hit = Physics.Raycast(
-            cameraPivot.position,
-            cameraPivot.forward,
-            out var hitInfo,
-            gunInteractDistance
-        );
-
-        // Perform a raycast to see if the player is looking at a gun
-        if (hit)
-        {
-            // If the player is looking at a gun, set the current looked at gun to the gun that the player is looking at
-            if (hitInfo.collider.TryGetComponent(out IGun gun))
-            {
-                // Skip if the gun is the equipped gun
-                if (_equippedGun == gun)
-                    _currentLookedAtGun = null;
-
-                else
-                    _currentLookedAtGun = gun;
-            }
-
-            // If there is no gun, set the current looked at gun to null
-            else
-                _currentLookedAtGun = null;
-        }
-        // If the player is not looking at a gun, set the current looked at gun to null
-        else
-            _currentLookedAtGun = null;
     }
 
     private void UpdateReloadText()
@@ -281,8 +220,6 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
 
     public string GetDebugText()
     {
-        return
-            $"Equipped Gun: {_equippedGun?.GunInformation.name}\n" +
-            $"Looking at gun: {_currentLookedAtGun?.GunInformation.name} ({_currentLookedAtGun?.GameObject.name})\n";
+        return $"Equipped Gun: {_equippedGun?.GunInformation.name}\n";
     }
 }
