@@ -192,15 +192,34 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
         if (_equippedGun.GameObject.TryGetComponent(out Rigidbody rb))
         {
             rb.isKinematic = false;
-            
+
             // Also enable the collider
             _equippedGun.Collider.enabled = true;
-            
-            // Add a force to the gun
-            rb.AddForce(transform.forward * 5, ForceMode.Impulse);
+
+            // Throw the gun
+            ThrowRigidBody(rb);
         }
 
         _equippedGun = null;
+    }
+
+    private void ThrowRigidBody(Rigidbody rb)
+    {
+        const float throwForce = 5;
+
+        // Create a random force
+        var forceX = UnityEngine.Random.Range(throwForce * .75f, throwForce);
+
+        // Add a force to the gun
+        rb.AddForce(transform.forward * forceX, ForceMode.Impulse);
+
+        // Create random torque force
+        var torqueX = UnityEngine.Random.Range(-throwForce, throwForce);
+        var torqueY = UnityEngine.Random.Range(-throwForce, throwForce);
+        var torqueZ = UnityEngine.Random.Range(-throwForce / 10, throwForce / 10);
+
+        // Add torque to the gun
+        rb.AddTorque(new Vector3(torqueX, torqueY, 0) / 10, ForceMode.Impulse);
     }
 
     public string GetDebugText()
