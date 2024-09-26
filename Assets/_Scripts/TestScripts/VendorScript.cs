@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+[ExecuteAlways]
 public class VendorScript : MonoBehaviour, IInteractable
 {
     [SerializeField] private PowerScriptableObject availablePower;
@@ -41,7 +42,7 @@ public class VendorScript : MonoBehaviour, IInteractable
         UpdatePowerUI();
 
         // Update the removal mode
-        UpdateRemovalMode(_testPlayer.PlayerPowerManager);
+        UpdateRemovalMode(_testPlayer?.PlayerPowerManager);
     }
 
     private void UpdatePowerUI()
@@ -71,6 +72,9 @@ public class VendorScript : MonoBehaviour, IInteractable
     /// <returns></returns>
     private void UpdateRemovalMode(TestPlayerPowerManager playerPowerManager)
     {
+        if (playerPowerManager == null)
+            return;
+        
         // If the player has the power, set removal mode to true
         _removalMode = playerPowerManager.HasPower(availablePower);
     }

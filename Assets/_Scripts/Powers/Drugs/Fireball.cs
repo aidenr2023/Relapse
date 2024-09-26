@@ -91,6 +91,10 @@ public class Fireball : MonoBehaviour, IPower
             if (other.gameObject == powerManager.gameObject) 
                 return;
             
+            // Return if the other object is a trigger
+            if (other.isTrigger) 
+                return;
+            
             // If the projectile hits something with an IActor component, deal damage
             if (other.TryGetComponent(out IActor actor))
                 actor.ChangeHealth(-100);

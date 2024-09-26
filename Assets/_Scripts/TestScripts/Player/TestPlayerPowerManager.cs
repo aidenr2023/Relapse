@@ -349,6 +349,9 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
             // Add the power to the power usage tokens
             _powerTokens.Add(power, new PowerToken(power));
         }
+        
+        // clamp the current power index to the new powers array
+        _currentPowerIndex = Mathf.Clamp(_currentPowerIndex, 0, powers.Length - 1);
 
         // Skip if the current power is already set or if there are no powers
         if (CurrentPower != null || powers.Length == 0)
