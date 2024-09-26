@@ -16,32 +16,23 @@ public class PowerScroll : MonoBehaviour
         if (currentPower == null)
             return;
 
-        // Update power icon
+        // Update power icon, Assuming you have a sprite for each power
         if (powerIcon != null)
-        {
-            // Assuming you have a sprite for each power
             powerIcon.sprite = currentPower.Icon;
-            Debug.Log("Setting icon to: " + currentPower.Icon.name);
-        }
 
         // Update power name
         if (powerNameText != null)
-        {
             powerNameText.text = currentPower.name;
-        }
 
         // Update the charge slider
         if (chargeSlider != null)
-        {
             chargeSlider.value = powerToken.ChargePercentage;
-        }
 
         // Update the cooldown slider
         if (cooldownSlider != null)
-        {
             cooldownSlider.value = powerToken.CooldownPercentage;
-        }
-        Debug.Log("Updating Power UI for: " + currentPower.name);
+
+        // Debug.Log("Updating Power UI for: " + currentPower.name);
     }
 
 }
