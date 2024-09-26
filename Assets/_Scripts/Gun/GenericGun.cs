@@ -223,6 +223,19 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
 
             // Emit the particles
             PlayParticles(impactParticles, hitInfo.point, impactParticlesCount);
+            
+            // Test if the cast hit an IActor
+            if (hitInfo.collider.TryGetComponent(out IActor actor))
+            {
+                // Calculate the damage falloff
+                var distance = Vector3.Distance(startingPosition, hitInfo.point);
+                var damage = gunInformation.EvaluateBaseDamage(distance);
+
+                Debug.Log($"DAMAGE: {damage} - DISTANCE: {distance} / {gunInformation.Range}");
+                
+                // Deal damage to the actor
+                actor.ChangeHealth(-damage);
+            }
         }
     }
 
