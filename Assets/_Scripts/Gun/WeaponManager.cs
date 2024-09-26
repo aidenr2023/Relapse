@@ -16,6 +16,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     /// </summary>
     private IGun _currentLookedAtGun;
 
+    [Tooltip("The position that the gun will fire from.")]
+    [SerializeField] private Transform fireTransform;
+
     [SerializeField] private float gunInteractDistance;
 
     [SerializeField] private Transform gunHolder;
@@ -32,6 +35,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     public TestPlayer Player => _player;
     public Playerinfo PlayerInfo => _playerInfo;
     public IGun EquippedGun => _equippedGun;
+    
+    public Transform FiringPoint => fireTransform;
 
     #endregion
 
@@ -61,7 +66,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
         _player = GetComponent<TestPlayer>();
 
         // Get the Player info component
-        _playerInfo = GetComponent<Playerinfo>();
+        _playerInfo = _player.PlayerInfo;
     }
 
     #endregion
@@ -75,6 +80,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
 
         // Shoot input
         InputManager.Instance.PlayerControls.GamePlay.Shoot.performed += OnShoot;
+        InputManager.Instance.PlayerControls.GamePlay.Shoot.canceled += OnShootCanceled;
 
         // Pick up weapon input
         InputManager.Instance.PlayerControls.GamePlay.Interact.performed += OnPickUpWeapon;
@@ -84,6 +90,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     {
         // Remove the input
         InputManager.Instance.PlayerControls.GamePlay.Shoot.performed -= OnShoot;
+        InputManager.Instance.PlayerControls.GamePlay.Shoot.canceled -= OnShootCanceled;
+
         InputManager.Instance.PlayerControls.GamePlay.Interact.performed -= OnPickUpWeapon;
     }
 
@@ -105,9 +113,17 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
             return;
 
         // Fire the IGun
-        EquippedGun.Fire(this, transform.position, transform.forward);
+        EquippedGun.OnFire(this);
+    }
 
-        Debug.Log($"Shot {_equippedGun.GunInformation.name}");
+    private void OnShootCanceled(InputAction.CallbackContext obj)
+    {
+        // If the current gun is null, return
+        if (_equippedGun == null)
+            return;
+
+        // Fire the IGun
+        EquippedGun.OnFireReleased();
     }
 
     #endregion
@@ -177,6 +193,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
             // Also disable the collider
             gun.Collider.enabled = false;
         }
+        
+        // Call the OnEquip function
+        gun.OnEquip(this);
     }
 
     public void RemoveGun()
@@ -199,6 +218,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
             // Throw the gun
             ThrowRigidBody(rb);
         }
+        
+        // Call the OnRemoval function
+        _equippedGun.OnRemoval(this);
 
         _equippedGun = null;
     }

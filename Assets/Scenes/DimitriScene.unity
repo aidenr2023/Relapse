@@ -433,11 +433,6 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8237298286555941285, guid: 8657bace23580d04faebc2f449019212,
-        type: 3}
-      propertyPath: jumpCooldown
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8292727077949744333, guid: 8657bace23580d04faebc2f449019212,
         type: 3}
       propertyPath: sensX
@@ -785,6 +780,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 947975389963947401, guid: 0dbfb767904bcfaaea9331650f1b4e7e,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: c5bee2f16443c754aaee69808f6b33e8, type: 2}
     - target: {fileID: 1676120636432712961, guid: 0dbfb767904bcfaaea9331650f1b4e7e,
         type: 3}
       propertyPath: m_Name
