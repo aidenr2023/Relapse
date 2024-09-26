@@ -80,7 +80,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
 
     public string InteractText => $"Pick up {gunInformation.GunName}";
 
-    public bool IsCurrentlyLookedAt { get; set; }
+    public bool IsCurrentlySelected { get; set; }
     public bool IsInteractable => true;
 
     #endregion

@@ -15,7 +15,7 @@ public interface IInteractable
     /// <summary>
     /// Is the player currently looking at the object?
     /// </summary>
-    public bool IsCurrentlyLookedAt { get; set; }
+    public bool IsCurrentlySelected { get; set; }
 
     /// <summary>
     /// Can the player interact with the object right now?

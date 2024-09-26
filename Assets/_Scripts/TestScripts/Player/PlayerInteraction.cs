@@ -51,7 +51,7 @@ public class PlayerInteraction : MonoBehaviour
     {
         // Reset the currently looked at flag for the previous interactable
         if (_selectedInteractable != null)
-            _selectedInteractable.IsCurrentlyLookedAt = false;
+            _selectedInteractable.IsCurrentlySelected = false;
 
         // Get the camera pivot
         var cameraPivot = Player.PlayerController.CameraPivot.transform;
@@ -89,7 +89,7 @@ public class PlayerInteraction : MonoBehaviour
 
         // Set the currently looked at flag for the new interactable
         if (_selectedInteractable != null)
-            _selectedInteractable.IsCurrentlyLookedAt = true;
+            _selectedInteractable.IsCurrentlySelected = true;
     }
 
     private void OnDrawGizmos()
