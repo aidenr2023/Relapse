@@ -381,6 +381,57 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         UpdatePowerCollections(powerScriptableObject);
     }
 
+    public void RemovePower(PowerScriptableObject powerScriptableObject)
+    {
+        // Check if the power is already in one of the hash sets
+        var powerSet = powerScriptableObject.PowerType switch
+        {
+            PowerType.Drug => _drugsSet,
+            PowerType.Medicine => _medsSet,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        // Return if the player does not have the power
+        if (!powerSet.Remove(powerScriptableObject))
+            return;
+
+        // Remove the power from the powers array
+        for (int i = 0; i < powers.Length; i++)
+        {
+            // Look for the power in the array
+            if (powers[i] != powerScriptableObject)
+                continue;
+
+            // Remove the power from the array by shifting all the elements to the left
+            for (int j = i; j < powers.Length - 1; j++)
+                powers[j] = powers[j + 1];
+
+            // Resize the array
+            Array.Resize(ref powers, powers.Length - 1);
+
+            break;
+        }
+        
+        // Remove the associated power token
+        _powerTokens.Remove(powerScriptableObject);
+
+        // Update the power collections
+        UpdatePowerCollections();
+    }
+
+    public bool HasPower(PowerScriptableObject powerScriptableObject)
+    {
+        // Check if the power is already in one of the hash sets
+        var powerSet = powerScriptableObject.PowerType switch
+        {
+            PowerType.Drug => _drugsSet,
+            PowerType.Medicine => _medsSet,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        return powerSet.Contains(powerScriptableObject);
+    }
+
     public string GetDebugText()
     {
         if (CurrentPower == null)

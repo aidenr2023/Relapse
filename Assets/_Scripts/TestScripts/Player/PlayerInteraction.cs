@@ -1,10 +1,13 @@
 ﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerInteraction : MonoBehaviour
 {
     [SerializeField] [Min(0)] private float interactDistance = 5;
+
+    [SerializeField] private TMP_Text interactText;
 
     /// <summary>
     /// A reference to the interactable that the player is currently looking at.
@@ -25,6 +28,8 @@ public class PlayerInteraction : MonoBehaviour
         InitializeControls();
     }
 
+    #region Controls
+
     private void InitializeControls()
     {
         // Subscribe to the interact event
@@ -39,6 +44,16 @@ public class PlayerInteraction : MonoBehaviour
 
         // Interact with the current interactable
         _selectedInteractable.Interact(this);
+    }
+
+    #endregion
+
+    #region Update Functions
+
+    private void Update()
+    {
+        // Update the interact text
+        UpdateInteractText();
     }
 
     private void FixedUpdate()
@@ -91,6 +106,29 @@ public class PlayerInteraction : MonoBehaviour
         if (_selectedInteractable != null)
             _selectedInteractable.IsCurrentlySelected = true;
     }
+
+    private void UpdateInteractText()
+    {
+        // If the player is not looking at an interactable, hide the interact text
+        if (_selectedInteractable == null)
+        {
+            interactText.gameObject.SetActive(false);
+            return;
+        }
+
+        // Show the interact text
+        interactText.gameObject.SetActive(true);
+
+        if (_selectedInteractable.InteractText == string.Empty)
+            interactText.text = "Press E to interact";
+        else
+        {
+            // Set the interact text to the interactable's interact text
+            interactText.text = $"Press E to\n{_selectedInteractable.InteractText}";
+        }
+    }
+
+    #endregion
 
     private void OnDrawGizmos()
     {
