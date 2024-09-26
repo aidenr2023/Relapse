@@ -5,6 +5,8 @@ using UnityEngine.Serialization;
 [RequireComponent(typeof(Rigidbody))]
 public class GenericGun : MonoBehaviour, IGun, IDebugManaged
 {
+    #region Serialized Fields
+
     [SerializeField] private GunInformation gunInformation;
 
     [Header("Muzzle Particles")] [SerializeField]
@@ -18,6 +20,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
 
     [SerializeField] [Range(0, 500)] private int impactParticlesCount = 200;
 
+    #endregion
+
+    #region Private Fields
 
     /// <summary>
     /// A flag to determine if the fire input is being held down.
@@ -28,7 +33,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
     /// A flag to determine if the fire input was pressed this frame.
     /// Used to force the player to release the fire button before firing again w/ semi-automatic weapons.
     /// </summary>
-    private bool _firedThisFrame;
+    private bool _hasFiredThisFrame;
 
     /// <summary>
     /// The time since the gun last fired.
@@ -37,9 +42,23 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
     private float _fireDelta;
 
     /// <summary>
+    /// How many bullets are remaining in the magazine.
+    /// </summary>
+    private int _currentMagazineSize;
+
+    /// <summary>
+    /// How long the player has spent reloading the gun.
+    /// </summary>
+    private float _currentReloadTime;
+
+    private bool _isReloading;
+
+    /// <summary>
     /// A reference to the weapon manager that is currently using this gun.
     /// </summary>
     private WeaponManager _weaponManager;
+
+    #endregion
 
     #region Getters
 
@@ -51,6 +70,12 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
 
     private float TimeBetweenShots => 1 / gunInformation.FireRate;
 
+    public bool IsMagazineEmpty => _currentMagazineSize <= 0;
+
+    public bool IsReloading => _isReloading;
+
+    public float ReloadingPercentage => (gunInformation.ReloadTime - _currentReloadTime) / gunInformation.ReloadTime;
+
     #endregion
 
     private void Awake()
@@ -59,13 +84,77 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
         Collider = GetComponent<Collider>();
     }
 
+    private void Start()
+    {
+        // Set the current magazine size to the max magazine size
+        _currentMagazineSize = gunInformation.MagazineSize;
+
+        // Set the fire delta to the time between shots
+        _fireDelta = TimeBetweenShots;
+    }
+
+    #region Update Functions
+
+    private void Update()
+    {
+        UpdateFireDelta();
+
+        // Fire the weapon if applicable
+        if (_weaponManager != null)
+            Fire(_weaponManager, _weaponManager.FiringPoint.position, _weaponManager.FiringPoint.forward);
+
+        // Reset the fired this frame flag
+        _hasFiredThisFrame = false;
+
+        // Update the reload time if the gun is currently reloading
+        UpdateReload();
+    }
+
+    private void UpdateReload()
+    {
+        // Return if the gun is not currently reloading
+        if (!IsReloading)
+            return;
+
+        // Update the reload time
+        _currentReloadTime = Mathf.Clamp(_currentReloadTime - Time.deltaTime, 0, gunInformation.ReloadTime);
+
+        if (_currentReloadTime > 0)
+            return;
+
+        // Set the reloading flag to false
+        _isReloading = false;
+
+        // If the player has finished reloading, reset the magazine size
+        _currentMagazineSize = gunInformation.MagazineSize;
+    }
+
+    private void UpdateFireDelta()
+    {
+        // If the player is reloading, force the fire delta to the TimeBetweenShots
+        if (IsReloading)
+        {
+            _fireDelta = TimeBetweenShots;
+            return;
+        }
+
+        // if the gun is currently firing, Update the time since the gun last fired
+        _fireDelta = Mathf.Clamp(_fireDelta + Time.deltaTime, 0, TimeBetweenShots);
+    }
+
+    #endregion
+
     public void OnFire(WeaponManager weaponManager)
     {
+        // Return if the gun is currently reloading
+        if (IsReloading)
+            return;
+
         // Set the firing flag to true
         _isFiring = true;
 
         // Set the fired this frame flag to true
-        _firedThisFrame = true;
+        _hasFiredThisFrame = true;
     }
 
     public void OnFireReleased()
@@ -74,32 +163,25 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
         _isFiring = false;
     }
 
-    private void Update()
-    {
-        // if the gun is currently firing, Update the time since the gun last fired
-        _fireDelta = Mathf.Clamp(_fireDelta + Time.deltaTime, 0, TimeBetweenShots);
-
-        if (_weaponManager != null)
-        {
-            // Fire the weapon if applicable
-            Fire(_weaponManager, _weaponManager.FiringPoint.position, _weaponManager.FiringPoint.forward);
-        }
-
-        // Reset the fired this frame flag
-        _firedThisFrame = false;
-    }
-
     public void Fire(WeaponManager weaponManager, Vector3 startingPosition, Vector3 direction)
     {
         // If the gun is not firing, return
         if (!_isFiring)
             return;
 
+        // Return if the gun is currently reloading
+        if (IsReloading)
+            return;
+
+        // return if the magazine is empty
+        if (IsMagazineEmpty)
+            return;
+
         // Special logic to determine if the gun should fire this frame based on the gun's fire type
         switch (gunInformation.FireType)
         {
             case GunInformation.GunFireType.SemiAutomatic:
-                if (!_firedThisFrame)
+                if (!_hasFiredThisFrame)
                     return;
                 break;
         }
@@ -115,44 +197,54 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
         // Create a ray cast from the starting point in the direction with the specified range
 
         // Emit the fire particles
-        PlayParticles(muzzleParticles, muzzleLocation.position, direction, 10, muzzleParticlesCount);
+        PlayParticles(muzzleParticles, muzzleLocation.position, muzzleParticlesCount);
 
         // Fire the gun
         for (var i = 0; i < timesToFire; i++)
         {
+            // break if the magazine is empty
+            if (IsMagazineEmpty)
+                break;
+
             // Determine the bloom of the gun
-            var xBloom = UnityEngine.Random.Range(-gunInformation.BloomAngle, gunInformation.BloomAngle);
-            var yBloom = UnityEngine.Random.Range(-gunInformation.BloomAngle, gunInformation.BloomAngle);
+            var xBloom = UnityEngine.Random.Range(-gunInformation.BloomAngle / 2, gunInformation.BloomAngle / 2);
+            var yBloom = UnityEngine.Random.Range(-gunInformation.BloomAngle / 2, gunInformation.BloomAngle / 2);
             var spreadDirection = Quaternion.Euler(xBloom, yBloom, 0) * direction;
 
             // Perform the raycast
             var hit = Physics.Raycast(startingPosition, spreadDirection, out var hitInfo, gunInformation.Range);
-            
-            Debug.Log($"SHOT!: {hit}");
-            
+
+            // Decrease the magazine size
+            _currentMagazineSize--;
+
             // Continue if the raycast did not hit anything
             if (!hit)
                 continue;
 
             // Emit the particles
-            PlayParticles(impactParticles, hitInfo.point, hitInfo.normal, 2, impactParticlesCount);
+            PlayParticles(impactParticles, hitInfo.point, impactParticlesCount);
         }
     }
-    
-    private static void PlayParticles(ParticleSystem system, Vector3 position, Vector3 direction, float velocity, int count)
+
+    public void Reload()
     {
-        if (system == null)
+        // Return if the player is reloading
+        if (IsReloading)
+            return;
+        
+        // Return if the gun's magazine is full
+        if (_currentMagazineSize == gunInformation.MagazineSize)
             return;
 
-        // Create emit parameters that only override the position and velocity
-        var emitParams = new ParticleSystem.EmitParams
-        {
-            position = position,
-            applyShapeToPosition = true,
-        };
-        
-        // Emit the particles
-        system.Emit(emitParams, count);
+        // Force the firing flag to false
+        _isFiring = false;
+        _hasFiredThisFrame = false;
+
+        // Set the reload time to the reload time of the gun
+        _currentReloadTime = gunInformation.ReloadTime;
+
+        // Set the reloading flag to true
+        _isReloading = true;
     }
 
     public void OnEquip(WeaponManager weaponManager)
@@ -179,8 +271,27 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
                $"\tFire Type: {gunInformation.FireType}\n" +
                $"\tDamage: {gunInformation.BaseDamage}\n" +
                $"\tFire Rate: {gunInformation.FireRate}\t ({TimeBetweenShots}) \tDelta: {_fireDelta}\n" +
-               $"\tEquipped: {((_weaponManager != null) ? _weaponManager.gameObject.name : "NONE")}\n" +
-               $"\tFiring?: {_isFiring} - {_firedThisFrame}" +
+               $"\tEquipped: {(_weaponManager != null ? _weaponManager.gameObject.name : "NONE")}\n" +
+               $"\tFiring?: {_isFiring} - {_hasFiredThisFrame}\n" +
+               $"\tMagazine: {_currentMagazineSize} / {gunInformation.MagazineSize}\n" +
+               $"\tReloading: {_currentReloadTime} / {gunInformation.ReloadTime}" +
                $"\n";
+    }
+
+
+    private static void PlayParticles(ParticleSystem system, Vector3 position, int count)
+    {
+        if (system == null)
+            return;
+
+        // Create emit parameters that only override the position and velocity
+        var emitParams = new ParticleSystem.EmitParams
+        {
+            position = position,
+            applyShapeToPosition = true,
+        };
+
+        // Emit the particles
+        system.Emit(emitParams, count);
     }
 }

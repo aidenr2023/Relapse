@@ -10,14 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 233036f7b6394fedbe6b24cc25703910, type: 3}
-  m_Name: Pistol 2
+  m_Name: Automatic Pistol
   m_EditorClassIdentifier: 
-  gunName: Pistol 2
+  gunName: Automatic Pistol
   gunFireType: 1
   baseDamage: 1
   fireRate: 8
-  bloomAngle: 0
+  bloomAngle: 10
   range: 100
+  magazineSize: 18
+  reloadTime: 1.5
   damageFalloffCurve:
     serializedVersion: 2
     m_Curve:

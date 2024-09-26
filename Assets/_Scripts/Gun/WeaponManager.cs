@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -16,8 +17,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     /// </summary>
     private IGun _currentLookedAtGun;
 
-    [Tooltip("The position that the gun will fire from.")]
-    [SerializeField] private Transform fireTransform;
+    [Tooltip("The position that the gun will fire from.")] [SerializeField]
+    private Transform fireTransform;
 
     [SerializeField] private float gunInteractDistance;
 
@@ -28,6 +29,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     /// </summary>
     [SerializeField] private GameObject initialGunPrefab;
 
+    [SerializeField] private TMP_Text reloadText;
+
     #endregion
 
     #region Getters
@@ -35,7 +38,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     public TestPlayer Player => _player;
     public Playerinfo PlayerInfo => _playerInfo;
     public IGun EquippedGun => _equippedGun;
-    
+
     public Transform FiringPoint => fireTransform;
 
     #endregion
@@ -82,6 +85,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
         InputManager.Instance.PlayerControls.GamePlay.Shoot.performed += OnShoot;
         InputManager.Instance.PlayerControls.GamePlay.Shoot.canceled += OnShootCanceled;
 
+        // Reload
+        InputManager.Instance.PlayerControls.GamePlay.Reload.performed += OnReload;
+
         // Pick up weapon input
         InputManager.Instance.PlayerControls.GamePlay.Interact.performed += OnPickUpWeapon;
     }
@@ -91,6 +97,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
         // Remove the input
         InputManager.Instance.PlayerControls.GamePlay.Shoot.performed -= OnShoot;
         InputManager.Instance.PlayerControls.GamePlay.Shoot.canceled -= OnShootCanceled;
+
+        InputManager.Instance.PlayerControls.GamePlay.Reload.performed -= OnReload;
 
         InputManager.Instance.PlayerControls.GamePlay.Interact.performed -= OnPickUpWeapon;
     }
@@ -126,11 +134,24 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
         EquippedGun.OnFireReleased();
     }
 
+    private void OnReload(InputAction.CallbackContext obj)
+    {
+        // If the current gun is null, return
+        if (_equippedGun == null)
+            return;
+
+        // Reload the gun
+        EquippedGun.Reload();
+    }
+
     #endregion
 
     private void Update()
     {
         UpdateLookedAtGun();
+
+        // TODO: Remove this and replace it with a bar or something
+        UpdateReloadText();
     }
 
     private void UpdateLookedAtGun()
@@ -168,6 +189,21 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
             _currentLookedAtGun = null;
     }
 
+    private void UpdateReloadText()
+    {
+        reloadText.text = "";
+
+        if (_equippedGun == null)
+            return;
+
+        if (_equippedGun.IsReloading)
+            reloadText.text = $"Reloading: {_equippedGun.ReloadingPercentage * 100:0}%";
+
+        // Tell the player to reload
+        else if (_equippedGun.IsMagazineEmpty)
+            reloadText.text = "You need to reload!";
+    }
+
     public void EquipGun(IGun gun)
     {
         // Remove the current gun
@@ -193,7 +229,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
             // Also disable the collider
             gun.Collider.enabled = false;
         }
-        
+
         // Call the OnEquip function
         gun.OnEquip(this);
     }
@@ -218,7 +254,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
             // Throw the gun
             ThrowRigidBody(rb);
         }
-        
+
         // Call the OnRemoval function
         _equippedGun.OnRemoval(this);
 
@@ -238,7 +274,6 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
         // Create random torque force
         var torqueX = UnityEngine.Random.Range(-throwForce, throwForce);
         var torqueY = UnityEngine.Random.Range(-throwForce, throwForce);
-        var torqueZ = UnityEngine.Random.Range(-throwForce / 10, throwForce / 10);
 
         // Add torque to the gun
         rb.AddTorque(new Vector3(torqueX, torqueY, 0) / 10, ForceMode.Impulse);
