@@ -41,7 +41,7 @@ public class PlayerInteraction : MonoBehaviour
         _selectedInteractable.Interact(this);
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         // Update the currently selected interactable
         UpdateSelectedInteractable();
@@ -49,6 +49,10 @@ public class PlayerInteraction : MonoBehaviour
 
     private void UpdateSelectedInteractable()
     {
+        // Reset the currently looked at flag for the previous interactable
+        if (_selectedInteractable != null)
+            _selectedInteractable.IsCurrentlyLookedAt = false;
+
         // Get the camera pivot
         var cameraPivot = Player.PlayerController.CameraPivot.transform;
 
@@ -66,7 +70,15 @@ public class PlayerInteraction : MonoBehaviour
             // If the player is looking at an interactable,
             // set the current selected interactable to the interactable that the player is looking at
             if (hitInfo.collider.TryGetComponent(out IInteractable interactable))
-                _selectedInteractable = interactable;
+            {
+                // If the interactable is interactable,
+                // set the current selected interactable to the interactable
+                if (interactable.IsInteractable)
+                    _selectedInteractable = interactable;
+
+                // Otherwise, set the current selected interactable to null
+                else _selectedInteractable = null;
+            }
 
             // If there is no interactable, set the current selected interactable to null
             else _selectedInteractable = null;
@@ -74,6 +86,10 @@ public class PlayerInteraction : MonoBehaviour
 
         // If the player is not looking at an interactable, set the current selected interactable to null
         else _selectedInteractable = null;
+
+        // Set the currently looked at flag for the new interactable
+        if (_selectedInteractable != null)
+            _selectedInteractable.IsCurrentlyLookedAt = true;
     }
 
     private void OnDrawGizmos()
@@ -81,16 +97,15 @@ public class PlayerInteraction : MonoBehaviour
         // Return if the selected interactable is null
         if (_selectedInteractable == null)
             return;
-        
+
         // Draw a line from the camera pivot to the interactable
         Gizmos.color = Color.red;
         Gizmos.DrawLine(
             Player.PlayerController.CameraPivot.transform.position,
             _selectedInteractable.GameObject.transform.position
         );
-        
+
         // Draw a sphere at the interactable's position
         Gizmos.DrawSphere(_selectedInteractable.GameObject.transform.position, 0.5f);
-        
     }
 }

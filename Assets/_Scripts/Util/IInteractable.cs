@@ -8,6 +8,21 @@
 public interface IInteractable
 {
     /// <summary>
+    /// Words that pop up when looking at the object.
+    /// </summary>
+    public string InteractText { get; }
+
+    /// <summary>
+    /// Is the player currently looking at the object?
+    /// </summary>
+    public bool IsCurrentlyLookedAt { get; set; }
+
+    /// <summary>
+    /// Can the player interact with the object right now?
+    /// </summary>
+    public bool IsInteractable { get; }
+
+    /// <summary>
     /// A reference to the game object that the script is attached to.
     /// </summary>
     public GameObject GameObject { get; }

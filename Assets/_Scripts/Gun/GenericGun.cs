@@ -76,6 +76,15 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
 
     public float ReloadingPercentage => (gunInformation.ReloadTime - _currentReloadTime) / gunInformation.ReloadTime;
 
+    #region IInteractable
+
+    public string InteractText => $"Pick up {gunInformation.GunName}";
+
+    public bool IsCurrentlyLookedAt { get; set; }
+    public bool IsInteractable => true;
+
+    #endregion
+
     #endregion
 
     private void Awake()
@@ -223,7 +232,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
 
             // Emit the particles
             PlayParticles(impactParticles, hitInfo.point, impactParticlesCount);
-            
+
             // Test if the cast hit an IActor
             if (hitInfo.collider.TryGetComponent(out IActor actor))
             {
@@ -232,7 +241,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
                 var damage = gunInformation.EvaluateBaseDamage(distance);
 
                 Debug.Log($"DAMAGE: {damage} - DISTANCE: {distance} / {gunInformation.Range}");
-                
+
                 // Deal damage to the actor
                 actor.ChangeHealth(-damage);
             }
@@ -244,7 +253,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
         // Return if the player is reloading
         if (IsReloading)
             return;
-        
+
         // Return if the gun's magazine is full
         if (_currentMagazineSize == gunInformation.MagazineSize)
             return;
@@ -301,7 +310,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
         var emitParams = new ParticleSystem.EmitParams
         {
             position = position,
-            applyShapeToPosition = true,
+            applyShapeToPosition = true
         };
 
         // Emit the particles
