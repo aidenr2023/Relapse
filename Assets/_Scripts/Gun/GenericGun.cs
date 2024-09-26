@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class Pistol : MonoBehaviour, IGun
+public class GenericGun : MonoBehaviour, IGun
 {
     [SerializeField] private GunInformation gunInformation;
 
