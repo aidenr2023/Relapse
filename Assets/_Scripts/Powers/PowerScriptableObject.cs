@@ -17,7 +17,7 @@ public class PowerScriptableObject : ScriptableObject
     [SerializeField] private float passiveEffectDuration;
     [SerializeField] private float cooldown;
     [SerializeField] private float baseToleranceMeterImpact;
-    [SerializeField] private float[] toleranceMeterLevelMultiplier;
+    [SerializeField] private float[] toleranceMeterLevelMultiplier = { 1, .75f, .5f };
 
     [SerializeField] private GameObject powerLogicPrefab;
 
