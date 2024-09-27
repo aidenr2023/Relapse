@@ -116,6 +116,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""f2779599-35b8-46cd-a7ec-7c36bf42d3c0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -404,6 +413,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""ChangePower"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""77a17074-8adb-4755-b51b-18d12405d83c"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -456,6 +476,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_GamePlay_Shoot = m_GamePlay.FindAction("Shoot", throwIfNotFound: true);
         m_GamePlay_Power = m_GamePlay.FindAction("Power", throwIfNotFound: true);
         m_GamePlay_ChangePower = m_GamePlay.FindAction("ChangePower", throwIfNotFound: true);
+        m_GamePlay_Interact = m_GamePlay.FindAction("Interact", throwIfNotFound: true);
         // Debug
         m_Debug = asset.FindActionMap("Debug", throwIfNotFound: true);
         m_Debug_ToggleDebug = m_Debug.FindAction("ToggleDebug", throwIfNotFound: true);
@@ -530,6 +551,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_GamePlay_Shoot;
     private readonly InputAction m_GamePlay_Power;
     private readonly InputAction m_GamePlay_ChangePower;
+    private readonly InputAction m_GamePlay_Interact;
     public struct GamePlayActions
     {
         private @PlayerControls m_Wrapper;
@@ -544,6 +566,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Shoot => m_Wrapper.m_GamePlay_Shoot;
         public InputAction @Power => m_Wrapper.m_GamePlay_Power;
         public InputAction @ChangePower => m_Wrapper.m_GamePlay_ChangePower;
+        public InputAction @Interact => m_Wrapper.m_GamePlay_Interact;
         public InputActionMap Get() { return m_Wrapper.m_GamePlay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -583,6 +606,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @ChangePower.started += instance.OnChangePower;
             @ChangePower.performed += instance.OnChangePower;
             @ChangePower.canceled += instance.OnChangePower;
+            @Interact.started += instance.OnInteract;
+            @Interact.performed += instance.OnInteract;
+            @Interact.canceled += instance.OnInteract;
         }
 
         private void UnregisterCallbacks(IGamePlayActions instance)
@@ -617,6 +643,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @ChangePower.started -= instance.OnChangePower;
             @ChangePower.performed -= instance.OnChangePower;
             @ChangePower.canceled -= instance.OnChangePower;
+            @Interact.started -= instance.OnInteract;
+            @Interact.performed -= instance.OnInteract;
+            @Interact.canceled -= instance.OnInteract;
         }
 
         public void RemoveCallbacks(IGamePlayActions instance)
@@ -701,6 +730,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnShoot(InputAction.CallbackContext context);
         void OnPower(InputAction.CallbackContext context);
         void OnChangePower(InputAction.CallbackContext context);
+        void OnInteract(InputAction.CallbackContext context);
     }
     public interface IDebugActions
     {
