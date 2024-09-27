@@ -4,8 +4,8 @@ using System.Collections;
 
 public class Dash : MonoBehaviour
 {
-    public float dashForce = 20f; // The strength of the dash impulse
-    public float dashCooldown = 1f; // Cooldown time before the player can dash again
+    [SerializeField] [Range(0, 2000)] private float  dashForce = 100f; // The strength of the dash impulse
+    [SerializeField] [Range(0,10)] private float dashCooldown = 1f; // Cooldown time before the player can dash again
 
     private Rigidbody rb; // Reference to the player's Rigidbody
     private PlayerControls playerInputActions; // Reference to the Input System controls
@@ -28,14 +28,31 @@ public class Dash : MonoBehaviour
         playerInputActions.GamePlay.dash.performed -= OnDashPerformed;
         playerInputActions.Disable();
     }
+    
+    private void FixedUpdate()
+    {
+        ClampVerticalVelocity();
+    }
 
     private void OnDashPerformed(InputAction.CallbackContext context)
     {
         if (canDash)
         {
             Vector3 dashDirection = GetDashDirection();
+            
+            rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+            ClampVerticalVelocity();
             rb.AddForce(dashDirection * dashForce, ForceMode.Impulse); // Apply dash impulse
             StartCoroutine(DashCooldownCoroutine());
+        }
+    }
+
+    private void ClampVerticalVelocity()
+    {
+        // Limit how much vertical velocity (Y-axis) the player can have
+        if (rb.velocity.y > 5f) // Adjust this value to control vertical speed when dashing
+        {
+            rb.velocity = new Vector3(rb.velocity.x, 5f, rb.velocity.z);
         }
     }
 

@@ -28,6 +28,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     // Reference to the player's orientation transform
     [SerializeField] private Transform orientation;
+    
+    // Maximum slope angle
+    [SerializeField] [Range(15, 60)] private float maxSlopeAngle = 45f; 
 
     // The speed when the player is walking
     [Header("Movement")] [SerializeField] [Range(0, 100)] private float walkSpeed;
@@ -217,12 +220,22 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         // Handle player movement in FixedUpdate for physics-based movement
         MovePlayer();
+        
+        //apply force so that player sticks to slope
+        ApplyDownwardForce();
     }
 
     public void MovePlayer()
     {
         // Calculate the move direction based on input and orientation
         _moveDirection = (orientation.forward * _verticalInput + orientation.right * _horizontalInput).normalized;
+        
+        if (OnSlope() && _isGrounded)
+        {
+            // Project movement to the slope
+            _moveDirection = Vector3.ProjectOnPlane(_moveDirection, Vector3.up);
+            _rb.AddForce(_moveDirection * (_moveSpeed * 10f), ForceMode.Force);
+        }
 
         // Remove the y component of the move direction to prevent vertical movement
         _moveDirection = new Vector3(_moveDirection.x, 0f, _moveDirection.z);
@@ -235,6 +248,27 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         else if (!_isGrounded && !IsWallRunning)
             _rb.AddForce(_moveDirection * (_moveSpeed * 10f * airMultiplier), ForceMode.Force);
     }
+    
+    private void ApplyDownwardForce()
+    {
+        if (OnSlope())
+        {
+            // Apply a downward force to keep the player grounded on slopes
+            _rb.AddForce(Vector3.down * 10f, ForceMode.Acceleration); 
+        }
+    }
+    
+    private bool OnSlope()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, playerHeight * 0.5f + 0.2f))
+        {
+            float slopeAngle = Vector3.Angle(hit.normal, Vector3.up);
+            return slopeAngle > 0 && slopeAngle <= maxSlopeAngle;
+        }
+        return false;
+    }
+
 
     private void SpeedControl()
     {
@@ -295,6 +329,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
                 // Apply air drag and set move speed
                 _moveSpeed = walkSpeed * airMultiplier;
                 dash.canDash = true;
+                wallRunning.canWallRun = true;
 
 
                 SetSoundState(footsteps, false);
