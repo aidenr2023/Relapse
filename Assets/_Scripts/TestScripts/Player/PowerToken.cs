@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PowerToken
@@ -52,6 +53,8 @@ public class PowerToken
     /// </summary>
     private float currentCurrentCooldownDuration;
 
+    private Dictionary<string, object> _dataDictionary;
+
     #region Getters
 
     public PowerScriptableObject PowerScriptableObject => _powerScriptableObject;
@@ -88,7 +91,12 @@ public class PowerToken
     public PowerToken(PowerScriptableObject powerScriptableObject)
     {
         _powerScriptableObject = powerScriptableObject;
+        
+        // Initialize the data dictionary
+        _dataDictionary = new Dictionary<string, object>();
     }
+
+    #region Token Control
 
     public void SetChargingFlag(bool isCharging)
     {
@@ -168,5 +176,34 @@ public class PowerToken
     public void SetCooldownDuration(float amount)
     {
         currentCurrentCooldownDuration = amount;
+    }
+
+    #endregion
+
+
+    public void AddData(string key, object value)
+    {
+        if (_dataDictionary == null)
+            _dataDictionary = new Dictionary<string, object>();
+
+        // If the key already exists, throw an exception for the user to handle
+        if (!_dataDictionary.TryAdd(key, value))
+            throw new System.Exception($"Key {key} already exists in the data dictionary.");
+    }
+    
+    public T GetData<T>(string key)
+    {
+        if (_dataDictionary.TryGetValue(key, out var value))
+            return (T) value;
+
+        return default;
+    }
+    
+    public T RemoveData<T>(string key)
+    {
+        if (_dataDictionary.Remove(key, out var value))
+            return (T) value;
+
+        return default;
     }
 }

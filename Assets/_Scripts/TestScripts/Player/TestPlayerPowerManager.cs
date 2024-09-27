@@ -8,9 +8,11 @@ using UnityEngine.UI;
 [RequireComponent(typeof(TestPlayer))]
 public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 {
-    private TestPlayer _player;
-
+    [SerializeField] private PowerScroll powerScroll;
     [SerializeField] private PowerScriptableObject[] powers;
+
+    private TestPlayer _player;
+    
     private Dictionary<PowerScriptableObject, PowerToken> _powerTokens;
     private HashSet<PowerScriptableObject> _drugsSet;
     private HashSet<PowerScriptableObject> _medsSet;
@@ -18,7 +20,6 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
     private int _currentPowerIndex;
     private bool _isChargingPower;
 
-    [SerializeField] private PowerScroll powerScroll;
 
     #region Getters
 
@@ -75,7 +76,6 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
     }
 
     #endregion
-
 
     #region Input Functions
 
@@ -178,7 +178,6 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
     }
 
     #endregion
-
 
     // Update is called once per frame
     private void Update()

@@ -13,22 +13,19 @@ public class PlayerHealth : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        healthSlider.maxValue = Playerinfo.maxHealth;
-        easeHealthSlider.maxValue = Playerinfo.maxHealth;
-        
-        healthSlider.value = Playerinfo.health;
-        easeHealthSlider.value = Playerinfo.health;
+        healthSlider.maxValue = Playerinfo.MaxHealth;
+        easeHealthSlider.maxValue = Playerinfo.MaxHealth;
+
+        healthSlider.value = Playerinfo.CurrentHealth;
+        easeHealthSlider.value = Playerinfo.CurrentHealth;
     }
 
     // Update is called once per frame
     void Update()
     {
-        healthSlider.value = Playerinfo.health;
-
+        healthSlider.value = Playerinfo.CurrentHealth;
 
         if (healthSlider.value != easeHealthSlider.value)
-        {
-            easeHealthSlider.value = Mathf.Lerp(easeHealthSlider.value, Playerinfo.health, lerpSpeed);
-        }
+            easeHealthSlider.value = Mathf.Lerp(easeHealthSlider.value, Playerinfo.CurrentHealth, lerpSpeed);
     }
 }
