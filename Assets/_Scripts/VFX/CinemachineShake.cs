@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,33 +12,33 @@ public class CinemachineShake : MonoBehaviour
     // Reference to the Cinemachine virtual camera
     private CinemachineVirtualCamera CinemachineVirtualCamera;
 
+    private CinemachineBasicMultiChannelPerlin perlinNoise;
+
     // Timer to track the remaining shake duration
     private float shakeTimer;
 
     // Stores the total shake duration
-    private float shakeTimerTotal;
+    private float shakeTimerTotal = 1;
 
     // The initial intensity of the camera shake
     private float startingIntensity;
 
     // Called when the script instance is being loaded
-    private void Awake() {
+    private void Awake()
+    {
         // Assign this instance to the static Instance property
         Instance = this;
 
         // Get the CinemachineVirtualCamera component attached to the same GameObject
         CinemachineVirtualCamera = GetComponent<CinemachineVirtualCamera>();
+
+        // Get the perlin noise component
+        perlinNoise = CinemachineVirtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
     }
 
     // Method to trigger the camera shake with specified intensity and duration
-    public void ShakeCamera(float intensity, float time) {
-        // Get the noise component (CinemachineBasicMultiChannelPerlin) used for camera shake
-        CinemachineBasicMultiChannelPerlin cinemachineBasicMultiChannelPerlin =    
-            CinemachineVirtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-
-        // Set the amplitude of the noise, which determines the shake intensity
-        cinemachineBasicMultiChannelPerlin.m_AmplitudeGain = intensity;
-
+    public void ShakeCamera(float intensity, float time)
+    {
         // Store the initial intensity and set the total shake time
         startingIntensity = intensity;
         shakeTimerTotal = time;
@@ -47,19 +48,12 @@ public class CinemachineShake : MonoBehaviour
     }
 
     // Called once per frame to update the shake effect
-    private void Update() {
-        // Check if the shake effect is still active (i.e., the timer is not yet finished)
-        if (shakeTimer > 0) {
-            // Decrease the shake timer by the time passed since the last frame
-            shakeTimer -= Time.deltaTime;
+    private void Update()
+    {
+        // Decrease the shake timer by the time passed since the last frame
+        shakeTimer = Mathf.Clamp(shakeTimer - Time.deltaTime, 0, shakeTimerTotal);
 
-            // Get the noise component again to adjust the shake intensity
-            CinemachineBasicMultiChannelPerlin cinemachineBasicMultiChannelPerlin = 
-                CinemachineVirtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-
-            // Gradually decrease the shake intensity from the starting value to 0 over time
-            cinemachineBasicMultiChannelPerlin.m_AmplitudeGain = 
-                Mathf.Lerp(startingIntensity, 0f, shakeTimer / shakeTimerTotal);
-        }
+        // Gradually decrease the shake intensity from the starting value to 0 over time
+        perlinNoise.m_AmplitudeGain = Mathf.Lerp(startingIntensity, 0f, 1 - (shakeTimer / shakeTimerTotal));
     }
 }

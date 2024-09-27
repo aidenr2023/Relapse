@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class PlayerFallDetection : MonoBehaviour
 {
-    private Rigidbody rb;               // Reference to the Rigidbody component
-    private bool isFalling = false;      // To check if the player is falling
-    private float fallTime = 0f;         // Tracks how long the player has been falling
-    private float fallThreshold = 0.5f;  // The time threshold for triggering the camera shake
+    private Rigidbody rb; // Reference to the Rigidbody component
+    private bool isFalling = false; // To check if the player is falling
+    private float fallTime = 0f; // Tracks how long the player has been falling
+    private float fallThreshold = 0.5f; // The time threshold for triggering the camera shake
+
+    [SerializeField] private float cameraShakeIntensity = 5f; // The intensity of the camera shake
+    [SerializeField] private float cameraShakeDuration = 0.1f; // The duration of the camera shake
 
     void Start()
     {
@@ -26,18 +29,13 @@ public class PlayerFallDetection : MonoBehaviour
                 isFalling = true;
                 fallTime = 0f; // Reset the fall timer
             }
-            
+
             // Increment fall time
             fallTime += Time.deltaTime;
         }
-        else
-        {
-            // If the player is not falling, reset the fall state
-            if (isFalling)
-            {
-                isFalling = false;
-            }
-        }
+        // If the player is not falling, reset the fall state
+        else if (isFalling)
+            isFalling = false;
     }
 
     void OnCollisionEnter(Collision collision)
@@ -49,10 +47,10 @@ public class PlayerFallDetection : MonoBehaviour
             if (fallTime > fallThreshold)
             {
                 // Call the camera shake method with intensity 5f and duration 0.1f
-                CinemachineShake.Instance.ShakeCamera(10f, 0.1f);
+                CinemachineShake.Instance.ShakeCamera(cameraShakeIntensity, cameraShakeDuration);
                 Debug.Log("Camera shake");
             }
-            
+
             // Reset fall-related variables
             isFalling = false;
             fallTime = 0f;
