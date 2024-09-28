@@ -33,28 +33,28 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     [SerializeField] [Range(15, 60)] private float maxSlopeAngle = 45f; 
 
     // The speed when the player is walking
-    [Header("Movement")] [SerializeField] [Range(0, 100)] private float walkSpeed;
+    [Header("Movement")] [SerializeField] [Range(0, 150)] private float walkSpeed;
 
     // The speed when the player is sprinting
-    [SerializeField] [Range(0, 100)] private float sprintSpeed;
+    [SerializeField] [Range(0, 150)] private float sprintSpeed;
 
     // The speed when the player is wall running
-    [SerializeField] [Range(0, 100)] private float wallrunSpeed;
+    [SerializeField] [Range(0, 150)] private float wallrunSpeed;
 
     // Drag applied to the player when grounded
-    [SerializeField] [Range(0, 10)] private float groundDrag;
+    [SerializeField] [Range(0, 15)] private float groundDrag;
 
     // The current speed of the player
     private float _moveSpeed;
 
     // The force applied when the player jumps
-    [SerializeField] [Range(0, 10)] private float jumpForce;
+    [SerializeField] [Range(0, 500)] private float jumpForce;
 
     // The cooldown time between jumps
-    [SerializeField] [Range(0, 10)] private float jumpCooldown;
+    [SerializeField] [Range(0, 15)] private float jumpCooldown;
 
     // Multiplier for movement speed when in the air
-    [SerializeField] [Range(0, 10)] private float airMultiplier;
+    [SerializeField] [Range(0, 15)] private float airMultiplier;
 
     // Flag to check if the player is ready to jump
     private bool _readyToJump = true;
