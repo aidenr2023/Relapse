@@ -28,12 +28,13 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     // Reference to the player's orientation transform
     [SerializeField] private Transform orientation;
-    
+
     // Maximum slope angle
-    [SerializeField] [Range(15, 60)] private float maxSlopeAngle = 45f; 
+    [SerializeField] [Range(15, 60)] private float maxSlopeAngle = 45f;
 
     // The speed when the player is walking
-    [Header("Movement")] [SerializeField] [Range(0, 150)] private float walkSpeed;
+    [Header("Movement")] [SerializeField] [Range(0, 150)]
+    private float walkSpeed;
 
     // The speed when the player is sprinting
     [SerializeField] [Range(0, 150)] private float sprintSpeed;
@@ -220,7 +221,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         // Handle player movement in FixedUpdate for physics-based movement
         MovePlayer();
-        
+
         //apply force so that player sticks to slope
         ApplyDownwardForce();
     }
@@ -229,7 +230,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         // Calculate the move direction based on input and orientation
         _moveDirection = (orientation.forward * _verticalInput + orientation.right * _horizontalInput).normalized;
-        
+
         if (OnSlope() && _isGrounded)
         {
             // Project movement to the slope
@@ -248,16 +249,16 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         else if (!_isGrounded && !IsWallRunning)
             _rb.AddForce(_moveDirection * (_moveSpeed * 10f * airMultiplier), ForceMode.Force);
     }
-    
+
     private void ApplyDownwardForce()
     {
         if (OnSlope())
         {
             // Apply a downward force to keep the player grounded on slopes
-            _rb.AddForce(Vector3.down * 10f, ForceMode.Acceleration); 
+            _rb.AddForce(Vector3.down * 10f, ForceMode.Acceleration);
         }
     }
-    
+
     private bool OnSlope()
     {
         RaycastHit hit;
@@ -266,6 +267,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             float slopeAngle = Vector3.Angle(hit.normal, Vector3.up);
             return slopeAngle > 0 && slopeAngle <= maxSlopeAngle;
         }
+
         return false;
     }
 
@@ -297,29 +299,38 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void StateHandler()
     {
+        // Allow the player to dash by default so this line only has
+        // to be written once
+        dash.SetExternalDashFlag(true);
+
         // Handle the player's movement state using a switch case
         switch (_movementState)
         {
             case MovementState.Walking:
-                _moveSpeed = walkSpeed; // Set move speed to walk speed
-                dash.canDash = true;
+                // Set move speed to walk speed
+                _moveSpeed = walkSpeed;
 
                 SetSoundState(footsteps, false);
                 SetSoundState(wallFootSteps, false);
                 break;
 
             case MovementState.Sprinting:
-                _moveSpeed = sprintSpeed; // Set move speed to sprint speed
-                dash.canDash = true;
+                // Set move speed to sprint speed
+                _moveSpeed = sprintSpeed;
 
                 SetSoundState(footsteps, true);
                 SetSoundState(wallFootSteps, false);
                 break;
 
             case MovementState.WallRunning:
-                _moveSpeed = wallrunSpeed; // Set move speed to wall run speed
-                dash.canDash = false; // disable dashing while wallrunning
-                _rb.drag = 0; // Disable drag during wall running
+                // Set move speed to wall run speed
+                _moveSpeed = wallrunSpeed;
+
+                // disable dashing while wall running
+                dash.SetExternalDashFlag(false);
+
+                // Disable drag during wall running
+                _rb.drag = 0;
 
                 SetSoundState(footsteps, false);
                 SetSoundState(wallFootSteps, true);
@@ -328,9 +339,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             case MovementState.Air:
                 // Apply air drag and set move speed
                 _moveSpeed = walkSpeed * airMultiplier;
-                dash.canDash = true;
                 wallRunning.canWallRun = true;
-
 
                 SetSoundState(footsteps, false);
                 SetSoundState(wallFootSteps, false);

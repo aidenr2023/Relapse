@@ -25,11 +25,12 @@ public class TestPlayerController : MonoBehaviour, IPlayerController
     [SerializeField] private bool invertHorizontalLook;
 
     #region Getters
-    
+
     public GameObject CameraPivot => cameraPivot;
-    
+    public bool IsGrounded => _characterController.isGrounded;
+
     #endregion
-    
+
     #region Initialization Functions
 
     private void Awake()
