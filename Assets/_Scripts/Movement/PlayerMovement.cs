@@ -84,11 +84,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     // Flag to check if the player is climbing
     private bool _isClimbing;
 
-    // Horizontal input value
-    private float _horizontalInput;
-
-    // Vertical input value
-    private float _verticalInput;
+    private Vector2 _movementInput;
 
     // A flag to check if the player is sprinting
     private bool _isSprinting;
@@ -100,6 +96,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     #region Getters
 
     public GameObject CameraPivot => cameraPivot.gameObject;
+
+    public Vector2 MovementInput => _movementInput;
 
     public bool IsGrounded => _isGrounded;
     public bool IsSprinting => _isSprinting;
@@ -148,14 +146,13 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         var moveInput = obj.ReadValue<Vector2>();
 
-        _horizontalInput = moveInput.x;
-        _verticalInput = moveInput.y;
+        _movementInput = moveInput;
     }
 
     private void OnMoveCanceled(InputAction.CallbackContext obj)
     {
-        _horizontalInput = 0;
-        _verticalInput = 0;
+        // Reset the movement input
+        _movementInput = Vector2.zero;
     }
 
 
@@ -230,7 +227,11 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public void MovePlayer()
     {
         // Calculate the move direction based on input and orientation
-        _moveDirection = (orientation.forward * _verticalInput + orientation.right * _horizontalInput).normalized;
+        _moveDirection =
+        (
+            orientation.forward * _movementInput.y +
+            orientation.right * _movementInput.x
+        ).normalized;
 
         if (OnSlope() && _isGrounded)
         {

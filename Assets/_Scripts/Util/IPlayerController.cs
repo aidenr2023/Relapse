@@ -7,7 +7,9 @@ public interface IPlayerController
     /// </summary>
     public GameObject CameraPivot { get; }
 
-    public bool IsGrounded { get; }
+    public Vector2 MovementInput { get; }
     
+    public bool IsGrounded { get; }
+
     public bool IsSprinting { get; }
 }

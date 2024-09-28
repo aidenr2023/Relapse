@@ -21,11 +21,11 @@ public class DynamicFOVController : MonoBehaviour
     private bool _isDashing;
     private bool _isInDashFOVTransition;
 
-    private PlayerMovement _playerMovement;
+    private IPlayerController _playerMovement;
     private Dash _dashScript;
 
     private bool IsSprinting => _playerMovement.IsSprinting;
-    
+
     #region Initialization
 
     private void Awake()
@@ -38,7 +38,7 @@ public class DynamicFOVController : MonoBehaviour
     {
         // Get the PlayerMovement script
         _playerMovement = GetComponent<PlayerMovement>();
-        
+
         // Get the Dash script
         _dashScript = GetComponent<Dash>();
 
@@ -53,7 +53,7 @@ public class DynamicFOVController : MonoBehaviour
         // Return if in the FOV transition
         if (_isInDashFOVTransition)
             return;
-        
+
         StartCoroutine(HandleDash());
     }
 

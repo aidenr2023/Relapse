@@ -11,6 +11,8 @@ public class Dash : MonoBehaviour
     // Reference to the player
     private TestPlayer _player;
 
+    private WallRunning _wallRunning;
+
     private Rigidbody _rb; // Reference to the player's Rigidbody
     private PlayerControls _playerInputActions; // Reference to the Input System controls
 
@@ -48,7 +50,7 @@ public class Dash : MonoBehaviour
             (_remainingDashesInAir > 0 && !_player.PlayerController.IsGrounded) ||
             _player.PlayerController.IsGrounded
         );
-    
+
     public bool IsDashing => _isDashing;
 
     #region Events
@@ -56,8 +58,17 @@ public class Dash : MonoBehaviour
     public event Action<Dash> OnDash;
 
     #endregion
-    
+
     void Awake()
+    {
+        // Initialize the components
+        InitializeComponents();
+
+        // Initialize the Input System controls
+        _playerInputActions = new PlayerControls();
+    }
+
+    private void InitializeComponents()
     {
         // Get the player component
         _player = GetComponent<TestPlayer>();
@@ -65,8 +76,8 @@ public class Dash : MonoBehaviour
         // Get the Rigidbody component
         _rb = GetComponent<Rigidbody>();
 
-        // Initialize the Input System controls
-        _playerInputActions = new PlayerControls();
+        // Get the WallRunning component
+        _wallRunning = GetComponent<WallRunning>();
     }
 
     void OnEnable()
@@ -94,8 +105,13 @@ public class Dash : MonoBehaviour
     private void UpdateAirDashCount()
     {
         // Detect if the player is grounded using the controller
+
         // If the player is grounded, reset the dash count
-        if (_player.PlayerController.IsGrounded)
+        // If the player is wall running, reset the dash count
+        if (
+            _player.PlayerController.IsGrounded ||
+            _wallRunning != null && _wallRunning.IsWallRunning
+        )
             _remainingDashesInAir = maxDashesInAir;
     }
 
@@ -110,17 +126,17 @@ public class Dash : MonoBehaviour
         // Set the velocity on the Y-axis to 0
         _rb.velocity = new Vector3(_rb.velocity.x, 0f, _rb.velocity.z);
         ClampVerticalVelocity();
-        
+
         // Apply dash impulse
-        _rb.AddForce(dashDirection * dashForce, ForceMode.Impulse); 
-        
+        _rb.AddForce(dashDirection * dashForce, ForceMode.Impulse);
+
         // Start the dash cooldown coroutine
         StartCoroutine(DashCooldownCoroutine());
-        
+
         // If the player is in the air, decrement the remaining dashes
         if (!_player.PlayerController.IsGrounded)
             _remainingDashesInAir--;
-        
+
         // Run the OnDash event
         OnDash?.Invoke(this);
     }
@@ -134,14 +150,42 @@ public class Dash : MonoBehaviour
 
     private Vector3 GetDashDirection()
     {
-        var currentVelocity = _rb.velocity;
-        var horizontalVelocity = new Vector3(currentVelocity.x, 0, currentVelocity.z);
+        // var currentVelocity = _rb.velocity;
+        // var horizontalVelocity = new Vector3(currentVelocity.x, 0, currentVelocity.z);
+        //
+        // // If the player is stationary, default to forward
+        // if (horizontalVelocity.magnitude == 0)
+        //     return transform.forward;
+        //
+        // return horizontalVelocity.normalized;
 
-        // If the player is stationary, default to forward
-        if (horizontalVelocity.magnitude == 0)
-            return transform.forward;
+        // Get the movement input from the controller
+        var movementInput = _player.PlayerController.MovementInput;
 
-        return horizontalVelocity.normalized;
+        // Get the camera pivot's transform
+        var playerTransform = _player.PlayerController.CameraPivot.transform;
+
+        Vector3 newForward;
+
+        // If the movement input is not zero,
+        // return a new Vector3 with the movement input
+        // relative to the player's transform
+        if (movementInput != Vector2.zero)
+        {
+            newForward =
+            (
+                playerTransform.right * movementInput.x +
+                playerTransform.forward * movementInput.y
+            ).normalized;
+        }
+        else
+        {
+            // If the movement input is zero, return the player's forward direction
+            newForward = playerTransform.forward;
+        }
+
+        // Eliminate the Y-axis component
+        return new Vector3(newForward.x, 0, newForward.z);
     }
 
 

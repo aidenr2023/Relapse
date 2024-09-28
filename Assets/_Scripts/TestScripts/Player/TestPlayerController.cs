@@ -26,6 +26,7 @@ public class TestPlayerController : MonoBehaviour, IPlayerController
 
     #region Getters
 
+    public Vector2 MovementInput => _movementInput;
     public GameObject CameraPivot => cameraPivot;
     public bool IsGrounded => _characterController.isGrounded;
     public bool IsSprinting => false;
