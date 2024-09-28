@@ -29,29 +29,33 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     // Reference to the player's orientation transform
     [SerializeField] private Transform orientation;
 
+    // Maximum slope angle
+    [SerializeField] [Range(15, 60)] private float maxSlopeAngle = 45f;
+
     // The speed when the player is walking
-    [Header("Movement")] [SerializeField] private float walkSpeed;
+    [Header("Movement")] [SerializeField] [Range(0, 150)]
+    private float walkSpeed;
 
     // The speed when the player is sprinting
-    [SerializeField] private float sprintSpeed;
+    [SerializeField] [Range(0, 150)] private float sprintSpeed;
 
     // The speed when the player is wall running
-    [SerializeField] private float wallrunSpeed;
+    [SerializeField] [Range(0, 150)] private float wallrunSpeed;
 
     // Drag applied to the player when grounded
-    [SerializeField] private float groundDrag;
+    [SerializeField] [Range(0, 15)] private float groundDrag;
 
     // The current speed of the player
     private float _moveSpeed;
 
     // The force applied when the player jumps
-    [SerializeField] private float jumpForce;
+    [SerializeField] [Range(0, 500)] private float jumpForce;
 
     // The cooldown time between jumps
-    [SerializeField] private float jumpCooldown;
+    [SerializeField] [Range(0, 15)] private float jumpCooldown;
 
     // Multiplier for movement speed when in the air
-    [SerializeField] private float airMultiplier;
+    [SerializeField] [Range(0, 15)] private float airMultiplier;
 
     // Flag to check if the player is ready to jump
     private bool _readyToJump = true;
@@ -80,11 +84,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     // Flag to check if the player is climbing
     private bool _isClimbing;
 
-    // Horizontal input value
-    private float _horizontalInput;
-
-    // Vertical input value
-    private float _verticalInput;
+    private Vector2 _movementInput;
 
     // A flag to check if the player is sprinting
     private bool _isSprinting;
@@ -97,7 +97,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     public GameObject CameraPivot => cameraPivot.gameObject;
 
+    public Vector2 MovementInput => _movementInput;
+
     public bool IsGrounded => _isGrounded;
+    public bool IsSprinting => _isSprinting;
 
     public bool IsWallRunning => wallRunning.IsWallRunning;
 
@@ -143,19 +146,22 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         var moveInput = obj.ReadValue<Vector2>();
 
-        _horizontalInput = moveInput.x;
-        _verticalInput = moveInput.y;
+        _movementInput = moveInput;
     }
 
     private void OnMoveCanceled(InputAction.CallbackContext obj)
     {
-        _horizontalInput = 0;
-        _verticalInput = 0;
+        // Reset the movement input
+        _movementInput = Vector2.zero;
     }
 
 
     private void OnSprintPerformed(InputAction.CallbackContext obj)
     {
+        // If the player is not grounded, return
+        if (!_isGrounded)
+            return;
+
         // Set the sprint flag to true
         _isSprinting = true;
     }
@@ -200,6 +206,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         // Check if the player is grounded by casting a ray downward
         _isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
 
+        // If the player is not grounded, force the sprint flag to false
+        if (!_isGrounded)
+            _isSprinting = false;
+        
         // Control the player's speed
         SpeedControl();
 
@@ -217,12 +227,26 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     {
         // Handle player movement in FixedUpdate for physics-based movement
         MovePlayer();
+
+        //apply force so that player sticks to slope
+        ApplyDownwardForce();
     }
 
     public void MovePlayer()
     {
         // Calculate the move direction based on input and orientation
-        _moveDirection = (orientation.forward * _verticalInput + orientation.right * _horizontalInput).normalized;
+        _moveDirection =
+        (
+            orientation.forward * _movementInput.y +
+            orientation.right * _movementInput.x
+        ).normalized;
+
+        if (OnSlope() && _isGrounded)
+        {
+            // Project movement to the slope
+            _moveDirection = Vector3.ProjectOnPlane(_moveDirection, Vector3.up);
+            _rb.AddForce(_moveDirection * (_moveSpeed * 10f), ForceMode.Force);
+        }
 
         // Remove the y component of the move direction to prevent vertical movement
         _moveDirection = new Vector3(_moveDirection.x, 0f, _moveDirection.z);
@@ -235,6 +259,28 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         else if (!_isGrounded && !IsWallRunning)
             _rb.AddForce(_moveDirection * (_moveSpeed * 10f * airMultiplier), ForceMode.Force);
     }
+
+    private void ApplyDownwardForce()
+    {
+        if (OnSlope())
+        {
+            // Apply a downward force to keep the player grounded on slopes
+            _rb.AddForce(Vector3.down * 10f, ForceMode.Acceleration);
+        }
+    }
+
+    private bool OnSlope()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, playerHeight * 0.5f + 0.2f))
+        {
+            float slopeAngle = Vector3.Angle(hit.normal, Vector3.up);
+            return slopeAngle > 0 && slopeAngle <= maxSlopeAngle;
+        }
+
+        return false;
+    }
+
 
     private void SpeedControl()
     {
@@ -263,29 +309,38 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void StateHandler()
     {
+        // Allow the player to dash by default so this line only has
+        // to be written once
+        dash.SetExternalDashFlag(true);
+
         // Handle the player's movement state using a switch case
         switch (_movementState)
         {
             case MovementState.Walking:
-                _moveSpeed = walkSpeed; // Set move speed to walk speed
-                dash.canDash = true;
+                // Set move speed to walk speed
+                _moveSpeed = walkSpeed;
 
                 SetSoundState(footsteps, false);
                 SetSoundState(wallFootSteps, false);
                 break;
 
             case MovementState.Sprinting:
-                _moveSpeed = sprintSpeed; // Set move speed to sprint speed
-                dash.canDash = true;
+                // Set move speed to sprint speed
+                _moveSpeed = sprintSpeed;
 
                 SetSoundState(footsteps, true);
                 SetSoundState(wallFootSteps, false);
                 break;
 
             case MovementState.WallRunning:
-                _moveSpeed = wallrunSpeed; // Set move speed to wall run speed
-                dash.canDash = false; // disable dashing while wallrunning
-                _rb.drag = 0; // Disable drag during wall running
+                // Set move speed to wall run speed
+                _moveSpeed = wallrunSpeed;
+
+                // disable dashing while wall running
+                dash.SetExternalDashFlag(false);
+
+                // Disable drag during wall running
+                _rb.drag = 0;
 
                 SetSoundState(footsteps, false);
                 SetSoundState(wallFootSteps, true);
@@ -294,8 +349,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
             case MovementState.Air:
                 // Apply air drag and set move speed
                 _moveSpeed = walkSpeed * airMultiplier;
-                dash.canDash = true;
-
+                wallRunning.canWallRun = true;
 
                 SetSoundState(footsteps, false);
                 SetSoundState(wallFootSteps, false);
@@ -315,7 +369,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
         else if (_isGrounded)
         {
-            if (_isSprinting)
+            if (IsSprinting)
                 _movementState = MovementState.Sprinting;
 
             else

@@ -8,25 +8,26 @@ using UnityEngine.UI;
 [RequireComponent(typeof(TestPlayer))]
 public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 {
+    [SerializeField] private PowerScroll powerScroll;
+    [SerializeField] private PowerScriptableObject[] powers;
+
     private TestPlayer _player;
 
-    [SerializeField] private PowerScriptableObject[] powers;
     private Dictionary<PowerScriptableObject, PowerToken> _powerTokens;
     private HashSet<PowerScriptableObject> _drugsSet;
     private HashSet<PowerScriptableObject> _medsSet;
 
     private int _currentPowerIndex;
-    public PowerScroll powerScroll;
-    public Image[] powerIcons;
-    public Image activePowerIcon;
-    public Sprite[] powerSprites;
     private bool _isChargingPower;
+
 
     #region Getters
 
     public TestPlayer Player => _player;
 
-    private PowerScriptableObject CurrentPower => powers[_currentPowerIndex];
+    private PowerScriptableObject CurrentPower => powers.Length > 0 ? powers[_currentPowerIndex] : null;
+
+    private PowerToken CurrentPowerToken => CurrentPower != null ? _powerTokens[CurrentPower] : null;
 
     #endregion
 
@@ -76,7 +77,6 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 
     #endregion
 
-
     #region Input Functions
 
     private void OnPowerChanged(InputAction.CallbackContext obj)
@@ -86,13 +86,11 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
             return;
 
         // Don't change the power if the current power is active
-        if (_powerTokens[CurrentPower].IsActiveEffectOn)
+        if (CurrentPowerToken.IsActiveEffectOn)
             return;
 
         // Get the float value of the change power input
         var changePowerValue = obj.ReadValue<float>();
-
-        Debug.Log($"{changePowerValue}");
 
         // Scroll up or down based on the input
         var direction = changePowerValue > 0 ? 1 : -1;
@@ -101,10 +99,6 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         _currentPowerIndex = (_currentPowerIndex + direction) % powers.Length;
         if (_currentPowerIndex < 0)
             _currentPowerIndex += powers.Length;
-
-        // Update the active power icon for the newly selected power
-        UpdateActivePowerIcon(powers[_currentPowerIndex]);
-        RefreshPowerIcons();
     }
 
     private void OnPowerPerformed(InputAction.CallbackContext obj)
@@ -114,22 +108,22 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
             return;
 
         // Return if the power is currently cooling down
-        if (_powerTokens[CurrentPower].IsCoolingDown)
+        if (CurrentPowerToken.IsCoolingDown)
             return;
 
         // Return if the power is currently active
-        if (_powerTokens[CurrentPower].IsActiveEffectOn)
+        if (CurrentPowerToken.IsActiveEffectOn)
             return;
 
         // Set the is charging power flag to true
         _isChargingPower = true;
 
         // Call the current power's start charge method
-        var startedChargingThisFrame = _powerTokens[CurrentPower].ChargePercentage == 0;
-        CurrentPower.PowerLogic.StartCharge(this, _powerTokens[CurrentPower], startedChargingThisFrame);
+        var startedChargingThisFrame = CurrentPowerToken.ChargePercentage == 0;
+        CurrentPower.PowerLogic.StartCharge(this, CurrentPowerToken, startedChargingThisFrame);
 
         // Set the charging flag to true
-        _powerTokens[CurrentPower].SetChargingFlag(true);
+        CurrentPowerToken.SetChargingFlag(true);
     }
 
     private void OnPowerCanceled(InputAction.CallbackContext obj)
@@ -142,50 +136,48 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         _isChargingPower = false;
 
         // Call the current power's release method
-        var isChargeComplete = _powerTokens[CurrentPower].ChargePercentage >= 1;
-        CurrentPower.PowerLogic.Release(this, _powerTokens[CurrentPower], isChargeComplete);
+        var isChargeComplete = CurrentPowerToken.ChargePercentage >= 1;
+        CurrentPower.PowerLogic.Release(this, CurrentPowerToken, isChargeComplete);
 
         // Set the charging flag to false
-        _powerTokens[CurrentPower].SetChargingFlag(false);
+        CurrentPowerToken.SetChargingFlag(false);
 
         // Reset the charge duration if the power is not charging
-        _powerTokens[CurrentPower].ResetChargeDuration();
+        CurrentPowerToken.ResetChargeDuration();
 
         // If the charge is complete
         if (isChargeComplete)
         {
             // use the power
-            CurrentPower.PowerLogic.Use(this, _powerTokens[CurrentPower]);
+            CurrentPower.PowerLogic.Use(this, CurrentPowerToken);
 
             // Set the active flag to true
-            _powerTokens[CurrentPower].SetActiveFlag(true);
+            CurrentPowerToken.SetActiveFlag(true);
 
             // Reset the active duration
-            _powerTokens[CurrentPower].ResetActiveDuration();
+            CurrentPowerToken.ResetActiveDuration();
 
             // Set the passive flag to true
-            _powerTokens[CurrentPower].SetPassiveFlag(true);
+            CurrentPowerToken.SetPassiveFlag(true);
 
             // Reset the passive duration
-            _powerTokens[CurrentPower].ResetPassiveDuration();
+            CurrentPowerToken.ResetPassiveDuration();
 
             // After using the power, reset the charge duration
-            _powerTokens[CurrentPower].ResetChargeDuration();
+            CurrentPowerToken.ResetChargeDuration();
 
             // Start the active effect
-            CurrentPower.PowerLogic.StartActiveEffect(this, _powerTokens[CurrentPower]);
+            CurrentPower.PowerLogic.StartActiveEffect(this, CurrentPowerToken);
 
             // Start the passive effect
-            CurrentPower.PowerLogic.StartPassiveEffect(this, _powerTokens[CurrentPower]);
-            
+            CurrentPower.PowerLogic.StartPassiveEffect(this, CurrentPowerToken);
+
             // Change the player's tolerance
-            _player.PlayerInfo.ChangeTolerance(_powerTokens[CurrentPower].ToleranceMeterImpact);
+            _player.PlayerInfo.ChangeTolerance(CurrentPowerToken.ToleranceMeterImpact);
         }
     }
 
     #endregion
-
-    
 
     // Update is called once per frame
     private void Update()
@@ -202,8 +194,8 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         // Update the cooldowns
         UpdateCooldowns();
 
+        // Update the power UI
         UpdatePowerUI();
-
     }
 
     private void UpdateCharge()
@@ -217,19 +209,16 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
             return;
 
         // Update the charge duration
-        _powerTokens[CurrentPower].ChargePowerDuration();
+        CurrentPowerToken.ChargePowerDuration();
 
         // Call the current power's charge method
-        CurrentPower.PowerLogic.Charge(this, _powerTokens[CurrentPower]);
+        CurrentPower.PowerLogic.Charge(this, CurrentPowerToken);
     }
 
     private void UpdatePowerUI()
     {
         if (powerScroll != null)
-        {
-            powerScroll.UpdatePowerUI(CurrentPower, _powerTokens[CurrentPower]);
-        }
-       
+            powerScroll.UpdatePowerUI(CurrentPower, CurrentPowerToken);
     }
 
     private void UpdateActivePowers()
@@ -258,10 +247,10 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
                 power.PowerLogic.EndActiveEffect(this, cToken);
 
                 // Set the cooldown flag to true
-                _powerTokens[CurrentPower].SetCooldownFlag(true);
+                CurrentPowerToken.SetCooldownFlag(true);
 
                 // Set the cooldown duration to 0
-                _powerTokens[CurrentPower].SetCooldownDuration(0);
+                CurrentPowerToken.SetCooldownDuration(0);
             }
         }
     }
@@ -295,41 +284,6 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         }
     }
 
-    private void UpdateActivePowerIcon(PowerScriptableObject currentPower)
-    {
-        // Find the index of the current power in the array
-        int powerIndex = System.Array.IndexOf(powers, currentPower);
-        Debug.Log($"Updating active power icon. Current Power: {currentPower.name}, Index: {powerIndex}");
-
-        if (powerIndex >= 0 && powerIndex < powerSprites.Length)
-        {
-            activePowerIcon.sprite = powerSprites[powerIndex];
-            Debug.Log("Active power icon updated successfully.");
-        }
-        else
-        {
-            Debug.LogError("Invalid power index: " + powerIndex);
-        }
-    }
-
-    // Force refresh of all power icons (useful if switching isn't working)
-    private void RefreshPowerIcons()
-    {
-        for (int i = 0; i < powerIcons.Length; i++)
-        {
-            if (i < powers.Length && i < powerSprites.Length)
-            {
-                powerIcons[i].sprite = powerSprites[i];
-            }
-        }
-
-        // Set the active power icon for the currently selected power
-        if (activePowerIcon != null && _currentPowerIndex >= 0)
-        {
-            activePowerIcon.sprite = powerSprites[_currentPowerIndex];
-        }
-    }
-
     private void UpdateCooldowns()
     {
         foreach (var power in _powerTokens.Keys)
@@ -352,8 +306,8 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
             // TODO: Create an event or something for when the cooldown stops
             if (cToken.CooldownPercentage >= 1)
                 cToken.SetCooldownFlag(false);
-            
-                powerScroll.UpdatePowerUI(CurrentPower, cToken); // Update the UI here
+
+            powerScroll.UpdatePowerUI(CurrentPower, cToken); // Update the UI here
         }
     }
 
@@ -395,15 +349,15 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
             _powerTokens.Add(power, new PowerToken(power));
         }
 
+        // clamp the current power index to the new powers array
+        _currentPowerIndex = Mathf.Clamp(_currentPowerIndex, 0, powers.Length - 1);
+
         // Skip if the current power is already set or if there are no powers
         if (CurrentPower != null || powers.Length == 0)
             return;
 
         // Set the current power to the first power in the array
         _currentPowerIndex = 0;
-
-        // Update the UI with the selected power
-        UpdateActivePowerIcon(powers[0]);
     }
 
     #region Public Methods
@@ -429,21 +383,73 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         UpdatePowerCollections(powerScriptableObject);
     }
 
-    public void SwitchPower(int newIndex)
+    public void RemovePower(PowerScriptableObject powerScriptableObject)
     {
-        if (newIndex >= 0 && newIndex < powers.Length)
+        // Check if the power is already in one of the hash sets
+        var powerSet = powerScriptableObject.PowerType switch
         {
-            // Switch to the new power
-            _currentPowerIndex = newIndex;
-     
+            PowerType.Drug => _drugsSet,
+            PowerType.Medicine => _medsSet,
+            _ => throw new ArgumentOutOfRangeException()
+        };
 
-            // Update the active power icon
-            UpdateActivePowerIcon(CurrentPower);
+        // Return if the player does not have the power
+        if (!powerSet.Remove(powerScriptableObject))
+            return;
 
-            // Ensure all icons update properly (if necessary)
-            RefreshPowerIcons();
+        // Remove the power from the powers array
+        for (int i = 0; i < powers.Length; i++)
+        {
+            // Look for the power in the array
+            if (powers[i] != powerScriptableObject)
+                continue;
+
+            // Remove the power from the array by shifting all the elements to the left
+            for (int j = i; j < powers.Length - 1; j++)
+                powers[j] = powers[j + 1];
+
+            // Resize the array
+            Array.Resize(ref powers, powers.Length - 1);
+
+            break;
         }
-        Debug.Log("Switching to power: " + CurrentPower.name);
+
+        // Remove the associated power token
+        _powerTokens.Remove(powerScriptableObject);
+
+        // Update the power collections
+        UpdatePowerCollections();
+    }
+
+    public bool HasPower(PowerScriptableObject powerScriptableObject)
+    {
+        // Check if the power is already in one of the hash sets
+        var powerSet = powerScriptableObject.PowerType switch
+        {
+            PowerType.Drug => _drugsSet,
+            PowerType.Medicine => _medsSet,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        return powerSet.Contains(powerScriptableObject);
+    }
+
+    public PowerToken GetPowerToken(PowerScriptableObject powerScriptableObject)
+    {
+        return _powerTokens.GetValueOrDefault(powerScriptableObject);
+    }
+
+    public void SetPowerLevel(PowerScriptableObject powerScriptableObject, int level)
+    {
+        // Get the power token
+        var powerToken = GetPowerToken(powerScriptableObject);
+
+        // Return if the power token is null
+        if (powerToken == null)
+            return;
+
+        // Set the power level
+        powerToken.SetPowerLevel(level);
     }
 
     public string GetDebugText()
@@ -458,51 +464,52 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
             tolerancePercentage = 0;
         else
             tolerancePercentage = _player.PlayerInfo.CurrentTolerance / _player.PlayerInfo.MaxTolerance * 100;
-        
-        debugString.Append($"Tolerance: {_player.PlayerInfo.CurrentTolerance:0.00} / {_player.PlayerInfo.MaxTolerance:0.00} ({tolerancePercentage:0.00}%)\n\n");
+
+        debugString.Append(
+            $"Tolerance: {_player.PlayerInfo.CurrentTolerance:0.00} / {_player.PlayerInfo.MaxTolerance:0.00} ({tolerancePercentage:0.00}%)\n\n");
 
         debugString.Append($"Current Power: {CurrentPower.name}\n");
-        debugString.Append($"\tPurity (Level): {_powerTokens[CurrentPower].CurrentLevel}\n");
-        debugString.Append($"\tTolerance Impact: {_powerTokens[CurrentPower].ToleranceMeterImpact}\n");
+        debugString.Append($"\tPurity (Level): {CurrentPowerToken.CurrentLevel}\n");
+        debugString.Append($"\tTolerance Impact: {CurrentPowerToken.ToleranceMeterImpact}\n");
 
         // Charging Logic
-        debugString.Append($"\tIs Charging? {_powerTokens[CurrentPower].IsCharging}\n");
+        debugString.Append($"\tIs Charging? {CurrentPowerToken.IsCharging}\n");
 
-        if (_powerTokens[CurrentPower].IsCharging)
+        if (CurrentPowerToken.IsCharging)
         {
-            debugString.Append($"\t\tCharge: {_powerTokens[CurrentPower].ChargePercentage * 100:0.00}%\n");
+            debugString.Append($"\t\tCharge: {CurrentPowerToken.ChargePercentage * 100:0.00}%\n");
             debugString.Append(
-                $"\t\tDuration: {_powerTokens[CurrentPower].CurrentChargeDuration:0.00}s / {CurrentPower.ChargeDuration:0.00}s\n");
+                $"\t\tDuration: {CurrentPowerToken.CurrentChargeDuration:0.00}s / {CurrentPower.ChargeDuration:0.00}s\n");
         }
 
         // Active Logic
-        debugString.Append($"\tActive Effect? {_powerTokens[CurrentPower].IsActiveEffectOn}\n");
+        debugString.Append($"\tActive Effect? {CurrentPowerToken.IsActiveEffectOn}\n");
 
-        if (_powerTokens[CurrentPower].IsActiveEffectOn)
+        if (CurrentPowerToken.IsActiveEffectOn)
         {
-            debugString.Append($"\t\tOn: {_powerTokens[CurrentPower].ActivePercentage * 100:0.00}%\n");
+            debugString.Append($"\t\tOn: {CurrentPowerToken.ActivePercentage * 100:0.00}%\n");
             debugString.Append(
-                $"\t\tDuration: {_powerTokens[CurrentPower].CurrentActiveDuration:0.00}s / {CurrentPower.ActiveEffectDuration:0.00}s\n");
+                $"\t\tDuration: {CurrentPowerToken.CurrentActiveDuration:0.00}s / {CurrentPower.ActiveEffectDuration:0.00}s\n");
         }
 
         // Passive Logic
-        debugString.Append($"\tPassive Effect? {_powerTokens[CurrentPower].IsActiveEffectOn}\n");
+        debugString.Append($"\tPassive Effect? {CurrentPowerToken.IsActiveEffectOn}\n");
 
-        if (_powerTokens[CurrentPower].IsPassiveEffectOn)
+        if (CurrentPowerToken.IsPassiveEffectOn)
         {
-            debugString.Append($"\t\tOn: {_powerTokens[CurrentPower].PassivePercentage * 100:0.00}%\n");
+            debugString.Append($"\t\tOn: {CurrentPowerToken.PassivePercentage * 100:0.00}%\n");
             debugString.Append(
-                $"\t\tDuration: {_powerTokens[CurrentPower].CurrentPassiveDuration:0.00}s / {CurrentPower.PassiveEffectDuration:0.00}s\n");
+                $"\t\tDuration: {CurrentPowerToken.CurrentPassiveDuration:0.00}s / {CurrentPower.PassiveEffectDuration:0.00}s\n");
         }
 
         // Cooldown Logic
-        debugString.Append($"\tIs Cooling Down? {_powerTokens[CurrentPower].IsCoolingDown}\n");
+        debugString.Append($"\tIs Cooling Down? {CurrentPowerToken.IsCoolingDown}\n");
 
-        if (_powerTokens[CurrentPower].IsCoolingDown)
+        if (CurrentPowerToken.IsCoolingDown)
         {
-            debugString.Append($"\t\tCooldown: {_powerTokens[CurrentPower].CooldownPercentage * 100:0.00}%\n");
+            debugString.Append($"\t\tCooldown: {CurrentPowerToken.CooldownPercentage * 100:0.00}%\n");
             debugString.Append(
-                $"\t\tDuration: {_powerTokens[CurrentPower].CurrentCooldownDuration:0.00}s / {CurrentPower.Cooldown:0.00}s\n");
+                $"\t\tDuration: {CurrentPowerToken.CurrentCooldownDuration:0.00}s / {CurrentPower.Cooldown:0.00}s\n");
         }
 
         return debugString.ToString();

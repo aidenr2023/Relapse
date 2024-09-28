@@ -1,63 +1,207 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 
 public class Dash : MonoBehaviour
 {
-    public float dashForce = 20f; // The strength of the dash impulse
-    public float dashCooldown = 1f; // Cooldown time before the player can dash again
+    [SerializeField] [Range(0, 2000)] private float dashForce = 100f; // The strength of the dash impulse
+    [SerializeField] [Range(0, 10)] private float dashCooldown = 1f; // Cooldown time before the player can dash again
 
-    private Rigidbody rb; // Reference to the player's Rigidbody
-    private PlayerControls playerInputActions; // Reference to the Input System controls
-    public bool canDash = true; // Whether the player can dash
+    // Reference to the player
+    private TestPlayer _player;
+
+    private WallRunning _wallRunning;
+
+    private Rigidbody _rb; // Reference to the player's Rigidbody
+    private PlayerControls _playerInputActions; // Reference to the Input System controls
+
+    [SerializeField] [Min(0)] private int maxDashesInAir = 1;
+    private int _remainingDashesInAir = 0;
+
+    /// <summary>
+    /// An external flag to determine if the player can dash.
+    /// This flag is supposed to be controlled by the movement script, not this.
+    /// NOT to be used by itself for the sake of dashing.
+    /// Use the CanDash property instead.
+    /// </summary>
+    private bool _externalDashFlag = true;
+
+    /// <summary>
+    /// A flag to determine if the player is currently in the dash cooldown period.
+    /// </summary>
+    private bool _isDashCooldown;
+
+    /// <summary>
+    /// A flag to determine if the player is currently dashing.
+    /// </summary>
+    private bool _isDashing;
+
+    /// <summary>
+    /// The player is allowed to dash if:
+    /// The external dash flag is set AND
+    /// the dash cooldown flag is NOT active AND
+    /// the player is either on the ground OR is in the air with remaining dashes
+    /// </summary>
+    private bool CanDash =>
+        _externalDashFlag &&
+        !_isDashCooldown &&
+        (
+            (_remainingDashesInAir > 0 && !_player.PlayerController.IsGrounded) ||
+            _player.PlayerController.IsGrounded
+        );
+
+    public bool IsDashing => _isDashing;
+
+    #region Events
+
+    public event Action<Dash> OnDash;
+
+    #endregion
 
     void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-        playerInputActions = new PlayerControls();
+        // Initialize the components
+        InitializeComponents();
+
+        // Initialize the Input System controls
+        _playerInputActions = new PlayerControls();
+    }
+
+    private void InitializeComponents()
+    {
+        // Get the player component
+        _player = GetComponent<TestPlayer>();
+
+        // Get the Rigidbody component
+        _rb = GetComponent<Rigidbody>();
+
+        // Get the WallRunning component
+        _wallRunning = GetComponent<WallRunning>();
     }
 
     void OnEnable()
     {
-        playerInputActions.GamePlay.dash.performed += OnDashPerformed;
-        playerInputActions.Enable();
+        _playerInputActions.GamePlay.dash.performed += OnDashPerformed;
+        _playerInputActions.Enable();
     }
 
     void OnDisable()
     {
-        playerInputActions.GamePlay.dash.performed -= OnDashPerformed;
-        playerInputActions.Disable();
+        _playerInputActions.GamePlay.dash.performed -= OnDashPerformed;
+        _playerInputActions.Disable();
+    }
+
+    private void Update()
+    {
+        UpdateAirDashCount();
+    }
+
+    private void FixedUpdate()
+    {
+        ClampVerticalVelocity();
+    }
+
+    private void UpdateAirDashCount()
+    {
+        // Detect if the player is grounded using the controller
+
+        // If the player is grounded, reset the dash count
+        // If the player is wall running, reset the dash count
+        if (
+            _player.PlayerController.IsGrounded ||
+            _wallRunning != null && _wallRunning.IsWallRunning
+        )
+            _remainingDashesInAir = maxDashesInAir;
     }
 
     private void OnDashPerformed(InputAction.CallbackContext context)
     {
-        if (canDash)
-        {
-            Vector3 dashDirection = GetDashDirection();
-            rb.AddForce(dashDirection * dashForce, ForceMode.Impulse); // Apply dash impulse
-            StartCoroutine(DashCooldownCoroutine());
-        }
+        // Return if the player cannot dash
+        if (!CanDash)
+            return;
+
+        var dashDirection = GetDashDirection();
+
+        // Set the velocity on the Y-axis to 0
+        _rb.velocity = new Vector3(_rb.velocity.x, 0f, _rb.velocity.z);
+        ClampVerticalVelocity();
+
+        // Apply dash impulse
+        _rb.AddForce(dashDirection * dashForce, ForceMode.Impulse);
+
+        // Start the dash cooldown coroutine
+        StartCoroutine(DashCooldownCoroutine());
+
+        // If the player is in the air, decrement the remaining dashes
+        if (!_player.PlayerController.IsGrounded)
+            _remainingDashesInAir--;
+
+        // Run the OnDash event
+        OnDash?.Invoke(this);
+    }
+
+    private void ClampVerticalVelocity()
+    {
+        // Limit how much vertical velocity (Y-axis) the player can have
+        if (_rb.velocity.y > 5f) // Adjust this value to control vertical speed when dashing
+            _rb.velocity = new Vector3(_rb.velocity.x, 5f, _rb.velocity.z);
     }
 
     private Vector3 GetDashDirection()
     {
-        Vector3 currentVelocity = rb.velocity;
-        Vector3 horizontalVelocity = new Vector3(currentVelocity.x, 0, currentVelocity.z);
+        // var currentVelocity = _rb.velocity;
+        // var horizontalVelocity = new Vector3(currentVelocity.x, 0, currentVelocity.z);
+        //
+        // // If the player is stationary, default to forward
+        // if (horizontalVelocity.magnitude == 0)
+        //     return transform.forward;
+        //
+        // return horizontalVelocity.normalized;
 
-        // If the player is stationary, default to forward
-        if (horizontalVelocity.magnitude == 0)
+        // Get the movement input from the controller
+        var movementInput = _player.PlayerController.MovementInput;
+
+        // Get the camera pivot's transform
+        var playerTransform = _player.PlayerController.CameraPivot.transform;
+
+        Vector3 newForward;
+
+        // If the movement input is not zero,
+        // return a new Vector3 with the movement input
+        // relative to the player's transform
+        if (movementInput != Vector2.zero)
         {
-            return transform.forward;
+            newForward =
+            (
+                playerTransform.right * movementInput.x +
+                playerTransform.forward * movementInput.y
+            ).normalized;
+        }
+        else
+        {
+            // If the movement input is zero, return the player's forward direction
+            newForward = playerTransform.forward;
         }
 
-        return horizontalVelocity.normalized;
+        // Eliminate the Y-axis component
+        return new Vector3(newForward.x, 0, newForward.z);
     }
 
 
     private IEnumerator DashCooldownCoroutine()
     {
-        canDash = false;
+        // Set the dash cooldown flag to true
+        _isDashCooldown = true;
+
         yield return new WaitForSeconds(dashCooldown);
-        canDash = true; // Allow dashing again after cooldown
+
+        // Set the dash cooldown flag to false
+        _isDashCooldown = false;
+    }
+
+    public void SetExternalDashFlag(bool canDash)
+    {
+        _externalDashFlag = canDash;
     }
 }

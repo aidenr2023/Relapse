@@ -1,4 +1,5 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -10,13 +11,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     private Playerinfo _playerInfo;
     private IGun _equippedGun;
 
-    /// <summary>
-    /// A variable that stores the gun that the player is currently looking at.
-    /// Used w/ the equip gun function.
-    /// </summary>
-    private IGun _currentLookedAtGun;
-
-    [SerializeField] private float gunInteractDistance;
+    [Tooltip("The position that the gun will fire from.")] [SerializeField]
+    private Transform fireTransform;
 
     [SerializeField] private Transform gunHolder;
 
@@ -25,6 +21,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     /// </summary>
     [SerializeField] private GameObject initialGunPrefab;
 
+    [SerializeField] private TMP_Text reloadText;
+
     #endregion
 
     #region Getters
@@ -32,6 +30,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     public TestPlayer Player => _player;
     public Playerinfo PlayerInfo => _playerInfo;
     public IGun EquippedGun => _equippedGun;
+
+    public Transform FiringPoint => fireTransform;
 
     #endregion
 
@@ -61,7 +61,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
         _player = GetComponent<TestPlayer>();
 
         // Get the Player info component
-        _playerInfo = GetComponent<Playerinfo>();
+        _playerInfo = _player.PlayerInfo;
     }
 
     #endregion
@@ -75,27 +75,19 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
 
         // Shoot input
         InputManager.Instance.PlayerControls.GamePlay.Shoot.performed += OnShoot;
+        InputManager.Instance.PlayerControls.GamePlay.Shoot.canceled += OnShootCanceled;
 
-        // Pick up weapon input
-        InputManager.Instance.PlayerControls.GamePlay.Interact.performed += OnPickUpWeapon;
+        // Reload
+        InputManager.Instance.PlayerControls.GamePlay.Reload.performed += OnReload;
     }
 
     public void RemoveInput()
     {
         // Remove the input
         InputManager.Instance.PlayerControls.GamePlay.Shoot.performed -= OnShoot;
-        InputManager.Instance.PlayerControls.GamePlay.Interact.performed -= OnPickUpWeapon;
-    }
+        InputManager.Instance.PlayerControls.GamePlay.Shoot.canceled -= OnShootCanceled;
 
-
-    private void OnPickUpWeapon(InputAction.CallbackContext obj)
-    {
-        // Return if the player is not currently looking at a gun
-        if (_currentLookedAtGun == null)
-            return;
-
-        // Equip the gun that the player is currently looking at
-        EquipGun(_currentLookedAtGun);
+        InputManager.Instance.PlayerControls.GamePlay.Reload.performed -= OnReload;
     }
 
     private void OnShoot(InputAction.CallbackContext obj)
@@ -105,51 +97,50 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
             return;
 
         // Fire the IGun
-        EquippedGun.Fire(this, transform.position, transform.forward);
+        EquippedGun.OnFire(this);
+    }
 
-        Debug.Log($"Shot {_equippedGun.GunInformation.name}");
+    private void OnShootCanceled(InputAction.CallbackContext obj)
+    {
+        // If the current gun is null, return
+        if (_equippedGun == null)
+            return;
+
+        // Fire the IGun
+        EquippedGun.OnFireReleased();
+    }
+
+    private void OnReload(InputAction.CallbackContext obj)
+    {
+        // If the current gun is null, return
+        if (_equippedGun == null)
+            return;
+
+        // Reload the gun
+        EquippedGun.Reload();
     }
 
     #endregion
 
     private void Update()
     {
-        UpdateLookedAtGun();
+        // TODO: Remove this and replace it with a bar or something
+        UpdateReloadText();
     }
 
-    private void UpdateLookedAtGun()
+    private void UpdateReloadText()
     {
-        var cameraPivot = _player.PlayerController.CameraPivot.transform;
+        reloadText.text = "";
 
-        // Is there a ray cast hit within the gun interact distance?
-        var hit = Physics.Raycast(
-            cameraPivot.position,
-            cameraPivot.forward,
-            out var hitInfo,
-            gunInteractDistance
-        );
+        if (_equippedGun == null)
+            return;
 
-        // Perform a raycast to see if the player is looking at a gun
-        if (hit)
-        {
-            // If the player is looking at a gun, set the current looked at gun to the gun that the player is looking at
-            if (hitInfo.collider.TryGetComponent(out IGun gun))
-            {
-                // Skip if the gun is the equipped gun
-                if (_equippedGun == gun)
-                    _currentLookedAtGun = null;
+        if (_equippedGun.IsReloading)
+            reloadText.text = $"Reloading: {_equippedGun.ReloadingPercentage * 100:0}%";
 
-                else
-                    _currentLookedAtGun = gun;
-            }
-
-            // If there is no gun, set the current looked at gun to null
-            else
-                _currentLookedAtGun = null;
-        }
-        // If the player is not looking at a gun, set the current looked at gun to null
-        else
-            _currentLookedAtGun = null;
+        // Tell the player to reload
+        else if (_equippedGun.IsMagazineEmpty)
+            reloadText.text = "You need to reload!";
     }
 
     public void EquipGun(IGun gun)
@@ -177,6 +168,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
             // Also disable the collider
             gun.Collider.enabled = false;
         }
+
+        // Call the OnEquip function
+        gun.OnEquip(this);
     }
 
     public void RemoveGun()
@@ -192,21 +186,40 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
         if (_equippedGun.GameObject.TryGetComponent(out Rigidbody rb))
         {
             rb.isKinematic = false;
-            
+
             // Also enable the collider
             _equippedGun.Collider.enabled = true;
-            
-            // Add a force to the gun
-            rb.AddForce(transform.forward * 5, ForceMode.Impulse);
+
+            // Throw the gun
+            ThrowRigidBody(rb);
         }
+
+        // Call the OnRemoval function
+        _equippedGun.OnRemoval(this);
 
         _equippedGun = null;
     }
 
+    private void ThrowRigidBody(Rigidbody rb)
+    {
+        const float throwForce = 5;
+
+        // Create a random force
+        var forceX = UnityEngine.Random.Range(throwForce * .75f, throwForce);
+
+        // Add a force to the gun
+        rb.AddForce(transform.forward * forceX, ForceMode.Impulse);
+
+        // Create random torque force
+        var torqueX = UnityEngine.Random.Range(-throwForce, throwForce);
+        var torqueY = UnityEngine.Random.Range(-throwForce, throwForce);
+
+        // Add torque to the gun
+        rb.AddTorque(new Vector3(torqueX, torqueY, 0) / 10, ForceMode.Impulse);
+    }
+
     public string GetDebugText()
     {
-        return
-            $"Equipped Gun: {_equippedGun?.GunInformation.name}\n" +
-            $"Looking at gun: {_currentLookedAtGun?.GunInformation.name} ({_currentLookedAtGun?.GameObject.name})\n";
+        return $"Equipped Gun: {_equippedGun?.GunInformation.name}\n";
     }
 }

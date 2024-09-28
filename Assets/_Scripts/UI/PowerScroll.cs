@@ -5,43 +5,48 @@ using UnityEngine.UI;
 
 public class PowerScroll : MonoBehaviour
 {
-    public Image powerIcon;               // Power icon UI element
-    public Slider chargeSlider;            // Charge bar UI element
-    public Slider cooldownSlider;          // Cooldown bar UI element
-    public Text powerNameText;            // Power name UI text
+    public Image powerIcon; // Power icon UI element
+    public Slider chargeSlider; // Charge bar UI element
+    public Slider cooldownSlider; // Cooldown bar UI element
+    public Text powerNameText; // Power name UI text
 
     // Update the UI elements based on the current power
     public void UpdatePowerUI(PowerScriptableObject currentPower, PowerToken powerToken)
     {
+        // If the current power is null, hide the UI elements
         if (currentPower == null)
-            return;
-
-        // Update power icon
-        if (powerIcon != null)
         {
-            // Assuming you have a sprite for each power
-            powerIcon.sprite = currentPower.Icon;
-            Debug.Log("Setting icon to: " + currentPower.Icon.name);
+            SetUIVisibility(false);
+            return;
         }
+
+        // Show the UI elements
+        SetUIVisibility(true);
+        
+        // Update power icon, Assuming you have a sprite for each power
+        if (powerIcon != null)
+            powerIcon.sprite = currentPower.Icon;
 
         // Update power name
         if (powerNameText != null)
-        {
             powerNameText.text = currentPower.name;
-        }
 
         // Update the charge slider
         if (chargeSlider != null)
-        {
             chargeSlider.value = powerToken.ChargePercentage;
-        }
 
         // Update the cooldown slider
         if (cooldownSlider != null)
-        {
             cooldownSlider.value = powerToken.CooldownPercentage;
-        }
-        Debug.Log("Updating Power UI for: " + currentPower.name);
-    }
 
+        // Debug.Log("Updating Power UI for: " + currentPower.name);
+    }
+    
+    private void SetUIVisibility(bool isVisible)
+    {
+        powerIcon?.gameObject.SetActive(isVisible);
+        chargeSlider?.gameObject.SetActive(isVisible);
+        cooldownSlider?.gameObject.SetActive(isVisible);
+        powerNameText?.gameObject.SetActive(isVisible);
+    }
 }

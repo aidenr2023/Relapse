@@ -5,8 +5,8 @@ using UnityEngine;
 public class TolereanceMeter : MonoBehaviour
 {
     public RectTransform needle;
-    public float minAngle = 0f;
-    public float maxAngle = 270f;
+    public float minAngle = 180f;
+    public float maxAngle = 0f;
     
 
 
@@ -20,7 +20,7 @@ public class TolereanceMeter : MonoBehaviour
 
         Debug.Log($"Updating dial: Percentage={percentage}, Angle={angle}");
 
-        // Set the needle's rotation
-        needle.localRotation = Quaternion.Euler(0f, 0f, -angle); // Negative to rotate in the correct direction
+        // Set the needle's rotation, account for initial 180° offset by adding 180° to angle
+        needle.localRotation = Quaternion.Euler(0f, 0f, angle);
     }
 }

@@ -11,6 +11,7 @@ public class WallRunning : MonoBehaviour
     public float wallJumpUpwardsForce = 5f;
     public float verticalWallRunSpeed = 5f;
     public float wallJumpCooldown = .5f;
+    public bool canWallRun = false;
     public PlayerMovement pm;
     //public Dash dash;
 
@@ -100,7 +101,7 @@ public class WallRunning : MonoBehaviour
 
     private void StartWallRun()
     {
-        if (!pm.IsWallRunning)
+        if (!pm.IsWallRunning && canWallRun)
         {
             IsWallRunning = true;
             wallRunTimer = 0f;
@@ -110,7 +111,6 @@ public class WallRunning : MonoBehaviour
 
     private void PerformWallRun()
     {
-        // pm.isWallRunning = true;
         wallRunTimer += Time.deltaTime;
 
         // Stop wall running if the timer exceeds the max duration
@@ -144,6 +144,7 @@ public class WallRunning : MonoBehaviour
 
     private void StopWallRun()
     {
+        canWallRun = false;
         IsWallRunning = false;
         rb.useGravity = true; // Re-enable gravity
     }
