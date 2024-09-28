@@ -14,7 +14,13 @@ public class PlayerInteraction : MonoBehaviour
     /// </summary>
     private IInteractable _selectedInteractable;
 
+    #region Getters
+
     public TestPlayer Player { get; private set; }
+
+    public IInteractable SelectedInteractable => _selectedInteractable;
+
+    #endregion
 
     private void Awake()
     {
@@ -52,21 +58,24 @@ public class PlayerInteraction : MonoBehaviour
 
     private void Update()
     {
+        // Update the interactable if it is being looked at
+        _selectedInteractable?.LookAtUpdate(this);
+
         // Update the interact text
         UpdateInteractText();
     }
 
     private void FixedUpdate()
     {
-        // Update the currently selected interactable
+        // Detect the currently selected interactable
         UpdateSelectedInteractable();
     }
 
     private void UpdateSelectedInteractable()
     {
-        // Reset the currently looked at flag for the previous interactable
-        if (_selectedInteractable != null)
-            _selectedInteractable.IsCurrentlySelected = false;
+        // // Reset the currently looked at flag for the previous interactable
+        // if (_selectedInteractable != null)
+        //     _selectedInteractable.IsCurrentlySelected = false;
 
         // Get the camera pivot
         var cameraPivot = Player.PlayerController.CameraPivot.transform;
@@ -102,9 +111,9 @@ public class PlayerInteraction : MonoBehaviour
         // If the player is not looking at an interactable, set the current selected interactable to null
         else _selectedInteractable = null;
 
-        // Set the currently looked at flag for the new interactable
-        if (_selectedInteractable != null)
-            _selectedInteractable.IsCurrentlySelected = true;
+        // // Set the currently looked at flag for the new interactable
+        // if (_selectedInteractable != null)
+        //     _selectedInteractable.IsCurrentlySelected = true;
     }
 
     private void UpdateInteractText()
@@ -119,13 +128,17 @@ public class PlayerInteraction : MonoBehaviour
         // Show the interact text
         interactText.gameObject.SetActive(true);
 
-        if (_selectedInteractable.InteractText == string.Empty)
+        // Get the object's interact text
+        var interactTextString = _selectedInteractable.InteractText(this);
+
+        // If the interact text is empty,
+        // set the interact text to the default interact text
+        if (interactTextString == string.Empty)
             interactText.text = "Press E to interact";
+
+        // Set the interact text to the interactable's interact text
         else
-        {
-            // Set the interact text to the interactable's interact text
-            interactText.text = $"Press E to\n{_selectedInteractable.InteractText}";
-        }
+            interactText.text = $"Press E to\n{interactTextString}";
     }
 
     #endregion

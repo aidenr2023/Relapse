@@ -8,16 +8,6 @@
 public interface IInteractable
 {
     /// <summary>
-    /// Words that pop up when looking at the object.
-    /// </summary>
-    public string InteractText { get; }
-
-    /// <summary>
-    /// Is the player currently looking at the object?
-    /// </summary>
-    public bool IsCurrentlySelected { get; set; }
-
-    /// <summary>
     /// Can the player interact with the object right now?
     /// </summary>
     public bool IsInteractable { get; }
@@ -30,5 +20,27 @@ public interface IInteractable
     /// <summary>
     /// The function that is called when the player interacts with the object.
     /// </summary>
-    void Interact(PlayerInteraction playerInteraction);
+    public void Interact(PlayerInteraction playerInteraction);
+
+    /// <summary>
+    /// An update function that is called when the player is looking at the object.
+    /// </summary>
+    /// <param name="playerInteraction"></param>
+    public void LookAtUpdate(PlayerInteraction playerInteraction);
+    
+    /// <summary>
+    /// Words that pop up when looking at the object.
+    /// </summary>
+    public string InteractText(PlayerInteraction playerInteraction);
+}
+
+public static class IInteractableExtensions
+{
+    /// <summary>
+    /// Is the player currently looking at the object?
+    /// </summary>
+    public static bool IsCurrentlySelected(this IInteractable interactable, PlayerInteraction playerInteraction)
+    {
+        return playerInteraction.SelectedInteractable == interactable;
+    }
 }

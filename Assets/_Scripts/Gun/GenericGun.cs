@@ -78,9 +78,6 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
 
     #region IInteractable
 
-    public string InteractText => $"Pick up {gunInformation.GunName}";
-
-    public bool IsCurrentlySelected { get; set; }
     public bool IsInteractable => true;
 
     #endregion
@@ -300,7 +297,6 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
                $"\n";
     }
 
-
     private static void PlayParticles(ParticleSystem system, Vector3 position, int count)
     {
         if (system == null)
@@ -321,5 +317,15 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
     {
         // Equip the gun
         playerInteraction.Player.WeaponManager.EquipGun(this);
+    }
+
+    public void LookAtUpdate(PlayerInteraction playerInteraction)
+    {
+        Debug.Log($"Looking at {gunInformation.GunName}");
+    }
+
+    public string InteractText(PlayerInteraction playerInteraction)
+    {
+        return $"Pick up {gunInformation.GunName}";
     }
 }

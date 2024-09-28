@@ -46,7 +46,7 @@ public class PowerScriptableObject : ScriptableObject
         }
     }
 
-    public int LevelCount => toleranceMeterLevelMultiplier.Length;
+    public int MaxLevel => toleranceMeterLevelMultiplier.Length - 1;
 
     #endregion
 

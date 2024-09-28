@@ -6,25 +6,27 @@ using UnityEngine.UI;
 [ExecuteAlways]
 public class VendorScript : MonoBehaviour, IInteractable
 {
+    private enum VendorInteractionMode
+    {
+        PickUp,
+        Upgrade,
+        Remove
+    }
+
     [SerializeField] private PowerScriptableObject availablePower;
 
     [SerializeField] private Image powerImage;
     [SerializeField] private TMP_Text powerNameText;
 
-    // TODO: In the future, find a better way to get the player that is looking at the vendor
-    private TestPlayer _testPlayer;
-
     /// <summary>
-    /// False - The player does not have the power & needs to pick it up.
-    /// True - The player has the power & needs to drop it.
+    /// A variable to determine the interaction mode of the vendor.
     /// </summary>
-    private bool _removalMode;
+    private VendorInteractionMode _interactionMode;
 
     #region IInteractable
 
     public GameObject GameObject => gameObject;
 
-    public string InteractText => _removalMode ? $"Remove {availablePower.name}" : $"Pick Up {availablePower.name}";
     public bool IsCurrentlySelected { get; set; }
     public bool IsInteractable => true;
 
@@ -32,17 +34,12 @@ public class VendorScript : MonoBehaviour, IInteractable
 
     private void Awake()
     {
-        // Get the player component
-        _testPlayer = FindObjectOfType<TestPlayer>();
     }
 
     private void Update()
     {
         // Update the power UI
         UpdatePowerUI();
-
-        // Update the removal mode
-        UpdateRemovalMode(_testPlayer?.PlayerPowerManager);
     }
 
     private void UpdatePowerUI()
@@ -74,9 +71,23 @@ public class VendorScript : MonoBehaviour, IInteractable
     {
         if (playerPowerManager == null)
             return;
-        
-        // If the player has the power, set removal mode to true
-        _removalMode = playerPowerManager.HasPower(availablePower);
+
+        var playerPowerToken = playerPowerManager.GetPowerToken(availablePower);
+
+        if (playerPowerManager.HasPower(availablePower))
+        {
+            // Check to see if the current power has any upgrades available
+            if (playerPowerToken.CurrentLevel < availablePower.MaxLevel)
+                _interactionMode = VendorInteractionMode.Upgrade;
+
+            // If not, set the interaction mode to remove
+            else
+                _interactionMode = VendorInteractionMode.Remove;
+        }
+
+        // Set the interaction mode to pick up
+        else
+            _interactionMode = VendorInteractionMode.PickUp;
     }
 
 
@@ -88,12 +99,62 @@ public class VendorScript : MonoBehaviour, IInteractable
 
     public void Interact(PlayerInteraction playerInteraction)
     {
-        // Add the power to the player's inventory
-        if (_removalMode)
-            playerInteraction.Player.PlayerPowerManager.RemovePower(availablePower);
-        
-        // Remove the power from the player's inventory
-        else
-            playerInteraction.Player.PlayerPowerManager.AddPower(availablePower);
+        // Get the power manager from the player
+        var playerPowerManager = playerInteraction.Player.PlayerPowerManager;
+
+        switch (_interactionMode)
+        {
+            case VendorInteractionMode.PickUp:
+                playerPowerManager.AddPower(availablePower);
+                break;
+
+            case VendorInteractionMode.Upgrade:
+                // Get the power token from the player
+                var pToken = playerPowerManager.GetPowerToken(availablePower);
+
+                // Get the new level of the power
+                var newLevel = pToken.CurrentLevel + 1;
+
+                // Update the power level
+                playerPowerManager.SetPowerLevel(availablePower, newLevel);
+                break;
+
+            case VendorInteractionMode.Remove:
+                playerPowerManager.RemovePower(availablePower);
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    public void LookAtUpdate(PlayerInteraction playerInteraction)
+    {
+        // Update the removal mode
+        UpdateRemovalMode(playerInteraction.Player.PlayerPowerManager);
+    }
+
+    public string InteractText(PlayerInteraction playerInteraction)
+    {
+        switch (_interactionMode)
+        {
+            case VendorInteractionMode.PickUp:
+                return $"Pick Up {availablePower.name}";
+
+            case VendorInteractionMode.Upgrade:
+                // Get the power level of the player
+                var powerLevel = playerInteraction.Player.PlayerPowerManager.GetPowerToken(availablePower).CurrentLevel;
+
+                // Get the 1-indexed power level
+                powerLevel++;
+
+                return $"Upgrade {availablePower.name} to level {powerLevel + 1}";
+
+            case VendorInteractionMode.Remove:
+                return $"Remove {availablePower.name}";
+
+            default:
+                return $"\"{_interactionMode}\" NOT HANDLED";
+        }
     }
 }

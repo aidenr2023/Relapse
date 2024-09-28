@@ -12,7 +12,7 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
     [SerializeField] private PowerScriptableObject[] powers;
 
     private TestPlayer _player;
-    
+
     private Dictionary<PowerScriptableObject, PowerToken> _powerTokens;
     private HashSet<PowerScriptableObject> _drugsSet;
     private HashSet<PowerScriptableObject> _medsSet;
@@ -348,7 +348,7 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
             // Add the power to the power usage tokens
             _powerTokens.Add(power, new PowerToken(power));
         }
-        
+
         // clamp the current power index to the new powers array
         _currentPowerIndex = Mathf.Clamp(_currentPowerIndex, 0, powers.Length - 1);
 
@@ -413,7 +413,7 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 
             break;
         }
-        
+
         // Remove the associated power token
         _powerTokens.Remove(powerScriptableObject);
 
@@ -432,6 +432,24 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         };
 
         return powerSet.Contains(powerScriptableObject);
+    }
+
+    public PowerToken GetPowerToken(PowerScriptableObject powerScriptableObject)
+    {
+        return _powerTokens.GetValueOrDefault(powerScriptableObject);
+    }
+
+    public void SetPowerLevel(PowerScriptableObject powerScriptableObject, int level)
+    {
+        // Get the power token
+        var powerToken = GetPowerToken(powerScriptableObject);
+
+        // Return if the power token is null
+        if (powerToken == null)
+            return;
+
+        // Set the power level
+        powerToken.SetPowerLevel(level);
     }
 
     public string GetDebugText()

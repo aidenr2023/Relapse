@@ -312,6 +312,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraPivot: {fileID: 5244302159661097867}
   orientation: {fileID: 5224293575626551686}
+  maxSlopeAngle: 45
   walkSpeed: 5
   sprintSpeed: 10
   wallrunSpeed: 11
@@ -396,6 +397,7 @@ MonoBehaviour:
   wallJumpUpwardsForce: 5
   verticalWallRunSpeed: 5
   wallJumpCooldown: 0.5
+  canWallRun: 0
   pm: {fileID: 8237298286555941285}
 --- !u!114 &7397322249217950785
 MonoBehaviour:

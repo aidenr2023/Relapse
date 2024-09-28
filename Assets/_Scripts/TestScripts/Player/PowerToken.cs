@@ -51,14 +51,14 @@ public class PowerToken
     /// <summary>
     /// How far along the cooldown is.
     /// </summary>
-    private float currentCurrentCooldownDuration;
+    private float _currentCooldownDuration;
 
     private Dictionary<string, object> _dataDictionary;
 
     #region Getters
 
     public PowerScriptableObject PowerScriptableObject => _powerScriptableObject;
-    public int CurrentLevel => Mathf.Clamp(_currentLevel, 0, _powerScriptableObject.LevelCount - 1);
+    public int CurrentLevel => Mathf.Clamp(_currentLevel, 0, _powerScriptableObject.MaxLevel);
 
     public float ToleranceMeterImpact => _powerScriptableObject.BaseToleranceMeterImpact *
                                          _powerScriptableObject.ToleranceMeterLevelMultiplier[CurrentLevel] *
@@ -82,16 +82,16 @@ public class PowerToken
     public float CurrentPassiveDuration => _currentPassiveDuration;
 
     public bool IsCoolingDown => _isCoolingDown;
-    public float CooldownPercentage => currentCurrentCooldownDuration / _powerScriptableObject.Cooldown;
+    public float CooldownPercentage => _currentCooldownDuration / _powerScriptableObject.Cooldown;
 
-    public float CurrentCooldownDuration => currentCurrentCooldownDuration;
+    public float CurrentCooldownDuration => _currentCooldownDuration;
 
     #endregion
 
     public PowerToken(PowerScriptableObject powerScriptableObject)
     {
         _powerScriptableObject = powerScriptableObject;
-        
+
         // Initialize the data dictionary
         _dataDictionary = new Dictionary<string, object>();
     }
@@ -167,7 +167,7 @@ public class PowerToken
     {
         // Update the cooldown duration
         IPowerExtensions.UpdateDuration(
-            ref currentCurrentCooldownDuration,
+            ref _currentCooldownDuration,
             _powerScriptableObject.Cooldown,
             Time.deltaTime
         );
@@ -175,7 +175,7 @@ public class PowerToken
 
     public void SetCooldownDuration(float amount)
     {
-        currentCurrentCooldownDuration = amount;
+        _currentCooldownDuration = amount;
     }
 
     #endregion
@@ -190,20 +190,29 @@ public class PowerToken
         if (!_dataDictionary.TryAdd(key, value))
             throw new System.Exception($"Key {key} already exists in the data dictionary.");
     }
-    
+
     public T GetData<T>(string key)
     {
         if (_dataDictionary.TryGetValue(key, out var value))
-            return (T) value;
+            return (T)value;
 
         return default;
     }
-    
+
     public T RemoveData<T>(string key)
     {
         if (_dataDictionary.Remove(key, out var value))
-            return (T) value;
+            return (T)value;
 
         return default;
+    }
+
+    public void SetPowerLevel(int level)
+    {
+        // Clamp the level to the max level of the power
+        level = Mathf.Clamp(level, 0, _powerScriptableObject.MaxLevel);
+        
+        // Set the current level value
+        _currentLevel = level;
     }
 }
