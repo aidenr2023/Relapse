@@ -158,6 +158,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     private void OnSprintPerformed(InputAction.CallbackContext obj)
     {
+        // If the player is not grounded, return
+        if (!_isGrounded)
+            return;
+
         // Set the sprint flag to true
         _isSprinting = true;
     }
@@ -202,6 +206,10 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         // Check if the player is grounded by casting a ray downward
         _isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
 
+        // If the player is not grounded, force the sprint flag to false
+        if (!_isGrounded)
+            _isSprinting = false;
+        
         // Control the player's speed
         SpeedControl();
 
@@ -361,7 +369,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
         else if (_isGrounded)
         {
-            if (_isSprinting)
+            if (IsSprinting)
                 _movementState = MovementState.Sprinting;
 
             else
