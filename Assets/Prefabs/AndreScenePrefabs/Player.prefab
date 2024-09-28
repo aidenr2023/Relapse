@@ -203,6 +203,7 @@ GameObject:
   - component: {fileID: 27674651915690864}
   - component: {fileID: 8579423786828984914}
   - component: {fileID: 3797546687040640286}
+  - component: {fileID: 8320394391388750571}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -520,6 +521,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraShakeIntensity: 2
   cameraShakeDuration: 0.1
+--- !u!114 &8320394391388750571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3703685084401515452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d87bcdcfa71bd1443926998fd09e7b74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cinemachineCamera: {fileID: 7986816652180132302}
+  normalFOV: 70
+  sprintFOV: 85
+  dashFOV: 80
+  fovTransitionSpeed: 10
+  dashFOVDuration: 0.05
 --- !u!1 &4362924701896538173
 GameObject:
   m_ObjectHideFlags: 0

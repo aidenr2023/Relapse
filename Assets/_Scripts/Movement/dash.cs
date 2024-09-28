@@ -31,6 +31,11 @@ public class Dash : MonoBehaviour
     private bool _isDashCooldown;
 
     /// <summary>
+    /// A flag to determine if the player is currently dashing.
+    /// </summary>
+    private bool _isDashing;
+
+    /// <summary>
     /// The player is allowed to dash if:
     /// The external dash flag is set AND
     /// the dash cooldown flag is NOT active AND
@@ -43,7 +48,15 @@ public class Dash : MonoBehaviour
             (_remainingDashesInAir > 0 && !_player.PlayerController.IsGrounded) ||
             _player.PlayerController.IsGrounded
         );
+    
+    public bool IsDashing => _isDashing;
 
+    #region Events
+
+    public event Action<Dash> OnDash;
+
+    #endregion
+    
     void Awake()
     {
         // Get the player component
@@ -107,6 +120,9 @@ public class Dash : MonoBehaviour
         // If the player is in the air, decrement the remaining dashes
         if (!_player.PlayerController.IsGrounded)
             _remainingDashesInAir--;
+        
+        // Run the OnDash event
+        OnDash?.Invoke(this);
     }
 
     private void ClampVerticalVelocity()

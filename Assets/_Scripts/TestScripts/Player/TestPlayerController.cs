@@ -28,6 +28,7 @@ public class TestPlayerController : MonoBehaviour, IPlayerController
 
     public GameObject CameraPivot => cameraPivot;
     public bool IsGrounded => _characterController.isGrounded;
+    public bool IsSprinting => false;
 
     #endregion
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,58 +14,81 @@ public class DynamicFOVController : MonoBehaviour
     public float sprintFOV = 80f;
     public float dashFOV = 90f;
 
-    // Sprint and Dash controls
-    public KeyCode sprintKey = KeyCode.LeftShift;
-    public KeyCode dashKey = KeyCode.Space;
-
     // Speed of the FOV transitions
     public float fovTransitionSpeed = 5f;
-    public float dashFOVDuration = 0.5f;  // How long the dash FOV effect lasts
+    public float dashFOVDuration = 0.5f; // How long the dash FOV effect lasts
 
-    private bool isSprinting;
-    private bool isDashing;
-    private bool isInDashFOVTransition;
+    private bool _isDashing;
+    private bool _isInDashFOVTransition;
+
+    private PlayerMovement _playerMovement;
+    private Dash _dashScript;
+
+    private bool IsSprinting => _playerMovement.IsSprinting;
+    
+    #region Initialization
+
+    private void Awake()
+    {
+        // Initialize the components
+        InitializeComponents();
+    }
+
+    private void InitializeComponents()
+    {
+        // Get the PlayerMovement script
+        _playerMovement = GetComponent<PlayerMovement>();
+        
+        // Get the Dash script
+        _dashScript = GetComponent<Dash>();
+
+        // Add the OnDash method to the event
+        _dashScript.OnDash += OnDash;
+    }
+
+    #endregion
+
+    private void OnDash(Dash dash)
+    {
+        // Return if in the FOV transition
+        if (_isInDashFOVTransition)
+            return;
+        
+        StartCoroutine(HandleDash());
+    }
 
     void Update()
     {
         // Handle Sprinting
         HandleSprint();
-
-        // Handle Dashing
-        if (Input.GetKeyDown(dashKey) && !isInDashFOVTransition)
-        {
-            StartCoroutine(HandleDash());
-        }
     }
 
     void HandleSprint()
     {
-        // Check if the player is holding down the sprint key
-        isSprinting = Input.GetKey(sprintKey);
-
         // Get the current FOV of the camera
-        float currentFOV = cinemachineCamera.m_Lens.FieldOfView;
+        var currentFOV = cinemachineCamera.m_Lens.FieldOfView;
 
         // Only adjust sprint FOV if not currently dashing
-        if (!isDashing)
+        if (!_isDashing)
         {
             // Determine the target FOV based on whether the player is sprinting
-            float targetFOV = isSprinting ? sprintFOV : normalFOV;
+            var targetFOV = IsSprinting ? sprintFOV : normalFOV;
 
             // Smoothly transition the FOV
-            cinemachineCamera.m_Lens.FieldOfView = Mathf.Lerp(currentFOV, targetFOV, Time.deltaTime * fovTransitionSpeed);
+            cinemachineCamera.m_Lens.FieldOfView =
+                Mathf.Lerp(currentFOV, targetFOV, Time.deltaTime * fovTransitionSpeed);
         }
     }
 
     // Coroutine to handle the Dash FOV effect
     IEnumerator HandleDash()
     {
-        isDashing = true;
-        isInDashFOVTransition = true;
+        _isDashing = true;
+        _isInDashFOVTransition = true;
 
         // Quickly transition to dash FOV
-        float currentFOV = cinemachineCamera.m_Lens.FieldOfView;
-        float elapsedTime = 0f;
+        var currentFOV = cinemachineCamera.m_Lens.FieldOfView;
+        var elapsedTime = 0f;
 
         while (elapsedTime < dashFOVDuration)
         {
@@ -94,7 +118,7 @@ public class DynamicFOVController : MonoBehaviour
         cinemachineCamera.m_Lens.FieldOfView = normalFOV;
 
         // Dash transition is over
-        isInDashFOVTransition = false;
-        isDashing = false;
+        _isInDashFOVTransition = false;
+        _isDashing = false;
     }
 }

@@ -8,4 +8,6 @@ public interface IPlayerController
     public GameObject CameraPivot { get; }
 
     public bool IsGrounded { get; }
+    
+    public bool IsSprinting { get; }
 }

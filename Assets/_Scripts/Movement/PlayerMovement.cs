@@ -102,6 +102,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
     public GameObject CameraPivot => cameraPivot.gameObject;
 
     public bool IsGrounded => _isGrounded;
+    public bool IsSprinting => _isSprinting;
 
     public bool IsWallRunning => wallRunning.IsWallRunning;
 
