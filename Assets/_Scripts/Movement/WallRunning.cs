@@ -1,3 +1,4 @@
+using Cinemachine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,15 +16,39 @@ public class WallRunning : MonoBehaviour
     public PlayerMovement pm;
     //public Dash dash;
 
+    
     //protected bool isWallRunning = false;
     private float wallRunTimer = 0f;
     private float wallJumpCooldownTimer = 0f;
     private Rigidbody rb;
     private Vector3 lastWallNormal;
     private bool isGrounded;
+    //[SerializeField] private float boxCastSize = 0.5f;
     private RaycastHit[] hits = new RaycastHit[1]; // Array to store the results of the raycast
     private PlayerControls playerInputActions;
+    
 
+    
+    
+    //wall tilt reference
+    [SerializeField] private CinemachineVirtualCamera vcam;
+
+    // Box cast 
+    public Vector3 boxCastSize = new Vector3(0.2f, 1.8f, 0.2f);
+    [SerializeField] private float boxOffset = 0.5f; 
+    public float wallBoxCastDistance = 1f;
+    public Transform orientation;
+    
+    
+    //Camera Tilt 
+    private float targetTilt = 0f;  // Target tilt angle
+    [SerializeField] [Range(-45, 45)]private float wallRunTiltAngle = 15f; // Max tilt angle during wall run
+    [SerializeField] [Range(1,15)]private float tiltSpeed = 5f;         // Speed at which the tilt happens
+    private float tiltVelocity = 0f;
+
+    
+    [SerializeField] [Range(-45,45)]private float currentTilt = 0f; // Current tilt value for Lerp
+    
     #region Properties
     
     public bool IsWallRunning { get; private set; }
@@ -33,6 +58,7 @@ public class WallRunning : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        //vcam = GetComponent<CinemachineVirtualCamera>();
         playerInputActions = new PlayerControls();
     }
 
@@ -50,6 +76,7 @@ public class WallRunning : MonoBehaviour
 
     void FixedUpdate()
     {
+        UpdateCameraTilt();       
         // Update the wall jump cooldown timer
         if (wallJumpCooldownTimer > 0)
         {
@@ -65,6 +92,8 @@ public class WallRunning : MonoBehaviour
         {
             wallRunTimer = 0f;
         }
+        
+        
     }
 
     private void CheckForWall()
@@ -86,6 +115,22 @@ public class WallRunning : MonoBehaviour
 
         //checks for walls on the backward 
         bool wallBackward = Physics.RaycastNonAlloc(new Ray(transform.position, -transform.forward), hits, wallCheckDistance, wallLayer) > 0;
+
+        // if (wallRight || wallForward)
+        // {
+        //     targetTilt = wallRunTiltAngle; // Tilt to the right
+        //     //UpdateCameraTilt();
+        // }
+        // else if (wallLeft || wallBackward)
+        // {
+        //     targetTilt = -wallRunTiltAngle; // Tilt to the left
+        //     //UpdateCameraTilt();
+        // }
+        // else
+        // {
+        //     targetTilt = 0f; // Reset tilt if not on a wall
+        // }
+
         
         //checks for walls for z and x axis
         if (wallRight || wallLeft || wallForward || wallBackward )
@@ -147,6 +192,41 @@ public class WallRunning : MonoBehaviour
         canWallRun = false;
         IsWallRunning = false;
         rb.useGravity = true; // Re-enable gravity
+        //targetTilt = 0;
+    }
+    private void UpdateCameraTilt()
+    {
+        //box placements
+        Vector3 leftBoxOrigin = orientation.position + (-orientation.right * boxOffset); 
+        Vector3 rightBoxOrigin = orientation.position + (orientation.right * boxOffset); 
+
+
+        //check for walls on the lefy 
+        RaycastHit[] leftBoxHits = Physics.BoxCastAll(leftBoxOrigin, boxCastSize / 2, -orientation.right, orientation.rotation, wallBoxCastDistance, wallLayer);
+        RaycastHit[] rightBoxHits = Physics.BoxCastAll(rightBoxOrigin, boxCastSize / 2, orientation.right, orientation.rotation, wallBoxCastDistance, wallLayer);
+
+        bool isLeftWall = leftBoxHits.Length > 0;
+        bool isRightWall = rightBoxHits.Length > 0;
+
+        //targetTilt = 0;
+        if (isLeftWall)
+        {
+            targetTilt = -wallRunTiltAngle; //tilt left
+        }
+        else if (isRightWall)
+        {
+            targetTilt = wallRunTiltAngle;// tilt right
+        }
+        else
+        {
+            targetTilt = 0;
+        }
+        
+        
+        // Smoothly interpolate the current tilt to the target tilt
+        currentTilt = Mathf.SmoothDamp(currentTilt, targetTilt, ref tiltVelocity, tiltSpeed * Time.deltaTime);
+        
+        vcam.m_Lens.Dutch = currentTilt;
     }
 
     private void OnJumpPerformed(InputAction.CallbackContext context)
@@ -189,13 +269,33 @@ public class WallRunning : MonoBehaviour
     }
     void OnDrawGizmos()
     {
-        if (pm == null)
-            return;
-        
-        if (pm.IsWallRunning)
+        // if (pm == null)
+        //     return;
+        //
+        // if (pm.IsWallRunning)
+        // {
+        //     Gizmos.color = Color.red;
+        //     Gizmos.DrawLine(transform.position, transform.position + lastWallNormal);
+        // }
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, transform.position + lastWallNormal);
+            // Gizmos.color = Color.red;
+            //
+            // Gizmos.color = Color.red;
+            //
+            // // Calculate positions for left and right BoxCasts based on the player's orientation
+            // Vector3 leftBoxOrigin = orientation.position + (-orientation.right * boxOffset); // Left box position
+            // Vector3 rightBoxOrigin = orientation.position + (orientation.right * boxOffset); // Right box position
+            //
+            // // Draw left BoxCast with the player's rotation
+            // Gizmos.matrix = Matrix4x4.TRS(leftBoxOrigin, orientation.rotation, Vector3.one);
+            // Gizmos.DrawWireCube(Vector3.zero, boxCastSize);
+            //
+            // // Draw right BoxCast with the player's rotation
+            // Gizmos.color = Color.blue;
+            // Gizmos.matrix = Matrix4x4.TRS(rightBoxOrigin, orientation.rotation, Vector3.one);
+            // Gizmos.DrawWireCube(Vector3.zero, boxCastSize);
         }
     }
-}
+    }
+    
+
