@@ -460,7 +460,13 @@ MonoBehaviour:
   verticalWallRunSpeed: 5
   wallJumpCooldown: 0.5
   canWallRun: 0
-  pm: {fileID: 8237298286555941285}
+  vcam: {fileID: 7986816652180132302}
+  boxCastSize: {x: 0.2, y: 1.8, z: 0.2}
+  boxOffset: 0.5
+  wallBoxCastDistance: 1
+  wallRunTiltAngle: 15
+  tiltSpeed: 5
+  currentTilt: 0
 --- !u!114 &27674651915690864
 MonoBehaviour:
   m_ObjectHideFlags: 0

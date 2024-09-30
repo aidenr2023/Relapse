@@ -13,7 +13,7 @@ public class WallRunning : MonoBehaviour
     public float verticalWallRunSpeed = 5f;
     public float wallJumpCooldown = .5f;
     public bool canWallRun = false;
-    public PlayerMovement pm;
+    private PlayerMovement _playerMovement;
     //public Dash dash;
 
     
@@ -27,9 +27,6 @@ public class WallRunning : MonoBehaviour
     private RaycastHit[] hits = new RaycastHit[1]; // Array to store the results of the raycast
     private PlayerControls playerInputActions;
     
-
-    
-    
     //wall tilt reference
     [SerializeField] private CinemachineVirtualCamera vcam;
 
@@ -37,8 +34,6 @@ public class WallRunning : MonoBehaviour
     public Vector3 boxCastSize = new Vector3(0.2f, 1.8f, 0.2f);
     [SerializeField] private float boxOffset = 0.5f; 
     public float wallBoxCastDistance = 1f;
-    public Transform orientation;
-    
     
     //Camera Tilt 
     private float targetTilt = 0f;  // Target tilt angle
@@ -51,14 +46,21 @@ public class WallRunning : MonoBehaviour
     
     #region Properties
     
+    public Transform Orientation => _playerMovement.Orientation;
+    
     public bool IsWallRunning { get; private set; }
     
     #endregion
     
     void Awake()
     {
+        // Get the player movement component
+        _playerMovement = GetComponent<PlayerMovement>();
+        
+        // Get the rigidbody component
         rb = GetComponent<Rigidbody>();
-        //vcam = GetComponent<CinemachineVirtualCamera>();
+
+        // Get the player input actions
         playerInputActions = new PlayerControls();
     }
 
@@ -84,7 +86,7 @@ public class WallRunning : MonoBehaviour
         }
         
         CheckForWall();
-        if (pm.IsWallRunning)
+        if (_playerMovement.IsWallRunning)
         {
             PerformWallRun();
         }
@@ -146,7 +148,7 @@ public class WallRunning : MonoBehaviour
 
     private void StartWallRun()
     {
-        if (!pm.IsWallRunning && canWallRun)
+        if (!_playerMovement.IsWallRunning && canWallRun)
         {
             IsWallRunning = true;
             wallRunTimer = 0f;
@@ -197,31 +199,27 @@ public class WallRunning : MonoBehaviour
     private void UpdateCameraTilt()
     {
         //box placements
-        Vector3 leftBoxOrigin = orientation.position + (-orientation.right * boxOffset); 
-        Vector3 rightBoxOrigin = orientation.position + (orientation.right * boxOffset); 
-
+        var leftBoxOrigin = Orientation.position + (-Orientation.right * boxOffset); 
+        var rightBoxOrigin = Orientation.position + (Orientation.right * boxOffset); 
 
         //check for walls on the lefy 
-        RaycastHit[] leftBoxHits = Physics.BoxCastAll(leftBoxOrigin, boxCastSize / 2, -orientation.right, orientation.rotation, wallBoxCastDistance, wallLayer);
-        RaycastHit[] rightBoxHits = Physics.BoxCastAll(rightBoxOrigin, boxCastSize / 2, orientation.right, orientation.rotation, wallBoxCastDistance, wallLayer);
+        var leftBoxHits = Physics.BoxCastAll(leftBoxOrigin, boxCastSize / 2, -Orientation.right, Orientation.rotation, wallBoxCastDistance, wallLayer);
+        var rightBoxHits = Physics.BoxCastAll(rightBoxOrigin, boxCastSize / 2, Orientation.right, Orientation.rotation, wallBoxCastDistance, wallLayer);
 
-        bool isLeftWall = leftBoxHits.Length > 0;
-        bool isRightWall = rightBoxHits.Length > 0;
+        var isLeftWall = leftBoxHits.Length > 0;
+        var isRightWall = rightBoxHits.Length > 0;
 
         //targetTilt = 0;
-        if (isLeftWall)
-        {
-            targetTilt = -wallRunTiltAngle; //tilt left
-        }
-        else if (isRightWall)
-        {
-            targetTilt = wallRunTiltAngle;// tilt right
-        }
-        else
-        {
-            targetTilt = 0;
-        }
         
+        // Make the target tilt 0 if the player is NOT WALL RUNNING
+        if (!_playerMovement.IsWallRunning)
+            targetTilt = 0;
+        else if (isLeftWall)
+            targetTilt = -wallRunTiltAngle; //tilt left
+        else if (isRightWall)
+            targetTilt = wallRunTiltAngle;// tilt right
+        else
+            targetTilt = 0;
         
         // Smoothly interpolate the current tilt to the target tilt
         currentTilt = Mathf.SmoothDamp(currentTilt, targetTilt, ref tiltVelocity, tiltSpeed * Time.deltaTime);
@@ -231,7 +229,7 @@ public class WallRunning : MonoBehaviour
 
     private void OnJumpPerformed(InputAction.CallbackContext context)
     {
-        if (pm.IsWallRunning)
+        if (_playerMovement.IsWallRunning)
         {
             WallJump();
         }
