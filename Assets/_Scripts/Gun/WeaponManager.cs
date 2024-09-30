@@ -8,7 +8,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     #region Fields
 
     private TestPlayer _player;
-    private Playerinfo _playerInfo;
+    private PlayerInfo _playerInfo;
     private IGun _equippedGun;
 
     [Tooltip("The position that the gun will fire from.")] [SerializeField]
@@ -28,7 +28,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     #region Getters
 
     public TestPlayer Player => _player;
-    public Playerinfo PlayerInfo => _playerInfo;
+    public PlayerInfo PlayerInfo => _playerInfo;
     public IGun EquippedGun => _equippedGun;
 
     public Transform FireTransform => fireTransform;

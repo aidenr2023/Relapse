@@ -55,17 +55,19 @@ public class Explosion : MonoBehaviour, IPower
                 continue;
 
             // Add an explosion force to the collider
-            if (cCollider.TryGetComponent(out Rigidbody rb))
+            if (cCollider.transform.root.TryGetComponent(out Rigidbody rb))
                 rb.AddExplosionForce(explosionForce, explosionPosition, explosionRadius);
 
             // Get the Actor component of the collider
-            var actor = cCollider.GetComponent<IActor>();
+            if (!cCollider.transform.root.TryGetComponent(out IActor actor))
+                continue;
 
+            Debug.Log($"Explosion: {actor.GameObject.name}");
+            
             // If the collider has a health component
             // Deal damage to the health component
             // TODO: Increase damage & make it scale with distance
-            if (actor != null)
-                actor.ChangeHealth(-explosionDamage);
+            actor.ChangeHealth(-explosionDamage);
         }
 
         // Create the explosion particles

@@ -16,7 +16,7 @@ public class Gun : MonoBehaviour
     private float lastShot;
     public LayerMask mask;
     public AudioSource hitSound;
-    public Playerinfo pi;
+    public PlayerInfo pi;
 
     public void Shoot()
     {
@@ -58,11 +58,11 @@ public class Gun : MonoBehaviour
         if (hit.collider.CompareTag("Enemy"))
         {
             // Attempt to find an EnemyHealth component and deal damage
-            Enemy enemyHealth = hit.collider.GetComponent<Enemy>();
-            if (enemyHealth != null)
+            EnemyInfo enemyInfoHealth = hit.collider.GetComponent<EnemyInfo>();
+            if (enemyInfoHealth != null)
             {
                 // Deal 2 points of damage, adjust as needed
-                enemyHealth.ChangeHealth(-2);
+                enemyInfoHealth.ChangeHealth(-2);
             }
 
             // if (hitSound != null)
