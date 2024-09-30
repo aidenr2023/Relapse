@@ -235,7 +235,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
             {
                 // Calculate the damage falloff
                 var distance = Vector3.Distance(startingPosition, hitInfo.point);
-                var damage = gunInformation.EvaluateBaseDamage(distance);
+                var damage = gunInformation.EvaluateBaseDamage(distance) * weaponManager.CurrentDamageMultiplier;
 
                 Debug.Log($"DAMAGE: {damage} - DISTANCE: {distance} / {gunInformation.Range}");
 

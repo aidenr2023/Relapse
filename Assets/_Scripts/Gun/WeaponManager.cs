@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -6,10 +7,6 @@ using UnityEngine.InputSystem;
 public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
 {
     #region Fields
-
-    private TestPlayer _player;
-    private PlayerInfo _playerInfo;
-    private IGun _equippedGun;
 
     [Tooltip("The position that the gun will fire from.")] [SerializeField]
     private Transform fireTransform;
@@ -23,6 +20,12 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
 
     [SerializeField] private TMP_Text reloadText;
 
+    private TestPlayer _player;
+    private PlayerInfo _playerInfo;
+    private IGun _equippedGun;
+
+    private SortedSet<DamageMultiplierToken> _damageMultiplierTokens = new();
+
     #endregion
 
     #region Getters
@@ -32,6 +35,19 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     public IGun EquippedGun => _equippedGun;
 
     public Transform FireTransform => fireTransform;
+    
+    public float CurrentDamageMultiplier
+    {
+        get
+        {
+            float multiplier = 1;
+
+            foreach (var token in _damageMultiplierTokens)
+                multiplier *= token.Multiplier;
+
+            return multiplier;
+        }
+    }
 
     #endregion
 
@@ -65,7 +81,6 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     }
 
     #endregion
-
 
     # region Input Functions
 
@@ -126,6 +141,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     {
         // TODO: Remove this and replace it with a bar or something
         UpdateReloadText();
+
+        // Update the damage multipliers
+        UpdateDamageMultipliers();
     }
 
     private void UpdateReloadText()
@@ -230,5 +248,87 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
 
         Gizmos.color = Color.red;
         Gizmos.DrawRay(fireTransform.position, fireTransform.forward * 10);
+    }
+
+    public DamageMultiplierToken AddDamageMultiplier(float multiplier, float duration, bool isPermanent = false)
+    {
+        // Create the new token
+        var token = new DamageMultiplierToken(multiplier, duration, isPermanent);
+
+        // Add the token to the list
+        _damageMultiplierTokens.Add(token);
+
+        // Return the token
+        return token;
+    }
+
+    private void UpdateDamageMultipliers()
+    {
+        // Create a list of tokens to remove
+        var tokensToRemove = new List<DamageMultiplierToken>();
+
+        // Loop through the tokens
+        foreach (var token in _damageMultiplierTokens)
+        {
+            // If the token is permanent, continue
+            if (token.IsPermanent)
+                continue;
+
+            // Update the duration of the token
+            token.UpdateDuration(-Time.deltaTime);
+
+            // If the duration is less than or equal to 0, add it to the list of tokens to remove
+            if (token.Duration <= 0)
+                tokensToRemove.Add(token);
+        }
+
+        // Remove the tokens
+        foreach (var token in tokensToRemove)
+            _damageMultiplierTokens.Remove(token);
+    }
+
+    public void RemoveDamageMultiplier(DamageMultiplierToken token)
+    {
+        // Remove the token from the list
+        _damageMultiplierTokens.Remove(token);
+    }
+
+    public class DamageMultiplierToken : IComparable<DamageMultiplierToken>
+    {
+        private readonly float _multiplier;
+        private float _duration;
+        private readonly bool _isPermanent;
+
+        public float Multiplier => _multiplier;
+        public float Duration => _duration;
+        public bool IsPermanent => _isPermanent;
+
+        public DamageMultiplierToken(float multiplier, float duration, bool isPermanent = false)
+        {
+            _multiplier = multiplier;
+            _duration = duration;
+            _isPermanent = isPermanent;
+        }
+
+        public void UpdateDuration(float changeAmount)
+        {
+            _duration += changeAmount;
+        }
+
+        public int CompareTo(DamageMultiplierToken other)
+        {
+            if (ReferenceEquals(this, other))
+                return 0;
+            if (other is null)
+                return 1;
+
+            var multiplierComparison = _multiplier.CompareTo(other._multiplier);
+
+            // Return the comparison if the multipliers are not equal
+            if (multiplierComparison != 0)
+                return multiplierComparison;
+
+            return _duration.CompareTo(other._duration);
+        }
     }
 }
