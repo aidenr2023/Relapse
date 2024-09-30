@@ -17,17 +17,22 @@ public class PlayerInfo : MonoBehaviour, IActor
     // -Dimitri
     [Header("Tolerance Meter Settings")] [SerializeField]
     private float maxTolerance;
-
-    public TolereanceMeter tolereanceMeter;
-
     [SerializeField] private float currentTolerance;
-
-    private InputUserHandler _inputUserHandler;
+    [SerializeField] private TolereanceMeter tolereanceMeter;
 
     private int _relapsesThisLevel;
+    [SerializeField] private int relapsesToLose = 3;
+    [Tooltip("What percent is the tolerance meter set to when the player relapses?")] [Range(0, 1)] [SerializeField]
+    private float toleranceRelapsePercent = .75f;
 
+    /// <summary>
+    /// An event that is called when the player relapses.
+    /// Used mostly to connect to outside scripts.
+    /// </summary>
+    public Action<PlayerInfo> OnRelapse;
 
-
+    private InputUserHandler _inputUserHandler;
+    
     #region Getters
 
     public GameObject GameObject => gameObject;
@@ -84,7 +89,7 @@ public class PlayerInfo : MonoBehaviour, IActor
     private void OnDestroy()
     {
         // Remove all input
-        _inputUserHandler.RemoveAll();
+        _inputUserHandler?.RemoveAll();
     }
 
     public void ChangeHealth(float amount)
@@ -130,5 +135,32 @@ public class PlayerInfo : MonoBehaviour, IActor
 
     private void Relapse()
     {
+        // Increase the relapse count
+        _relapsesThisLevel++;
+
+        if (_relapsesThisLevel >= relapsesToLose)
+        {
+            // The player dies / restarts the level from relapsing too many times!
+            DieFromRelapse();
+
+            return;
+        }
+
+        // Invoke the relapse event
+        OnRelapse?.Invoke(this);
+        
+        // Reset the tolerance meter after a relapse
+        var targetTolerance = maxTolerance * toleranceRelapsePercent;
+        var toleranceDifference = targetTolerance - currentTolerance;
+        ChangeTolerance(toleranceDifference);
+    }
+
+    private void DieFromRelapse()
+    {
+        // Trigger the lose condition
+        if (winLose != null)
+            winLose.ShowLoseScreen();
+
+        Debug.Log("Player relapsed too many times!");
     }
 }

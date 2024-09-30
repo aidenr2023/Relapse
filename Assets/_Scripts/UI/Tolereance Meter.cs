@@ -18,9 +18,9 @@ public class TolereanceMeter : MonoBehaviour
         // Calculate the angle based on the percentage
         float angle = Mathf.Lerp(minAngle, maxAngle, percentage);
 
-        Debug.Log($"Updating dial: Percentage={percentage}, Angle={angle}");
+        // Debug.Log($"Updating dial: Percentage={percentage}, Angle={angle}");
 
-        // Set the needle's rotation, account for initial 180° offset by adding 180° to angle
+        // Set the needle's rotation, account for initial 180ï¿½ offset by adding 180ï¿½ to angle
         needle.localRotation = Quaternion.Euler(0f, 0f, angle);
     }
 }
