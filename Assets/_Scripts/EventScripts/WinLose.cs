@@ -7,6 +7,10 @@ using UnityEngine.UI;
 
 public class WinLose : MonoBehaviour
 {
+    private const string DEFAULT_LOSE_MESSAGE = "You Lose!";
+
+    public static WinLose Instance { get; private set; }
+
     // Assign a UI panel or image for the lose screen
     [SerializeField] private GameObject loseScreen;
 
@@ -20,10 +24,15 @@ public class WinLose : MonoBehaviour
 
     private bool _isLoseScreenActive;
 
+    private string _loseMessage = DEFAULT_LOSE_MESSAGE;
+
     private void Awake()
     {
-        // Get the lose text component
-        _loseText = loseScreen.GetComponentInChildren<TMP_Text>();
+        // Set this to the active instance of the WinLose script
+        Instance = this;
+
+        // Initialize the components
+        InitializeComponents();
     }
 
     private void Start()
@@ -31,6 +40,12 @@ public class WinLose : MonoBehaviour
         // Ensure the lose screen is initially hidden
         if (loseScreen != null)
             loseScreen.SetActive(false);
+    }
+
+    private void InitializeComponents()
+    {
+        // Get the lose text component
+        _loseText = loseScreen.GetComponentInChildren<TMP_Text>();
     }
 
     private void Update()
@@ -42,15 +57,18 @@ public class WinLose : MonoBehaviour
 
         // Reload the current scene to restart the game
         if (needsToRestart)
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            Restart();
     }
 
-    public void ShowLoseScreen()
+    public void Lose(string message = DEFAULT_LOSE_MESSAGE)
     {
         // Return if the lose screen is already active
         if (_isLoseScreenActive)
             return;
 
+        // Set the lose message
+        _loseMessage = message;
+        
         // Set the lose screen active flag to true
         _isLoseScreenActive = true;
 
@@ -73,7 +91,7 @@ public class WinLose : MonoBehaviour
         // Skip if the lose screen is not active
         if (!_isLoseScreenActive)
             return false;
-        
+
         // Decrement the lose time remaining
         // Clamp the lose time remaining
         _loseTimeRemaining = Mathf.Clamp(_loseTimeRemaining - Time.unscaledDeltaTime, 0, restartDelay);
@@ -88,19 +106,31 @@ public class WinLose : MonoBehaviour
         if (_loseText == null)
             return;
 
-        _loseText.text = $"YOU LOSE\n" +
-                         $"Restarting in {_loseTimeRemaining:0.00}s";
+        // Update the lose text
+        var newText = "";
+        if (_loseMessage != string.Empty)
+            newText += $"{_loseMessage}\n";
+
+        newText += $"Restarting in {_loseTimeRemaining:0.00}s";
+
+        _loseText.text = newText;
+    }
+
+    private void Restart()
+    {
+        // Reset the time scale
+        Time.timeScale = 1f;
+
+        // Reload the current scene to restart the game
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     private IEnumerator RestartGameAfterDelay()
     {
         yield return new WaitForSecondsRealtime(restartDelay); // Wait for 3 real-time seconds
 
-        // Reset the time scale
-        Time.timeScale = 1f;
-
-        // Reload the current scene to restart the game
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        // Restart the game
+        Restart();
     }
 
     public void QuitGame()

@@ -155,10 +155,7 @@ public class PlayerInfo : MonoBehaviour, IActor
         {
             // Trigger the lose condition
             if (winLose != null)
-            {
-                winLose.ShowLoseScreen();
-                Debug.Log("Player died!");
-            }
+                winLose.Lose("The Player Died!");
         }
     }
 
@@ -220,8 +217,6 @@ public class PlayerInfo : MonoBehaviour, IActor
     {
         // Trigger the lose condition
         if (winLose != null)
-            winLose.ShowLoseScreen();
-
-        Debug.Log("Player relapsed too many times!");
+            winLose.Lose("Player relapsed too many times!");
     }
 }
