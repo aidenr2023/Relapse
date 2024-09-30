@@ -358,8 +358,11 @@ MonoBehaviour:
   maxHealth: 3
   health: 3
   maxTolerance: 100
-  tolereanceMeter: {fileID: 8717561934427330062}
   currentTolerance: 0
+  tolereanceMeter: {fileID: 8717561934427330062}
+  relapsesToLose: 3
+  toleranceRelapsePercent: 0.5
+  relapseDuration: 3
 --- !u!114 &8237298286555941285
 MonoBehaviour:
   m_ObjectHideFlags: 0
