@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -19,6 +20,9 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 
     private int _currentPowerIndex;
     private bool _isChargingPower;
+
+    [Header("REMOVE LATER")] [SerializeField]
+    private TMP_Text buffText;
 
 
     #region Getters
@@ -196,6 +200,9 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 
         // Update the power UI
         UpdatePowerUI();
+
+        // Update the buff text
+        UpdateBuffText();
     }
 
     private void UpdateCharge()
@@ -358,6 +365,35 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
 
         // Set the current power to the first power in the array
         _currentPowerIndex = 0;
+    }
+
+    private void UpdateBuffText()
+    {
+        // Return if the buff text is null
+        if (buffText == null)
+            return;
+
+        // Create a string builder to store the text
+        StringBuilder buffStringBuilder = new();
+
+        // Loop through all the power tokens
+        foreach (var powerToken in _powerTokens.Values)
+        {
+            // Skip if the power token is not active or passive
+            if (!powerToken.IsActiveEffectOn && !powerToken.IsPassiveEffectOn)
+                continue;
+
+            // Append the power name and the active percentage to the string builder
+            buffStringBuilder.Append(
+                powerToken
+                    .PowerScriptableObject
+                    .PowerLogic
+                    .PassiveEffectDebugText(this, powerToken)
+            );
+        }
+
+        // Set the buff text to the string builder
+        buffText.text = buffStringBuilder.ToString();
     }
 
     #region Public Methods

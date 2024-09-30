@@ -476,6 +476,7 @@ MonoBehaviour:
   powerScroll: {fileID: 4381525105559914916}
   powers:
   - {fileID: 11400000, guid: 00f877605ff3c3a4f9d1a25c2ea80edd, type: 2}
+  buffText: {fileID: 3658807759508138457}
 --- !u!114 &8579423786828984914
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -522,7 +523,7 @@ MonoBehaviour:
   cinemachineCamera: {fileID: 7986816652180132302}
   normalFOV: 70
   sprintFOV: 85
-  dashFOV: 80
+  dashFOV: 90
   fovTransitionSpeed: 10
   dashFOVDuration: 0.05
 --- !u!1 &4362924701896538173
@@ -1435,6 +1436,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 6942508457977872047}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3658807759508138457 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5953209971373414262, guid: 4e1f2c1c363960402afcef7794835969,
+    type: 3}
+  m_PrefabInstance: {fileID: 6942508457977872047}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &4381525105559914916 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6671787587548526347, guid: 4e1f2c1c363960402afcef7794835969,

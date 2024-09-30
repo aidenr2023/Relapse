@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class Explosion : MonoBehaviour, IPower
 {
@@ -16,6 +17,10 @@ public class Explosion : MonoBehaviour, IPower
 
     public GameObject GameObject => gameObject;
     public PowerScriptableObject PowerScriptableObject { get; set; }
+
+    public string PassiveEffectDebugText(TestPlayerPowerManager powerManager, PowerToken pToken) => string.Empty;
+
+    #region IPower Methods
 
     public void StartCharge(TestPlayerPowerManager powerManager, PowerToken pToken, bool startedChargingThisFrame)
     {
@@ -112,4 +117,6 @@ public class Explosion : MonoBehaviour, IPower
         // Destroy the particles after the duration of the particles
         Destroy(particles.gameObject, particles.main.duration);
     }
+
+    #endregion
 }

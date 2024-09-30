@@ -12,6 +12,17 @@ public class Regeneration : MonoBehaviour, IPower
     [SerializeField] private float regenerationAmount = 2f;
     [SerializeField] private ParticleSystem regenerationParticles;
 
+    public string PassiveEffectDebugText(TestPlayerPowerManager powerManager, PowerToken pToken)
+    {
+        var timeRemaining = pToken.PowerScriptableObject.PassiveEffectDuration - pToken.CurrentPassiveDuration;
+
+        var regenerationPerSecond = regenerationAmount / PowerScriptableObject.PassiveEffectDuration;
+        
+        return $"Regeneration:\n" +
+               $"Restoring {regenerationPerSecond} health per second.\n" +
+               $"{timeRemaining:0.00} seconds remaining.";
+    }
+
     public void StartCharge(TestPlayerPowerManager powerManager, PowerToken pToken, bool startedChargingThisFrame)
     {
     }
@@ -47,7 +58,7 @@ public class Regeneration : MonoBehaviour, IPower
 
         // Set the regeneration particles to follow the player
         particles.transform.localPosition = Vector3.zero;
-        
+
         // Play the regeneration particles
         particles.Play();
 
@@ -67,10 +78,10 @@ public class Regeneration : MonoBehaviour, IPower
         // Get the particles from the power token's data dictionary
         // Remove the particles from the power token's data dictionary
         var particles = pToken.RemoveData<ParticleSystem>(REGENERATION_KEY);
-        
+
         // Stop the particle system
         particles.Stop();
-        
+
         // Destroy the particles' game object after the duration of the particle system
         Destroy(particles.gameObject, particles.main.duration);
     }

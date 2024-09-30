@@ -13,6 +13,12 @@ public interface IPower
     public PowerScriptableObject PowerScriptableObject { get; set; }
 
     /// <summary>
+    /// Text that appears on the screen while the passive effect is active.
+    /// TODO: Remove this & replace with the icon system.
+    /// </summary>
+    public string PassiveEffectDebugText(TestPlayerPowerManager powerManager, PowerToken pToken);
+
+    /// <summary>
     /// Logic for what happens when the player starts charging the power.
     /// </summary>
     /// <param name="startedChargingThisFrame">Whether the charge started this frame</param>
