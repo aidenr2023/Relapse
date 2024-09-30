@@ -121,7 +121,7 @@ public class PlayerInfo : MonoBehaviour, IActor
 
         // Reset the tolerance meter after a relapse
         var targetTolerance = maxTolerance * toleranceRelapsePercent;
-        var toleranceDifference = targetTolerance - currentTolerance;
+        var toleranceDifference = targetTolerance - maxTolerance;
         var toleranceDifferencePerSecond = toleranceDifference / relapseDuration;
         ChangeTolerance(toleranceDifferencePerSecond * Time.deltaTime);
 
