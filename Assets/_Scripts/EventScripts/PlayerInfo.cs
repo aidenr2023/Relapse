@@ -24,6 +24,10 @@ public class PlayerInfo : MonoBehaviour, IActor
 
     private InputUserHandler _inputUserHandler;
 
+    private int _relapsesThisLevel;
+
+
+
     #region Getters
 
     public GameObject GameObject => gameObject;
@@ -118,5 +122,13 @@ public class PlayerInfo : MonoBehaviour, IActor
     {
         currentTolerance = Mathf.Clamp(currentTolerance + amount, 0, maxTolerance);
         tolereanceMeter.UpdateToleranceUI(currentTolerance / maxTolerance); // Scale the dial
+
+        // The player will relapse if the tolerance meter is too high
+        if (currentTolerance >= maxTolerance)
+            Relapse();
+    }
+
+    private void Relapse()
+    {
     }
 }
