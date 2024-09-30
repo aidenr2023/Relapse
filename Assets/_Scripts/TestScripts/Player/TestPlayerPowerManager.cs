@@ -48,6 +48,9 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
     // Start is called before the first frame update
     void Start()
     {
+        // Initialize the events
+        InitializeEvents();
+        
         // Initialize the input
         InitializeInput();
 
@@ -61,6 +64,10 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         _player = GetComponent<TestPlayer>();
     }
 
+    private void InitializeEvents()
+    {
+        _player.PlayerInfo.OnRelapseStart += OnRelapseStart;
+    }
 
     private void InitializeInput()
     {
@@ -77,6 +84,13 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         _medsSet = new HashSet<PowerScriptableObject>();
         _powerTokens = new Dictionary<PowerScriptableObject, PowerToken>();
         UpdatePowerCollections(powers);
+    }
+
+
+    private void OnRelapseStart(PlayerInfo obj)
+    {
+        // Force the power to stop charging
+        StopCharge();
     }
 
     #endregion
@@ -119,6 +133,10 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         if (CurrentPowerToken.IsActiveEffectOn)
             return;
 
+        // Skip if the player is currently relapsing
+        if (_player.PlayerInfo.IsRelapsing)
+            return;
+
         // Set the is charging power flag to true
         _isChargingPower = true;
 
@@ -136,52 +154,16 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         if (CurrentPower == null)
             return;
 
-        // Set the is charging power flag to false
-        _isChargingPower = false;
-
-        // Call the current power's release method
-        var isChargeComplete = CurrentPowerToken.ChargePercentage >= 1;
-        CurrentPower.PowerLogic.Release(this, CurrentPowerToken, isChargeComplete);
-
-        // Set the charging flag to false
-        CurrentPowerToken.SetChargingFlag(false);
-
-        // Reset the charge duration if the power is not charging
-        CurrentPowerToken.ResetChargeDuration();
+        var isChargeComplete = StopCharge();
 
         // If the charge is complete
         if (isChargeComplete)
-        {
-            // use the power
-            CurrentPower.PowerLogic.Use(this, CurrentPowerToken);
-
-            // Set the active flag to true
-            CurrentPowerToken.SetActiveFlag(true);
-
-            // Reset the active duration
-            CurrentPowerToken.ResetActiveDuration();
-
-            // Set the passive flag to true
-            CurrentPowerToken.SetPassiveFlag(true);
-
-            // Reset the passive duration
-            CurrentPowerToken.ResetPassiveDuration();
-
-            // After using the power, reset the charge duration
-            CurrentPowerToken.ResetChargeDuration();
-
-            // Start the active effect
-            CurrentPower.PowerLogic.StartActiveEffect(this, CurrentPowerToken);
-
-            // Start the passive effect
-            CurrentPower.PowerLogic.StartPassiveEffect(this, CurrentPowerToken);
-
-            // Change the player's tolerance
-            _player.PlayerInfo.ChangeTolerance(CurrentPowerToken.ToleranceMeterImpact);
-        }
+            UsePower();
     }
 
     #endregion
+
+    #region Update Methods
 
     // Update is called once per frame
     private void Update()
@@ -395,6 +377,61 @@ public class TestPlayerPowerManager : MonoBehaviour, IDebugManaged
         // Set the buff text to the string builder
         buffText.text = buffStringBuilder.ToString();
     }
+
+    #endregion
+
+    private bool StopCharge()
+    {
+        // Set the is charging power flag to false
+        _isChargingPower = false;
+
+        // Call the current power's release method
+        var isChargeComplete = CurrentPowerToken.ChargePercentage >= 1;
+        CurrentPower.PowerLogic.Release(this, CurrentPowerToken, isChargeComplete);
+
+        // Set the charging flag to false
+        CurrentPowerToken.SetChargingFlag(false);
+
+        // Reset the charge duration if the power is not charging
+        CurrentPowerToken.ResetChargeDuration();
+
+        return isChargeComplete;
+    }
+
+    private void UsePower()
+    {
+        // Skip if the player is currently relapsing
+        if (_player.PlayerInfo.IsRelapsing)
+            return;
+
+        // use the power
+        CurrentPower.PowerLogic.Use(this, CurrentPowerToken);
+
+        // Set the active flag to true
+        CurrentPowerToken.SetActiveFlag(true);
+
+        // Reset the active duration
+        CurrentPowerToken.ResetActiveDuration();
+
+        // Set the passive flag to true
+        CurrentPowerToken.SetPassiveFlag(true);
+
+        // Reset the passive duration
+        CurrentPowerToken.ResetPassiveDuration();
+
+        // After using the power, reset the charge duration
+        CurrentPowerToken.ResetChargeDuration();
+
+        // Start the active effect
+        CurrentPower.PowerLogic.StartActiveEffect(this, CurrentPowerToken);
+
+        // Start the passive effect
+        CurrentPower.PowerLogic.StartPassiveEffect(this, CurrentPowerToken);
+
+        // Change the player's tolerance
+        _player.PlayerInfo.ChangeTolerance(CurrentPowerToken.ToleranceMeterImpact);
+    }
+
 
     #region Public Methods
 

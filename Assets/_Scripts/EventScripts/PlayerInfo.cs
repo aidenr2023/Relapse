@@ -32,7 +32,9 @@ public class PlayerInfo : MonoBehaviour, IActor
     [Tooltip("What percent is the tolerance meter set to when the player relapses?")] [Range(0, 1)] [SerializeField]
     private float toleranceRelapsePercent = .75f;
 
-    [SerializeField] [Min(0)] private float relapseDuration = 3;
+    [Header("Relapsing Settings")] [SerializeField] [Min(0)]
+    private float relapseDuration = 3;
+
     private float _currentRelapseDuration;
 
     private bool _isRelapsing;
