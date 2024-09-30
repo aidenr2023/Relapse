@@ -31,7 +31,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     public Playerinfo PlayerInfo => _playerInfo;
     public IGun EquippedGun => _equippedGun;
 
-    public Transform FiringPoint => fireTransform;
+    public Transform FireTransform => fireTransform;
 
     #endregion
 
@@ -221,5 +221,14 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     public string GetDebugText()
     {
         return $"Equipped Gun: {_equippedGun?.GunInformation.name}\n";
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (fireTransform == null)
+            return;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(fireTransform.position, fireTransform.forward * 10);
     }
 }

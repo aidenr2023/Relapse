@@ -107,7 +107,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
 
         // Fire the weapon if applicable
         if (_weaponManager != null)
-            Fire(_weaponManager, _weaponManager.FiringPoint.position, _weaponManager.FiringPoint.forward);
+            Fire(_weaponManager, _weaponManager.FireTransform.position, _weaponManager.FireTransform.forward);
 
         // Reset the fired this frame flag
         _hasFiredThisFrame = false;
