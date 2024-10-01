@@ -5,13 +5,14 @@ using UnityEngine;
 
 public class Fireball : MonoBehaviour, IPower
 {
-    // TODO: Create a field for a projectile prefab
-    
+    // a field for a projectile prefab
+    [SerializeField] private GameObject projectilePrefab;
+
     public GameObject GameObject => gameObject;
     public PowerScriptableObject PowerScriptableObject { get; set; }
 
     public string PassiveEffectDebugText(TestPlayerPowerManager powerManager, PowerToken pToken) => string.Empty;
-    
+
     #region IPower Methods
 
     public void StartCharge(TestPlayerPowerManager powerManager, PowerToken pToken, bool startedChargingThisFrame)
@@ -34,11 +35,20 @@ public class Fireball : MonoBehaviour, IPower
         // Create the position of the projectile
         var firePosition = powerManager.Player.PlayerController.CameraPivot.transform.position + fireForward * 1;
 
-        // Create the projectile
-        var projectileScript = CreateProjectile(firePosition, fireForward);
+        // Instantiate the projectile prefab
+        var projectile = Instantiate(projectilePrefab, firePosition, Quaternion.identity);
 
-        // Set up the projectile
-        SetUpProjectile(powerManager, projectileScript);
+        // Get the IPowerProjectile component from the projectile
+        var powerProjectile = projectile.GetComponent<IPowerProjectile>();
+
+        // Shoot the projectile
+        powerProjectile.Shoot(this, powerManager, pToken, firePosition, fireForward);
+
+        // // Create the projectile
+        // var projectileScript = CreateProjectile(firePosition, fireForward);
+        //
+        // // Set up the projectile
+        // SetUpProjectile(powerManager, projectileScript);
     }
 
     private ScriptExtender CreateProjectile(Vector3 pos, Vector3 forward)
@@ -76,7 +86,7 @@ public class Fireball : MonoBehaviour, IPower
 
         // Destroy the projectile after 5 seconds
         Destroy(scriptExtender.gameObject, 5);
-        
+
         return;
 
         // Create a function that runs when the projectile is updated
@@ -91,21 +101,21 @@ public class Fireball : MonoBehaviour, IPower
         void FireballTriggerEnter(ScriptExtender obj, Collider other)
         {
             // Return if the projectile hits sender of the projectile
-            if (other.gameObject == powerManager.gameObject) 
+            if (other.gameObject == powerManager.gameObject)
                 return;
-            
+
             // Return if the other object is a trigger
-            if (other.isTrigger) 
+            if (other.isTrigger)
                 return;
-            
+
             // If the projectile hits something with an IActor component, deal damage
             if (other.TryGetComponent(out IActor actor))
                 actor.ChangeHealth(-100);
-            
+
             // Destroy the projectile when it hits something
             Debug.Log($"BOOM! {obj.name} hit {other.name}");
             Destroy(obj.gameObject);
-            
+
             // TODO: Make an explosion of some sort
         }
     }
