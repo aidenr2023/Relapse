@@ -1,11 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Cinemachine;
 using TMPro;
 using UnityEngine;
 
 public class PlayerInfo : MonoBehaviour, IActor
 {
+    #region Fields
+
     public WinLose winLose; // Reference to the WinLose script
 
     [Header("Health Settings")] [SerializeField]
@@ -16,7 +19,7 @@ public class PlayerInfo : MonoBehaviour, IActor
     // TODO: Eventually, I might move this code to another script.
     // For now though, I'm keeping this here to make things easier
     // -Dimitri
-    [Header("Tolerance Meter Settings")] [SerializeField]
+    [Header("Tolerance Meter Settings")] [SerializeField] [Min(.001f)]
     private float maxTolerance;
 
     [SerializeField] private float currentTolerance;
@@ -55,6 +58,11 @@ public class PlayerInfo : MonoBehaviour, IActor
 
     private InputUserHandler _inputUserHandler;
 
+    // TODO: Find a better way to do this
+    [SerializeField] private CinemachineVirtualCamera vCam;
+
+    #endregion Fields
+
     #region Getters
 
     public GameObject GameObject => gameObject;
@@ -84,7 +92,7 @@ public class PlayerInfo : MonoBehaviour, IActor
 
         // If the tolerance meter is still null, log an error
         if (tolereanceMeter == null)
-            Debug.LogError("TolereanceMeter is not assigned and could not be found.");
+            Debug.LogError("Tolerance Meter is not assigned and could not be found.");
 
         // Hide the relapse text
         if (relapseText != null)
@@ -102,6 +110,9 @@ public class PlayerInfo : MonoBehaviour, IActor
 
     #endregion
 
+
+    #region Update Functions
+
     private void Update()
     {
         // Update the input users
@@ -109,6 +120,9 @@ public class PlayerInfo : MonoBehaviour, IActor
 
         // Update the relapse duration
         UpdateRelapseDuration();
+
+        // Update the relapse effects
+        UpdateRelapseEffects();
 
         // Update the relapse text
         UpdateRelapseText();
@@ -146,10 +160,12 @@ public class PlayerInfo : MonoBehaviour, IActor
         if (relapseText == null)
             return;
 
+        var timeOrTimes = _relapseCount == 1 ? "time" : "times";
+
         // Update the relapse text
         var newText = $"Relapsing...\n" +
                       $"{relapseDuration - _currentRelapseDuration:0.00}s remaining!\n" +
-                      $"The player has relapsed {_relapseCount} time(s)!";
+                      $"The player has relapsed {_relapseCount} {timeOrTimes}!";
 
         relapseText.text = newText;
 
@@ -163,6 +179,32 @@ public class PlayerInfo : MonoBehaviour, IActor
             opacity
         );
     }
+
+    private void UpdateRelapseEffects()
+    {
+        float vCamDampening;
+
+        switch (_relapseCount)
+        {
+            case 0:
+                vCamDampening = 0.0f;
+                break;
+            case 1:
+                vCamDampening = 0.1f;
+                break;
+            case 2:
+                vCamDampening = 0.3f;
+                break;
+            default:
+                vCamDampening = 0.5f;
+                break;
+        }
+
+        // Apply the dampening to the virtual camera's aim
+        vCam.GetCinemachineComponent<CinemachineSameAsFollowTarget>().m_Damping = vCamDampening;
+    }
+
+    #endregion
 
     private void OnDestroy()
     {
