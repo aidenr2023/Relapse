@@ -189,6 +189,21 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
 
         // Call the OnEquip function
         gun.OnEquip(this);
+        
+        
+        // TODO: DELETE THIS EVENTUALLY
+        // Get all the renderers in the gun
+        var renderers = gun.GameObject.GetComponentsInChildren<Renderer>();
+        
+        // Deactivate the renderers
+        foreach (var cRenderer in renderers)
+        {
+            // Skip the cRenderer if the object has a particle system
+            if (cRenderer.TryGetComponent(out ParticleSystem ps))
+                continue;
+            
+            cRenderer.enabled = false;
+        }
     }
 
     public void RemoveGun()
