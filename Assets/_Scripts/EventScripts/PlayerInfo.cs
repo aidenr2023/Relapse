@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PlayerInfo : MonoBehaviour, IActor
@@ -38,6 +39,8 @@ public class PlayerInfo : MonoBehaviour, IActor
     private float _currentRelapseDuration;
 
     private bool _isRelapsing;
+
+    [SerializeField] private TMP_Text relapseText;
 
     /// <summary>
     /// An event that is called when the player relapses.
@@ -83,6 +86,10 @@ public class PlayerInfo : MonoBehaviour, IActor
         if (tolereanceMeter == null)
             Debug.LogError("TolereanceMeter is not assigned and could not be found.");
 
+        // Hide the relapse text
+        if (relapseText != null)
+            relapseText.gameObject.SetActive(false);
+
         // Initialize the input handler
         InitializeInput();
     }
@@ -102,6 +109,9 @@ public class PlayerInfo : MonoBehaviour, IActor
 
         // Update the relapse duration
         UpdateRelapseDuration();
+
+        // Update the relapse text
+        UpdateRelapseText();
 
         // Prevent the tolerance from going below 0 or above the max value
         ClampTolerance();
@@ -128,6 +138,30 @@ public class PlayerInfo : MonoBehaviour, IActor
         // If the relapse duration is greater than the relapse duration, end the relapse
         if (_currentRelapseDuration >= relapseDuration)
             EndRelapse();
+    }
+
+    private void UpdateRelapseText()
+    {
+        // Return if the relapse text is null
+        if (relapseText == null)
+            return;
+
+        // Update the relapse text
+        var newText = $"Relapsing...\n" +
+                      $"{relapseDuration - _currentRelapseDuration:0.00}s remaining!\n" +
+                      $"The player has relapsed {_relapseCount} time(s)!";
+
+        relapseText.text = newText;
+
+        // Update the opacity of the relapse text
+        var opacity = Mathf.Sin(Time.time * 4) / 2 + 0.5f;
+
+        relapseText.color = new Color(
+            relapseText.color.r,
+            relapseText.color.g,
+            relapseText.color.b,
+            opacity
+        );
     }
 
     private void OnDestroy()
@@ -190,9 +224,12 @@ public class PlayerInfo : MonoBehaviour, IActor
         {
             // The player dies / restarts the level from relapsing too many times!
             DieFromRelapse();
-
             return;
         }
+
+        // Enable the relapse text
+        if (relapseText != null)
+            relapseText.gameObject.SetActive(true);
 
         // Reset the relapse duration
         _currentRelapseDuration = 0;
@@ -208,6 +245,10 @@ public class PlayerInfo : MonoBehaviour, IActor
 
         // Reset the relapse duration
         _currentRelapseDuration = 0;
+
+        // Disable the relapse text
+        if (relapseText != null)
+            relapseText.gameObject.SetActive(false);
 
         // Invoke the end relapse event
         OnRelapseEnd?.Invoke(this);
