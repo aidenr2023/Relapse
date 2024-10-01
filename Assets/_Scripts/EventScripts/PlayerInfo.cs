@@ -190,10 +190,10 @@ public class PlayerInfo : MonoBehaviour, IActor
                 vCamDampening = 0.0f;
                 break;
             case 1:
-                vCamDampening = 0.1f;
+                vCamDampening = 0.2f;
                 break;
             case 2:
-                vCamDampening = 0.3f;
+                vCamDampening = 0.4f;
                 break;
             default:
                 vCamDampening = 0.5f;

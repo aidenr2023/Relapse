@@ -15,7 +15,7 @@ public class DamageIncrease : MonoBehaviour, IPower
     {
         var timeRemaining = pToken.PowerScriptableObject.PassiveEffectDuration - pToken.CurrentPassiveDuration;
 
-        return $"Damage Multiplier:\n" +
+        return $"Gun Damage Multiplier:\n" +
                $"\tDamage {multiplier:0.00}x.\n" +
                $"\t{timeRemaining:0.00} seconds remaining.\n";
     }
