@@ -97,6 +97,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
 
     public GameObject CameraPivot => cameraPivot.gameObject;
 
+    public Transform Orientation => orientation;
+
     public Vector2 MovementInput => _movementInput;
 
     public bool IsGrounded => _isGrounded;
@@ -209,7 +211,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         // If the player is not grounded, force the sprint flag to false
         if (!_isGrounded)
             _isSprinting = false;
-        
+
         // Control the player's speed
         SpeedControl();
 

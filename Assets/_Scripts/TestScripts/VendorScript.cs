@@ -139,7 +139,7 @@ public class VendorScript : MonoBehaviour, IInteractable
         switch (_interactionMode)
         {
             case VendorInteractionMode.PickUp:
-                return $"Pick Up {availablePower.name}";
+                return $"Pick Up {availablePower.PowerName}";
 
             case VendorInteractionMode.Upgrade:
                 // Get the power level of the player
@@ -148,10 +148,10 @@ public class VendorScript : MonoBehaviour, IInteractable
                 // Get the 1-indexed power level
                 powerLevel++;
 
-                return $"Upgrade {availablePower.name} to level {powerLevel + 1}";
+                return $"Upgrade {availablePower.PowerName} to level {powerLevel + 1}";
 
             case VendorInteractionMode.Remove:
-                return $"Remove {availablePower.name}";
+                return $"Remove {availablePower.PowerName}";
 
             default:
                 return $"\"{_interactionMode}\" NOT HANDLED";

@@ -3,18 +3,18 @@ using UnityEngine;
 /// <summary>
 /// This class is mainly used as a hub to connect all the player components together.
 /// </summary>
-[RequireComponent(typeof(Playerinfo))]
+[RequireComponent(typeof(PlayerInfo))]
 [RequireComponent(typeof(TestPlayerPowerManager))]
 public class TestPlayer : MonoBehaviour
 {
-    private Playerinfo _playerInfo;
+    private PlayerInfo _playerInfo;
     private IPlayerController _playerController;
     private TestPlayerPowerManager _playerPowerManager;
     private WeaponManager _weaponManager;
 
     #region Getters
 
-    public Playerinfo PlayerInfo => _playerInfo;
+    public PlayerInfo PlayerInfo => _playerInfo;
 
     public IPlayerController PlayerController => _playerController;
 
@@ -35,7 +35,7 @@ public class TestPlayer : MonoBehaviour
     private void InitializeComponents()
     {
         // Get the Player Info component
-        _playerInfo = GetComponent<Playerinfo>();
+        _playerInfo = GetComponent<PlayerInfo>();
 
         // Get the TestPlayerController component
         _playerController = GetComponent<IPlayerController>();

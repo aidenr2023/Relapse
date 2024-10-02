@@ -459,6 +459,24 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""DebugTolerance"",
+                    ""type"": ""Value"",
+                    ""id"": ""ccad3cd4-a4e2-4b56-a8fd-ddc913947bc9"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""DebugHealth"",
+                    ""type"": ""Value"",
+                    ""id"": ""1735a8c4-c41f-41b3-807a-e2b4e804e3f5"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -472,6 +490,72 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""ToggleDebug"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""KL"",
+                    ""id"": ""e3a8b7a5-8666-4080-92dc-4537b4344e6e"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DebugTolerance"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""8e144a00-2676-4149-bed9-22a267ea570a"",
+                    ""path"": ""<Keyboard>/k"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DebugTolerance"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""49073c4e-18c0-4d47-806d-b0bd62b81c9b"",
+                    ""path"": ""<Keyboard>/l"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DebugTolerance"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""NM"",
+                    ""id"": ""58f3dbbc-1901-4029-a24c-adf06977fcbf"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DebugHealth"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""e9bf9962-401c-4b78-be47-a7ab4c88f499"",
+                    ""path"": ""<Keyboard>/n"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DebugHealth"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""53108be0-a892-499b-a142-f0acefe00e2e"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DebugHealth"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -501,6 +585,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         // Debug
         m_Debug = asset.FindActionMap("Debug", throwIfNotFound: true);
         m_Debug_ToggleDebug = m_Debug.FindAction("ToggleDebug", throwIfNotFound: true);
+        m_Debug_DebugTolerance = m_Debug.FindAction("DebugTolerance", throwIfNotFound: true);
+        m_Debug_DebugHealth = m_Debug.FindAction("DebugHealth", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -697,11 +783,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Debug;
     private List<IDebugActions> m_DebugActionsCallbackInterfaces = new List<IDebugActions>();
     private readonly InputAction m_Debug_ToggleDebug;
+    private readonly InputAction m_Debug_DebugTolerance;
+    private readonly InputAction m_Debug_DebugHealth;
     public struct DebugActions
     {
         private @PlayerControls m_Wrapper;
         public DebugActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @ToggleDebug => m_Wrapper.m_Debug_ToggleDebug;
+        public InputAction @DebugTolerance => m_Wrapper.m_Debug_DebugTolerance;
+        public InputAction @DebugHealth => m_Wrapper.m_Debug_DebugHealth;
         public InputActionMap Get() { return m_Wrapper.m_Debug; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -714,6 +804,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @ToggleDebug.started += instance.OnToggleDebug;
             @ToggleDebug.performed += instance.OnToggleDebug;
             @ToggleDebug.canceled += instance.OnToggleDebug;
+            @DebugTolerance.started += instance.OnDebugTolerance;
+            @DebugTolerance.performed += instance.OnDebugTolerance;
+            @DebugTolerance.canceled += instance.OnDebugTolerance;
+            @DebugHealth.started += instance.OnDebugHealth;
+            @DebugHealth.performed += instance.OnDebugHealth;
+            @DebugHealth.canceled += instance.OnDebugHealth;
         }
 
         private void UnregisterCallbacks(IDebugActions instance)
@@ -721,6 +817,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @ToggleDebug.started -= instance.OnToggleDebug;
             @ToggleDebug.performed -= instance.OnToggleDebug;
             @ToggleDebug.canceled -= instance.OnToggleDebug;
+            @DebugTolerance.started -= instance.OnDebugTolerance;
+            @DebugTolerance.performed -= instance.OnDebugTolerance;
+            @DebugTolerance.canceled -= instance.OnDebugTolerance;
+            @DebugHealth.started -= instance.OnDebugHealth;
+            @DebugHealth.performed -= instance.OnDebugHealth;
+            @DebugHealth.canceled -= instance.OnDebugHealth;
         }
 
         public void RemoveCallbacks(IDebugActions instance)
@@ -765,5 +867,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     public interface IDebugActions
     {
         void OnToggleDebug(InputAction.CallbackContext context);
+        void OnDebugTolerance(InputAction.CallbackContext context);
+        void OnDebugHealth(InputAction.CallbackContext context);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,8 @@ public class TestDrug : MonoBehaviour, IPower
     public GameObject GameObject => gameObject;
 
     public PowerScriptableObject PowerScriptableObject { get; set; }
+
+    public string PassiveEffectDebugText(TestPlayerPowerManager powerManager, PowerToken pToken) => string.Empty;
 
     #region IPower
 

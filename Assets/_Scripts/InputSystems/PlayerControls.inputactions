@@ -437,6 +437,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "DebugTolerance",
+                    "type": "Value",
+                    "id": "ccad3cd4-a4e2-4b56-a8fd-ddc913947bc9",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "DebugHealth",
+                    "type": "Value",
+                    "id": "1735a8c4-c41f-41b3-807a-e2b4e804e3f5",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -450,6 +468,72 @@
                     "action": "ToggleDebug",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "KL",
+                    "id": "e3a8b7a5-8666-4080-92dc-4537b4344e6e",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DebugTolerance",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "8e144a00-2676-4149-bed9-22a267ea570a",
+                    "path": "<Keyboard>/k",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DebugTolerance",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "49073c4e-18c0-4d47-806d-b0bd62b81c9b",
+                    "path": "<Keyboard>/l",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DebugTolerance",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "NM",
+                    "id": "58f3dbbc-1901-4029-a24c-adf06977fcbf",
+                    "path": "1DAxis",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DebugHealth",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "negative",
+                    "id": "e9bf9962-401c-4b78-be47-a7ab4c88f499",
+                    "path": "<Keyboard>/n",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DebugHealth",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "positive",
+                    "id": "53108be0-a892-499b-a142-f0acefe00e2e",
+                    "path": "<Keyboard>/m",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DebugHealth",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }

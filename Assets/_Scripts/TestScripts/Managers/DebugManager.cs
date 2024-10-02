@@ -21,6 +21,14 @@ public class DebugManager : MonoBehaviour, IDebugManaged
     [Tooltip("A TMP_Text object to display debug text")] [SerializeField]
     private TMP_Text debugText;
 
+    private TestPlayer _testPlayer;
+
+    private float _healthChange;
+    private float _toleranceChange;
+
+    [SerializeField] [Min(0)] private float healthMult = 1f;
+    [SerializeField] [Min(0)] private float toleranceMult = 10f;
+
 
     #region Initialization Functions
 
@@ -42,17 +50,26 @@ public class DebugManager : MonoBehaviour, IDebugManaged
         // Initialize the input
         InitializeInput();
         
-        // Set debug mode to true by default
-        IsDebugMode = true;
+        // // Set debug mode to true by default
+        // IsDebugMode = true;
 
         // Set the visibility of the debug text
         SetDebugVisibility(IsDebugMode);
+
+        // Find the player in the scene
+        _testPlayer = FindFirstObjectByType<TestPlayer>();
     }
 
     private void InitializeInput()
     {
         // Toggle debug mode
         InputManager.Instance.PlayerControls.Debug.ToggleDebug.performed += ToggleDebugMode;
+
+        InputManager.Instance.PlayerControls.Debug.DebugHealth.performed += OnDebugHealthPerformed;
+        InputManager.Instance.PlayerControls.Debug.DebugTolerance.performed += OnDebugTolerancePerformed;
+
+        InputManager.Instance.PlayerControls.Debug.DebugHealth.canceled+= OnDebugHealthCanceled;
+        InputManager.Instance.PlayerControls.Debug.DebugTolerance.canceled += OnDebugToleranceCanceled;
     }
 
     #endregion
@@ -62,6 +79,15 @@ public class DebugManager : MonoBehaviour, IDebugManaged
     {
         // Update the text
         UpdateText();
+
+        // Update the tolerance and health
+        UpdateToleranceAndHealth();
+    }
+
+    private void UpdateToleranceAndHealth()
+    {
+        _testPlayer.PlayerInfo.ChangeHealth(_healthChange * Time.deltaTime * healthMult);
+        _testPlayer.PlayerInfo.ChangeTolerance(_toleranceChange * Time.deltaTime * toleranceMult);
     }
 
     private void UpdateText()
@@ -88,6 +114,27 @@ public class DebugManager : MonoBehaviour, IDebugManaged
         SetDebugVisibility(IsDebugMode);
     }
 
+
+    private void OnDebugHealthPerformed(InputAction.CallbackContext context)
+    {
+        _healthChange = context.ReadValue<float>();
+    }
+
+    private void OnDebugHealthCanceled(InputAction.CallbackContext context)
+    {
+        _healthChange = 0;
+    }
+
+    private void OnDebugTolerancePerformed(InputAction.CallbackContext context)
+    {
+        _toleranceChange = context.ReadValue<float>();
+    }
+
+    private void OnDebugToleranceCanceled(InputAction.CallbackContext context)
+    {
+        _toleranceChange = 0;
+    }
+
     private void SetDebugVisibility(bool isVisible)
     {
         // Set the debug canvas's visibility
@@ -110,4 +157,6 @@ public class DebugManager : MonoBehaviour, IDebugManaged
     {
         return "PRESS F1 TO TOGGLE DEBUG MODE\n";
     }
+
+
 }
