@@ -67,7 +67,7 @@ public class Explosion : MonoBehaviour, IPower
             // If the collider has a health component
             // Deal damage to the health component
             // TODO: Increase damage & make it scale with distance
-            actor.ChangeHealth(-explosionDamage);
+            actor.ChangeHealth(-explosionDamage, powerManager.Player.PlayerInfo, this);
         }
 
         // Create the explosion particles

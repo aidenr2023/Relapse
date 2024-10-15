@@ -17,7 +17,7 @@ public class Regeneration : MonoBehaviour, IPower
         var timeRemaining = pToken.PowerScriptableObject.PassiveEffectDuration - pToken.CurrentPassiveDuration;
 
         var regenerationPerSecond = regenerationAmount / PowerScriptableObject.PassiveEffectDuration;
-        
+
         return $"Regeneration:\n" +
                $"\tRestoring {regenerationPerSecond} health per second.\n" +
                $"\t{timeRemaining:0.00} seconds remaining.\n";
@@ -69,7 +69,9 @@ public class Regeneration : MonoBehaviour, IPower
     public void UpdatePassiveEffect(TestPlayerPowerManager powerManager, PowerToken pToken)
     {
         powerManager.Player.PlayerInfo.ChangeHealth(
-            regenerationAmount / PowerScriptableObject.PassiveEffectDuration * Time.deltaTime
+            regenerationAmount / PowerScriptableObject.PassiveEffectDuration * Time.deltaTime,
+            powerManager.Player.PlayerInfo,
+            this
         );
     }
 

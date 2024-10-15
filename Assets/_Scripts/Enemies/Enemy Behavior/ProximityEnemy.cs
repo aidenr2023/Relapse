@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 [RequireComponent(typeof(EnemyInfo))]
-public class ProximityEnemy : MonoBehaviour, IEnemyBehavior
+public class ProximityEnemy : MonoBehaviour, IEnemyBehavior, IDamager
 {
     private EnemyInfo _enemyInfo;
 
@@ -154,7 +154,7 @@ public class ProximityEnemy : MonoBehaviour, IEnemyBehavior
         CreateExplosiveForce();
 
         // Kill the enemy by changing the health to 0
-        _enemyInfo.ChangeHealth(-_enemyInfo.MaxHealth);
+        _enemyInfo.ChangeHealth(-_enemyInfo.MaxHealth, _enemyInfo, this);
     }
 
     private void CreateExplosiveForce()
@@ -170,7 +170,7 @@ public class ProximityEnemy : MonoBehaviour, IEnemyBehavior
                 continue;
 
             // Change the health of the player
-            player.ChangeHealth(-explosionDamage);
+            player.ChangeHealth(-explosionDamage, _enemyInfo, this);
 
             // Get the rigidbody component from the player
             if (!player.transform.root.TryGetComponent(out Rigidbody rb))

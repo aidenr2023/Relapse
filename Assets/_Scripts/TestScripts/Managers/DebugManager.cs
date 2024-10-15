@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class DebugManager : MonoBehaviour, IDebugManaged
+public class DebugManager : MonoBehaviour, IDebugManaged, IDamager
 {
     public static DebugManager Instance { get; private set; }
 
@@ -29,6 +29,8 @@ public class DebugManager : MonoBehaviour, IDebugManaged
     [SerializeField] [Min(0)] private float healthMult = 1f;
     [SerializeField] [Min(0)] private float toleranceMult = 10f;
 
+    public GameObject GameObject => gameObject;
+
 
     #region Initialization Functions
 
@@ -49,7 +51,7 @@ public class DebugManager : MonoBehaviour, IDebugManaged
     {
         // Initialize the input
         InitializeInput();
-        
+
         // // Set debug mode to true by default
         // IsDebugMode = true;
 
@@ -68,7 +70,7 @@ public class DebugManager : MonoBehaviour, IDebugManaged
         InputManager.Instance.PlayerControls.Debug.DebugHealth.performed += OnDebugHealthPerformed;
         InputManager.Instance.PlayerControls.Debug.DebugTolerance.performed += OnDebugTolerancePerformed;
 
-        InputManager.Instance.PlayerControls.Debug.DebugHealth.canceled+= OnDebugHealthCanceled;
+        InputManager.Instance.PlayerControls.Debug.DebugHealth.canceled += OnDebugHealthCanceled;
         InputManager.Instance.PlayerControls.Debug.DebugTolerance.canceled += OnDebugToleranceCanceled;
     }
 
@@ -86,7 +88,7 @@ public class DebugManager : MonoBehaviour, IDebugManaged
 
     private void UpdateToleranceAndHealth()
     {
-        _testPlayer.PlayerInfo.ChangeHealth(_healthChange * Time.deltaTime * healthMult);
+        _testPlayer.PlayerInfo.ChangeHealth(_healthChange * Time.deltaTime * healthMult, _testPlayer.PlayerInfo, this);
         _testPlayer.PlayerInfo.ChangeTolerance(_toleranceChange * Time.deltaTime * toleranceMult);
     }
 
@@ -140,13 +142,13 @@ public class DebugManager : MonoBehaviour, IDebugManaged
         // Set the debug canvas's visibility
         debugCanvas.enabled = isVisible;
     }
-    
+
     public void AddDebugManaged(IDebugManaged debugManaged)
     {
         // Add the debug managed object to the hash set
         _debugManagedObjects.Add(debugManaged);
     }
-    
+
     public void RemoveDebugManaged(IDebugManaged debugManaged)
     {
         // Remove the debug managed object from the hash set
@@ -157,6 +159,4 @@ public class DebugManager : MonoBehaviour, IDebugManaged
     {
         return "PRESS F1 TO TOGGLE DEBUG MODE\n";
     }
-
-
 }

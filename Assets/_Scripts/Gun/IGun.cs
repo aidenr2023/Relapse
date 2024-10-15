@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IGun : IInteractable
+public interface IGun : IInteractable, IDamager
 {
     public GunInformation GunInformation { get; }
 

@@ -5,17 +5,12 @@
 /// When I say "interacted with",
 /// I mean that the player can press E when looking at it to do something.
 /// </summary>
-public interface IInteractable
+public interface IInteractable : IInterfacedObject
 {
     /// <summary>
     /// Can the player interact with the object right now?
     /// </summary>
     public bool IsInteractable { get; }
-
-    /// <summary>
-    /// A reference to the game object that the script is attached to.
-    /// </summary>
-    public GameObject GameObject { get; }
 
     /// <summary>
     /// The function that is called when the player interacts with the object.
@@ -27,7 +22,7 @@ public interface IInteractable
     /// </summary>
     /// <param name="playerInteraction"></param>
     public void LookAtUpdate(PlayerInteraction playerInteraction);
-    
+
     /// <summary>
     /// Words that pop up when looking at the object.
     /// </summary>

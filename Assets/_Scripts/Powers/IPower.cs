@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public interface IPower
+public interface IPower : IDamager
 {
     /// <summary>
     /// The game object that contains this power.

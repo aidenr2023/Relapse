@@ -237,10 +237,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugManaged
                 var distance = Vector3.Distance(startingPosition, hitInfo.point);
                 var damage = gunInformation.EvaluateBaseDamage(distance) * weaponManager.CurrentDamageMultiplier;
 
-                Debug.Log($"DAMAGE: {damage} - DISTANCE: {distance} / {gunInformation.Range}");
+                // Debug.Log($"DAMAGE: {damage} - DISTANCE: {distance} / {gunInformation.Range}");
 
                 // Deal damage to the actor
-                actor.ChangeHealth(-damage);
+                actor.ChangeHealth(-damage, weaponManager.Player.PlayerInfo, this);
             }
         }
     }

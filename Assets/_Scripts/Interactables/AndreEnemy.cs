@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AndreEnemy : MonoBehaviour, IActor
+public class AndreEnemy : MonoBehaviour, IActor, IDamager
 {
     private GameObject _player;
 
@@ -17,9 +17,17 @@ public class AndreEnemy : MonoBehaviour, IActor
     private bool _isExploding;
 
     public GameObject GameObject => gameObject;
-    
+
     public float MaxHealth => _maxHealth;
     public float CurrentHealth => enemyHealth;
+
+    #region Events
+
+    public event EventHandler<HealthChangedEventArgs> OnDamaged;
+    public event EventHandler<HealthChangedEventArgs> OnHealed;
+    public event EventHandler<HealthChangedEventArgs> OnDeath;
+
+    #endregion
 
     private void Awake()
     {
@@ -47,7 +55,7 @@ public class AndreEnemy : MonoBehaviour, IActor
         var playerInfo = _player.GetComponent<IActor>();
 
         if (playerInfo != null)
-            playerInfo.ChangeHealth(-1);
+            playerInfo.ChangeHealth(-1, this, this);
 
         // Instantiate the explosion effect at the enemy's position
         if (explosionEffect != null)
@@ -60,15 +68,15 @@ public class AndreEnemy : MonoBehaviour, IActor
             {
                 ps.Play();
                 explosionSound.Play();
-                
+
                 // Destroy the particle system after it finishes playing
-                Destroy(explosion, ps.main.duration); 
+                Destroy(explosion, ps.main.duration);
             }
 
             else
             {
                 explosionSound.Play();
-                
+
                 // Destroy the explosion effect after 2 seconds
                 Destroy(explosion, 2f); // Fallback in case there's no ParticleSystem component
             }
@@ -78,12 +86,19 @@ public class AndreEnemy : MonoBehaviour, IActor
         Destroy(gameObject);
     }
 
-    private void TakeDamage(float damageAmount)
+    private void TakeDamage(float damageAmount, IActor changer, IDamager damager)
     {
         enemyHealth -= damageAmount;
 
+        // Invoke the OnDamaged event
+        var args = new HealthChangedEventArgs(this, changer, damager, damageAmount);
+        OnDamaged?.Invoke(this, args);
+
         if (enemyHealth <= 0)
         {
+            // Invoke the OnDeath event
+            OnDeath?.Invoke(this, args);
+
             explosionSound.Play();
             Destroy(gameObject);
         }
@@ -118,11 +133,10 @@ public class AndreEnemy : MonoBehaviour, IActor
     }
 
 
-    public void ChangeHealth(float amount)
+    public void ChangeHealth(float amount, IActor changer, IDamager damager)
     {
         if (amount < 0)
-            TakeDamage(-amount);
-
+            TakeDamage(-amount, changer, damager);
         else
             enemyHealth = Mathf.Clamp(enemyHealth + amount, 0, _maxHealth);
     }

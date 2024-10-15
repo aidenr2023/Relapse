@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Gun : MonoBehaviour
+public class Gun : MonoBehaviour, IDamager
 {
     [SerializeField] private bool bulletSpread = true;
 
@@ -17,6 +17,8 @@ public class Gun : MonoBehaviour
     public LayerMask mask;
     public AudioSource hitSound;
     public PlayerInfo pi;
+
+    public GameObject GameObject => gameObject;
 
     public void Shoot()
     {
@@ -36,7 +38,7 @@ public class Gun : MonoBehaviour
     private Vector3 GetBulletTrajectory()
     {
         Vector3 direction = transform.forward;
-        
+
         // means of calculating bullet spread based on a range of a objects normal
         if (bulletSpread)
         {
@@ -62,7 +64,7 @@ public class Gun : MonoBehaviour
             if (enemyInfoHealth != null)
             {
                 // Deal 2 points of damage, adjust as needed
-                enemyInfoHealth.ChangeHealth(-2);
+                enemyInfoHealth.ChangeHealth(-2, pi, this);
             }
 
             // if (hitSound != null)
