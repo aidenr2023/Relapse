@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
+public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
 {
     #region Fields
 
@@ -20,7 +20,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
 
     [SerializeField] private TMP_Text reloadText;
 
-    private TestPlayer _player;
+    private Player _player;
     private PlayerInfo _playerInfo;
     private IGun _equippedGun;
 
@@ -30,7 +30,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
 
     #region Getters
 
-    public TestPlayer Player => _player;
+    public Player Player => _player;
     public PlayerInfo PlayerInfo => _playerInfo;
     public IGun EquippedGun => _equippedGun;
 
@@ -74,7 +74,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugManaged
     private void GetComponents()
     {
         // Get the TestPlayer component
-        _player = GetComponent<TestPlayer>();
+        _player = GetComponent<Player>();
 
         // Get the Player info component
         _playerInfo = _player.PlayerInfo;

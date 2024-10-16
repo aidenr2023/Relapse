@@ -23,19 +23,22 @@ public class EnemyInfo : MonoBehaviour, IActor
 
     #region Events
 
-    public event EventHandler<HealthChangedEventArgs> OnDamaged;
-    public event EventHandler<HealthChangedEventArgs> OnHealed;
-    public event EventHandler<HealthChangedEventArgs> OnDeath;
+    public event HealthChangedEventHandler OnDamaged;
+    public event HealthChangedEventHandler OnHealed;
+    public event HealthChangedEventHandler OnDeath;
 
     #endregion
 
     private void Start()
     {
-        OnHealed += (sender, args) =>
-            Debug.Log($"{gameObject.name} healed: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
-        OnDamaged += (sender, args) =>
-            Debug.Log($"{gameObject.name} damaged: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
-        OnDeath += (sender, args) => Debug.Log($"{gameObject.name} died: {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
+        OnHealed += (_, args) =>
+            Debug.Log(
+                $"{gameObject.name} healed: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
+        OnDamaged += (_, args) =>
+            Debug.Log(
+                $"{gameObject.name} damaged: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
+        OnDeath += (_, args) =>
+            Debug.Log($"{gameObject.name} died: {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
     }
 
     public void ChangeHealth(float amount, IActor changer, IDamager damager)

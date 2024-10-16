@@ -81,9 +81,9 @@ public class PlayerInfo : MonoBehaviour, IActor
 
     #region Events
 
-    public event EventHandler<HealthChangedEventArgs> OnDamaged;
-    public event EventHandler<HealthChangedEventArgs> OnHealed;
-    public event EventHandler<HealthChangedEventArgs> OnDeath;
+    public event HealthChangedEventHandler OnDamaged;
+    public event HealthChangedEventHandler OnHealed;
+    public event HealthChangedEventHandler OnDeath;
 
     #endregion
 

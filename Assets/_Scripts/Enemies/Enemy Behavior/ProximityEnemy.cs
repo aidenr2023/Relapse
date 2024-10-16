@@ -93,7 +93,7 @@ public class ProximityEnemy : MonoBehaviour, IEnemyBehavior, IDamager
     private void CheckForPlayerInRange()
     {
         // Get all the test players in the scene
-        var players = FindObjectsOfType<TestPlayer>();
+        var players = FindObjectsOfType<Player>();
 
         // Sort them based on their distance from the enemy
         Array.Sort(players, (player1, player2) =>

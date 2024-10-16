@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Rigidbody))]
-public class GenericGun : MonoBehaviour, IGun, IDebugManaged
+public class GenericGun : MonoBehaviour, IGun, IDebugged
 {
     #region Serialized Fields
 
