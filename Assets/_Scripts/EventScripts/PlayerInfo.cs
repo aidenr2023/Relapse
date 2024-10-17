@@ -79,6 +79,14 @@ public class PlayerInfo : MonoBehaviour, IActor
 
     #endregion
 
+    #region Events
+
+    public event HealthChangedEventHandler OnDamaged;
+    public event HealthChangedEventHandler OnHealed;
+    public event HealthChangedEventHandler OnDeath;
+
+    #endregion
+
     #region Initialization Functions
 
     void Start()
@@ -100,6 +108,12 @@ public class PlayerInfo : MonoBehaviour, IActor
 
         // Initialize the input handler
         InitializeInput();
+
+        OnHealed += (sender, args) =>
+            Debug.Log($"{gameObject.name} healed: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
+        OnDamaged += (sender, args) =>
+            Debug.Log($"{gameObject.name} damaged: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
+        OnDeath += (sender, args) => Debug.Log($"{gameObject.name} died: {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
     }
 
     private void InitializeInput()
@@ -109,7 +123,6 @@ public class PlayerInfo : MonoBehaviour, IActor
     }
 
     #endregion
-
 
     #region Update Functions
 
@@ -212,23 +225,37 @@ public class PlayerInfo : MonoBehaviour, IActor
         _inputUserHandler?.RemoveAll();
     }
 
-    public void ChangeHealth(float amount)
+
+    public void ChangeHealth(float amount, IActor changer, IDamager damager)
     {
         // If the amount is negative, the player is taking damage
         if (amount < 0)
-            TakeDamage(-amount);
+            TakeDamage(-amount, changer, damager);
 
         // If the amount is positive, the player is gaining health
-        else
+        else if (amount > 0)
+        {
             health = Mathf.Clamp(health + amount, 0, maxHealth);
+
+            // Invoke the OnHealed event
+            var args = new HealthChangedEventArgs(this, changer, damager, amount);
+            OnHealed?.Invoke(this, args);
+        }
     }
 
-    private void TakeDamage(float damageAmount)
+    private void TakeDamage(float damageAmount, IActor changer, IDamager damager)
     {
         health = Mathf.Clamp(health - damageAmount, 0, maxHealth);
 
+        // Invoke the OnDamaged event
+        var args = new HealthChangedEventArgs(this, changer, damager, damageAmount);
+        OnDamaged?.Invoke(this, args);
+
         if (health <= 0)
         {
+            // Invoke the OnDeath event
+            OnDeath?.Invoke(this, args);
+
             // Trigger the lose condition
             if (winLose != null)
                 winLose.Lose("The Player Died!");
