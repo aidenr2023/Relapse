@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4614011368898484277}
   - component: {fileID: 2217757956141853447}
   - component: {fileID: 2684001482375690944}
+  - component: {fileID: 1161476141364330687}
   m_Layer: 0
   m_Name: TestBall
   m_TagString: Untagged
@@ -133,3 +134,22 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 1
+--- !u!114 &1161476141364330687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5168726720375319949}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fa4efd2407b131428d9a7fa9dfb851c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 100
+  yLaunchVelocity: 200
+  zLaunchVelocity: 300
+  explosionParticles: {fileID: 5786114173115362945, guid: 698484421d4499e4db04575c02ec6179,
+    type: 3}
+  explosionParticlesCount: 200
+  despawnTimer: 5
