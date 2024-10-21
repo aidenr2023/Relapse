@@ -193,6 +193,37 @@ MonoBehaviour:
   m_AmplitudeGain: 0
   m_FrequencyGain: 0
   mNoiseOffsets: {x: 0, y: 0, z: 0}
+--- !u!1 &507182689204337834
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7055934244896147694}
+  m_Layer: 0
+  m_Name: Ground Checker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7055934244896147694
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 507182689204337834}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.8, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7795416017126392668}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2966626161502641872
 GameObject:
   m_ObjectHideFlags: 0
@@ -492,15 +523,14 @@ GameObject:
   - component: {fileID: 6370308204982024158}
   - component: {fileID: 5299107068131062478}
   - component: {fileID: 1277419266882076832}
-  - component: {fileID: 541411378626336827}
   - component: {fileID: 534086157751078602}
   - component: {fileID: 8970542951123663805}
-  - component: {fileID: 8114850964472164274}
-  - component: {fileID: 2656195405682877776}
   - component: {fileID: 7219232306453989952}
   - component: {fileID: 6392300400353003323}
   - component: {fileID: 4501785134972941567}
   - component: {fileID: 8752263477337112648}
+  - component: {fileID: 1774236614971930220}
+  - component: {fileID: 9130919810387997847}
   m_Layer: 9
   m_Name: _temp Player New Movement
   m_TagString: Player
@@ -526,6 +556,7 @@ Transform:
   - {fileID: 63716641730917301}
   - {fileID: 2369240472030835557}
   - {fileID: 7713410973876067834}
+  - {fileID: 7055934244896147694}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7100531441727123584
@@ -663,36 +694,6 @@ MonoBehaviour:
   relapseDuration: 10
   relapseText: {fileID: 2885785035808711662}
   vCam: {fileID: 7439376870780568872}
---- !u!114 &541411378626336827
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5395095136624487652}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea58ce05523912e4491b1e61a3139105, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cameraPivot: {fileID: 7434595969876842229}
-  orientation: {fileID: 7082384289990667645}
-  maxSlopeAngle: 45
-  walkSpeed: 7.5
-  sprintSpeed: 12
-  wallrunSpeed: 50
-  groundDrag: 8
-  jumpForce: 250
-  jumpCooldown: 1
-  airMultiplier: 0.9
-  footsteps: {fileID: 0}
-  wallFootSteps: {fileID: 0}
-  wallRunning: {fileID: 2656195405682877776}
-  dash: {fileID: 8114850964472164274}
-  playerHeight: 2
-  whatIsGround:
-    serializedVersion: 2
-    m_Bits: 128
 --- !u!114 &534086157751078602
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -708,8 +709,8 @@ MonoBehaviour:
   sensitivityMultiplier: 30
   sensX: 0.8
   sensY: 1
-  playerMovement: {fileID: 541411378626336827}
-  wallRunning: {fileID: 2656195405682877776}
+  playerMovement: {fileID: 0}
+  wallRunning: {fileID: 0}
   orientation: {fileID: 7082384289990667645}
 --- !u!114 &8970542951123663805
 MonoBehaviour:
@@ -725,51 +726,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   interactDistance: 3
   interactText: {fileID: 550736075764331333}
---- !u!114 &8114850964472164274
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5395095136624487652}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c4f4345ee62cc04dafb4aefb3040cc0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dashForce: 200
-  dashCooldown: 0.5
-  maxDashesInAir: 2
---- !u!114 &2656195405682877776
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5395095136624487652}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcb6ed84750bb14db49e9d1fea19d16, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wallRunForce: 7
-  maxWallRunTime: 1
-  wallCheckDistance: 1
-  wallLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  wallJumpForce: 10
-  wallJumpUpwardsForce: 5
-  verticalWallRunSpeed: 1
-  wallJumpCooldown: 0.5
-  canWallRun: 0
-  vcam: {fileID: 7439376870780568872}
-  boxCastSize: {x: 0.2, y: 1.8, z: 0.2}
-  boxOffset: 0.5
-  wallBoxCastDistance: 1
-  wallRunTiltAngle: 15
-  tiltSpeed: 5
-  currentTilt: 0
 --- !u!114 &7219232306453989952
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -835,6 +791,37 @@ MonoBehaviour:
   dashFOV: 90
   fovTransitionSpeed: 10
   dashFOVDuration: 0.05
+--- !u!114 &1774236614971930220
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5395095136624487652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc2239b3085447aa97162efb8060164b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraPivot: {fileID: 7434595969876842229}
+  orientation: {fileID: 7082384289990667645}
+  groundChecker: {fileID: 7055934244896147694}
+  groundCheckDistance: 0.25
+  movementSpeed: 10
+--- !u!114 &9130919810387997847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5395095136624487652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6572cf277d9d4f0c832d3d068da6ed80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprintMultiplier: 1.5
+  jumpForce: 10
 --- !u!1 &5840219198840771320
 GameObject:
   m_ObjectHideFlags: 0

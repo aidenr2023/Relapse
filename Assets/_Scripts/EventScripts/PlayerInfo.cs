@@ -9,7 +9,7 @@ public class PlayerInfo : MonoBehaviour, IActor
 {
     #region Fields
 
-    public WinLose winLose; // Reference to the WinLose script
+    [SerializeField] private WinLose winLose; // Reference to the WinLose script
 
     [Header("Health Settings")] [SerializeField]
     private float maxHealth = 3f;
@@ -110,10 +110,13 @@ public class PlayerInfo : MonoBehaviour, IActor
         InitializeInput();
 
         OnHealed += (sender, args) =>
-            Debug.Log($"{gameObject.name} healed: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
+            Debug.Log(
+                $"{gameObject.name} healed: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
         OnDamaged += (sender, args) =>
-            Debug.Log($"{gameObject.name} damaged: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
-        OnDeath += (sender, args) => Debug.Log($"{gameObject.name} died: {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
+            Debug.Log(
+                $"{gameObject.name} damaged: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
+        OnDeath += (sender, args) =>
+            Debug.Log($"{gameObject.name} died: {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
     }
 
     private void InitializeInput()

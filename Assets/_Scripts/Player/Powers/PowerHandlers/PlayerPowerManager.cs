@@ -55,7 +55,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
         InitializeInput();
 
         // Add this to the debug managed objects
-        DebugManager.Instance.AddDebugManaged(this);
+        DebugManager.Instance.AddDebuggedObject(this);
     }
 
     private void InitializeComponents()

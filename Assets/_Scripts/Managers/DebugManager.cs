@@ -43,7 +43,7 @@ public class DebugManager : MonoBehaviour, IDebugged, IDamager
         _debuggedObjects = new HashSet<IDebugged>();
 
         // Add this to the debug managed objects
-        AddDebugManaged(this);
+        AddDebuggedObject(this);
     }
 
     // Start is called before the first frame update
@@ -143,7 +143,7 @@ public class DebugManager : MonoBehaviour, IDebugged, IDamager
         debugCanvas.enabled = isVisible;
     }
 
-    public void AddDebugManaged(IDebugged debugged)
+    public void AddDebuggedObject(IDebugged debugged)
     {
         // Add the debug managed object to the hash set
         _debuggedObjects.Add(debugged);

@@ -68,7 +68,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
             EquipGun(gun);
         }
 
-        DebugManager.Instance.AddDebugManaged(this);
+        DebugManager.Instance.AddDebuggedObject(this);
     }
 
     private void GetComponents()

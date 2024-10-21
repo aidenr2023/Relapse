@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 
-public class Dash : MonoBehaviour
+public class Dash : MonoBehaviour, IDashScript
 {
     [SerializeField] [Range(0, 2000)] private float dashForce = 100f; // The strength of the dash impulse
     [SerializeField] [Range(0, 10)] private float dashCooldown = 1f; // Cooldown time before the player can dash again
@@ -55,11 +55,11 @@ public class Dash : MonoBehaviour
 
     #region Events
 
-    public event Action<Dash> OnDash;
+    public event Action<IDashScript> OnDash;
 
     #endregion
 
-    void Awake()
+    private void Awake()
     {
         // Initialize the components
         InitializeComponents();
@@ -80,13 +80,13 @@ public class Dash : MonoBehaviour
         _wallRunning = GetComponent<WallRunning>();
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
         _playerInputActions.GamePlay.dash.performed += OnDashPerformed;
         _playerInputActions.Enable();
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         _playerInputActions.GamePlay.dash.performed -= OnDashPerformed;
         _playerInputActions.Disable();

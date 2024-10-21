@@ -272,7 +272,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         _weaponManager = weaponManager;
 
         // Add to debug manager
-        DebugManager.Instance.AddDebugManaged(this);
+        DebugManager.Instance.AddDebuggedObject(this);
     }
 
     public void OnRemoval(WeaponManager weaponManager)

@@ -8,7 +8,10 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     private PlayerInfo _playerInfo;
+
     private IPlayerController _playerController;
+    private PlayerLook _playerLook;
+
     private PlayerPowerManager _playerPowerManager;
     private WeaponManager _weaponManager;
 
@@ -17,6 +20,8 @@ public class Player : MonoBehaviour
     public PlayerInfo PlayerInfo => _playerInfo;
 
     public IPlayerController PlayerController => _playerController;
+
+    public PlayerLook PlayerLook => _playerLook;
 
     public PlayerPowerManager PlayerPowerManager => _playerPowerManager;
 
@@ -39,6 +44,9 @@ public class Player : MonoBehaviour
 
         // Get the TestPlayerController component
         _playerController = GetComponent<IPlayerController>();
+
+        // Get the PlayerLook component
+        _playerLook = GetComponent<PlayerLook>();
 
         // Get the TestPlayerPowerManager component
         _playerPowerManager = GetComponent<PlayerPowerManager>();
