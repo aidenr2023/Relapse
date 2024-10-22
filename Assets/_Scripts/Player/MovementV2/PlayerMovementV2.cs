@@ -56,7 +56,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public Rigidbody Rigidbody => _rigidbody;
 
-    public Vector2 MovementInput { get; }
+    public Vector2 MovementInput => _basicPlayerMovement.MovementInput;
 
     public bool IsGrounded { get; private set; }
 
@@ -65,6 +65,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     public float MovementSpeed => movementSpeed;
 
     private PlayerMovementScript CurrentMovementScript => _movementScripts.Peek();
+
+    public PlayerWallRunning WallRunning { get; private set; }
 
     #endregion
 
@@ -81,6 +83,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         // Get the basic player movement
         _basicPlayerMovement = GetComponent<BasicPlayerMovement>();
+
+        // Get the wall running component
+        WallRunning = GetComponent<PlayerWallRunning>();
     }
 
     private void Start()
@@ -186,7 +191,10 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Disable all the input maps except for the top most input map
         foreach (var movementScript in allMovementScripts)
         {
-            if (movementScript != topMostMovementScript && movementScript.InputActionMap.enabled)
+            if (
+                movementScript != topMostMovementScript &&
+                movementScript.InputActionMap is { enabled: true }
+            )
                 movementScript.InputActionMap.Disable();
         }
 

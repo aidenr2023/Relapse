@@ -13,16 +13,13 @@ public class PlayerLook : MonoBehaviour
     [SerializeField] [Range(0.01f, 1)] private float sensX = 1;
     [SerializeField] [Range(0.01f, 1)] private float sensY = 1;
 
-    [Header("References")]
-    // Reference to PlayerMovement script
-    [SerializeField]
-    private PlayerMovement playerMovement;
+    [SerializeField] [Range(0, 90)] private float upDownAngleLimit = 5;
 
-    // Reference to WallRunning script
-    [SerializeField] private WallRunning wallRunning;
+    [Header("References")]
 
     // Reference to the player's orientation transform
-    [SerializeField] private Transform orientation;
+    [SerializeField]
+    private Transform orientation;
 
     // Current rotation around the X axis
     private float _xRotation;
@@ -55,7 +52,7 @@ public class PlayerLook : MonoBehaviour
         _xRotation -= lookInput.y * sensY * constantSense;
 
         // Clamp the X rotation to prevent over-rotation
-        _xRotation = Mathf.Clamp(_xRotation, -90f, 90f);
+        _xRotation = Mathf.Clamp(_xRotation, -90f + upDownAngleLimit, 90f - upDownAngleLimit);
 
         // Rotate the camera
         orientation.transform.rotation = Quaternion.Euler(_xRotation, _yRotation, 0f);
@@ -68,14 +65,5 @@ public class PlayerLook : MonoBehaviour
 
     private void Update()
     {
-        // Adjust camera angle based on wall running state
-        // if (pm.isWallRunning && wr.wallRight)
-        // {
-        //     transform.rotation = Quaternion.Euler(xRotation, yRotation, -25f);
-        // }
-        // else if (pm.isWallRunning && wr.wallLeft)
-        // {
-        //     transform.rotation = Quaternion.Euler(xRotation, yRotation, 25f);
-        // }
     }
 }

@@ -2,5 +2,8 @@
 
 public interface IDashScript
 {
-    public event Action<IDashScript> OnDash;
+    public float DashDuration { get; }
+
+    public event Action<IDashScript> OnDashStart;
+    public event Action<IDashScript> OnDashEnd;
 }

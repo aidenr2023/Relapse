@@ -25,7 +25,7 @@ public class BasicPlayerMovement : PlayerMovementScript
 
     public Vector2 MovementInput => _movementInput;
 
-    private bool CanSprint => canSprintWithoutPower;
+    private bool CanSprint => canSprintWithoutPower && ParentComponent.IsGrounded;
 
     public bool IsSprinting => _isSprinting;
 
@@ -114,8 +114,14 @@ public class BasicPlayerMovement : PlayerMovementScript
         // Adjust the player's rotation
         CameraRotationAdjust();
 
-        // Apply the lateral speed limit
-        ApplyLateralSpeedLimit();
+        // Apply the lateral speed
+        // if (true)
+        {
+            var sprintMod = _isSprinting ? sprintMultiplier : 1;
+            ApplyLateralSpeedLimit(ParentComponent.MovementSpeed * sprintMod);
+        }
+        // else
+        //     ApplyLateralSpeedLimit(ParentComponent.MovementSpeed);
 
         Debug.Log($"SPRINTING: {_isSprinting}!");
     }

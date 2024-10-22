@@ -24,6 +24,9 @@ public class DynamicFOVController : MonoBehaviour
     private IPlayerController _playerMovement;
     private IDashScript _dashScript;
 
+    private float _dashStartTime;
+    private float _dashEndTime;
+
     private bool IsSprinting => _playerMovement.IsSprinting;
 
     #region Initialization
@@ -34,21 +37,31 @@ public class DynamicFOVController : MonoBehaviour
         InitializeComponents();
     }
 
+    private void Start()
+    {
+        InitializeEvents();
+    }
+
+    private void InitializeEvents()
+    {
+        // Add the OnDash method to the event
+        // _dashScript.OnDashStart += OnDashStart;
+        _dashScript.OnDashStart += OnDashStart2;
+        _dashScript.OnDashEnd += OnDashEnd;
+    }
+
     private void InitializeComponents()
     {
         // Get the PlayerMovement script
-        _playerMovement = GetComponent<PlayerMovement>();
+        _playerMovement = GetComponent<IPlayerController>();
 
         // Get the Dash script
         _dashScript = GetComponent<IDashScript>();
-
-        // Add the OnDash method to the event
-        _dashScript.OnDash += OnDash;
     }
 
     #endregion
 
-    private void OnDash(IDashScript dash)
+    private void OnDashStart(IDashScript dash)
     {
         // Return if in the FOV transition
         if (_isInDashFOVTransition)
@@ -57,13 +70,58 @@ public class DynamicFOVController : MonoBehaviour
         StartCoroutine(HandleDash());
     }
 
-    void Update()
+
+    private void OnDashStart2(IDashScript obj)
     {
-        // Handle Sprinting
-        HandleSprint();
+        // Return if the dash is dash
+        // This script does not have the ability to handle the new dash effect
+        if (_dashScript is Dash)
+        {
+            OnDashStart(_dashScript);
+            return;
+        }
+
+        // Set the isDashing bool to true
+        _isDashing = true;
+
+        // Set the dash start time
+        _dashStartTime = Time.time;
     }
 
-    void HandleSprint()
+    private void OnDashEnd(IDashScript obj)
+    {
+        // Set the isDashing bool to false
+        _isDashing = false;
+
+        // Set the dash end time
+        _dashEndTime = Time.time;
+    }
+
+    private void Update()
+    {
+        // // Handle Sprinting
+        // HandleSprint();
+
+        var setFov = normalFOV;
+
+        float setSprintFov = setFov;
+        float setDashFov = setFov;
+
+        if (IsSprinting && sprintFOV > normalFOV)
+            setSprintFov = sprintFOV;
+
+        setDashFov = _isDashing
+            ? Mathf.Lerp(normalFOV, dashFOV, (Time.time - _dashStartTime) / _dashScript.DashDuration)
+            : Mathf.Lerp(dashFOV, normalFOV, (Time.time - _dashEndTime) / dashFOVDuration);
+
+        setFov = Mathf.Max(setSprintFov, setDashFov, normalFOV);
+
+        // Debug.Log($"Setting FOV to {setFov}! (Sprinting: {IsSprinting}, Dashing: {_isDashing})");
+
+        cinemachineCamera.m_Lens.FieldOfView = setFov;
+    }
+
+    private void HandleSprint()
     {
         // Get the current FOV of the camera
         var currentFOV = cinemachineCamera.m_Lens.FieldOfView;
@@ -81,7 +139,7 @@ public class DynamicFOVController : MonoBehaviour
     }
 
     // Coroutine to handle the Dash FOV effect
-    IEnumerator HandleDash()
+    private IEnumerator HandleDash()
     {
         _isDashing = true;
         _isInDashFOVTransition = true;

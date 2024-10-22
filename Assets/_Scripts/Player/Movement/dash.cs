@@ -53,9 +53,12 @@ public class Dash : MonoBehaviour, IDashScript
 
     public bool IsDashing => _isDashing;
 
+    public float DashDuration => .05f;
+
     #region Events
 
-    public event Action<IDashScript> OnDash;
+    public event Action<IDashScript> OnDashStart;
+    public event Action<IDashScript> OnDashEnd;
 
     #endregion
 
@@ -138,7 +141,7 @@ public class Dash : MonoBehaviour, IDashScript
             _remainingDashesInAir--;
 
         // Run the OnDash event
-        OnDash?.Invoke(this);
+        OnDashStart?.Invoke(this);
     }
 
     private void ClampVerticalVelocity()
