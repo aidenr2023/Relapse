@@ -2,6 +2,7 @@
 using System.Text;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDebugged
 {
@@ -25,6 +26,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     // How far the ground checker should check for ground
     [SerializeField] [Min(0)] private float groundCheckDistance = 0.2f;
+
+    [SerializeField] [Min(0)] private float groundCheckBoxAdjust = .25f;
 
     [Header("Stats")] [SerializeField] [Min(0)]
     private float movementSpeed = 10f;
@@ -109,19 +112,31 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     private void UpdateOnGround()
     {
         // Create a mask that includes everything but the 'Actor' and 'Wall' layers
-        var mask = ~LayerMask.GetMask("Actor", "Wall");
+        // var mask = ~LayerMask.GetMask("Actor", "Wall");
+        var mask = ~LayerMask.GetMask("Actor");
 
-        // Check if there is a collider below the player
-        _groundCollide = Physics.Raycast(
-            groundChecker.position,
+        // // Check if there is a collider below the player
+        // _groundCollide = Physics.Raycast(
+        //     groundChecker.position,
+        //     Vector3.down,
+        //     out var hitInfo,
+        //     groundCheckDistance,
+        //     mask
+        // );
+
+        // Check if there is a collider below the player using a box cast
+        _groundCollide = Physics.BoxCast(
+            groundChecker.position + new Vector3(0, groundCheckBoxAdjust / 2, 0),
+            new Vector3(0.5f, groundCheckBoxAdjust / 2, 0.5f),
             Vector3.down,
             out var hitInfo,
+            Quaternion.identity,
             groundCheckDistance,
             mask
         );
 
-        if (_groundCollide)
-            Debug.Log($"Collided with {hitInfo.collider.name}");
+        // if (_groundCollide)
+        //     Debug.Log($"Collided with {hitInfo.collider.name}");
 
         // Check if the player's vertical velocity is less than the threshold
         var verticalVelocityCheck = Mathf.Abs(_rigidbody.velocity.y) < GROUND_VELOCITY_THRESHOLD;
@@ -201,7 +216,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         sb.AppendLine($"Player:");
         sb.AppendLine($"\tPosition: {transform.position}");
-        sb.AppendLine($"\tVelocity: {_rigidbody.velocity} ({lateralVelocity.magnitude})");
+        sb.AppendLine($"\tVelocity: {_rigidbody.velocity} ({lateralVelocity.magnitude:0.0000})");
         sb.AppendLine($"\tGrounded: {IsGrounded}");
         sb.AppendLine($"\tGCollide: {_groundCollide}");
 
@@ -241,9 +256,16 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         Gizmos.color = Color.red;
         Gizmos.DrawRay(orientation.position, orientation.forward * 3);
 
-        // Draw the ground check vector
+        // // Draw the ground check vector
+        // Gizmos.color = Color.green;
+        // Gizmos.DrawRay(groundChecker.position, Vector3.down * groundCheckDistance);
+
+        // Draw the ground check box
         Gizmos.color = Color.green;
-        Gizmos.DrawRay(groundChecker.position, Vector3.down * groundCheckDistance);
+        Gizmos.DrawWireCube(
+            groundChecker.position + new Vector3(0, groundCheckBoxAdjust / 2 - groundCheckDistance, 0),
+            new Vector3(1, groundCheckBoxAdjust, 1)
+        );
     }
 
     #endregion

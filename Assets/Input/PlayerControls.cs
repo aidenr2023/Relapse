@@ -822,6 +822,98 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": true
                 }
             ]
+        },
+        {
+            ""name"": ""PlayerMovementWallRunning"",
+            ""id"": ""1575008e-1dc6-47f5-88ff-87e6fb85512c"",
+            ""actions"": [
+                {
+                    ""name"": ""Move"",
+                    ""type"": ""Value"",
+                    ""id"": ""19dd4063-45fc-4bcf-a914-0a32f196a64c"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""94003cd4-f3fa-42d9-8aa6-e72aca44f054"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""4769f9f8-1b08-4139-abe2-ca8e7957eb02"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KB n M"",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""WASD"",
+                    ""id"": ""63af4882-6b94-4b97-89a8-2e311a28e123"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""ff618653-eadb-4866-ab23-f2b4328d36ca"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KB n M"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""dac413b8-af03-44f7-807d-9195389d1113"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KB n M"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""9c869a90-3825-4d86-b5c8-a05350471db5"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KB n M"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""c827d434-d19f-4639-bb4c-898179714438"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KB n M"",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -885,6 +977,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_PlayerMovementBasic_Jump = m_PlayerMovementBasic.FindAction("Jump", throwIfNotFound: true);
         m_PlayerMovementBasic_Dash = m_PlayerMovementBasic.FindAction("Dash", throwIfNotFound: true);
         m_PlayerMovementBasic_Sprint = m_PlayerMovementBasic.FindAction("Sprint", throwIfNotFound: true);
+        // PlayerMovementWallRunning
+        m_PlayerMovementWallRunning = asset.FindActionMap("PlayerMovementWallRunning", throwIfNotFound: true);
+        m_PlayerMovementWallRunning_Move = m_PlayerMovementWallRunning.FindAction("Move", throwIfNotFound: true);
+        m_PlayerMovementWallRunning_Jump = m_PlayerMovementWallRunning.FindAction("Jump", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1278,6 +1374,60 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         }
     }
     public PlayerMovementBasicActions @PlayerMovementBasic => new PlayerMovementBasicActions(this);
+
+    // PlayerMovementWallRunning
+    private readonly InputActionMap m_PlayerMovementWallRunning;
+    private List<IPlayerMovementWallRunningActions> m_PlayerMovementWallRunningActionsCallbackInterfaces = new List<IPlayerMovementWallRunningActions>();
+    private readonly InputAction m_PlayerMovementWallRunning_Move;
+    private readonly InputAction m_PlayerMovementWallRunning_Jump;
+    public struct PlayerMovementWallRunningActions
+    {
+        private @PlayerControls m_Wrapper;
+        public PlayerMovementWallRunningActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Move => m_Wrapper.m_PlayerMovementWallRunning_Move;
+        public InputAction @Jump => m_Wrapper.m_PlayerMovementWallRunning_Jump;
+        public InputActionMap Get() { return m_Wrapper.m_PlayerMovementWallRunning; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(PlayerMovementWallRunningActions set) { return set.Get(); }
+        public void AddCallbacks(IPlayerMovementWallRunningActions instance)
+        {
+            if (instance == null || m_Wrapper.m_PlayerMovementWallRunningActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_PlayerMovementWallRunningActionsCallbackInterfaces.Add(instance);
+            @Move.started += instance.OnMove;
+            @Move.performed += instance.OnMove;
+            @Move.canceled += instance.OnMove;
+            @Jump.started += instance.OnJump;
+            @Jump.performed += instance.OnJump;
+            @Jump.canceled += instance.OnJump;
+        }
+
+        private void UnregisterCallbacks(IPlayerMovementWallRunningActions instance)
+        {
+            @Move.started -= instance.OnMove;
+            @Move.performed -= instance.OnMove;
+            @Move.canceled -= instance.OnMove;
+            @Jump.started -= instance.OnJump;
+            @Jump.performed -= instance.OnJump;
+            @Jump.canceled -= instance.OnJump;
+        }
+
+        public void RemoveCallbacks(IPlayerMovementWallRunningActions instance)
+        {
+            if (m_Wrapper.m_PlayerMovementWallRunningActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IPlayerMovementWallRunningActions instance)
+        {
+            foreach (var item in m_Wrapper.m_PlayerMovementWallRunningActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_PlayerMovementWallRunningActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public PlayerMovementWallRunningActions @PlayerMovementWallRunning => new PlayerMovementWallRunningActions(this);
     private int m_KBnMSchemeIndex = -1;
     public InputControlScheme KBnMScheme
     {
@@ -1330,5 +1480,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
+    }
+    public interface IPlayerMovementWallRunningActions
+    {
+        void OnMove(InputAction.CallbackContext context);
+        void OnJump(InputAction.CallbackContext context);
     }
 }

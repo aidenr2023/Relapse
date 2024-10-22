@@ -6,6 +6,8 @@ public class BasicPlayerMovement : PlayerMovementScript
 {
     #region Serialized Fields
 
+    [SerializeField] private bool canSprintWithoutPower = false;
+
     [SerializeField] [Min(1)] private float sprintMultiplier = 1.5f;
 
     [SerializeField] [Min(0)] private float jumpForce = 10f;
@@ -22,6 +24,8 @@ public class BasicPlayerMovement : PlayerMovementScript
     public override InputActionMap InputActionMap => InputManager.Instance.PlayerControls.PlayerMovementBasic;
 
     public Vector2 MovementInput => _movementInput;
+
+    private bool CanSprint => canSprintWithoutPower;
 
     public bool IsSprinting => _isSprinting;
 
@@ -65,6 +69,10 @@ public class BasicPlayerMovement : PlayerMovementScript
 
     private void OnSprintPerformed(InputAction.CallbackContext obj)
     {
+        // Return if the player cannot sprint
+        if (!CanSprint)
+            return;
+
         // Set the sprinting flag to true
         _isSprinting = true;
     }
@@ -108,6 +116,8 @@ public class BasicPlayerMovement : PlayerMovementScript
 
         // Apply the lateral speed limit
         ApplyLateralSpeedLimit();
+
+        Debug.Log($"SPRINTING: {_isSprinting}!");
     }
 
     private void UpdateGroundedLateralMovement()
@@ -206,7 +216,7 @@ public class BasicPlayerMovement : PlayerMovementScript
         var jumpDirection =
             (ParentComponent.Orientation.forward * movementInput.y +
              ParentComponent.Orientation.right * movementInput.x +
-             ParentComponent.Orientation.up).normalized;
+             ParentComponent.transform.up).normalized;
 
         // Add a force to the rigid body
         ParentComponent.Rigidbody.CustomAddForce(jumpDirection * jumpForce, ForceMode.VelocityChange);

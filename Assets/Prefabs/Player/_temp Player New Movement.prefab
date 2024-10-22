@@ -531,6 +531,7 @@ GameObject:
   - component: {fileID: 8752263477337112648}
   - component: {fileID: 1774236614971930220}
   - component: {fileID: 9130919810387997847}
+  - component: {fileID: 8341745960345838466}
   m_Layer: 9
   m_Name: _temp Player New Movement
   m_TagString: Player
@@ -616,7 +617,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5395095136624487652}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 301928d1dd748f0448b7d9054d0d02d6, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -807,6 +808,7 @@ MonoBehaviour:
   orientation: {fileID: 7082384289990667645}
   groundChecker: {fileID: 7055934244896147694}
   groundCheckDistance: 0.25
+  groundCheckBoxAdjust: 0
   movementSpeed: 10
 --- !u!114 &9130919810387997847
 MonoBehaviour:
@@ -820,8 +822,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6572cf277d9d4f0c832d3d068da6ed80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canSprintWithoutPower: 0
   sprintMultiplier: 1.5
   jumpForce: 10
+--- !u!114 &8341745960345838466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5395095136624487652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c971285f906448499d4970d68e8af803, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  wallRunningSensitivity: 0.25
+  wallJumpForce: 10
+  wallJumpAngle: 20
 --- !u!1 &5840219198840771320
 GameObject:
   m_ObjectHideFlags: 0
@@ -979,7 +1000,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7322345666779145803}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0.15867692, y: -0.7113613, z: 0.6631875, w: 0.17020316}
   m_LocalPosition: {x: 0, y: 0.70000005, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
