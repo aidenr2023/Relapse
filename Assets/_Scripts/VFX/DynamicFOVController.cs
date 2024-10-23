@@ -24,8 +24,8 @@ public class DynamicFOVController : MonoBehaviour
     private IPlayerController _playerMovement;
     private IDashScript _dashScript;
 
-    private float _dashStartTime;
-    private float _dashEndTime;
+    private float _dashStartTime = float.MinValue;
+    private float _dashEndTime = float.MaxValue;
 
     private bool IsSprinting => _playerMovement.IsSprinting;
 

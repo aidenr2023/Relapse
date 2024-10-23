@@ -8,6 +8,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerWallRunning : PlayerMovementScript, IDebugged
 {
+    [SerializeField] private bool isEnabled = true;
+
     [SerializeField] private LayerMask wallLayer;
 
     [SerializeField] [Range(0, 1)] private float wallRunningSensitivity = 1f;
@@ -264,7 +266,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
         _isWallRunningRight = rightDotProduct <= minimumDot && !_isWallRunningLeft;
         _isWallRunning = _isWallRunningLeft || _isWallRunningRight;
 
-        if (_isWallRunning && !ParentComponent.IsGrounded)
+        if (_isWallRunning && !ParentComponent.IsGrounded && isEnabled)
         {
             // Set the contact point index
             _contactPointIndex = _isWallRunningLeft

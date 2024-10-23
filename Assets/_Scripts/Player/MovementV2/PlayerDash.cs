@@ -4,6 +4,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerDash : PlayerMovementScript, IDashScript
 {
+    [SerializeField] private bool isEnabled = true;
+
     [SerializeField] [Min(0)] private float dashSpeed = 10f;
     [SerializeField] private CountdownTimer dashDuration = new(.25f, false, true);
     [SerializeField] private CountdownTimer dashCooldown = new(.5f, false, true);
@@ -49,6 +51,10 @@ public class PlayerDash : PlayerMovementScript, IDashScript
 
     private void OnDashPerformed(InputAction.CallbackContext obj)
     {
+        // Return if the dash is not enabled
+        if (!isEnabled)
+            return;
+
         // If the cooldown is ticking,
         // Or the dash duration is ticking,
         // return

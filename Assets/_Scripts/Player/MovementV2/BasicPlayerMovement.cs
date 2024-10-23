@@ -6,7 +6,8 @@ public class BasicPlayerMovement : PlayerMovementScript
 {
     #region Serialized Fields
 
-    [SerializeField] private bool canSprintWithoutPower = false;
+    [SerializeField] private bool canSprintWithoutPower = true;
+    [SerializeField] private bool canJumpWithoutPower = true;
 
     [SerializeField] [Min(1)] private float sprintMultiplier = 1.5f;
 
@@ -85,6 +86,10 @@ public class BasicPlayerMovement : PlayerMovementScript
 
     private void OnJumpPerformed(InputAction.CallbackContext obj)
     {
+        // Return if the player cannot jump
+        if (!canJumpWithoutPower)
+            return;
+
         // If the player is not grounded, return
         if (!ParentComponent.IsGrounded)
         {
