@@ -55,7 +55,7 @@ MonoBehaviour:
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 7434595969876842229}
   m_Lens:
-    FieldOfView: 80
+    FieldOfView: 70
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5000
@@ -708,11 +708,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77183e8bd3658a5498311792be45966e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensitivityMultiplier: 30
-  sensX: 0.8
+  sensitivityMultiplier: 50
+  sensX: 1
   sensY: 1
   upDownAngleLimit: 5
-  orientation: {fileID: 7082384289990667645}
+  orientation: {fileID: 5224293575626551686, guid: 8657bace23580d04faebc2f449019212,
+    type: 3}
 --- !u!114 &8970542951123663805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1417,6 +1418,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 2358012739232723514, guid: 4e1f2c1c363960402afcef7794835969,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2629566555160371798, guid: 4e1f2c1c363960402afcef7794835969,
         type: 3}
       propertyPath: m_Sprite
@@ -1586,6 +1592,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Color.r
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4278795291072447712, guid: 4e1f2c1c363960402afcef7794835969,
+        type: 3}
+      propertyPath: m_text
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4376641797627733032, guid: 4e1f2c1c363960402afcef7794835969,
         type: 3}
