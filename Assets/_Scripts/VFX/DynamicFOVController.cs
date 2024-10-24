@@ -7,16 +7,16 @@ using Cinemachine;
 public class DynamicFOVController : MonoBehaviour
 {
     // Reference to the Cinemachine Virtual Camera
-    public CinemachineVirtualCamera cinemachineCamera;
+    [SerializeField] private CinemachineVirtualCamera cinemachineCamera;
 
     // FOV values for sprint and dash
-    public float normalFOV = 60f;
-    public float sprintFOV = 80f;
-    public float dashFOV = 90f;
+    [SerializeField] private float normalFOV = 60f;
+    [SerializeField] private float sprintFOV = 80f;
+    [SerializeField] private float dashFOV = 90f;
 
     // Speed of the FOV transitions
-    public float fovTransitionSpeed = 5f;
-    public float dashFOVDuration = 0.5f; // How long the dash FOV effect lasts
+    [SerializeField] private float fovTransitionSpeed = 5f;
+    [SerializeField] private float dashFOVDuration = 0.5f; // How long the dash FOV effect lasts
 
     private bool _isDashing;
     private bool _isInDashFOVTransition;

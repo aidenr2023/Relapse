@@ -51,6 +51,10 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
 
     public bool IsWallRunning => _isWallRunning;
 
+    public bool IsWallRunningLeft => _isWallRunningLeft;
+
+    public bool IsWallRunningRight => _isWallRunningRight;
+
     #endregion
 
     #region Initialization Functions
@@ -295,8 +299,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
         }
 
         // Remove the current object from the wall running objects
-        if (_wallRunningObjects.Contains(other.gameObject))
-            RemoveWallRunningObject(other.gameObject);
+        RemoveWallRunningObject(other.gameObject);
     }
 
     private void WallJump()
@@ -338,8 +341,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
         _jumpObject = contactPoint.otherCollider.gameObject;
 
         // Remove the current object from the wall running objects
-        if (_wallRunningObjects.Contains(_jumpObject))
-            RemoveWallRunningObject(_jumpObject);
+        RemoveWallRunningObject(_jumpObject);
 
         // Force all the booleans to false
         _isWallRunning = false;
@@ -348,7 +350,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
 
         // Add a force to the rigid body
         ParentComponent.Rigidbody.CustomAddForce(wallJumpForceVector, ForceMode.VelocityChange);
-        ApplyLateralSpeedLimit();
+        // ApplyLateralSpeedLimit();
 
         _isCurrentlyJumping = true;
     }
@@ -397,6 +399,9 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
 
     private void AutoWallJump(PlayerWallRunning obj)
     {
+        if (_contactPoints == null)
+            return;
+
         // Get the current contact point
         var contactPoint = _contactPoints[_contactPointIndex];
 

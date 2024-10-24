@@ -20,6 +20,8 @@ public class CountdownTimer
 
     public event Action OnTimerEnd;
 
+    public float Percentage => 1 - (TimeLeft / MaxTime);
+
     public CountdownTimer(float maxTime, bool isActive = false, bool zeroByDefault = false)
     {
         MaxTime = maxTime;
@@ -57,4 +59,8 @@ public class CountdownTimer
     {
         IsActive = active;
     }
+
+    public void Start() => SetActive(true);
+
+    public void Stop() => SetActive(false);
 }
