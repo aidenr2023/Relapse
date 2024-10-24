@@ -146,6 +146,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Check if the player's vertical velocity is less than the threshold
         var verticalVelocityCheck = Mathf.Abs(_rigidbody.velocity.y) < GROUND_VELOCITY_THRESHOLD;
 
+        // TODO: Delete this maybe?
+        verticalVelocityCheck = true;
+
         // Set the on ground to true if the player is on the ground
         IsGrounded = _groundCollide && verticalVelocityCheck;
     }

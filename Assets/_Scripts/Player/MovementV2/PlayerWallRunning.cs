@@ -402,6 +402,10 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
         if (_contactPoints == null)
             return;
 
+        // Return if the contact point index is out of range
+        if (_contactPointIndex < 0 || _contactPointIndex >= _contactPoints.Length)
+            return;
+
         // Get the current contact point
         var contactPoint = _contactPoints[_contactPointIndex];
 
