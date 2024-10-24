@@ -96,6 +96,9 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
 
         // Emit the explosion particles
         explosion.Emit(emitParams, explosionParticlesCount);
+
+        // Destroy the explosion particles after the duration of the particles
+        Destroy(explosion.gameObject, explosion.main.duration);
     }
 
     private void Explode()
