@@ -127,8 +127,6 @@ public class BasicPlayerMovement : PlayerMovementScript
         }
         // else
         //     ApplyLateralSpeedLimit(ParentComponent.MovementSpeed);
-
-        Debug.Log($"SPRINTING: {_isSprinting}!");
     }
 
     private void UpdateGroundedLateralMovement()

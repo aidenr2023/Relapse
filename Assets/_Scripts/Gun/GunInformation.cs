@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-[CreateAssetMenu(fileName = "GunInformation", menuName = "Gun/Gun Information", order = 0)]
+[CreateAssetMenu(fileName = "GunInformation", menuName = "Gun Information", order = 0)]
 public class GunInformation : ScriptableObject
 {
     public enum GunFireType

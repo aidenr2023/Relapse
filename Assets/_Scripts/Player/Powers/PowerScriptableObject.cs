@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-[CreateAssetMenu(fileName = "New Power", menuName = "Powers/Power")]
+[CreateAssetMenu(fileName = "New Power", menuName = "Power")]
 public class PowerScriptableObject : ScriptableObject
 {
     [Header("Overview Information")] [SerializeField]

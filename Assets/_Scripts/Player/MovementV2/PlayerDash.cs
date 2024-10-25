@@ -104,8 +104,6 @@ public class PlayerDash : PlayerMovementScript, IDashScript
 
     private void EndDash(IDashScript obj)
     {
-        Debug.Log($"Dash Ended");
-
         // Reset & start the dash cooldown
         dashCooldown.Reset();
         dashCooldown.SetActive(true);
