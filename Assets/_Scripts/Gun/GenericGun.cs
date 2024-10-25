@@ -272,6 +272,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Set the reloading flag to true
         _isReloading = true;
+
+        // Play the reload sound
+        Debug.Log($"Sound Settings: {gunInformation.ReloadSound.Clip.name}");
+        SoundManager.Instance.PlaySfx(gunInformation.ReloadSound);
     }
 
     public void OnEquip(WeaponManager weaponManager)

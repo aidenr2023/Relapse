@@ -28,7 +28,7 @@ public class ManagedAudioSource
 
         // Assign the sound settings to the Source
         // Source.loop = sound.Settings.Loop;
-        Source.volume = sound.Settings.Volume;
+        Source.volume = sound.Volume;
         Source.pitch = sound.Settings.Pitch;
         Source.panStereo = sound.Settings.StereoPan;
         Source.spatialBlend = sound.Settings.SpatialBlend;

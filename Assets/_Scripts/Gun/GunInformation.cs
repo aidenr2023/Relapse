@@ -37,6 +37,8 @@ public class GunInformation : ScriptableObject
 
     [SerializeField] private SoundPool fireSounds;
 
+    [SerializeField] private Sound reloadSound;
+
     #region Getters
 
     public string GunName => gunName;
@@ -58,6 +60,8 @@ public class GunInformation : ScriptableObject
     public Sound PickupSound => pickupSound;
 
     public SoundPool FireSounds => fireSounds;
+
+    public Sound ReloadSound => reloadSound;
 
     #endregion
 

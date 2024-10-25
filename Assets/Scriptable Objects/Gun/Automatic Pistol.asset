@@ -47,9 +47,16 @@ MonoBehaviour:
   pickupSound:
     clip: {fileID: 8300000, guid: 76b6b013471e4ce45907faffffe0cc2c, type: 3}
     settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
-    isPersistent: 0
+    isPersistent: 1
+    volume: 1
   fireSounds:
     sounds:
     - clip: {fileID: 8300000, guid: 11ebb68a5dcc6274688936e38eb60a73, type: 3}
       settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
       isPersistent: 1
+      volume: 1
+  reloadSound:
+    clip: {fileID: 8300000, guid: fa0fffeaf853f5745b55dcc07c3bcc83, type: 3}
+    settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
+    isPersistent: 1
+    volume: 1

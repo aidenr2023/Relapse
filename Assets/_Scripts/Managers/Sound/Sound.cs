@@ -8,6 +8,7 @@ public class Sound
 
     [SerializeField] private AudioClip clip;
     [SerializeField] private SoundSettings settings;
+    [SerializeField] [Range(0, 1)] private float volume = 1;
     [SerializeField] private bool isPersistent;
 
     #endregion
@@ -20,10 +21,12 @@ public class Sound
 
     public bool IsPersistent => isPersistent;
 
+    public float Volume => volume;
+
     #endregion
 
     public override string ToString()
     {
-        return $"[Clip: {clip.name}, Settings: {settings.name}]";
+        return $"[Clip: {clip?.name}, Settings: {settings?.name}]";
     }
 }
