@@ -33,6 +33,10 @@ public class GunInformation : ScriptableObject
 
     [SerializeField] private AnimationCurve damageFalloffCurve;
 
+    [Header("Sound")] [SerializeField] private Sound pickupSound;
+
+    [SerializeField] private SoundPool fireSounds;
+
     #region Getters
 
     public string GunName => gunName;
@@ -50,6 +54,10 @@ public class GunInformation : ScriptableObject
     public int MagazineSize => magazineSize;
 
     public float ReloadTime => reloadTime;
+
+    public Sound PickupSound => pickupSound;
+
+    public SoundPool FireSounds => fireSounds;
 
     #endregion
 

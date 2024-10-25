@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
@@ -6,7 +7,7 @@ public class SoundPool
 {
     [SerializeField] private Sound[] sounds;
 
-    public Sound[] Sounds => sounds;
+    public IReadOnlyCollection<Sound> Sounds => sounds;
 
     public Sound GetRandomSound()
     {

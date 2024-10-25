@@ -596,12 +596,9 @@ MonoBehaviour:
     sounds:
     - clip: {fileID: 8300000, guid: facf4a1c9268a2d4ebf1f3b8667d9353, type: 3}
       settings: {fileID: 11400000, guid: 9f4cf9e3ef50eb14393cbeeebb74ea1a, type: 2}
-    - clip: {fileID: 8300000, guid: 76b6b013471e4ce45907faffffe0cc2c, type: 3}
-      settings: {fileID: 11400000, guid: 9f4cf9e3ef50eb14393cbeeebb74ea1a, type: 2}
-    - clip: {fileID: 8300000, guid: 5ccef22cf9da72742b671efc3b5176e1, type: 3}
-      settings: {fileID: 11400000, guid: 9f4cf9e3ef50eb14393cbeeebb74ea1a, type: 2}
+      isPersistent: 0
   timeBetweenSounds:
-    maxTime: 1
+    maxTime: 0.25
 --- !u!1 &1272307983
 GameObject:
   m_ObjectHideFlags: 0

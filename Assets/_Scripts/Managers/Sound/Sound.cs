@@ -8,6 +8,7 @@ public class Sound
 
     [SerializeField] private AudioClip clip;
     [SerializeField] private SoundSettings settings;
+    [SerializeField] private bool isPersistent;
 
     #endregion
 
@@ -17,5 +18,12 @@ public class Sound
 
     public SoundSettings Settings => settings;
 
+    public bool IsPersistent => isPersistent;
+
     #endregion
+
+    public override string ToString()
+    {
+        return $"[Clip: {clip.name}, Settings: {settings.name}]";
+    }
 }

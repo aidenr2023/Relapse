@@ -7,7 +7,7 @@ public class TmpSoundEmitter : MonoBehaviour
     [SerializeField] private CountdownTimer timeBetweenSounds = new(1f, true);
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         timeBetweenSounds.OnTimerEnd += () =>
         {
@@ -17,7 +17,7 @@ public class TmpSoundEmitter : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         // Update the timer
         timeBetweenSounds.Update(Time.deltaTime);

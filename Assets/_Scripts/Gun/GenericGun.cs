@@ -223,6 +223,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             // Decrease the magazine size
             _currentMagazineSize--;
 
+            // Play the fire sound
+            var fireSound = gunInformation.FireSounds.GetRandomSound();
+            SoundManager.Instance.PlaySfx(fireSound);
+
             // Continue if the raycast did not hit anything
             if (!hit)
                 continue;
@@ -233,6 +237,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             // Test if the cast hit an IActor (test the root object)
             if (hitInfo.collider.transform.root.TryGetComponent(out IActor actor))
             {
+                // continue if the actor is the player
+                if (actor is PlayerInfo info && info == weaponManager.PlayerInfo)
+                    continue;
+
                 // Calculate the damage falloff
                 var distance = Vector3.Distance(startingPosition, hitInfo.point);
                 var damage = gunInformation.EvaluateBaseDamage(distance) * weaponManager.CurrentDamageMultiplier;
