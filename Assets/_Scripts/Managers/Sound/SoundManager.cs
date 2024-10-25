@@ -11,8 +11,6 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private AudioSource sfxSource;
 
-    [SerializeField] private SoundPool testPool;
-
     #endregion
 
     #region Getters
@@ -28,20 +26,6 @@ public class SoundManager : MonoBehaviour
         // Singleton pattern
         if (Instance == null)
             Instance = this;
-    }
-
-    private void Start()
-    {
-        InputManager.Instance.PlayerControls.Debug.ToggleDebug.performed += SoundTest;
-    }
-
-    private void SoundTest(InputAction.CallbackContext obj)
-    {
-        // Get a random sound from the test pool
-        var sound = testPool.GetRandomSound();
-
-        // Play the sound
-        PlaySfx(sound);
     }
 
     private void SetSoundSetting(Sound sound, AudioSource source)
@@ -85,5 +69,4 @@ public class SoundManager : MonoBehaviour
     public void PlaySfx(Sound sound) => PlaySound(sound, sfxSource, false);
 
     public void PlaySfxAtPoint(Sound sound, Vector3 pos) => PlaySoundAtPoint(sound, sfxSource, false, pos);
-
 }
