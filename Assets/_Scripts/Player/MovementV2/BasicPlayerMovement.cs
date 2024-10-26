@@ -224,6 +224,9 @@ public class BasicPlayerMovement : PlayerMovementScript
 
     private void UpdateAirborneLateralMovement()
     {
+        // Disable the footstep timer
+        footstepTimer.SetActive(false);
+
         // Return if the movement input is zero
         if (_movementInput == Vector2.zero)
             return;
