@@ -4,6 +4,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerDash : PlayerMovementScript, IDashScript
 {
+    #region Serialized Fields
+
     [SerializeField] private bool isEnabled = true;
 
     [SerializeField] [Min(0)] private float dashSpeed = 10f;
@@ -11,6 +13,11 @@ public class PlayerDash : PlayerMovementScript, IDashScript
     [SerializeField] private CountdownTimer dashCooldown = new(.5f, false, true);
 
     [SerializeField] [Min(0)] private int maxDashesInAir = 2;
+
+    [Header("Sounds")]
+    [SerializeField] private Sound dashSound;
+
+    #endregion
 
     private int _remainingDashesInAir;
 
@@ -38,6 +45,7 @@ public class PlayerDash : PlayerMovementScript, IDashScript
 
         OnDashStart += _ => PushControls(this);
         OnDashStart += StartDash;
+        OnDashStart += _ => SoundManager.Instance.PlaySfx(dashSound);
 
         OnDashEnd += _ => RemoveControls(this);
         OnDashEnd += EndDash;
