@@ -4,12 +4,20 @@ using UnityEngine;
 
 public class FlickeringLights : MonoBehaviour
 {
-    public Light light01;
+    private Light light01;
     public float minTime;
     public float maxTime;
     public float timer;
+    public float maxIntensity = 1;
+    public float minIntensity = 0;
+    private bool enabled;
 
-    // Start is called before the first frame update
+    void Awake()
+    {
+        light01 = GetComponent<Light>();
+    }
+
+    
     void Start()
     {
         timer = Random.Range(minTime, maxTime);
@@ -28,7 +36,18 @@ public class FlickeringLights : MonoBehaviour
 
         if(timer <= 0)
         {
-            light01.enabled = !light01.enabled;
+            enabled = !enabled;
+        if (enabled)
+        {
+            light01.intensity = maxIntensity;
+        }
+        else
+        {
+            light01.intensity = minIntensity;
+        }
+
+
+
             timer = Random.Range(minTime, maxTime);
         }
     }
