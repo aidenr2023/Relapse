@@ -472,6 +472,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraShakeIntensity: 2
   cameraShakeDuration: 0.1
+  fallSound:
+    clip: {fileID: 8300000, guid: facf4a1c9268a2d4ebf1f3b8667d9353, type: 3}
+    settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
+    volume: 0.25
+    isPersistent: 0
 --- !u!114 &-6734510740079581843
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -506,6 +511,23 @@ MonoBehaviour:
   canJumpWithoutPower: 1
   sprintMultiplier: 1.5
   jumpForce: 10
+  footstepSoundPool:
+    sounds:
+    - clip: {fileID: 8300000, guid: fa0fffeaf853f5745b55dcc07c3bcc83, type: 3}
+      settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
+      volume: 0.25
+      isPersistent: 0
+    - clip: {fileID: 8300000, guid: 5ccef22cf9da72742b671efc3b5176e1, type: 3}
+      settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
+      volume: 0.25
+      isPersistent: 0
+  footstepTimer:
+    maxTime: 0.25
+  jumpSound:
+    clip: {fileID: 8300000, guid: 5ccef22cf9da72742b671efc3b5176e1, type: 3}
+    settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
+    volume: 1
+    isPersistent: 0
 --- !u!114 &-2300652163101954379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -548,7 +570,7 @@ MonoBehaviour:
   dashSound:
     clip: {fileID: 8300000, guid: facf4a1c9268a2d4ebf1f3b8667d9353, type: 3}
     settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
-    volume: 1
+    volume: 0.5
     isPersistent: 1
 --- !u!1 &4362924701896538173
 GameObject:

@@ -189,7 +189,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
 
         // Call the OnEquip function
         gun.OnEquip(this);
-        
+
+        // Play the equip sound
+        SoundManager.Instance.PlaySfx(gun.GunInformation.PickupSound);
         
         // TODO: DELETE THIS EVENTUALLY
         // Get all the renderers in the gun

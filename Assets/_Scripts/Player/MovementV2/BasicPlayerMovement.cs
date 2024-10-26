@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,12 +14,22 @@ public class BasicPlayerMovement : PlayerMovementScript
 
     [SerializeField] [Min(0)] private float jumpForce = 10f;
 
+    [Header("Sounds")] [SerializeField] private SoundPool footstepSoundPool;
+
+    [SerializeField] private float walkingFootstepInterval = 0.35f;
+    [SerializeField] private float sprintingFootstepInterval = 0.25f;
+
+    [SerializeField] private Sound jumpSound;
+
     #endregion
 
     private Vector2 _movementInput;
 
     private bool _isSprinting;
     private bool _isJumpThisFrame;
+
+    private CountdownTimer footstepTimer = new(0.5f, true, false);
+
 
     #region Getters
 
@@ -38,6 +49,9 @@ public class BasicPlayerMovement : PlayerMovementScript
     {
         // Initialize the controls
         InitializeControls();
+
+        // Initialize the footstep sounds
+        InitializeFootsteps();
     }
 
     private void InitializeControls()
@@ -50,6 +64,23 @@ public class BasicPlayerMovement : PlayerMovementScript
         InputManager.Instance.PlayerControls.PlayerMovementBasic.Sprint.canceled += OnSprintCanceled;
 
         InputManager.Instance.PlayerControls.PlayerMovementBasic.Jump.performed += OnJumpPerformed;
+    }
+
+    private void InitializeFootsteps()
+    {
+        // Set up the footstep timer
+        footstepTimer.OnTimerEnd += PlayFootstepSound;
+    }
+
+    private void PlayFootstepSound()
+    {
+        Debug.Log("Playing footstep sound");
+
+        // Play the footstep sound
+        SoundManager.Instance.PlaySfx(footstepSoundPool.GetRandomSound());
+
+        // Reset the timer
+        footstepTimer.Reset();
     }
 
     #endregion
@@ -105,6 +136,15 @@ public class BasicPlayerMovement : PlayerMovementScript
 
     #region Update Functions
 
+    private void Update()
+    {
+        // Update the footstep timer
+        footstepTimer.Update(Time.deltaTime);
+
+        // Set the footstep timer's max time based on the player's walking/sprinting state
+        footstepTimer.SetMaxTime(!_isSprinting ? walkingFootstepInterval : sprintingFootstepInterval);
+    }
+
     public override void FixedMovementUpdate()
     {
         // Update the movement
@@ -136,6 +176,10 @@ public class BasicPlayerMovement : PlayerMovementScript
         {
             // Kill the lateral velocity
             ParentComponent.Rigidbody.velocity = new Vector3(0, ParentComponent.Rigidbody.velocity.y, 0);
+
+            // Stop the footstep timer to prevent footstep sounds
+            footstepTimer.SetActive(false);
+
             return;
         }
 
@@ -165,6 +209,9 @@ public class BasicPlayerMovement : PlayerMovementScript
         //     new Vector3(move.x, ParentComponent.Rigidbody.velocity.y, move.z);
 
         ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, 0, move.z), ForceMode.VelocityChange);
+
+        // Set the footstep timer to active
+        footstepTimer.SetActive(true);
     }
 
     private void UpdateAirborneLateralMovement()
@@ -229,6 +276,9 @@ public class BasicPlayerMovement : PlayerMovementScript
 
         // Add a force to the rigid body
         ParentComponent.Rigidbody.CustomAddForce(jumpDirection * jumpForce, ForceMode.VelocityChange);
+
+        // Play the jump sound
+        SoundManager.Instance.PlaySfx(jumpSound);
     }
 
     private void CameraRotationAdjust()

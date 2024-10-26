@@ -49,6 +49,11 @@ public class CountdownTimer
         TimeLeft = MaxTime;
     }
 
+    public void SetMaxTime(float time)
+    {
+        MaxTime = time;
+    }
+
     public void SetMaxTimeAndReset(float time)
     {
         MaxTime = time;
