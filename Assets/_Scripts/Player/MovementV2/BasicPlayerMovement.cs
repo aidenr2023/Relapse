@@ -74,8 +74,6 @@ public class BasicPlayerMovement : PlayerMovementScript
 
     private void PlayFootstepSound()
     {
-        Debug.Log("Playing footstep sound");
-
         // Play the footstep sound
         SoundManager.Instance.PlaySfx(footstepSoundPool.GetRandomSound());
 
@@ -138,11 +136,21 @@ public class BasicPlayerMovement : PlayerMovementScript
 
     private void Update()
     {
+        // Update the footstep sounds
+        UpdateFootsteps();
+    }
+
+    private void UpdateFootsteps()
+    {
         // Update the footstep timer
         footstepTimer.Update(Time.deltaTime);
 
         // Set the footstep timer's max time based on the player's walking/sprinting state
         footstepTimer.SetMaxTime(!_isSprinting ? walkingFootstepInterval : sprintingFootstepInterval);
+
+        // If this is NOT the active movement script, disable the footstep timer
+        if (ParentComponent.CurrentMovementScript != this)
+            footstepTimer.SetActive(false);
     }
 
     public override void FixedMovementUpdate()

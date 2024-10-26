@@ -8,6 +8,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerWallRunning : PlayerMovementScript, IDebugged
 {
+    #region Serialized Fields
+
     [SerializeField] private bool isEnabled = true;
 
     [SerializeField] private LayerMask wallLayer;
@@ -20,6 +22,15 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
     [SerializeField] [Range(0, 90)] private float wallJumpAngle = 20f;
 
     [SerializeField] [Min(0)] private float autoWallJumpForce = .5f;
+
+    [Header("Sounds")] [SerializeField] private SoundPool footstepSoundPool;
+
+    [SerializeField] private float walkingFootstepInterval = 0.35f;
+    [SerializeField] private float sprintingFootstepInterval = 0.25f;
+
+    [SerializeField] private Sound jumpSound;
+
+    #endregion
 
     #region Private Fields
 
@@ -39,6 +50,8 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
 
     private bool _isCurrentlyJumping;
     private GameObject _jumpObject;
+
+    private CountdownTimer footstepTimer = new(0.5f, true, false);
 
     #endregion
 
@@ -72,6 +85,9 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
 
         // Initialize the input
         InitializeInput();
+
+        // Initialize the footstep sounds
+        InitializeFootsteps();
     }
 
     private void InitializeEvents()
@@ -93,6 +109,21 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
         InputManager.Instance.PlayerControls.PlayerMovementWallRunning.Move.canceled += OnMoveCanceled;
 
         InputManager.Instance.PlayerControls.PlayerMovementWallRunning.Jump.performed += OnJumpPerformed;
+    }
+
+    private void InitializeFootsteps()
+    {
+        // Set up the footstep timer
+        footstepTimer.OnTimerEnd += PlayFootstepSound;
+    }
+
+    private void PlayFootstepSound()
+    {
+        // Play the footstep sound
+        SoundManager.Instance.PlaySfx(footstepSoundPool.GetRandomSound());
+
+        // Reset the timer
+        footstepTimer.Reset();
     }
 
     #endregion
@@ -124,6 +155,22 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
         // reset the wall running if the player is not wall running
         if (_wallRunningObjects.Count <= 0)
             UpdateResetWallRunning();
+
+        // Update the footstep sounds
+        UpdateFootsteps();
+    }
+
+    private void UpdateFootsteps()
+    {
+        // Update the footstep timer
+        footstepTimer.Update(Time.deltaTime);
+
+        // Set the footstep timer's max time based on the player's walking/sprinting state
+        footstepTimer.SetMaxTime(walkingFootstepInterval);
+
+        // If this is NOT the active movement script, disable the footstep timer
+        if (ParentComponent.CurrentMovementScript != this)
+            footstepTimer.SetActive(false);
     }
 
     public override void FixedMovementUpdate()
@@ -214,6 +261,9 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
         // );
         // ParentComponent.Rigidbody.CustomAddForce(velocityVector, ForceMode.VelocityChange);
         ApplyLateralSpeedLimit();
+
+        // Activate the footstep timer
+        footstepTimer.SetActive(true);
     }
 
     private void OnCollisionStay(Collision other)
@@ -353,6 +403,9 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
         // ApplyLateralSpeedLimit();
 
         _isCurrentlyJumping = true;
+
+        // Play the jump sound
+        SoundManager.Instance.PlaySfx(jumpSound);
     }
 
     private void AddWallRunningObject(GameObject wallRunningObject)

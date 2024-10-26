@@ -521,8 +521,8 @@ MonoBehaviour:
       settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
       volume: 0.25
       isPersistent: 0
-  footstepTimer:
-    maxTime: 0.25
+  walkingFootstepInterval: 0.35
+  sprintingFootstepInterval: 0.25
   jumpSound:
     clip: {fileID: 8300000, guid: 5ccef22cf9da72742b671efc3b5176e1, type: 3}
     settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
@@ -548,6 +548,23 @@ MonoBehaviour:
   wallJumpForce: 10
   wallJumpAngle: 20
   autoWallJumpForce: 0.5
+  footstepSoundPool:
+    sounds:
+    - clip: {fileID: 8300000, guid: fa0fffeaf853f5745b55dcc07c3bcc83, type: 3}
+      settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
+      volume: 0.25
+      isPersistent: 0
+    - clip: {fileID: 8300000, guid: 5ccef22cf9da72742b671efc3b5176e1, type: 3}
+      settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
+      volume: 0.25
+      isPersistent: 0
+  walkingFootstepInterval: 0.35
+  sprintingFootstepInterval: 0.25
+  jumpSound:
+    clip: {fileID: 8300000, guid: 5ccef22cf9da72742b671efc3b5176e1, type: 3}
+    settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
+    volume: 1
+    isPersistent: 0
 --- !u!114 &7032570368268033865
 MonoBehaviour:
   m_ObjectHideFlags: 0

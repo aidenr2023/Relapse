@@ -64,7 +64,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public float MovementSpeed => movementSpeed;
 
-    private PlayerMovementScript CurrentMovementScript => _movementScripts.Peek();
+    public PlayerMovementScript CurrentMovementScript => _movementScripts.Peek();
 
     public PlayerWallRunning WallRunning { get; private set; }
 
