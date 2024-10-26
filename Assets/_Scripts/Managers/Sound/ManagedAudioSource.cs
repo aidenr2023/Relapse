@@ -37,6 +37,10 @@ public class ManagedAudioSource
 
     public void PlaySound(Sound sound, bool globalLocation = false)
     {
+        // Return if the sound is null
+        if (sound == null)
+            return;
+
         bool _isPlaying = _source.isPlaying;
 
         // If the sound is already playing, stop it

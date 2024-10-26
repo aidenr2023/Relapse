@@ -146,6 +146,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
 
         // Set the charging flag to true
         CurrentPowerToken.SetChargingFlag(true);
+
+        // Play the charge start sound
+        SoundManager.Instance.PlaySfx(CurrentPower.ChargeStartSound);
     }
 
     private void OnPowerCanceled(InputAction.CallbackContext obj)
@@ -294,7 +297,12 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
             // If the cooldown percentage is 1, set the cooldown flag to false
             // TODO: Create an event or something for when the cooldown stops
             if (cToken.CooldownPercentage >= 1)
+            {
                 cToken.SetCooldownFlag(false);
+
+                // Play the power ready sound
+                SoundManager.Instance.PlaySfx(power.PowerReadySound);
+            }
 
             powerScroll.UpdatePowerUI(CurrentPower, cToken); // Update the UI here
         }
@@ -430,6 +438,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
 
         // Change the player's tolerance
         _player.PlayerInfo.ChangeTolerance(CurrentPowerToken.ToleranceMeterImpact);
+
+        // Play the power use sound
+        SoundManager.Instance.PlaySfx(CurrentPower.PowerUseSound);
     }
 
 

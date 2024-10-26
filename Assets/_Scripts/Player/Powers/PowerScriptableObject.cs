@@ -23,6 +23,17 @@ public class PowerScriptableObject : ScriptableObject
 
     private IPower _powerLogic;
 
+    #region Sounds
+
+    [Header("Sounds")]
+    [SerializeField] private Sound chargeStartSound;
+
+    [SerializeField] private Sound powerUseSound;
+
+    [SerializeField] private Sound powerReadySound;
+
+    #endregion
+
     #region Getters
 
     public string PowerName => powerName;
@@ -47,6 +58,16 @@ public class PowerScriptableObject : ScriptableObject
     }
 
     public int MaxLevel => toleranceMeterLevelMultiplier.Length - 1;
+
+    #region Sound
+
+    public Sound ChargeStartSound => chargeStartSound;
+
+    public Sound PowerUseSound => powerUseSound;
+
+    public Sound PowerReadySound => powerReadySound;
+
+    #endregion
 
     #endregion
 
