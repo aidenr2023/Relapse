@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Cinemachine;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerInfo : MonoBehaviour, IActor, IDamager
 {
@@ -18,12 +19,18 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
     // TODO: Eventually, I might move this code to another script.
     // For now though, I'm keeping this here to make things easier
-    // -Dimitri
     [Header("Tolerance Meter Settings")] [SerializeField] [Min(.001f)]
     private float maxTolerance;
 
     [SerializeField] private float currentTolerance;
     [SerializeField] private TolereanceMeter tolereanceMeter;
+
+    [Header("Relapse Image Overlay")] [SerializeField]
+    private Image relapseImage;
+
+    [SerializeField] private AnimationCurve relapseOpacityCurve;
+    [SerializeField] [Min(0.00001f)] private float relapseOpacityDuration = 1f;
+    [SerializeField] private CountdownTimer relapseOpacityTimer = new(1);
 
     /// <summary>
     /// The number of times the player has relapsed during this level.
@@ -44,17 +51,6 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
     private bool _isRelapsing;
 
     [SerializeField] private TMP_Text relapseText;
-
-    /// <summary>
-    /// An event that is called when the player relapses.
-    /// Used mostly to connect to outside scripts.
-    /// </summary>
-    public Action<PlayerInfo> OnRelapseStart;
-
-    /// <summary>
-    /// An event that is called when the player's relapse ends.
-    /// </summary>
-    public Action<PlayerInfo> OnRelapseEnd;
 
     private InputUserHandler _inputUserHandler;
 
@@ -81,6 +77,17 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
     #region Events
 
+    /// <summary>
+    /// An event that is called when the player relapses.
+    /// Used mostly to connect to outside scripts.
+    /// </summary>
+    public Action<PlayerInfo> OnRelapseStart;
+
+    /// <summary>
+    /// An event that is called when the player's relapse ends.
+    /// </summary>
+    public Action<PlayerInfo> OnRelapseEnd;
+
     public event HealthChangedEventHandler OnDamaged;
     public event HealthChangedEventHandler OnHealed;
     public event HealthChangedEventHandler OnDeath;
@@ -89,7 +96,7 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
     #region Initialization Functions
 
-    void Start()
+    private void Start()
     {
         // Set the player's health to the max health
         // health = maxHealth;
@@ -121,12 +128,56 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
         OnDeath += (sender, args) =>
             Debug.Log($"{(args.DamagerObject == args.Actor ? "RELAPSE" : "DEATH")}!");
 
+        // Disable the relapse image
+        relapseImage.enabled = false;
+
+        relapseOpacityTimer.OnTimerEnd += () => { relapseOpacityTimer.Reset(); };
+
+        // Initialize the events
+        InitializeEvents();
     }
 
     private void InitializeInput()
     {
         // Create the input handler
         _inputUserHandler = new InputUserHandler(gameObject);
+    }
+
+    private void InitializeEvents()
+    {
+        // Subscribe to the OnRelapseStart event
+        // Change the color of the relapse image
+        OnRelapseStart += StartRelapseImage;
+
+        // Subscribe to the OnRelapseEnd event
+        // Change the color of the relapse image
+        OnRelapseEnd += EndRelapseImage;
+    }
+
+    private void StartRelapseImage(PlayerInfo obj)
+    {
+        // Enable the relapse image
+        relapseImage.enabled = true;
+
+        // Reset the relapse opacity timer
+        relapseOpacityTimer.Reset();
+
+        // Start the relapse opacity timer
+        relapseOpacityTimer.Start();
+
+        relapseOpacityTimer.SetActive(true);
+    }
+
+    private void EndRelapseImage(PlayerInfo obj)
+    {
+        // Disable the relapse image
+        relapseImage.enabled = false;
+
+        // Stop the relapse opacity timer
+        relapseOpacityTimer.Stop();
+
+        // Reset the relapse opacity timer
+        relapseOpacityTimer.Reset();
     }
 
     #endregion
@@ -149,6 +200,9 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
         // Prevent the tolerance from going below 0 or above the max value
         ClampTolerance();
+
+        // Update the Relapse Image update
+        RelapseImageUpdate();
 
         if (maxTolerance > 0)
             tolereanceMeter.UpdateToleranceUI(currentTolerance / maxTolerance); // Scale to 0-1
@@ -222,6 +276,27 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
         // Apply the dampening to the virtual camera's aim
         vCam.GetCinemachineComponent<CinemachineSameAsFollowTarget>().m_Damping = vCamDampening;
+    }
+
+    private void RelapseImageUpdate()
+    {
+        // Update the relapse opacity timer
+        relapseOpacityTimer.Update(Time.deltaTime);
+
+        // Return if the relapse image is not enabled
+        if (relapseImage == null || !relapseImage.enabled)
+            return;
+
+        // Update the relapse image's opacity
+        var opacity = relapseOpacityCurve.Evaluate(relapseOpacityTimer.Percentage);
+
+        // Set the opacity of the relapse image
+        relapseImage.color = new Color(
+            relapseImage.color.r,
+            relapseImage.color.g,
+            relapseImage.color.b,
+            opacity
+        );
     }
 
     #endregion

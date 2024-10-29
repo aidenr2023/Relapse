@@ -352,6 +352,43 @@ MonoBehaviour:
   maxTolerance: 100
   currentTolerance: 0
   tolereanceMeter: {fileID: 8717561934427330062}
+  relapseImage: {fileID: 759131344803418922}
+  relapseOpacityCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.75
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 136
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  relapseOpacityDuration: 1
+  relapseOpacityTimer:
+    maxTime: 1
   relapsesToLose: 3
   toleranceRelapsePercent: 0.5
   relapseDuration: 10
@@ -1989,6 +2026,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 6942508457977872047}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &759131344803418922 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7696730135444401541, guid: 4e1f2c1c363960402afcef7794835969,
+    type: 3}
+  m_PrefabInstance: {fileID: 6942508457977872047}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &3658807759508138457 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5953209971373414262, guid: 4e1f2c1c363960402afcef7794835969,

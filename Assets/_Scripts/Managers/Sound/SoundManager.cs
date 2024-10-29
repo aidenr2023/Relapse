@@ -151,7 +151,7 @@ public class SoundManager : MonoBehaviour, IDebugged
         // If no source is available,
         // return the furthest along source
         highestCompletionTime = 0;
-        highestCompletionIndex = -1;
+        highestCompletionIndex = 0;
 
         for (var i = 0; i < sources.Length; i++)
         {
