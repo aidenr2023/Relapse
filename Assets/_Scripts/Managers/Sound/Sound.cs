@@ -27,6 +27,9 @@ public class Sound
 
     public override string ToString()
     {
+        if (clip == null || settings == null)
+            return "";
+
         return $"[Clip: {clip?.name}, Settings: {settings?.name}]";
     }
 }
