@@ -23,12 +23,19 @@ public class ManagedAudioSource
 
     private void SetSoundSettings(Sound sound)
     {
+        if (sound == null)
+            return;
+
         // Assign the sound clip to the source
         Source.clip = sound.Clip;
 
         // Assign the sound settings to the Source
         // Source.loop = sound.Settings.Loop;
         Source.volume = sound.Volume;
+
+        if (sound.Settings == null)
+            return;
+
         Source.pitch = sound.Settings.Pitch;
         Source.panStereo = sound.Settings.StereoPan;
         Source.spatialBlend = sound.Settings.SpatialBlend;

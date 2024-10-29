@@ -5,7 +5,7 @@ using Cinemachine;
 using TMPro;
 using UnityEngine;
 
-public class PlayerInfo : MonoBehaviour, IActor
+public class PlayerInfo : MonoBehaviour, IActor, IDamager
 {
     #region Fields
 
@@ -109,14 +109,18 @@ public class PlayerInfo : MonoBehaviour, IActor
         // Initialize the input handler
         InitializeInput();
 
-        OnHealed += (sender, args) =>
-            Debug.Log(
-                $"{gameObject.name} healed: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
-        OnDamaged += (sender, args) =>
-            Debug.Log(
-                $"{gameObject.name} damaged: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
+        // OnHealed += (sender, args) =>
+        //     Debug.Log(
+        //         $"{gameObject.name} healed: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
+        // OnDamaged += (sender, args) =>
+        //     Debug.Log(
+        //         $"{gameObject.name} damaged: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
         OnDeath += (sender, args) =>
             Debug.Log($"{gameObject.name} died: {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
+
+        OnDeath += (sender, args) =>
+            Debug.Log($"{(args.DamagerObject == args.Actor ? "RELAPSE" : "DEATH")}!");
+
     }
 
     private void InitializeInput()
@@ -328,6 +332,8 @@ public class PlayerInfo : MonoBehaviour, IActor
 
     private void DieFromRelapse()
     {
+        ChangeHealth(-maxHealth, this, this);
+
         // Trigger the lose condition
         if (winLose != null)
             winLose.Lose("Player relapsed too many times!");
