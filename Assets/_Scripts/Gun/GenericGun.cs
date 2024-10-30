@@ -8,7 +8,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     #region Serialized Fields
 
     [SerializeField] private GunInformation gunInformation;
-
+    [SerializeField]private Animator animator;
     [Header("Muzzle Particles")] [SerializeField]
     private Transform muzzleLocation;
 
@@ -88,6 +88,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     {
         // Get the collider component
         Collider = GetComponent<Collider>();
+        
+        // Get the animator component
+        //animator = GetComponent<Animator>();
     }
 
     private void Start()
@@ -155,10 +158,11 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Return if the gun is currently reloading
         if (IsReloading)
             return;
+            
 
         // Set the firing flag to true
         _isFiring = true;
-
+        //
         // Set the fired this frame flag to true
         _hasFiredThisFrame = true;
     }
@@ -222,7 +226,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
             // Decrease the magazine size
             _currentMagazineSize--;
-
+            
+            //Play shooting animation
+            animator.SetTrigger("Shoot");
+            
             // Play the fire sound
             var fireSound = gunInformation.FireSounds.GetRandomSound();
             SoundManager.Instance.PlaySfx(fireSound);
@@ -269,10 +276,15 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Set the reload time to the reload time of the gun
         _currentReloadTime = gunInformation.ReloadTime;
-
+        
+        
+        
         // Set the reloading flag to true
         _isReloading = true;
-
+        
+        // set animation param to _isReloading boolean
+        animator.SetBool("Reloading", _isReloading);
+        
         // Play the reload sound
         Debug.Log($"Sound Settings: {gunInformation.ReloadSound.Clip.name}");
         SoundManager.Instance.PlaySfx(gunInformation.ReloadSound);
