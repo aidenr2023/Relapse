@@ -89,7 +89,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Get the collider component
         Collider = GetComponent<Collider>();
         
-        // Get the animator component
+        // Get the animator component from pistol4
         //animator = GetComponent<Animator>();
     }
 
@@ -227,8 +227,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             // Decrease the magazine size
             _currentMagazineSize--;
             
+       
+            
             //Play shooting animation
-            animator.SetTrigger("Shoot");
+            animator.SetTrigger("Shooting");
             
             // Play the fire sound
             var fireSound = gunInformation.FireSounds.GetRandomSound();
@@ -282,9 +284,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Set the reloading flag to true
         _isReloading = true;
         
-        // set animation param to _isReloading boolean
-        animator.SetBool("Reloading", _isReloading);
-        
+        // set animation param trigger to reload
+        animator.SetTrigger("Reload");
+                
         // Play the reload sound
         Debug.Log($"Sound Settings: {gunInformation.ReloadSound.Clip.name}");
         SoundManager.Instance.PlaySfx(gunInformation.ReloadSound);
