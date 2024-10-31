@@ -1,14 +1,20 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 
 public class MoveOnTrigger : MonoBehaviour
 {
     public GameObject targetObject; // The object to move
     public float speed = 5f;        // Speed of movement
     public float duration = 2f;     // Duration to move for
-
     private bool isMoving = false;  // Is the object currently moving
+    [SerializeField] private Animator animator; // Animator component for the object
+    // sound of the object
+    [SerializeField] private AudioSource audioSource; // ManagedAudioSource component for the object
+
+  
 
     private void OnTriggerEnter(Collider other)
     {
@@ -22,6 +28,11 @@ public class MoveOnTrigger : MonoBehaviour
     private IEnumerator MoveObject()
     {
         isMoving = true;
+        //play sound when is moving true
+        audioSource.PlayOneShot(audioSource.clip);
+        
+        //play animation when is moving true
+        animator.SetBool("isMoving", isMoving);
 
         // Store the initial position of the target object
         Vector3 startPosition = targetObject.transform.position;
@@ -42,7 +53,9 @@ public class MoveOnTrigger : MonoBehaviour
 
         // Destroy the trigger volume after movement is completed
         Destroy(gameObject); // This destroys the GameObject this script is attached to
-
+        
         isMoving = false;
+        //play animation when is moving false
+        animator.SetBool("isMoving", isMoving);
     }
 }
