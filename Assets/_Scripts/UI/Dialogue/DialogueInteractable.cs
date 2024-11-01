@@ -1,11 +1,12 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class DialogueInteractable : MonoBehaviour, IInteractable
 {
     #region Serialized Fields
 
-    [SerializeField] private DialogueObject dialogueObject;
+    [FormerlySerializedAs("dialogueObject")] [SerializeField] private DialogueNode dialogueNode;
 
     #endregion
 
@@ -19,7 +20,7 @@ public class DialogueInteractable : MonoBehaviour, IInteractable
 
     public void Interact(PlayerInteraction playerInteraction)
     {
-        StartDialogue(dialogueObject);
+        StartDialogue(dialogueNode);
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)
@@ -28,10 +29,10 @@ public class DialogueInteractable : MonoBehaviour, IInteractable
 
     public string InteractText(PlayerInteraction playerInteraction)
     {
-        return $"Talk to {dialogueObject.NpcName}";
+        return $"Talk to {dialogueNode.SpeakerInfo.SpeakerName}";
     }
 
-    public void StartDialogue(DialogueObject dialogue)
+    public void StartDialogue(DialogueNode dialogue)
     {
         // // Print out each line of dialogue
         // foreach (var entry in dialogueObject.Entries)

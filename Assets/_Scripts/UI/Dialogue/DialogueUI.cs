@@ -16,18 +16,13 @@ public class DialogueUI : MonoBehaviour
 
     public TMP_Text DialogueText => dialogueText;
 
-    private bool IsTyping => _currentCharacterIndex < _currentDialogue.Entries[_currentDialogueIndex].Text.Length;
+    private bool IsTyping => _currentCharacterIndex < _currentDialogue.DialogueText.Length;
 
     #endregion
 
     #region Private Fields
 
-    private DialogueObject _currentDialogue;
-
-    /// <summary>
-    /// Which dialogue entry we are currently on.
-    /// </summary>
-    private int _currentDialogueIndex;
+    private DialogueNode _currentDialogue;
 
     private int _currentCharacterIndex;
 
@@ -47,8 +42,6 @@ public class DialogueUI : MonoBehaviour
     {
         // Set the dialogue UI to be invisible
         SetVisibility(false);
-
-        _currentDialogueIndex = 0;
 
         // Reset the current text
         ResetCurrentText();
@@ -89,14 +82,17 @@ public class DialogueUI : MonoBehaviour
         if (!IsTyping)
             return;
 
+        // // Set the speaker Text
+        // speakerText.text = _currentDialogue.Entries[_currentDialogueIndex].Speaker switch
+        // {
+        //     DialogueSpeaker.NPC => _currentDialogue.NpcName,
+        //     DialogueSpeaker.Player => "Player",
+        //     DialogueSpeaker.Narrator => "Narrator",
+        //     _ => "UNHANDLED SPEAKER!!!"
+        // };
+
         // Set the speaker Text
-        speakerText.text = _currentDialogue.Entries[_currentDialogueIndex].Speaker switch
-        {
-            DialogueSpeaker.NPC => _currentDialogue.NpcName,
-            DialogueSpeaker.Player => "Player",
-            DialogueSpeaker.Narrator => "Narrator",
-            _ => "UNHANDLED SPEAKER!!!"
-        };
+        speakerText.text = _currentDialogue.SpeakerInfo.SpeakerName;
     }
 
     private void ResetCurrentText()
@@ -137,15 +133,13 @@ public class DialogueUI : MonoBehaviour
         gameObject.SetActive(visible);
     }
 
-    public void StartDialogue(DialogueObject dialogueObject)
+    public void StartDialogue(DialogueNode dialogueNode)
     {
-        Debug.Log($"Starting Dialogue with {dialogueObject.NpcName}");
+        // Debug.Log($"Starting Dialogue with {dialogueNode.NpcName}");
+        Debug.Log($"Starting Dialogue with {dialogueNode.SpeakerInfo.SpeakerName}");
 
         // Set the current dialogue object
-        _currentDialogue = dialogueObject;
-
-        // Set the current dialogue index to 0
-        _currentDialogueIndex = 0;
+        _currentDialogue = dialogueNode;
 
         // Reset the current character index
         _currentCharacterIndex = 0;
@@ -173,30 +167,45 @@ public class DialogueUI : MonoBehaviour
             _currentText.Clear();
 
             // Add all the text
-            AddCurrentText(_currentDialogue.Entries[_currentDialogueIndex].Text);
+            // AddCurrentText(_currentDialogue.Entries[_currentDialogueIndex].Text);
+            AddCurrentText(_currentDialogue.DialogueText);
 
             // Set the character index
-            _currentCharacterIndex = _currentDialogue.Entries[_currentDialogueIndex].Text.Length;
+            // _currentCharacterIndex = _currentDialogue.Entries[_currentDialogueIndex].Text.Length;
+            _currentCharacterIndex = _currentDialogue.DialogueText.Length;
         }
         else
         {
             // If we are not typing, reset the current text
             ResetCurrentText();
 
-            // Increment the current dialogue index
-            _currentDialogueIndex++;
-
             // Reset the current character index
             _currentCharacterIndex = 0;
 
-            // If the current dialogue index is greater than or equal to the number of entries, end the dialogue
-            if (_currentDialogueIndex >= _currentDialogue.Entries.Length)
+            // // If the current dialogue index is greater than or equal to the number of entries, end the dialogue
+            // if (_currentDialogueIndex >= _currentDialogue.Entries.Length)
+            // {
+            //     // Set the dialogue UI to be invisible
+            //     SetVisibility(false);
+            //
+            //     // Set the current dialogue to null
+            //     _currentDialogue = null;
+            // }
+
+            var nextNode = _currentDialogue.GetNextNode();
+
+            // If there are no more dialogue nodes, end the dialogue
+            if (nextNode == null)
             {
                 // Set the dialogue UI to be invisible
                 SetVisibility(false);
 
                 // Set the current dialogue to null
                 _currentDialogue = null;
+            }
+            else
+            {
+                _currentDialogue = nextNode;
             }
         }
 
@@ -207,7 +216,8 @@ public class DialogueUI : MonoBehaviour
     private void AddCharacterOnTimerEnd()
     {
         // Get the current text from the dialogue
-        var currentText = _currentDialogue.Entries[_currentDialogueIndex].Text;
+        // var currentText = _currentDialogue.Entries[_currentDialogueIndex].Text;
+        var currentText = _currentDialogue.DialogueText;
 
         // Add the current character to the text
         AddCurrentText(currentText[_currentCharacterIndex]);
