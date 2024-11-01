@@ -114,8 +114,8 @@ public class SoundManager : MonoBehaviour, IDebugged
 
     private void Start()
     {
-        // Add this item to the debug manager
-        DebugManager.Instance.AddDebuggedObject(this);
+        // // Add this item to the debug manager
+        // DebugManager.Instance.AddDebuggedObject(this);
     }
 
     private ManagedAudioSource GetNextSoundSource(ManagedAudioSource[] sources)
