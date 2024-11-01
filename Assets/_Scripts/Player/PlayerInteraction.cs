@@ -40,6 +40,7 @@ public class PlayerInteraction : MonoBehaviour
     {
         // Subscribe to the interact event
         InputManager.Instance.PlayerControls.GamePlay.Interact.performed += OnInteractPerformed;
+        InputManager.Instance.PlayerControls.GamePlay.Interact.performed += InteractDialogue;
     }
 
     private void OnInteractPerformed(InputAction.CallbackContext obj)
@@ -50,6 +51,14 @@ public class PlayerInteraction : MonoBehaviour
 
         // Interact with the current interactable
         _selectedInteractable.Interact(this);
+    }
+
+    private void InteractDialogue(InputAction.CallbackContext obj)
+    {
+        if (_selectedInteractable != null)
+            return;
+
+        DialogueManager.Instance.DialogueUI.NextDialogue();
     }
 
     #endregion

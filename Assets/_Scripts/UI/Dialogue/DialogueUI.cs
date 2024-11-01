@@ -7,6 +7,7 @@ public class DialogueUI : MonoBehaviour
 {
     #region Serialized Fields
 
+    [SerializeField] private TMP_Text speakerText;
     [SerializeField] private TMP_Text dialogueText;
 
     #endregion
@@ -30,9 +31,9 @@ public class DialogueUI : MonoBehaviour
 
     private int _currentCharacterIndex;
 
-    private StringBuilder _currentText = new();
+    private readonly StringBuilder _currentText = new();
 
-    private CountdownTimer _typingTimer = new CountdownTimer(1f, true, false);
+    private readonly CountdownTimer _typingTimer = new CountdownTimer(1f, true, false);
 
     #endregion
 
@@ -87,6 +88,15 @@ public class DialogueUI : MonoBehaviour
         // If we are no longer typing, return
         if (!IsTyping)
             return;
+
+        // Set the speaker Text
+        speakerText.text = _currentDialogue.Entries[_currentDialogueIndex].Speaker switch
+        {
+            DialogueSpeaker.NPC => _currentDialogue.NpcName,
+            DialogueSpeaker.Player => "Player",
+            DialogueSpeaker.Narrator => "Narrator",
+            _ => "UNHANDLED SPEAKER!!!"
+        };
     }
 
     private void ResetCurrentText()
@@ -152,6 +162,10 @@ public class DialogueUI : MonoBehaviour
 
     public void NextDialogue()
     {
+        // Return if the current dialogue is null
+        if (_currentDialogue == null)
+            return;
+
         // If we are still typing, finish typing
         if (IsTyping)
         {
@@ -163,7 +177,6 @@ public class DialogueUI : MonoBehaviour
 
             // Set the character index
             _currentCharacterIndex = _currentDialogue.Entries[_currentDialogueIndex].Text.Length;
-            return;
         }
         else
         {
@@ -172,7 +185,23 @@ public class DialogueUI : MonoBehaviour
 
             // Increment the current dialogue index
             _currentDialogueIndex++;
+
+            // Reset the current character index
+            _currentCharacterIndex = 0;
+
+            // If the current dialogue index is greater than or equal to the number of entries, end the dialogue
+            if (_currentDialogueIndex >= _currentDialogue.Entries.Length)
+            {
+                // Set the dialogue UI to be invisible
+                SetVisibility(false);
+
+                // Set the current dialogue to null
+                _currentDialogue = null;
+            }
         }
+
+        // Reset the typing timer
+        _typingTimer.Reset();
     }
 
     private void AddCharacterOnTimerEnd()
