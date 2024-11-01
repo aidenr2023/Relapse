@@ -5,10 +5,10 @@ using UnityEngine.UI;
 
 public class PowerScroll : MonoBehaviour
 {
-    public Image powerIcon; // Power icon UI element
-    public Slider chargeSlider; // Charge bar UI element
-    public Slider cooldownSlider; // Cooldown bar UI element
-    public Text powerNameText; // Power name UI text
+    [SerializeField] private Image powerIcon; // Power icon UI element
+    [SerializeField] private Slider chargeSlider; // Charge bar UI element
+    [SerializeField] private Slider cooldownSlider; // Cooldown bar UI element
+    [SerializeField] private Text powerNameText; // Power name UI text
 
     // Update the UI elements based on the current power
     public void UpdatePowerUI(PowerScriptableObject currentPower, PowerToken powerToken)
@@ -22,7 +22,7 @@ public class PowerScroll : MonoBehaviour
 
         // Show the UI elements
         SetUIVisibility(true);
-        
+
         // Update power icon, Assuming you have a sprite for each power
         if (powerIcon != null)
             powerIcon.sprite = currentPower.Icon;
@@ -31,17 +31,39 @@ public class PowerScroll : MonoBehaviour
         if (powerNameText != null)
             powerNameText.text = currentPower.name;
 
-        // Update the charge slider
-        if (chargeSlider != null)
-            chargeSlider.value = powerToken.ChargePercentage;
-
-        // Update the cooldown slider
-        if (cooldownSlider != null)
-            cooldownSlider.value = powerToken.CooldownPercentage;
+        // Update the charge and cooldown sliders
+        UpdateSlider(currentPower, powerToken);
 
         // Debug.Log("Updating Power UI for: " + currentPower.name);
     }
-    
+
+    private void UpdateSlider(PowerScriptableObject currentPower, PowerToken powerToken)
+    {
+        // If the cooldown and charge sliders are separate, update them separately
+        if (chargeSlider != cooldownSlider)
+        {
+            // Update the charge slider
+            if (chargeSlider != null)
+                chargeSlider.value = 1 - powerToken.CooldownPercentage;
+
+            // Update the cooldown slider
+            if (cooldownSlider != null)
+                cooldownSlider.value = powerToken.CooldownPercentage;
+        }
+
+        // If the cooldown and charge sliders are the same, update them together
+        else
+        {
+            // If the current power is cooling down, update the slider based on the cooldown percentage
+            if (powerToken.IsCoolingDown)
+                cooldownSlider.value = 1 - powerToken.CooldownPercentage;
+
+            // Otherwise, update the slider based on the charge percentage
+            else
+                chargeSlider.value = powerToken.ChargePercentage;
+        }
+    }
+
     private void SetUIVisibility(bool isVisible)
     {
         powerIcon?.gameObject.SetActive(isVisible);
