@@ -31,20 +31,22 @@ public class DialogueInteractable : MonoBehaviour, IInteractable
         return $"Talk to {dialogueObject.NpcName}";
     }
 
-    public void StartDialogue(DialogueObject dialogueObject)
+    public void StartDialogue(DialogueObject dialogue)
     {
-        // Print out each line of dialogue
-        foreach (var entry in dialogueObject.Entries)
-        {
-            var speaker = entry.Speaker switch
-            {
-                DialogueSpeaker.NPC => dialogueObject.NpcName,
-                DialogueSpeaker.Player => "Player",
-                DialogueSpeaker.Narrator => "",
-                _ => ""
-            };
+        // // Print out each line of dialogue
+        // foreach (var entry in dialogueObject.Entries)
+        // {
+        //     var speaker = entry.Speaker switch
+        //     {
+        //         DialogueSpeaker.NPC => dialogueObject.NpcName,
+        //         DialogueSpeaker.Player => "Player",
+        //         DialogueSpeaker.Narrator => "",
+        //         _ => ""
+        //     };
+        //
+        //     Debug.Log($"{speaker}: {entry.Text}");
+        // }
 
-            Debug.Log($"{speaker}: {entry.Text}");
-        }
+        DialogueManager.Instance.DialogueUI.StartDialogue(dialogue);
     }
 }
