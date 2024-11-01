@@ -34,20 +34,6 @@ public class DialogueInteractable : MonoBehaviour, IInteractable
 
     public void StartDialogue(DialogueNode dialogue)
     {
-        // // Print out each line of dialogue
-        // foreach (var entry in dialogueObject.Entries)
-        // {
-        //     var speaker = entry.Speaker switch
-        //     {
-        //         DialogueSpeaker.NPC => dialogueObject.NpcName,
-        //         DialogueSpeaker.Player => "Player",
-        //         DialogueSpeaker.Narrator => "",
-        //         _ => ""
-        //     };
-        //
-        //     Debug.Log($"{speaker}: {entry.Text}");
-        // }
-
         DialogueManager.Instance.DialogueUI.StartDialogue(dialogue);
     }
 }

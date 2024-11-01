@@ -206,6 +206,8 @@ public class DialogueUI : MonoBehaviour
             else
             {
                 _currentDialogue = nextNode;
+
+                Debug.Log($"Now using: {_currentDialogue} - {_currentDialogue.DialogueText}");
             }
         }
 

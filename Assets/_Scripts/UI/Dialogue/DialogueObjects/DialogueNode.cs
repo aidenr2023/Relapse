@@ -1,14 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.Serialization;
 
-// [CreateAssetMenu(fileName = "New Dialogue", menuName = "Dialogue/Dialogue Object", order = 0)]
 public abstract class DialogueNode : ScriptableObject
 {
     #region Serialized Fields
 
     [SerializeField] protected DialogueSpeakerInfo speakerInfo;
-
-    [SerializeField] [TextArea] protected string dialogueText;
 
     #endregion
 
@@ -16,7 +13,7 @@ public abstract class DialogueNode : ScriptableObject
 
     public DialogueSpeakerInfo SpeakerInfo => speakerInfo;
 
-    public string DialogueText => dialogueText;
+    public abstract string DialogueText { get; }
 
     #endregion
 
