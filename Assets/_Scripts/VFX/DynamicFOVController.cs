@@ -25,7 +25,7 @@ public class DynamicFOVController : MonoBehaviour
     private IDashScript _dashScript;
 
     private float _dashStartTime = float.MinValue;
-    private float _dashEndTime = float.MaxValue;
+    private float _dashEndTime = float.MinValue;
 
     private bool IsSprinting => _playerMovement.IsSprinting;
 
@@ -104,8 +104,8 @@ public class DynamicFOVController : MonoBehaviour
 
         var setFov = normalFOV;
 
-        float setSprintFov = setFov;
-        float setDashFov = setFov;
+        var setSprintFov = setFov;
+        var setDashFov = setFov;
 
         if (IsSprinting && sprintFOV > normalFOV)
             setSprintFov = sprintFOV;
@@ -116,7 +116,7 @@ public class DynamicFOVController : MonoBehaviour
 
         setFov = Mathf.Max(setSprintFov, setDashFov, normalFOV);
 
-        // Debug.Log($"Setting FOV to {setFov}! (Sprinting: {IsSprinting}, Dashing: {_isDashing})");
+        // Debug.Log($"Set FOV: {setFov} - {normalFOV} - {setSprintFov} - {setDashFov}");
 
         cinemachineCamera.m_Lens.FieldOfView = setFov;
     }
