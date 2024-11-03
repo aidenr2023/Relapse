@@ -8,7 +8,7 @@ public sealed class SimpleDialogueNode : DialogueNode
 
     public override string DialogueText => dialogueText;
 
-    public override DialogueNode GetNextNode()
+    public override DialogueNode GetNextNode(int index = 0)
     {
         return nextDialogue;
     }

@@ -1,18 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class DialogueUI : MonoBehaviour
 {
     #region Serialized Fields
 
+    [Header("Text")]
+    [SerializeField] private GameObject textBoxParent;
     [SerializeField] private TMP_Text speakerText;
     [SerializeField] private TMP_Text dialogueText;
+
+    [Header("Buttons")] [SerializeField] private GameObject dialogueButtonsParent;
+    [SerializeField] private Button[] buttons = new Button[4];
 
     #endregion
 
     #region Getters
+
+    public DialogueNode CurrentDialogue => _currentDialogue;
 
     public TMP_Text DialogueText => dialogueText;
 
@@ -30,6 +41,8 @@ public class DialogueUI : MonoBehaviour
 
     private readonly CountdownTimer _typingTimer = new CountdownTimer(1f, true, false);
 
+    private readonly List<DialogueNode> _dialogueNodes = new();
+
     #endregion
 
     private void Awake()
@@ -40,6 +53,9 @@ public class DialogueUI : MonoBehaviour
 
     private void Start()
     {
+        // Disable the dialogue buttons parent by default
+        dialogueButtonsParent.SetActive(false);
+
         // Set the dialogue UI to be invisible
         SetVisibility(false);
 
@@ -81,15 +97,6 @@ public class DialogueUI : MonoBehaviour
         // If we are no longer typing, return
         if (!IsTyping)
             return;
-
-        // // Set the speaker Text
-        // speakerText.text = _currentDialogue.Entries[_currentDialogueIndex].Speaker switch
-        // {
-        //     DialogueSpeaker.NPC => _currentDialogue.NpcName,
-        //     DialogueSpeaker.Player => "Player",
-        //     DialogueSpeaker.Narrator => "Narrator",
-        //     _ => "UNHANDLED SPEAKER!!!"
-        // };
 
         // Set the speaker Text
         speakerText.text = _currentDialogue.SpeakerInfo.SpeakerName;
@@ -138,9 +145,6 @@ public class DialogueUI : MonoBehaviour
         // Debug.Log($"Starting Dialogue with {dialogueNode.NpcName}");
         Debug.Log($"Starting Dialogue with {dialogueNode.SpeakerInfo.SpeakerName}");
 
-        // Set the current dialogue object
-        _currentDialogue = dialogueNode;
-
         // Reset the current character index
         _currentCharacterIndex = 0;
 
@@ -152,13 +156,33 @@ public class DialogueUI : MonoBehaviour
 
         // Set the dialogue UI to be visible
         SetVisibility(true);
+
+        // Clear the dialogue nodes list
+        _dialogueNodes.Clear();
+
+        // Set the current dialogue object
+        SetCurrentDialogue(dialogueNode);
     }
 
     public void NextDialogue()
     {
+        if (DialogueManager.Instance.DialogueUI.CurrentDialogue is DialogueChoiceNode)
+            return;
+
+        AdvanceDialogue();
+    }
+
+    private void AdvanceDialogue()
+    {
         // Return if the current dialogue is null
         if (_currentDialogue == null)
             return;
+
+        // Deactivate the dialogue buttons parent
+        dialogueButtonsParent.SetActive(false);
+
+        // Activate the text box parent
+        textBoxParent.SetActive(true);
 
         // If we are still typing, finish typing
         if (IsTyping)
@@ -167,11 +191,9 @@ public class DialogueUI : MonoBehaviour
             _currentText.Clear();
 
             // Add all the text
-            // AddCurrentText(_currentDialogue.Entries[_currentDialogueIndex].Text);
             AddCurrentText(_currentDialogue.DialogueText);
 
             // Set the character index
-            // _currentCharacterIndex = _currentDialogue.Entries[_currentDialogueIndex].Text.Length;
             _currentCharacterIndex = _currentDialogue.DialogueText.Length;
         }
         else
@@ -181,16 +203,6 @@ public class DialogueUI : MonoBehaviour
 
             // Reset the current character index
             _currentCharacterIndex = 0;
-
-            // // If the current dialogue index is greater than or equal to the number of entries, end the dialogue
-            // if (_currentDialogueIndex >= _currentDialogue.Entries.Length)
-            // {
-            //     // Set the dialogue UI to be invisible
-            //     SetVisibility(false);
-            //
-            //     // Set the current dialogue to null
-            //     _currentDialogue = null;
-            // }
 
             var nextNode = _currentDialogue.GetNextNode();
 
@@ -205,7 +217,8 @@ public class DialogueUI : MonoBehaviour
             }
             else
             {
-                _currentDialogue = nextNode;
+                // Add the current dialogue to the list
+                SetCurrentDialogue(nextNode);
 
                 Debug.Log($"Now using: {_currentDialogue} - {_currentDialogue.DialogueText}");
             }
@@ -213,6 +226,64 @@ public class DialogueUI : MonoBehaviour
 
         // Reset the typing timer
         _typingTimer.Reset();
+    }
+
+    private void SetCurrentDialogue(DialogueNode dialogueNode)
+    {
+        // set the current dialogue object
+        _currentDialogue = dialogueNode;
+
+        // Add the node to the list of dialogues
+        _dialogueNodes.Add(dialogueNode);
+
+        // Extra logic for choice nodes
+        // TODO: Put this in a better place or something. This goes against SOLID
+        if (_currentDialogue is DialogueChoiceNode dialogueChoiceNode)
+            ActivateChoiceButtons(dialogueChoiceNode);
+    }
+
+    private void ActivateChoiceButtons(DialogueChoiceNode dialogueChoiceNode)
+    {
+        Debug.Log("Activating choice buttons");
+
+        // Activate the dialogue buttons parent
+        dialogueButtonsParent.SetActive(true);
+
+        // Deactivate the text box parent
+        textBoxParent.SetActive(false);
+
+        // Deactivate all buttons
+        foreach (var button in buttons)
+        {
+            button.gameObject.SetActive(false);
+
+            // Remove all listeners from the button
+            button.onClick.RemoveAllListeners();
+        }
+
+        for (var i = 0; i < dialogueChoiceNode.DialogueChoices.Count; i++)
+        {
+            var cButton = buttons[i];
+
+            var displayText = cButton.GetComponentInChildren<TMP_Text>();
+            displayText.text = dialogueChoiceNode.DialogueChoices.ElementAt(i).DisplayText;
+
+            // Activate the button
+            cButton.gameObject.SetActive(true);
+
+            var choice = dialogueChoiceNode.DialogueChoices.ElementAt(i);
+
+            cButton.onClick.AddListener(() =>
+            {
+                // Set the current dialogue to the next dialogue
+                SetCurrentDialogue(choice.NextDialogue);
+
+                // Call the next dialogue
+                AdvanceDialogue();
+
+                Debug.Log($"ADVANCED DIALOGUE TO: {choice.NextDialogue}");
+            });
+        }
     }
 
     private void AddCharacterOnTimerEnd()

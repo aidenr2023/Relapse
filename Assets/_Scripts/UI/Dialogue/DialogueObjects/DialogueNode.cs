@@ -17,5 +17,5 @@ public abstract class DialogueNode : ScriptableObject
 
     #endregion
 
-    public abstract DialogueNode GetNextNode();
+    public abstract DialogueNode GetNextNode(int index = 0);
 }
