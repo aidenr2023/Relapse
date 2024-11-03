@@ -16,6 +16,9 @@ public class DialogueUI : MonoBehaviour
     [SerializeField] private TMP_Text speakerText;
     [SerializeField] private TMP_Text dialogueText;
 
+    [Header("Image")]
+    [SerializeField] private Image npcImage;
+
     [Header("Buttons")] [SerializeField] private GameObject dialogueButtonsParent;
     [SerializeField] private Button[] buttons = new Button[4];
 
@@ -217,15 +220,48 @@ public class DialogueUI : MonoBehaviour
             }
             else
             {
+                // End the current dialogue
+                _currentDialogue.OnDialogueEnd.Invoke();
+
                 // Add the current dialogue to the list
                 SetCurrentDialogue(nextNode);
+
+                // Invoke the next dialogue's start event
+                _currentDialogue.OnDialogueStart.Invoke();
 
                 Debug.Log($"Now using: {_currentDialogue} - {_currentDialogue.DialogueText}");
             }
         }
 
+        // Set the NPC image
+        SetNPCImage();
+
         // Reset the typing timer
         _typingTimer.Reset();
+    }
+
+    private void SetNPCImage()
+    {
+        // Disable the NPC image by default
+        npcImage.gameObject.SetActive(false);
+
+        // Return if the current dialogue is null
+        if (_currentDialogue == null)
+            return;
+
+        // Return if the current dialogue's speaker info is null
+        if (_currentDialogue.SpeakerInfo == null)
+            return;
+
+        // Return if the current dialogue's speaker info's NPC sprite is null
+        if (_currentDialogue.SpeakerInfo.NpcSprite == null)
+            return;
+
+        // Activate the NPC image
+        npcImage.gameObject.SetActive(true);
+
+        // Set the NPC image
+        npcImage.sprite = _currentDialogue.SpeakerInfo.NpcSprite;
     }
 
     private void SetCurrentDialogue(DialogueNode dialogueNode)

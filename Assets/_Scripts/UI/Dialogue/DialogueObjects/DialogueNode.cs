@@ -1,11 +1,15 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Serialization;
 
 public abstract class DialogueNode : ScriptableObject
 {
     #region Serialized Fields
 
-    [SerializeField] protected DialogueSpeakerInfo speakerInfo;
+    [Header("Events")] [SerializeField] public UnityEvent OnDialogueStart;
+    [SerializeField] public UnityEvent OnDialogueEnd;
+
+    [Space] [SerializeField] protected DialogueSpeakerInfo speakerInfo;
 
     #endregion
 
