@@ -11,12 +11,11 @@ public class DialogueUI : MonoBehaviour
 {
     #region Serialized Fields
 
-    [Header("Text")]
-    [SerializeField] private GameObject textBoxParent;
+    [Header("Text")] [SerializeField] private GameObject textBoxParent;
     [SerializeField] private TMP_Text speakerText;
     [SerializeField] private TMP_Text dialogueText;
 
-    [Header("Image")]
+    [Header("Image")] [SerializeField] private GameObject npcImageParent;
     [SerializeField] private Image npcImage;
 
     [Header("Buttons")] [SerializeField] private GameObject dialogueButtonsParent;
@@ -145,8 +144,8 @@ public class DialogueUI : MonoBehaviour
 
     public void StartDialogue(DialogueNode dialogueNode)
     {
-        // Debug.Log($"Starting Dialogue with {dialogueNode.NpcName}");
-        Debug.Log($"Starting Dialogue with {dialogueNode.SpeakerInfo.SpeakerName}");
+        // // Debug.Log($"Starting Dialogue with {dialogueNode.NpcName}");
+        // Debug.Log($"Starting Dialogue with {dialogueNode.SpeakerInfo.SpeakerName}");
 
         // Reset the current character index
         _currentCharacterIndex = 0;
@@ -157,14 +156,23 @@ public class DialogueUI : MonoBehaviour
         // Reset the typing timer
         _typingTimer.Reset();
 
-        // Set the dialogue UI to be visible
-        SetVisibility(true);
-
         // Clear the dialogue nodes list
         _dialogueNodes.Clear();
 
+        // Reset the visibilities
+        ResetVisibilities();
+
+        // Force the text to be visible
+        textBoxParent.SetActive(true);
+
         // Set the current dialogue object
         SetCurrentDialogue(dialogueNode);
+
+        // Determine the npc image
+        SetNPCImage();
+
+        // Set the dialogue UI to be visible
+        SetVisibility(true);
     }
 
     public void NextDialogue()
@@ -243,7 +251,7 @@ public class DialogueUI : MonoBehaviour
     private void SetNPCImage()
     {
         // Disable the NPC image by default
-        npcImage.gameObject.SetActive(false);
+        npcImageParent.gameObject.SetActive(false);
 
         // Return if the current dialogue is null
         if (_currentDialogue == null)
@@ -258,7 +266,7 @@ public class DialogueUI : MonoBehaviour
             return;
 
         // Activate the NPC image
-        npcImage.gameObject.SetActive(true);
+        npcImageParent.gameObject.SetActive(true);
 
         // Set the NPC image
         npcImage.sprite = _currentDialogue.SpeakerInfo.NpcSprite;
@@ -334,5 +342,17 @@ public class DialogueUI : MonoBehaviour
 
         // Reset the timer
         _typingTimer.Reset();
+    }
+
+    private void ResetVisibilities()
+    {
+        // Deactivate the dialogue buttons parent
+        dialogueButtonsParent.SetActive(false);
+
+        // Activate the text box parent
+        textBoxParent.SetActive(true);
+
+        // Deactivate the NPC image parent
+        npcImageParent.SetActive(false);
     }
 }
