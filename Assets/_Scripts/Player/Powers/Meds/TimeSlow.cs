@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class TimeSlow : MonoBehaviour, IPower
 {
+    //Time scale variables
     [SerializeField][Range(0.01f, 1)] private float timeScaleAdjust = 1;
     private int defaultTime = 1;
-
     private float fixedDeltaTime;
 
     public GameObject GameObject => gameObject;
@@ -66,15 +66,18 @@ public class TimeSlow : MonoBehaviour, IPower
     {
         //Begin timeslow
         Debug.Log("Time Slow");
-        if (Time.timeScale == 1.0f)
-        {
-            Time.timeScale = timeScaleAdjust;
-        }
-        else
-        {
-            Time.timeScale = defaultTime;
-        }
+
+        //Set the time scale to the adjusted time scale from the inspector
+        Time.timeScale = timeScaleAdjust;
+
+        //Do this to make sure the physics don't break
         Time.fixedDeltaTime = this.fixedDeltaTime * Time.timeScale;
+
+
+
+        //Fancy animate crap
+
+
     }
 
     public void UpdatePassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
@@ -85,7 +88,10 @@ public class TimeSlow : MonoBehaviour, IPower
     {
         Debug.Log("Time Slow Done");
 
+        //Set timescale back to default (should be 1)
         Time.timeScale = defaultTime;
+
+        //Do this to make sure the physics don't break
         Time.fixedDeltaTime = fixedDeltaTime * Time.timeScale;
 
     }
