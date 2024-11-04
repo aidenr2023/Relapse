@@ -10,6 +10,8 @@ public class VendorShopButton : MonoBehaviour
 
     [SerializeField] private PowerScriptableObject power;
 
+    public PowerScriptableObject Power => power;
+
     private void Start()
     {
         // Set the power info
@@ -60,7 +62,7 @@ public class VendorShopButton : MonoBehaviour
         // Return if the power is null
         if (power == null)
             return;
-        
+
         text.text = power.Description;
     }
 

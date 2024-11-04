@@ -415,13 +415,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Delegates:
-  - eventID: 0
+  - eventID: 9
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 4396011209320078298}
+        - m_Target: {fileID: 0}
           m_TargetAssemblyTypeName: VendorShopButton, Assembly-CSharp
-          m_MethodName: SetDescriptionText
+          m_MethodName: 
           m_Mode: 2
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -431,6 +431,10 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+  - eventID: 8
+    callback:
+      m_PersistentCalls:
+        m_Calls: []
 --- !u!1 &8222414062569457637
 GameObject:
   m_ObjectHideFlags: 0

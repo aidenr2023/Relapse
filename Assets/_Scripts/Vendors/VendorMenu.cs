@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class VendorMenu : MonoBehaviour
@@ -10,6 +11,12 @@ public class VendorMenu : MonoBehaviour
     private PowerScriptableObject[] powers;
 
     [SerializeField] private VendorShopButton[] powerButtons;
+
+    [SerializeField] private TMP_Text powerTypeText;
+    [SerializeField] private TMP_Text priceText;
+    [SerializeField] private TMP_Text toleranceImpactText;
+    [SerializeField] private TMP_Text cooldownText;
+    [SerializeField] private TMP_Text descriptionText;
 
     [Header("Gossip Dialogue")] [SerializeField]
     private DialogueNode gossipDialogue;
@@ -71,5 +78,26 @@ public class VendorMenu : MonoBehaviour
             // Enable the button
             button.Enable();
         }
+    }
+
+    public void SetShopDescriptions(VendorShopButton button)
+    {
+        // Get the power
+        var power = button.Power;
+
+        // Set the power type
+        powerTypeText.text = $"Power Type: {power.PowerType}";
+
+        // Set the price
+        priceText.text = $"Price: $PLACEHOLDER PRICE";
+
+        // Set the tolerance impact
+        toleranceImpactText.text = $"Tolerance Impact: {power.BaseToleranceMeterImpact}";
+
+        // Set the cooldown
+        cooldownText.text = $"Cooldown: {power.Cooldown:0.00}s";
+
+        // Set the description
+        descriptionText.text = power.Description;
     }
 }
