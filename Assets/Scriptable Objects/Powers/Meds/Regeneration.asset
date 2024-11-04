@@ -15,7 +15,7 @@ MonoBehaviour:
   powerName: Regneration
   powerType: 1
   icon: {fileID: 21300000, guid: 11cb3d719feb5864d968db0ac0e07da5, type: 3}
-  description: 
+  description: Flavor text for regeneration.
   chargeDuration: 3
   activeEffectDuration: 0
   passiveEffectDuration: 10
@@ -27,3 +27,18 @@ MonoBehaviour:
   - 1.5
   powerLogicPrefab: {fileID: 8899943518142316300, guid: c10dde747743e374fa2bbf654408a3ac,
     type: 3}
+  chargeStartSound:
+    clip: {fileID: 0}
+    settings: {fileID: 0}
+    volume: 1
+    isPersistent: 0
+  powerUseSound:
+    clip: {fileID: 0}
+    settings: {fileID: 0}
+    volume: 1
+    isPersistent: 0
+  powerReadySound:
+    clip: {fileID: 0}
+    settings: {fileID: 0}
+    volume: 1
+    isPersistent: 1

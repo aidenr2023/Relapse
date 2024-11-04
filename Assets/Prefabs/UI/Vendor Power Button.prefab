@@ -276,6 +276,7 @@ GameObject:
   - component: {fileID: 8663240538957391025}
   - component: {fileID: 8095249884221347307}
   - component: {fileID: 4396011209320078298}
+  - component: {fileID: 8242124293917332780}
   m_Layer: 5
   m_Name: Vendor Power Button
   m_TagString: Untagged
@@ -401,6 +402,35 @@ MonoBehaviour:
   powerNameText: {fileID: 4695941613639251136}
   powerImage: {fileID: 8057093618444170357}
   power: {fileID: 0}
+--- !u!114 &8242124293917332780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7890577925521567198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0b148fe25e99eb48b9724523833bab1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Delegates:
+  - eventID: 0
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 4396011209320078298}
+          m_TargetAssemblyTypeName: VendorShopButton, Assembly-CSharp
+          m_MethodName: SetDescriptionText
+          m_Mode: 2
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &8222414062569457637
 GameObject:
   m_ObjectHideFlags: 0

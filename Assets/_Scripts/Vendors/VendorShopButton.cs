@@ -55,4 +55,13 @@ public class VendorShopButton : MonoBehaviour
         SetPowerInfo();
     }
 
+    public void SetDescriptionText(TMP_Text text)
+    {
+        // Return if the power is null
+        if (power == null)
+            return;
+        
+        text.text = power.Description;
+    }
+
 }
