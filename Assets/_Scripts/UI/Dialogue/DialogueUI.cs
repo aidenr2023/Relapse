@@ -11,6 +11,8 @@ public class DialogueUI : MonoBehaviour
 {
     #region Serialized Fields
 
+    [SerializeField] private UnityEvent OnDialogueEnd;
+
     [Header("Text")] [SerializeField] private GameObject textBoxParent;
     [SerializeField] private TMP_Text speakerText;
     [SerializeField] private TMP_Text dialogueText;
@@ -20,6 +22,8 @@ public class DialogueUI : MonoBehaviour
 
     [Header("Buttons")] [SerializeField] private GameObject dialogueButtonsParent;
     [SerializeField] private Button[] buttons = new Button[4];
+
+
 
     #endregion
 
@@ -41,14 +45,18 @@ public class DialogueUI : MonoBehaviour
 
     private readonly StringBuilder _currentText = new();
 
-    private readonly CountdownTimer _typingTimer = new CountdownTimer(1f, true, false);
+    private CountdownTimer _typingTimer;
 
-    private readonly List<DialogueNode> _dialogueNodes = new();
+    private List<DialogueNode> _dialogueNodes;
 
     #endregion
 
     private void Awake()
     {
+        _dialogueNodes = new();
+
+        _typingTimer = new CountdownTimer(1f, true, false);
+
         _typingTimer.OnTimerEnd += AddCharacterOnTimerEnd;
     }
 
@@ -58,8 +66,8 @@ public class DialogueUI : MonoBehaviour
         // Disable the dialogue buttons parent by default
         dialogueButtonsParent.SetActive(false);
 
-        // Set the dialogue UI to be invisible
-        SetVisibility(false);
+        // // Set the dialogue UI to be invisible
+        // SetVisibility(false);
 
         // Reset the current text
         ResetCurrentText();
@@ -173,6 +181,8 @@ public class DialogueUI : MonoBehaviour
 
         // Set the dialogue UI to be visible
         SetVisibility(true);
+
+        Debug.Log($"Setting the visibility to true for {gameObject.name}");
     }
 
     public void NextDialogue()
@@ -246,6 +256,10 @@ public class DialogueUI : MonoBehaviour
 
         // Reset the typing timer
         _typingTimer.Reset();
+
+        // If the current dialogue is null, invoke the OnDialogueEnd event
+        if (_currentDialogue == null)
+            OnDialogueEnd?.Invoke();
     }
 
     private void SetNPCImage()
