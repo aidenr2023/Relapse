@@ -210,6 +210,9 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
         // Emit the fire particles
         PlayParticles(muzzleParticles, muzzleLocation.position, muzzleParticlesCount);
 
+        //Overfill the mag before firing
+        _currentMagazineSize += (pelletsPerShot - 1) * timesToFire;
+
         // Fire the gun
         for (var i = 0; i < timesToFire * pelletsPerShot; i++)
         {
@@ -227,9 +230,7 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
 
             // Decrease the magazine size
             _currentMagazineSize--;
-            
-       
-            
+
             //Play shooting animation
             animator.SetTrigger("Shooting");
             
@@ -260,14 +261,7 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
                 // Deal damage to the actor
                 actor.ChangeHealth(-damage, weaponManager.Player.PlayerInfo, this);
             }
-            //Debug.Log("Inside: " + _currentMagazineSize);
         }
-        Debug.Log("Outside: " + _currentMagazineSize);
-
-        _currentMagazineSize += (pelletsPerShot-1)*timesToFire;
-
-        Debug.Log("Final: " + _currentMagazineSize);
-
     }
 
     public void Reload()
