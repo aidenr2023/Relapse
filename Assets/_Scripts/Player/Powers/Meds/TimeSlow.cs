@@ -9,6 +9,9 @@ public class TimeSlow : MonoBehaviour, IPower
     private int defaultTime = 1;
     private float fixedDeltaTime;
 
+    //Fancy animation crap
+    [SerializeField] private int secondsBetweenFrames = 1;
+
     public GameObject GameObject => gameObject;
 
     public PowerScriptableObject PowerScriptableObject { get; set; }
@@ -76,9 +79,27 @@ public class TimeSlow : MonoBehaviour, IPower
 
 
         //Fancy animate crap
+        
+        
+            //StartCoroutine(Example());
 
+        
 
     }
+    /*IEnumerator Example()
+    {
+        float timeA = Time.time;
+        Debug.Log("Initial: " + (timeA));
+
+        yield return new WaitForSecondsRealtime(secondsBetweenFrames);
+        float timeB = Time.time;
+        Debug.Log("Final: " + (timeB));
+        
+        float timedif = timeB - timeA;
+        Debug.Log("Time Difference: " + timedif);
+
+    }
+    */
 
     public void UpdatePassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
