@@ -9,6 +9,8 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Player))]
 public class PlayerPowerManager : MonoBehaviour, IDebugged
 {
+    public static PlayerPowerManager Instance { get; private set; }
+
     [SerializeField] private PowerScroll powerScroll;
     [SerializeField] private PowerScriptableObject[] powers;
 
@@ -39,6 +41,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
 
     private void Awake()
     {
+        // Set the instance to this
+        Instance = this;
+
         InitializeComponents();
 
         // Initialize the power collections
@@ -50,7 +55,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
     {
         // Initialize the events
         InitializeEvents();
-        
+
         // Initialize the input
         InitializeInput();
 

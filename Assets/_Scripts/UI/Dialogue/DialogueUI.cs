@@ -23,8 +23,6 @@ public class DialogueUI : MonoBehaviour
     [Header("Buttons")] [SerializeField] private GameObject dialogueButtonsParent;
     [SerializeField] private Button[] buttons = new Button[4];
 
-
-
     #endregion
 
     #region Getters
@@ -95,7 +93,7 @@ public class DialogueUI : MonoBehaviour
         // Set the timer's max time based on the characters per second
         _typingTimer.SetMaxTime(1f / DialogueManager.Instance.CharactersPerSecond);
 
-        _typingTimer.Update(Time.deltaTime);
+        _typingTimer.Update(Time.unscaledDeltaTime);
     }
 
     private void UpdateDialogue()
@@ -187,7 +185,11 @@ public class DialogueUI : MonoBehaviour
 
     public void NextDialogue()
     {
-        if (DialogueManager.Instance.DialogueUI.CurrentDialogue is DialogueChoiceNode)
+        Debug.Log($"Dialogue Manager instance: {DialogueManager.Instance}");
+        Debug.Log($"DialogueUI instance: {DialogueManager.Instance.DialogueUI}");
+        Debug.Log($"Current Dialogue: {DialogueManager.Instance.DialogueUI.CurrentDialogue}");
+
+        if (_currentDialogue is DialogueChoiceNode)
             return;
 
         AdvanceDialogue();

@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class VendorMenu : MonoBehaviour
 {
+    public static VendorMenu Instance { get; private set; }
+
     #region Serialized Fields
 
     [Header("Powers Shop Screen")] [SerializeField]
@@ -29,11 +31,23 @@ public class VendorMenu : MonoBehaviour
 
     #endregion
 
-    #region Serialized Fields
+    #region Getters
 
     public IEnumerable<PowerScriptableObject> Powers => powers;
 
+    public GameObject InitialMenu => initialMenu;
+
+    public GameObject PowerMenu => powerMenu;
+
+    public GameObject GossipMenu => gossipMenu;
+
     #endregion
+
+    private void Awake()
+    {
+        // Set the instance
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -99,5 +113,38 @@ public class VendorMenu : MonoBehaviour
 
         // Set the description
         descriptionText.text = power.Description;
+    }
+
+    public void StartVendor()
+    {
+        // Set this menu to active
+        gameObject.SetActive(true);
+
+        // Set the cursor to visible
+        Cursor.lockState = CursorLockMode.None;
+
+        // Disable the playercontrols in the input manager
+        InputManager.Instance.PlayerControls.Disable();
+
+        // Pause the game
+        Time.timeScale = 0;
+
+        // Isolate the initial menu
+        IsolateMenu(initialMenu);
+    }
+
+    public void EndVendor()
+    {
+        // Set this menu to inactive
+        gameObject.SetActive(false);
+
+        // Set the cursor to invisible
+        Cursor.lockState = CursorLockMode.Locked;
+
+        // Unpause the game
+        Time.timeScale = 1;
+
+        // Re-enable the playercontrols in the input manager
+        InputManager.Instance.PlayerControls.Enable();
     }
 }
