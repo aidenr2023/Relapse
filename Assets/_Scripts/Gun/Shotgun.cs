@@ -211,7 +211,7 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
         PlayParticles(muzzleParticles, muzzleLocation.position, muzzleParticlesCount);
 
         // Fire the gun
-        for (var i = 0; i < timesToFire *pelletsPerShot; i++)
+        for (var i = 0; i < timesToFire * pelletsPerShot; i++)
         {
             // break if the magazine is empty
             if (IsMagazineEmpty)
@@ -260,8 +260,14 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
                 // Deal damage to the actor
                 actor.ChangeHealth(-damage, weaponManager.Player.PlayerInfo, this);
             }
+            //Debug.Log("Inside: " + _currentMagazineSize);
         }
+        Debug.Log("Outside: " + _currentMagazineSize);
+
         _currentMagazineSize += (pelletsPerShot-1)*timesToFire;
+
+        Debug.Log("Final: " + _currentMagazineSize);
+
     }
 
     public void Reload()
