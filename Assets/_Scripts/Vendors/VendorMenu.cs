@@ -122,6 +122,8 @@ public class VendorMenu : MonoBehaviour
 
         // Set the cursor to visible
         Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
 
         // Disable the playercontrols in the input manager
         InputManager.Instance.PlayerControls.Disable();
@@ -140,6 +142,7 @@ public class VendorMenu : MonoBehaviour
 
         // Set the cursor to invisible
         Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
         // Unpause the game
         Time.timeScale = 1;
