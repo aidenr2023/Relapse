@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 [RequireComponent(typeof(EnemyInfo))]
-public class ProximityEnemy : MonoBehaviour, IEnemyBehavior, IDamager
+public class ProximityEnemy : MonoBehaviour, IEnemyAttackBehavior
 {
-    private EnemyInfo _enemyInfo;
+    #region Serialized Fields
 
     [Header("Stats")]
     [Tooltip("How far away the player has to be for the enemy to detect them and begin to blow up.")]
@@ -32,6 +32,10 @@ public class ProximityEnemy : MonoBehaviour, IEnemyBehavior, IDamager
 
     [SerializeField] private ParticleSystem fuseParticles;
 
+    #endregion
+
+    #region Private Fields
+
     /// <summary>
     /// A boolean to determine if this enemy will blow up soon;
     /// Used to prevent the enemy from blowing up multiple times.
@@ -54,7 +58,15 @@ public class ProximityEnemy : MonoBehaviour, IEnemyBehavior, IDamager
     /// </summary>
     private ParticleSystem _fuseParticlesInstance;
 
+    #endregion
+
+    #region Getters
+
     public GameObject GameObject => gameObject;
+
+    public Enemy Enemy { get; private set; }
+
+    #endregion
 
     #region Initialization Functions
 
@@ -70,8 +82,8 @@ public class ProximityEnemy : MonoBehaviour, IEnemyBehavior, IDamager
 
     private void GetComponents()
     {
-        // Get the EnemyInfo component
-        _enemyInfo = GetComponent<EnemyInfo>();
+        // Get the Enemy component
+        Enemy = GetComponent<Enemy>();
     }
 
     #endregion
@@ -154,7 +166,7 @@ public class ProximityEnemy : MonoBehaviour, IEnemyBehavior, IDamager
         CreateExplosiveForce();
 
         // Kill the enemy by changing the health to 0
-        _enemyInfo.ChangeHealth(-_enemyInfo.MaxHealth, _enemyInfo, this);
+        Enemy.EnemyInfo.ChangeHealth(-Enemy.EnemyInfo.MaxHealth, Enemy.EnemyInfo, this);
     }
 
     private void CreateExplosiveForce()
@@ -170,7 +182,7 @@ public class ProximityEnemy : MonoBehaviour, IEnemyBehavior, IDamager
                 continue;
 
             // Change the health of the player
-            player.ChangeHealth(-explosionDamage, _enemyInfo, this);
+            player.ChangeHealth(-explosionDamage, Enemy.EnemyInfo, this);
 
             // Get the rigidbody component from the player
             if (!player.transform.root.TryGetComponent(out Rigidbody rb))

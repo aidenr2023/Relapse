@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class ShootingEnemy : MonoBehaviour, IEnemyBehavior, IDamager
+public class ShootingEnemy : MonoBehaviour, IEnemyAttackBehavior
 {
     private EnemyInfo _enemyInfo;
+
+    #region Serialized Fields
 
     [Header("Stats")]
     [Tooltip("How far away the player has to be for the enemy to detect them and begin to fire.")]
@@ -14,20 +16,31 @@ public class ShootingEnemy : MonoBehaviour, IEnemyBehavior, IDamager
     [Min(0)]
     private float detectionRadius = 5f;
 
-    [Tooltip("How long it takes after the enemy detects the player for the enemy to shoot.")]
-    [SerializeField]
-    [Min(0)]
+    [Tooltip("How long it takes after the enemy detects the player for the enemy to shoot.")] [SerializeField] [Min(0)]
     private float fireDelay;
+
+    [SerializeField] private GameObject enemyBullet;
+    [SerializeField] private Transform spawnPoint;
+    [SerializeField] private float enemySpeed;
+    [SerializeField] private float timer = 5;
+
+    #endregion
+
+    #region Getters
+
     public GameObject GameObject => gameObject;
 
-    public GameObject enemyBullet;
-    public Transform spawnPoint;
-    public float enemySpeed;
+    public Enemy Enemy { get; private set; }
 
-    [SerializeField] private float timer = 5;
-    private float bulletTime;
+    #endregion
 
-    private GameObject target;
+    #region Private Fields
+
+    private float _bulletTime;
+
+    private GameObject _target;
+
+    #endregion
 
 
     /// <summary>
@@ -36,29 +49,30 @@ public class ShootingEnemy : MonoBehaviour, IEnemyBehavior, IDamager
     /// </summary>
     private bool _isActivated;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
-        
+        // Get the enemy component
+        Enemy = GetComponent<Enemy>();
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         // Check if the player is in range
         CheckForPlayerInRange();
-
     }
-    void shootAtPlayer()
+
+    private void ShootAtPlayer()
     {
-        bulletTime -= Time.deltaTime;
-        if (bulletTime > 0) return;
-        bulletTime = timer;
-        GameObject bulletObj = Instantiate(enemyBullet, spawnPoint.transform.position, spawnPoint.transform.rotation) as GameObject;
+        _bulletTime -= Time.deltaTime;
+        if (_bulletTime > 0) return;
+        _bulletTime = timer;
+        GameObject bulletObj =
+            Instantiate(enemyBullet, spawnPoint.transform.position, spawnPoint.transform.rotation) as GameObject;
         Rigidbody bulletRig = bulletObj.GetComponent<Rigidbody>();
 
-        var direction = target.transform.position - transform.position;
-        bulletRig.AddForce(direction.normalized*enemySpeed,ForceMode.VelocityChange);
+        var direction = _target.transform.position - transform.position;
+        bulletRig.AddForce(direction.normalized * enemySpeed, ForceMode.VelocityChange);
         Destroy(bulletObj, 5f);
     }
 
@@ -80,15 +94,16 @@ public class ShootingEnemy : MonoBehaviour, IEnemyBehavior, IDamager
         // If the closest player is not within range, return
         if (Vector3.Distance(transform.position, players[0].transform.position) > detectionRadius)
             return;
-        target = players[0].gameObject;
+        _target = players[0].gameObject;
 
         // Fire at player
-        shootAtPlayer();
+        ShootAtPlayer();
     }
+
     private void OnDrawGizmos()
     {
         // Draw a circle around the enemy to represent the detection radius
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
     }
-    }
+}
