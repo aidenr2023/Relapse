@@ -78,11 +78,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseMapA:
-        m_Texture: {fileID: 2800000, guid: 4589b54dd5b7c8c4aa1c9ee4d0e3c51c, type: 3}
+        m_Texture: {fileID: 2800000, guid: f6e8e034125c35548b88a78a3445eca8, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseMapB:
-        m_Texture: {fileID: 2800000, guid: 8f44beb394647344a86e8da24bc68451, type: 3}
+        m_Texture: {fileID: 2800000, guid: c079bb6f43ef2a743ba9b64130472048, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -111,7 +111,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Alpha: 0.55
+    - _Alpha: 0.454
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _Blend: 0
@@ -122,10 +122,10 @@ Material:
     - _ClearCoatSmoothness: 0
     - _Cull: 2
     - _Cutoff: 0.5
-    - _DarkMaskScale: 0.5
-    - _DarkMaskStartSize: 0.76
-    - _DarkStepMax: 0.26
-    - _DarkStepMin: 0.24
+    - _DarkMaskScale: 0.423
+    - _DarkMaskStartSize: 1.1
+    - _DarkStepMax: 0.219
+    - _DarkStepMin: 0.2
     - _DecalAngleFadeSupported: 1
     - _DecalMeshBiasType: 0
     - _DecalMeshDepthBias: 0
@@ -139,10 +139,10 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
-    - _LightMaskScale: 0.5
-    - _LightMaskStartSize: 0.69
-    - _LightStepMax: 0.52
-    - _LightStepMin: 0.23
+    - _LightMaskScale: 0.332
+    - _LightMaskStartSize: 1.88
+    - _LightStepMax: 0.308
+    - _LightStepMin: 0.54
     - _Metallic: 0
     - _NoiseTilingA: 1
     - _NoiseTilingB: 1.18
@@ -151,7 +151,7 @@ Material:
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _ReduceSpots: 0.27
+    - _ReduceSpots: 0.123
     - _Smoothness: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
@@ -164,8 +164,8 @@ Material:
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _DarkColor: {r: 0.05068703, g: 0.071085736, b: 0.07924521, a: 1}
+    - _DarkColor: {r: 0.5188679, g: 0.5188679, b: 0.5188679, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _LightColor: {r: 0.11848342, g: 0.15350796, b: 0.16226411, a: 0}
+    - _LightColor: {r: 0.15686275, g: 0.21568629, b: 0.24705884, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
