@@ -26,14 +26,6 @@ public class ShootingEnemy : MonoBehaviour, IEnemyAttackBehavior
 
     #endregion
 
-    #region Getters
-
-    public GameObject GameObject => gameObject;
-
-    public Enemy Enemy { get; private set; }
-
-    #endregion
-
     #region Private Fields
 
     private float _bulletTime;
@@ -42,6 +34,13 @@ public class ShootingEnemy : MonoBehaviour, IEnemyAttackBehavior
 
     #endregion
 
+    #region Getters
+
+    public GameObject GameObject => gameObject;
+
+    public Enemy Enemy { get; private set; }
+
+    #endregion
 
     /// <summary>
     /// A boolean to determine if this enemy will blow up soon;
@@ -64,15 +63,24 @@ public class ShootingEnemy : MonoBehaviour, IEnemyAttackBehavior
 
     private void ShootAtPlayer()
     {
+        // If the fire delay has not passed, return
         _bulletTime -= Time.deltaTime;
-        if (_bulletTime > 0) return;
-        _bulletTime = timer;
-        GameObject bulletObj =
-            Instantiate(enemyBullet, spawnPoint.transform.position, spawnPoint.transform.rotation) as GameObject;
-        Rigidbody bulletRig = bulletObj.GetComponent<Rigidbody>();
 
+        if (_bulletTime > 0)
+            return;
+
+        // Reset the fire delay
+        _bulletTime = timer;
+
+        // Instantiate the bullet
+        var bulletObj = Instantiate(enemyBullet, spawnPoint.transform.position, spawnPoint.transform.rotation);
+        var bulletRig = bulletObj.GetComponent<Rigidbody>();
+
+        // Fire the bullet at the player
         var direction = _target.transform.position - transform.position;
         bulletRig.AddForce(direction.normalized * enemySpeed, ForceMode.VelocityChange);
+
+        // Destroy the bullet after 5 seconds
         Destroy(bulletObj, 5f);
     }
 
@@ -94,6 +102,7 @@ public class ShootingEnemy : MonoBehaviour, IEnemyAttackBehavior
         // If the closest player is not within range, return
         if (Vector3.Distance(transform.position, players[0].transform.position) > detectionRadius)
             return;
+
         _target = players[0].gameObject;
 
         // Fire at player
