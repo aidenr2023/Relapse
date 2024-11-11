@@ -5,10 +5,13 @@ using UnityEngine.Serialization;
 [RequireComponent(typeof(Rigidbody))]
 public class Shotgun : MonoBehaviour, IGun, IDebugged
 {
+    private static readonly int ShootingAnimationID = Animator.StringToHash("Shooting");
+
     #region Serialized Fields
 
     [SerializeField] private GunInformation gunInformation;
-    [SerializeField]private Animator animator;
+    [SerializeField] private Animator animator;
+
     [Header("Muzzle Particles")] [SerializeField]
     private Transform muzzleLocation;
 
@@ -21,6 +24,7 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
     [SerializeField] [Range(0, 500)] private int impactParticlesCount = 200;
 
     [SerializeField] private int pelletsPerShot = 8;
+
     #endregion
 
     #region Private Fields
@@ -89,7 +93,7 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
     {
         // Get the collider component
         Collider = GetComponent<Collider>();
-        
+
         // Get the animator component from pistol4
         //animator = GetComponent<Animator>();
     }
@@ -159,7 +163,7 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
         // Return if the gun is currently reloading
         if (IsReloading)
             return;
-            
+
 
         // Set the firing flag to true
         _isFiring = true;
@@ -210,8 +214,15 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
         // Emit the fire particles
         PlayParticles(muzzleParticles, muzzleLocation.position, muzzleParticlesCount);
 
-        //Overfill the mag before firing
+        // Overfill the mag before firing
         _currentMagazineSize += (pelletsPerShot - 1) * timesToFire;
+
+        // Play the fire sound
+        var fireSound = gunInformation.FireSounds.GetRandomSound();
+        SoundManager.Instance.PlaySfx(fireSound);
+
+        //Play shooting animation
+        animator.SetTrigger(ShootingAnimationID);
 
         // Fire the gun
         for (var i = 0; i < timesToFire * pelletsPerShot; i++)
@@ -225,18 +236,13 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
             var yBloom = UnityEngine.Random.Range(-gunInformation.BloomAngle / 2, gunInformation.BloomAngle / 2);
             var spreadDirection = Quaternion.Euler(xBloom, yBloom, 0) * direction;
 
+            // TODO: Create a layer mask that ignores things that should not be hit
+
             // Perform the raycast
             var hit = Physics.Raycast(startingPosition, spreadDirection, out var hitInfo, gunInformation.Range);
 
             // Decrease the magazine size
             _currentMagazineSize--;
-
-            //Play shooting animation
-            animator.SetTrigger("Shooting");
-            
-            // Play the fire sound
-            var fireSound = gunInformation.FireSounds.GetRandomSound();
-            SoundManager.Instance.PlaySfx(fireSound);
 
             // Continue if the raycast did not hit anything
             if (!hit)
@@ -280,15 +286,14 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
 
         // Set the reload time to the reload time of the gun
         _currentReloadTime = gunInformation.ReloadTime;
-        
-        
-        
+
+
         // Set the reloading flag to true
         _isReloading = true;
-        
+
         // set animation param trigger to reload
         animator.SetTrigger("Reload");
-                
+
         // Play the reload sound
         Debug.Log($"Sound Settings: {gunInformation.ReloadSound.Clip.name}");
         SoundManager.Instance.PlaySfx(gunInformation.ReloadSound);

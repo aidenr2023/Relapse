@@ -1,8 +1,19 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class SceneLoaderCollider : MonoBehaviour
 {
-    [SerializeField] private string[] scenesToLoad;
+    [SerializeField] private SceneLoadInformation scenesToLoad;
+
+    private void Awake()
+    {
+        // Get all renderers so the collider is visible in the editor
+        var renderers = GetComponentsInChildren<Renderer>();
+
+        // Set the renderers to be invisible
+        foreach (var cRenderer in renderers)
+            GetComponent<Renderer>().enabled = false;
+    }
 
     private void OnTriggerEnter(Collider other)
     {
