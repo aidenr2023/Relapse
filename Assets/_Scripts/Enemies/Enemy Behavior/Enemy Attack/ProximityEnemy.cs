@@ -149,6 +149,8 @@ public class ProximityEnemy : MonoBehaviour, IEnemyAttackBehavior
         // Create a new instance of the fuse particles at the enemy's position
         _fuseParticlesInstance = Instantiate(fuseParticles, transform.position, Quaternion.identity);
 
+        _fuseParticlesInstance.transform.parent = transform;
+
         // Emit the fuse particles
         _fuseParticlesInstance.Play();
     }
