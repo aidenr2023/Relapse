@@ -131,7 +131,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: -1372625422
   m_Radius: 1
-  m_Speed: 3.5
+  m_Speed: 5
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
@@ -183,14 +183,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   patrolCheckpoints: []
   checkpointProximityThreshold: 0.5
-  visionDistance: 10
-  visionAngle: 45
+  visionDistance: 25
+  visionAngle: 50
   patrolDetectionTimer:
     maxTime: 1
   searchDetectionTimer:
     maxTime: 1
   pursuitDetectionTimer:
-    maxTime: 1
+    maxTime: 0.5
 --- !u!114 &7911376860155475657
 MonoBehaviour:
   m_ObjectHideFlags: 0

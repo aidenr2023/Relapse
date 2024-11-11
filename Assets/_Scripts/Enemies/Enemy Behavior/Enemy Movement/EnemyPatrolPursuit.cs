@@ -36,6 +36,8 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
     /// </summary>
     private bool _playerDetected;
 
+    private Vector3 _lastKnownPlayerPosition;
+
     #endregion
 
     #region Events
@@ -73,7 +75,6 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
         patrolDetectionTimer.SetActive(true);
         searchDetectionTimer.SetActive(true);
         pursuitDetectionTimer.SetActive(true);
-
     }
 
     private void InitializeComponents()
@@ -143,11 +144,57 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
         // Detect the player
         _playerDetected = PlayerDetected();
 
+        // Update the last known player position
+        UpdateLastKnowPlayerPosition();
+
         // Determine the current movement state
         UpdateMovementState();
 
-        // Check if the enemy has reached the checkpoint
-        CheckCheckpoint();
+        // Update the destination
+        UpdateDestination();
+    }
+
+    private void UpdateLastKnowPlayerPosition()
+    {
+        // Update the last known player position
+        if (_playerDetected)
+            _lastKnownPlayerPosition = Player.Instance.transform.position;
+    }
+
+    private void UpdateDestination()
+    {
+        switch (_currentMovementState)
+        {
+            case EnemyMovementState.Patrol:
+
+                // Check if the enemy has reached the checkpoint
+                CheckCheckpoint();
+
+                // Set the destination to the current checkpoint
+                if (NavMeshAgent.destination != CurrentCheckpoint.position)
+                    NavMeshAgent.SetDestination(CurrentCheckpoint.position);
+
+                break;
+
+            case EnemyMovementState.Searching:
+
+                // Set the destination to the last known player position
+                if (NavMeshAgent.destination != _lastKnownPlayerPosition)
+                    NavMeshAgent.SetDestination(_lastKnownPlayerPosition);
+
+                break;
+
+            case EnemyMovementState.Pursuit:
+
+                // Set the destination to the player's current position
+                NavMeshAgent.SetDestination(Player.Instance.transform.position);
+
+                break;
+
+            default:
+                Debug.LogError($"Case not handled: {_currentMovementState}");
+                break;
+        }
     }
 
     /// <summary>
@@ -161,18 +208,18 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
         switch (_currentMovementState)
         {
             case EnemyMovementState.Patrol:
+                // Update the player detection timer
                 if (_playerDetected)
-                {
-                    // Update the player detection timer
                     patrolDetectionTimer.Update(Time.deltaTime);
+                else
+                    patrolDetectionTimer.Update(-Time.deltaTime);
 
-                    // If the player is detected for long enough,
-                    // change the movement state to pursuit
-                    if (patrolDetectionTimer.Percentage >= 1)
-                    {
-                        _currentMovementState = EnemyMovementState.Searching;
-                        OnMovementStateChanged?.Invoke(this, previousMovementState, _currentMovementState);
-                    }
+                // If the player is detected for long enough,
+                // change the movement state to pursuit
+                if (patrolDetectionTimer.Percentage >= 1)
+                {
+                    _currentMovementState = EnemyMovementState.Searching;
+                    OnMovementStateChanged?.Invoke(this, previousMovementState, _currentMovementState);
                 }
 
                 break;
@@ -214,7 +261,11 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
                 // change the movement state to patrol
                 if (pursuitDetectionTimer.Percentage <= 0)
                 {
-                    _currentMovementState = EnemyMovementState.Patrol;
+                    _currentMovementState = EnemyMovementState.Searching;
+
+                    // Force the searching timer to 100%
+                    searchDetectionTimer.ForcePercent(1);
+
                     OnMovementStateChanged?.Invoke(this, previousMovementState, _currentMovementState);
                 }
 
@@ -382,5 +433,4 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
         /// </summary>
         Pursuit,
     }
-
 }
