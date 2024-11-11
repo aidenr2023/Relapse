@@ -413,4 +413,16 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
         if (winLose != null)
             winLose.Lose("Player relapsed too many times!");
     }
+
+    public void ResetPlayer()
+    {
+        // Reset the health
+        health = maxHealth;
+
+        // Reset the tolerance
+        currentTolerance = 0;
+
+        // End the relapse
+        EndRelapse();
+    }
 }

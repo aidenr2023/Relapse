@@ -48,6 +48,8 @@ public class Checkpoint : MonoBehaviour
             //Reset powers
             //Any other attributes that need to be reset are reset
 
+            // Get the player component
+            Player.Instance.ResetPlayer();
         }
     }
 

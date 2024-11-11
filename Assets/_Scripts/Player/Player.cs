@@ -67,4 +67,18 @@ public class Player : MonoBehaviour
     }
 
     #endregion
+
+    public void ResetPlayer()
+    {
+        Debug.Log("Resetting Player");
+
+        // Reset the health
+        _playerInfo.ResetPlayer();
+
+        // Reset the powers
+        _playerPowerManager.ResetPlayer();
+
+        // Reset the weapon
+        _weaponManager.ResetPlayer();
+    }
 }

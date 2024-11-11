@@ -310,6 +310,12 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
         _damageMultiplierTokens.Remove(token);
     }
 
+    public void ResetPlayer()
+    {
+        // Clear the damage multipliers
+        _damageMultiplierTokens.Clear();
+    }
+
     public class DamageMultiplierToken : IComparable<DamageMultiplierToken>
     {
         private readonly float _multiplier;

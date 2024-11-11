@@ -448,6 +448,12 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
         SoundManager.Instance.PlaySfx(CurrentPower.PowerUseSound);
     }
 
+    public void ResetPlayer()
+    {
+        // Clear the power tokens
+        _powerTokens.Clear();
+    }
+
 
     #region Public Methods
 
