@@ -16,6 +16,7 @@ public class Player : MonoBehaviour
 
     private PlayerPowerManager _playerPowerManager;
     private WeaponManager _weaponManager;
+    private PlayerInventory _playerInventory;
 
     #region Getters
 
@@ -28,6 +29,8 @@ public class Player : MonoBehaviour
     public PlayerPowerManager PlayerPowerManager => _playerPowerManager;
 
     public WeaponManager WeaponManager => _weaponManager;
+
+    public PlayerInventory PlayerInventory => _playerInventory;
 
     #endregion
 
@@ -58,6 +61,9 @@ public class Player : MonoBehaviour
 
         // Get the WeaponManager component
         _weaponManager = GetComponent<WeaponManager>();
+
+        // Get the PlayerInventory component
+        _playerInventory = GetComponent<PlayerInventory>();
     }
 
     #endregion

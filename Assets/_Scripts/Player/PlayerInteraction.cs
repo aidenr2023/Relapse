@@ -149,12 +149,9 @@ public class PlayerInteraction : MonoBehaviour
         if (_selectedInteractable == null)
             return;
 
-        // Draw a line from the camera pivot to the interactable
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(
-            Player.PlayerController.CameraPivot.transform.position,
-            _selectedInteractable.GameObject.transform.position
-        );
+        // return if the selected interactable's game object is null
+        if (_selectedInteractable.GameObject == null || _selectedInteractable.GameObject is null)
+            return;
 
         // Draw a sphere at the interactable's position
         Gizmos.DrawSphere(_selectedInteractable.GameObject.transform.position, 0.5f);

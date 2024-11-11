@@ -1,0 +1,51 @@
+﻿using System;
+using System.Text;
+using UnityEngine;
+
+public class InventoryPickup : MonoBehaviour, IInteractable
+{
+    [SerializeField] private InventoryEntry inventoryEntry;
+
+    [SerializeField] private bool destroyOnPickup = true;
+
+    public InventoryEntry InventoryEntry => inventoryEntry;
+
+    public GameObject GameObject => gameObject;
+
+    public bool IsInteractable => true;
+
+    public void Interact(PlayerInteraction playerInteraction)
+    {
+        // Add the inventory entry to the player's inventory
+        playerInteraction.Player.PlayerInventory.AddItem(inventoryEntry);
+
+        // Subtract the quantity from the inventory entry
+        inventoryEntry.RemoveQuantity(inventoryEntry.Quantity);
+
+        // Destroy the game object if destroyOnPickup is true
+        if (destroyOnPickup)
+            Destroy(gameObject);
+    }
+
+    public void LookAtUpdate(PlayerInteraction playerInteraction)
+    {
+    }
+
+    public string InteractText(PlayerInteraction playerInteraction)
+    {
+        StringBuilder sb = new();
+
+        sb.Append("Pick up ");
+
+        if (inventoryEntry.Quantity > 1)
+            sb.Append($"{inventoryEntry.Quantity}x ");
+
+        sb.Append(inventoryEntry.InventoryObject.Name);
+
+        return sb.ToString();
+    }
+
+    private void Update()
+    {
+    }
+}
