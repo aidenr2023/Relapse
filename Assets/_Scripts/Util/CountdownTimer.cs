@@ -60,6 +60,14 @@ public class CountdownTimer
         TimeLeft = MaxTime;
     }
 
+    public void ForcePercent(float amount)
+    {
+        TimeLeft = Mathf.Clamp(TimeLeft - (MaxTime * amount), 0, MaxTime);
+
+        if (TimeLeft <= 0)
+            OnTimerEnd?.Invoke();
+    }
+
     public void SetActive(bool active)
     {
         IsActive = active;

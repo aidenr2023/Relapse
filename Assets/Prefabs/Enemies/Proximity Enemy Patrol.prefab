@@ -183,6 +183,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   patrolCheckpoints: []
   checkpointProximityThreshold: 0.5
+  visionDistance: 10
+  visionAngle: 45
+  patrolDetectionTimer:
+    maxTime: 1
+  searchDetectionTimer:
+    maxTime: 1
+  pursuitDetectionTimer:
+    maxTime: 1
 --- !u!114 &7911376860155475657
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -90,8 +90,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private void Start()
     {
-        // Add this object to the debug manager
-        DebugManager.Instance.AddDebuggedObject(this);
+        // // Add this object to the debug manager
+        // DebugManager.Instance.AddDebuggedObject(this);
 
         // Create the movement scripts stack
         _movementScripts = new CustomStack<PlayerMovementScript>();

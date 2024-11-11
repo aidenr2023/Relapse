@@ -7,6 +7,8 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerPowerManager))]
 public class Player : MonoBehaviour
 {
+    public static Player Instance { get; private set; }
+
     private PlayerInfo _playerInfo;
 
     private IPlayerController _playerController;
@@ -33,6 +35,9 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
+        // Set the instance to this
+        Instance = this;
+
         // Initialize the components
         InitializeComponents();
     }
