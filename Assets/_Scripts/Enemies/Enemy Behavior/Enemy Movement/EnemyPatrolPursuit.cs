@@ -38,6 +38,8 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
 
     private Vector3 _lastKnownPlayerPosition;
 
+    private bool _externallyEnabled = true;
+
     #endregion
 
     #region Events
@@ -57,6 +59,8 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
     public IReadOnlyCollection<Transform> PatrolCheckpoints => patrolCheckpoints;
 
     public Transform CurrentCheckpoint => patrolCheckpoints[_currentCheckpointIndex];
+
+    private bool NavMeshEnabled => _externallyEnabled;
 
     #endregion
 
@@ -137,6 +141,12 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
         }
     }
 
+    private void OnDestroy()
+    {
+        // Remove this from the debug manager
+        DebugManager.Instance.RemoveDebuggedObject(this);
+    }
+
     #endregion
 
     private void Update()
@@ -152,6 +162,9 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
 
         // Update the destination
         UpdateDestination();
+
+        // Set the NavMeshAgent enabled state
+        NavMeshAgent.enabled = NavMeshEnabled;
     }
 
     private void UpdateLastKnowPlayerPosition()
@@ -356,6 +369,11 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
         }
 
         return closestCheckpointIndex;
+    }
+
+    public void SetMovementEnabled(bool on)
+    {
+        NavMeshAgent.enabled = on;
     }
 
     #region Debugging

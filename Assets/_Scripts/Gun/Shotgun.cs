@@ -306,7 +306,7 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
     public void OnRemoval(WeaponManager weaponManager)
     {
         // Remove from debug manager
-        DebugManager.Instance.RemoveDebugManaged(this);
+        DebugManager.Instance.RemoveDebuggedObject(this);
 
         // Clear the weapon manager
         _weaponManager = null;

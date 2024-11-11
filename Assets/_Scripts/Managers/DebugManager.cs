@@ -149,7 +149,7 @@ public class DebugManager : MonoBehaviour, IDebugged, IDamager
         _debuggedObjects.Add(debugged);
     }
 
-    public void RemoveDebugManaged(IDebugged debugged)
+    public void RemoveDebuggedObject(IDebugged debugged)
     {
         // Remove the debug managed object from the hash set
         _debuggedObjects.Remove(debugged);
