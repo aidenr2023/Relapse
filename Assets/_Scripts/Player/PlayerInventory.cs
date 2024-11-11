@@ -17,7 +17,10 @@ public class PlayerInventory : MonoBehaviour
 
         // Create a new inventory entry and add it to the list
         if (inventoryEntry == null)
+        {
             inventoryEntry = new InventoryEntry(inventoryObject, 0);
+            inventoryEntries.Add(inventoryEntry);
+        }
 
         inventoryEntry.AddQuantity(quantity);
 
