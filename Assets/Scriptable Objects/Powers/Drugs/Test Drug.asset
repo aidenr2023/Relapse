@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cfb2a6815644269acb7f25676adc9c7, type: 3}
+  m_Name: Test Drug
+  m_EditorClassIdentifier: 
+  powerName: Test Power (Drug)
+  powerType: 0
+  icon: {fileID: 21300000, guid: 66e33b373e570bd489e163fb012394bc, type: 3}
+  description: Flavor text for test drug.
+  chargeDuration: 1
+  activeEffectDuration: 3
+  passiveEffectDuration: 4
+  cooldown: 5
+  baseToleranceMeterImpact: 10
+  toleranceMeterLevelMultiplier:
+  - 1
+  - 0.75
+  - 0.5
+  powerLogicPrefab: {fileID: 3058926612469710390, guid: b16172358bbbc53959ffd8656641252b,
+    type: 3}
+  chargeStartSound:
+    clip: {fileID: 0}
+    settings: {fileID: 0}
+    volume: 1
+    isPersistent: 0
+  powerUseSound:
+    clip: {fileID: 0}
+    settings: {fileID: 0}
+    volume: 1
+    isPersistent: 0
+  powerReadySound:
+    clip: {fileID: 0}
+    settings: {fileID: 0}
+    volume: 1
+    isPersistent: 0
