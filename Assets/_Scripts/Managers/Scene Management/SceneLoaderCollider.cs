@@ -12,7 +12,7 @@ public class SceneLoaderCollider : MonoBehaviour
 
         // Set the renderers to be invisible
         foreach (var cRenderer in renderers)
-            GetComponent<Renderer>().enabled = false;
+            cRenderer.enabled = false;
     }
 
     private void OnTriggerEnter(Collider other)
