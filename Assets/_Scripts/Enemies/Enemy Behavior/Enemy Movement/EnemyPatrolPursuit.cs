@@ -64,7 +64,7 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
 
     #endregion
 
-    #region Initialization Functions
+     #region Initialization Functions
 
     private void Awake()
     {
