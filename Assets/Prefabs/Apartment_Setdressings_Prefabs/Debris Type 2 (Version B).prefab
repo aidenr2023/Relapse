@@ -92,6 +92,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7493827050586697717}
+  - component: {fileID: 4132290293850045647}
   m_Layer: 0
   m_Name: Debris Type 2 (Version B)
   m_TagString: Untagged
@@ -155,6 +156,27 @@ Transform:
   - {fileID: 4192362021724759888}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!65 &4132290293850045647
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3297130869247930699}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.0341926, y: 3.4101868, z: 9.561743}
+  m_Center: {x: 2.2571328, y: 0.50249314, z: -0.68856144}
 --- !u!1 &8044651535535712247
 GameObject:
   m_ObjectHideFlags: 0
