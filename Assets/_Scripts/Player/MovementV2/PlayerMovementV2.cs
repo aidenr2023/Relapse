@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -46,6 +48,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private bool _groundCollide;
 
+    private RaycastHit _groundCollideHitInfo;
+
     #endregion
 
     #region Getters
@@ -67,6 +71,12 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     public PlayerMovementScript CurrentMovementScript => _movementScripts.Peek();
 
     public PlayerWallRunning WallRunning { get; private set; }
+
+    public Vector3 GroundCollisionForward =>
+        Vector3.Cross(_groundCollideHitInfo.normal, -CameraPivot.transform.right).normalized;
+
+    public Vector3 GroundCollisionRight =>
+        Vector3.Cross(_groundCollideHitInfo.normal, CameraPivot.transform.forward).normalized;
 
     #endregion
 
@@ -90,8 +100,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private void Start()
     {
-        // // Add this object to the debug manager
-        // DebugManager.Instance.AddDebuggedObject(this);
+        // Add this object to the debug manager
+        DebugManager.Instance.AddDebuggedObject(this);
 
         // Create the movement scripts stack
         _movementScripts = new CustomStack<PlayerMovementScript>();
@@ -124,7 +134,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // _groundCollide = Physics.Raycast(
         //     groundChecker.position,
         //     Vector3.down,
-        //     out var hitInfo,
+        //     out _groundCollideHitInfo,
         //     groundCheckDistance,
         //     mask
         // );
@@ -134,11 +144,30 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             groundChecker.position + new Vector3(0, groundCheckBoxAdjust / 2, 0),
             new Vector3(0.5f, groundCheckBoxAdjust / 2, 0.5f),
             Vector3.down,
-            out var hitInfo,
+            out _groundCollideHitInfo,
             Quaternion.identity,
             groundCheckDistance,
             mask
         );
+
+        // var groundCollisions = new List<RaycastHit>();
+        //
+        // var collides = false;
+        //
+        //
+        // _groundCollide = collides;
+        //
+        // // Set the ground hit info to the item w/ the highest y value
+        // if (groundCollisions.Count > 0)
+        // {
+        //     _groundCollideHitInfo = groundCollisions[0];
+        //
+        //     foreach (var hitInfo in groundCollisions)
+        //     {
+        //         if (hitInfo.point.y > _groundCollideHitInfo.point.y)
+        //             _groundCollideHitInfo = hitInfo;
+        //     }
+        // }
 
         // if (_groundCollide)
         //     Debug.Log($"Collided with {hitInfo.collider.name}");
@@ -150,7 +179,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         verticalVelocityCheck = true;
 
         // Set the on ground to true if the player is on the ground
-        IsGrounded = _groundCollide && verticalVelocityCheck;
+        // IsGrounded = _groundCollide && verticalVelocityCheck;
+        IsGrounded = _groundCollide;
     }
 
     #endregion
@@ -233,6 +263,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         sb.AppendLine($"\tAll Movement Scripts: {string.Join(", ", _movementScripts.Select(n => n.GetType().Name))}");
 
+        return sb.ToString();
+
         // Add the current movement script's debug text
         var movementScriptDebugText = CurrentMovementScript?.GetDebugText();
         if (movementScriptDebugText != null)
@@ -277,6 +309,16 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             groundChecker.position + new Vector3(0, groundCheckBoxAdjust / 2 - groundCheckDistance, 0),
             new Vector3(1, groundCheckBoxAdjust, 1)
         );
+
+        // Draw the ground collision normal's forward direction
+        if (_groundCollide)
+        {
+            var groundColor = new Color(1, .4f, 0, 1);
+
+            Gizmos.color = groundColor;
+            Gizmos.DrawRay(_groundCollideHitInfo.point, GroundCollisionForward * 10);
+            Gizmos.DrawRay(_groundCollideHitInfo.point, GroundCollisionRight * 10);
+        }
     }
 
     #endregion

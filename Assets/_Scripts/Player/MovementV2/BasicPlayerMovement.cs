@@ -164,17 +164,9 @@ public class BasicPlayerMovement : PlayerMovementScript
         // Update the jump
         UpdateJump();
 
-        // Adjust the player's rotation
-        CameraRotationAdjust();
-
         // Apply the lateral speed
-        // if (true)
-        {
-            var sprintMod = _isSprinting ? sprintMultiplier : 1;
-            ApplyLateralSpeedLimit(ParentComponent.MovementSpeed * sprintMod);
-        }
-        // else
-        //     ApplyLateralSpeedLimit(ParentComponent.MovementSpeed);
+        var sprintMod = _isSprinting ? sprintMultiplier : 1;
+        ApplyLateralSpeedLimit(ParentComponent.MovementSpeed * sprintMod);
     }
 
     private void UpdateGroundedLateralMovement()
@@ -182,8 +174,8 @@ public class BasicPlayerMovement : PlayerMovementScript
         // Return if the movement input is zero
         if (_movementInput == Vector2.zero)
         {
-            // Kill the lateral velocity
-            ParentComponent.Rigidbody.velocity = new Vector3(0, ParentComponent.Rigidbody.velocity.y, 0);
+            // Kill the velocity
+            ParentComponent.Rigidbody.velocity = new Vector3(0, 0, 0);
 
             // Stop the footstep timer to prevent footstep sounds
             footstepTimer.SetActive(false);
@@ -202,10 +194,14 @@ public class BasicPlayerMovement : PlayerMovementScript
         // Get the camera's right without the y component
         var cameraRight = new Vector3(cameraTransform.right.x, 0, cameraTransform.right.z).normalized;
 
+        cameraForward = ParentComponent.GroundCollisionForward.normalized;
+        cameraRight = ParentComponent.GroundCollisionRight.normalized;
+
         // Calculate the movement direction relative to the player's transform
         var movementDirection =
             cameraRight * _movementInput.x +
             cameraForward * _movementInput.y;
+
 
         var sprintMult = _isSprinting ? sprintMultiplier : 1;
 
@@ -213,10 +209,12 @@ public class BasicPlayerMovement : PlayerMovementScript
         var move = movementDirection * (ParentComponent.MovementSpeed * sprintMult);
 
         // Set the velocity of the rigid body
-        // ParentComponent.Rigidbody.velocity =
-        //     new Vector3(move.x, ParentComponent.Rigidbody.velocity.y, move.z);
+        // ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, 0, move.z), ForceMode.VelocityChange);
 
-        ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, 0, move.z), ForceMode.VelocityChange);
+        if (move.y >= 0)
+            ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, 0, move.z), ForceMode.VelocityChange);
+        else
+            ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, move.y, move.z), ForceMode.VelocityChange);
 
         // Set the footstep timer to active
         footstepTimer.SetActive(true);
@@ -255,6 +253,8 @@ public class BasicPlayerMovement : PlayerMovementScript
         ParentComponent.Rigidbody.CustomAddForce(
             new Vector3(move.x, 0, move.z), ForceMode.Impulse
         );
+
+        // ParentComponent.Rigidbody.velocity = new Vector3(ParentComponent.Rigidbody.velocity.x, 0, ParentComponent.Rigidbody.velocity.z);
     }
 
     private void UpdateJump()
@@ -290,10 +290,6 @@ public class BasicPlayerMovement : PlayerMovementScript
 
         // Play the jump sound
         SoundManager.Instance.PlaySfx(jumpSound);
-    }
-
-    private void CameraRotationAdjust()
-    {
     }
 
     #endregion

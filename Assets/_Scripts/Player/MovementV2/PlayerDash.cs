@@ -14,8 +14,7 @@ public class PlayerDash : PlayerMovementScript, IDashScript
 
     [SerializeField] [Min(0)] private int maxDashesInAir = 2;
 
-    [Header("Sounds")]
-    [SerializeField] private Sound dashSound;
+    [Header("Sounds")] [SerializeField] private Sound dashSound;
 
     #endregion
 
@@ -115,6 +114,13 @@ public class PlayerDash : PlayerMovementScript, IDashScript
         // Reset & start the dash cooldown
         dashCooldown.Reset();
         dashCooldown.SetActive(true);
+
+        // Kill the player's y velocity
+        ParentComponent.Rigidbody.velocity = new Vector3(
+            ParentComponent.Rigidbody.velocity.x,
+            0,
+            ParentComponent.Rigidbody.velocity.z
+        );
     }
 
     #endregion
@@ -134,7 +140,16 @@ public class PlayerDash : PlayerMovementScript, IDashScript
     {
         // Move the player if they are dashing
         if (IsDashing)
+        {
             ParentComponent.Rigidbody.velocity = _dashDirection * dashSpeed;
+
+            // Reset the y velocity
+            ParentComponent.Rigidbody.velocity = new Vector3(
+                ParentComponent.Rigidbody.velocity.x,
+                0,
+                ParentComponent.Rigidbody.velocity.z
+            );
+        }
     }
 
     public override string GetDebugText()
