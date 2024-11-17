@@ -10,6 +10,8 @@ public class VendorInteractable : MonoBehaviour, IInteractable
     {
         // Get the vendor menu instance & activate the shop
         VendorMenu.Instance.StartVendor();
+        Debug.Log("Did a thing");
+
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)

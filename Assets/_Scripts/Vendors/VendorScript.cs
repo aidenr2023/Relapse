@@ -106,7 +106,6 @@ public class VendorScript : MonoBehaviour, IInteractable
         {
             case VendorInteractionMode.PickUp:
                 playerPowerManager.AddPower(availablePower);
-                Debug.Log("Picked up " + availablePower.PowerName);
                 break;
 
             case VendorInteractionMode.Upgrade:

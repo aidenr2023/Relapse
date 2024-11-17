@@ -65,5 +65,16 @@ public class VendorShopButton : MonoBehaviour
 
         text.text = power.Description;
     }
+    public void BuyPower()
+    {
+        Debug.Log("I was clicked!");
+        Debug.Log("You purchased: "+ power.PowerName);
 
+        //Add the power clicked
+
+        //Set canUseShop to false
+
+        //Close the shop
+        VendorMenu.Instance.EndVendor();
+    }
 }
