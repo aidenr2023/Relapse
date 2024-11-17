@@ -4,18 +4,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public abstract class StateManager<EState> : MonoBehaviour where EState : System.Enum
+public abstract class StateManager<EState> : MonoBehaviour where EState : Enum
 {
     // The states that the state manager can be in
     protected Dictionary<EState, BaseState<EState>> States = new Dictionary<EState, BaseState<EState>>();
     
     // The current state of the state manager
-    protected BaseState<EState> CurrentState;
+    public BaseState<EState> CurrentState { get; protected set; }
     protected bool isTransitionToState = false;
     
     //private field holding queued state
     private EState _queuedState;
-    
+
+    public void Start()
+    {
+        CurrentState.EnterState();
+    }
+
     private void Update()
     {
         EState nextStateKey = CurrentState.GetNextState();
