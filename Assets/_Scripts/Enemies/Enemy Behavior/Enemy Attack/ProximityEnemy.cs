@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.VFX;
 
 [RequireComponent(typeof(EnemyInfo))]
 public class ProximityEnemy : MonoBehaviour, IEnemyAttackBehavior
@@ -27,10 +28,11 @@ public class ProximityEnemy : MonoBehaviour, IEnemyAttackBehavior
 
     [SerializeField] [Min(0)] private float explosionDamage = 5f;
 
-    [Header("Visuals")] [SerializeField] private ParticleSystem explosionParticles;
-    [SerializeField] [Range(0, 500)] private int explosionParticlesCount = 30;
+    [Header("Visuals")]
 
     [SerializeField] private ParticleSystem fuseParticles;
+
+    [SerializeField] private VisualEffect explosionVFX;
 
     #endregion
 
@@ -198,30 +200,18 @@ public class ProximityEnemy : MonoBehaviour, IEnemyAttackBehavior
     private void CreateExplosionParticles()
     {
         // Return if the explosion particles are null
-        if (explosionParticles == null)
+        if (explosionVFX == null)
             return;
 
-        // Create a new instance of the explosion particles at the enemy's position
-        var explosion = Instantiate(explosionParticles, transform.position, Quaternion.identity);
+        // Create the explosion VFX
+        var fx = Instantiate(explosionVFX, transform.position, Quaternion.identity);
 
-        // Create emit parameters for the explosion particles
-        var emitParams = new ParticleSystem.EmitParams
-        {
-            applyShapeToPosition = true,
-            position = transform.position
-        };
+        var duration = fx.GetFloat("Duration");
 
-        // Emit the explosion particles
-        explosion.Emit(emitParams, explosionParticlesCount);
+        // Set the explosion VFX to be destroyed after the duration
+        Destroy(fx.gameObject, duration);
 
-        // Set the explosion particles to be destroyed after the duration
-        Destroy(explosion.gameObject, explosion.main.duration);
-
-        // Stop the fuse particles
-        _fuseParticlesInstance.Stop();
-
-        // Set the fuse particles to be destroyed after the duration
-        Destroy(_fuseParticlesInstance.gameObject, explosion.main.duration);
+        Debug.Log($"FX: {duration} - {fx}");
     }
 
     private void OnDestroy()

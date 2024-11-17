@@ -60,14 +60,14 @@ public class TemporaryApartmentLoader : MonoBehaviour
         foreach (var level in levelsToUnload)
         {
             _loadedLevels.Remove(level);
-            level.SetActive(false);
+            level?.SetActive(false);
         }
 
         // Load the levels
         foreach (var level in section.LevelsToLoad)
         {
             _loadedLevels.Add(level);
-            level.SetActive(true);
+            level?.SetActive(true);
         }
     }
 
