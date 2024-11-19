@@ -16,6 +16,9 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
 
     [SerializeField] [Range(0, 1)] private float wallRunningSensitivity = 1f;
 
+    [SerializeField] [Min(0)] private float maxFallSpeed;
+    [SerializeField] [Min(0)] private float fallAcceleration;
+
     [Header("Wall Jump")] [SerializeField] [Min(0)]
     private float wallJumpForce = 10f;
 
@@ -233,10 +236,12 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
             ? Vector3.Cross(forwardDirection, _contactPoints[_contactPointIndex].normal)
             : Vector3.Cross(_contactPoints[_contactPointIndex].normal, forwardDirection);
 
-        var upwardMovement = upwardDirection * _movementInput.y;
+        // var upwardMovement = upwardDirection * _movementInput.y;
+        // var upwardMovement = upwardDirection * -1;
+        var upwardMovement = upwardDirection * 0;
 
         // Move the player in the direction of the wall a little bit to prevent them from falling off
-        forwardDirection -= contactPoint.normal * 0.05f;
+        forwardDirection -= contactPoint.normal * 0.025f;
 
         // Remove the y component of the forward direction
         forwardDirection = new Vector3(forwardDirection.x, 0, forwardDirection.z);
@@ -248,10 +253,16 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
         // ParentComponent.transform.forward = forwardDirection;
 
         // Get the velocity vector
-        var velocityVector = moveVector * ParentComponent.MovementSpeed;
+        // var velocityVector = moveVector * ParentComponent.MovementSpeed;
+        var velocityVector = moveVector * (ParentComponent.MovementSpeed * _movementInput.y);
+
+        var currentYVelocity = ParentComponent.Rigidbody.velocity.y;
+        var updatedYVelocity = Mathf.Clamp(currentYVelocity - fallAcceleration, -maxFallSpeed, float.MaxValue);
+
+        var fallVector = upwardDirection * updatedYVelocity;
 
         // Move the player in the forward direction
-        ParentComponent.Rigidbody.velocity = velocityVector;
+        ParentComponent.Rigidbody.velocity = velocityVector + fallVector;
 
         // // Set the velocity of the rigid body
         // ParentComponent.Rigidbody.linearVelocity = new Vector3(
@@ -334,7 +345,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
         // Otherwise, remove the current object from the wall running objects
         else if (_wallRunningObjects.Contains(other.gameObject))
         {
-            Debug.Log("Pop from the wall!");
+            // Debug.Log("Pop from the wall!");
             RemoveWallRunningObject(other.gameObject);
         }
     }

@@ -666,7 +666,7 @@ MonoBehaviour:
   canSprintWithoutPower: 1
   canJumpWithoutPower: 1
   sprintMultiplier: 1.5
-  jumpForce: 10
+  jumpForce: 12
   footstepSoundPool:
     sounds:
     - clip: {fileID: 8300000, guid: 81def98cd06884940b95459db1a841f7, type: 3}
@@ -701,6 +701,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   wallRunningSensitivity: 0.25
+  maxFallSpeed: 3
+  fallAcceleration: 0.3
   wallJumpForce: 10
   wallJumpAngle: 20
   autoWallJumpForce: 0.5

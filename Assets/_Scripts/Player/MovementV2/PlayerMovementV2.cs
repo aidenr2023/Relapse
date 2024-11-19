@@ -241,7 +241,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Set the current action map to the top most input map
         _currentActionMap = topMostMovementScript?.InputActionMap;
 
-        Debug.Log($"Enabled {topMostMovementScript?.GetType().Name}");
+        // Debug.Log($"Enabled {topMostMovementScript?.GetType().Name}");
     }
 
     #endregion
