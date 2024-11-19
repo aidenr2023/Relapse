@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.VFX;
 
 [RequireComponent(typeof(Rigidbody))]
 public class GenericGun : MonoBehaviour, IGun, IDebugged
@@ -8,12 +9,15 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     #region Serialized Fields
 
     [SerializeField] private GunInformation gunInformation;
-    [SerializeField]private Animator animator;
+    [SerializeField] private Animator animator;
+
     [Header("Muzzle Particles")] [SerializeField]
     private Transform muzzleLocation;
 
     [SerializeField] private ParticleSystem muzzleParticles;
     [SerializeField] [Range(0, 500)] private int muzzleParticlesCount = 200;
+
+    [SerializeField] private VisualEffect muzzleFlashPrefab;
 
     [Header("Impact Particles")] [SerializeField]
     private ParticleSystem impactParticles;
@@ -88,7 +92,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     {
         // Get the collider component
         Collider = GetComponent<Collider>();
-        
+
         // Get the animator component from pistol4
         //animator = GetComponent<Animator>();
     }
@@ -158,7 +162,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Return if the gun is currently reloading
         if (IsReloading)
             return;
-            
+
 
         // Set the firing flag to true
         _isFiring = true;
@@ -206,8 +210,11 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Create a ray cast from the starting point in the direction with the specified range
 
-        // Emit the fire particles
-        PlayParticles(muzzleParticles, muzzleLocation.position, muzzleParticlesCount);
+        // // Emit the fire particles
+        // PlayParticles(muzzleParticles, muzzleLocation.position, muzzleParticlesCount);
+
+        // Play the muzzle flash VFX
+        PlayMuzzleFlash();
 
         // Fire the gun
         for (var i = 0; i < timesToFire; i++)
@@ -226,12 +233,11 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
             // Decrease the magazine size
             _currentMagazineSize--;
-            
-       
-            
+
+
             //Play shooting animation
             animator.SetTrigger("Shooting");
-            
+
             // Play the fire sound
             var fireSound = gunInformation.FireSounds.GetRandomSound();
             SoundManager.Instance.PlaySfx(fireSound);
@@ -278,15 +284,14 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Set the reload time to the reload time of the gun
         _currentReloadTime = gunInformation.ReloadTime;
-        
-        
-        
+
+
         // Set the reloading flag to true
         _isReloading = true;
-        
+
         // set animation param trigger to reload
         animator.SetTrigger("Reload");
-                
+
         // Play the reload sound
         Debug.Log($"Sound Settings: {gunInformation.ReloadSound.Clip.name}");
         SoundManager.Instance.PlaySfx(gunInformation.ReloadSound);
@@ -337,6 +342,21 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Emit the particles
         system.Emit(emitParams, count);
+    }
+
+    private void PlayMuzzleFlash()
+    {
+        // Instantiate the muzzle flash VFX
+        var muzzleFlashInstance = Instantiate(muzzleFlashPrefab, muzzleLocation.position, muzzleLocation.rotation);
+
+        // Get the max lifetime of the muzzle flash
+        var maxLifetime = muzzleFlashInstance.GetFloat("MaxLifetime");
+
+        // Destroy the muzzle flash after the max lifetime
+        Destroy(muzzleFlashInstance.gameObject, maxLifetime);
+
+        // Play the muzzle flash
+        muzzleFlashInstance.Play();
     }
 
     public void Interact(PlayerInteraction playerInteraction)
