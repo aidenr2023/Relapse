@@ -13,8 +13,6 @@ public class VendorShopButton : MonoBehaviour
     [SerializeField] private PowerScriptableObject power;
 
     [SerializeField] private GameObject vendorInteractable;
-    private PlayerPowerManager _powerManager;
-
 
     public PowerScriptableObject Power => power;
     public bool canUseShop = true;
@@ -80,7 +78,7 @@ public class VendorShopButton : MonoBehaviour
         Debug.Log("You purchased: " + power.PowerName);
 
         // Add the power clicked
-        GetComponent<PlayerPowerManager>().AddPower(power);
+        Player.Instance.PlayerPowerManager.AddPower(power);
         Debug.Log("Added a power: " + power);
 
         //NOT WORKING (make sure to set only that specific vendor and not all vendors. May require duping the buttons?)
