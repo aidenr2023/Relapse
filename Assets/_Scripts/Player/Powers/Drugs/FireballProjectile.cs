@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.VFX;
 
 [RequireComponent(typeof(Rigidbody))]
 public class FireballProjectile : MonoBehaviour, IPowerProjectile
@@ -17,8 +18,13 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
     [SerializeField] private float speed = 10f;
     [SerializeField] private float damage = 100f;
 
+    [SerializeField] [Min(0)] private float lifetime = 10;
+
     [SerializeField] private ParticleSystem explosionParticles;
     [SerializeField] [Range(0, 500)] private int explosionParticlesCount = 200;
+
+    [SerializeField] private VisualEffect fireballVFXPrefab;
+    [SerializeField] private VisualEffect explosionVFXPrefab;
 
 
     private void Awake()
@@ -47,7 +53,14 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
         transform.forward = _forward = forward;
         
         // Set the projectile to explode in 10 seconds
-        Invoke(nameof(Explode), 10f);
+        Invoke(nameof(Explode), lifetime);
+
+        // Instantiate the fireball VFX prefab
+        var fireballVFX = Instantiate(fireballVFXPrefab, transform.position, Quaternion.identity);
+
+        // Set the parent of the fireball VFX to the game object
+        fireballVFX.transform.parent = transform;
+        fireballVFX.transform.localPosition = Vector3.zero;
     }
 
     private void FixedUpdate()
@@ -101,12 +114,24 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
         Destroy(explosion.gameObject, explosion.main.duration);
     }
 
+    private void CreateExplosionVFX()
+    {
+        // Instantiate the explosion VFX at the projectile's position
+        var explosion = Instantiate(explosionVFXPrefab, transform.position, Quaternion.identity);
+
+        // Destroy the explosion VFX after the duration of the VFX
+        Destroy(explosion.gameObject, explosion.GetFloat("MaxLifetime"));
+    }
+
     private void Explode()
     {
         _isExploded = true;
 
-        // Create explosion particles
-        CreateExplosionParticles();
+        // // Create explosion particles
+        // CreateExplosionParticles();
+
+        // Create explosion VFX
+        CreateExplosionVFX();
 
         // Destroy the projectile
         Destroy(gameObject);
