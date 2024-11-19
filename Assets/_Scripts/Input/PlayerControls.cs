@@ -554,6 +554,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Flashlight"",
+                    ""type"": ""Button"",
+                    ""id"": ""71557573-d948-4ef3-bc13-725c7604aae7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -633,6 +642,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""DebugHealth"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5cc7befe-a028-48cd-b751-a45239e93042"",
+                    ""path"": ""<Keyboard>/f2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KB n M"",
+                    ""action"": ""Flashlight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -1196,6 +1216,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Debug_ToggleDebug = m_Debug.FindAction("ToggleDebug", throwIfNotFound: true);
         m_Debug_DebugTolerance = m_Debug.FindAction("DebugTolerance", throwIfNotFound: true);
         m_Debug_DebugHealth = m_Debug.FindAction("DebugHealth", throwIfNotFound: true);
+        m_Debug_Flashlight = m_Debug.FindAction("Flashlight", throwIfNotFound: true);
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
@@ -1410,6 +1431,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Debug_ToggleDebug;
     private readonly InputAction m_Debug_DebugTolerance;
     private readonly InputAction m_Debug_DebugHealth;
+    private readonly InputAction m_Debug_Flashlight;
     public struct DebugActions
     {
         private @PlayerControls m_Wrapper;
@@ -1417,6 +1439,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @ToggleDebug => m_Wrapper.m_Debug_ToggleDebug;
         public InputAction @DebugTolerance => m_Wrapper.m_Debug_DebugTolerance;
         public InputAction @DebugHealth => m_Wrapper.m_Debug_DebugHealth;
+        public InputAction @Flashlight => m_Wrapper.m_Debug_Flashlight;
         public InputActionMap Get() { return m_Wrapper.m_Debug; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1435,6 +1458,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @DebugHealth.started += instance.OnDebugHealth;
             @DebugHealth.performed += instance.OnDebugHealth;
             @DebugHealth.canceled += instance.OnDebugHealth;
+            @Flashlight.started += instance.OnFlashlight;
+            @Flashlight.performed += instance.OnFlashlight;
+            @Flashlight.canceled += instance.OnFlashlight;
         }
 
         private void UnregisterCallbacks(IDebugActions instance)
@@ -1448,6 +1474,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @DebugHealth.started -= instance.OnDebugHealth;
             @DebugHealth.performed -= instance.OnDebugHealth;
             @DebugHealth.canceled -= instance.OnDebugHealth;
+            @Flashlight.started -= instance.OnFlashlight;
+            @Flashlight.performed -= instance.OnFlashlight;
+            @Flashlight.canceled -= instance.OnFlashlight;
         }
 
         public void RemoveCallbacks(IDebugActions instance)
@@ -1697,6 +1726,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnToggleDebug(InputAction.CallbackContext context);
         void OnDebugTolerance(InputAction.CallbackContext context);
         void OnDebugHealth(InputAction.CallbackContext context);
+        void OnFlashlight(InputAction.CallbackContext context);
     }
     public interface IPlayerActions
     {

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugged
 {
@@ -22,6 +24,15 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
     [SerializeField] private CountdownTimer patrolDetectionTimer;
     [SerializeField] private CountdownTimer searchDetectionTimer;
     [SerializeField] private CountdownTimer pursuitDetectionTimer;
+
+    [Header("Debugging")] [SerializeField] private Canvas debugCanvas;
+    [SerializeField] private Slider pursuitDetectionSlider;
+    [SerializeField] private TMP_Text pursuitDetectionText;
+    [SerializeField] private Image pursuitDetectionColorImage;
+
+    [SerializeField] private Color patrolDetectionColor = Color.green;
+    [SerializeField] private Color searchDetectionColor = Color.yellow;
+    [SerializeField] private Color pursuitDetectionColor = Color.red;
 
     #endregion
 
@@ -64,7 +75,7 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
 
     #endregion
 
-     #region Initialization Functions
+    #region Initialization Functions
 
     private void Awake()
     {
@@ -165,6 +176,43 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
 
         // Set the NavMeshAgent enabled state
         NavMeshAgent.enabled = NavMeshEnabled;
+
+        // Update the debug stuff
+        UpdateDebug();
+    }
+
+    private void UpdateDebug()
+    {
+        // If the game is not in debug mode, hide the debug canvas and return
+        if (!DebugManager.Instance.IsDebugMode)
+        {
+            debugCanvas.enabled = false;
+            return;
+        }
+
+        debugCanvas.enabled = true;
+
+        // Get the main camera
+        var mainCamera = Camera.main;
+
+        // Set the debug canvas to be facing the current camera,
+        // but flipped so text is oriented correctly
+        debugCanvas.transform.LookAt(mainCamera.transform);
+        debugCanvas.transform.Rotate(0, 180, 0);
+
+        var currentTimer = _currentMovementState switch
+        {
+            EnemyMovementState.Patrol => patrolDetectionTimer,
+            EnemyMovementState.Searching => searchDetectionTimer,
+            EnemyMovementState.Pursuit => pursuitDetectionTimer,
+            _ => null
+        };
+
+        // Set the pursuit detection slider value
+        pursuitDetectionSlider.value = currentTimer.Percentage;
+
+        // Set the pursuit detection text
+        pursuitDetectionText.text = $"{_currentMovementState.ToString()} {currentTimer.Percentage:0.00}";
     }
 
     private void UpdateLastKnowPlayerPosition()
@@ -254,9 +302,13 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
 
                 // If the player is no longer detected,
                 // change the movement state to patrol
-                if (searchDetectionTimer.Percentage <= 0)
+                else if (searchDetectionTimer.Percentage <= 0)
                 {
-                    _currentMovementState = EnemyMovementState.Pursuit;
+                    _currentMovementState = EnemyMovementState.Patrol;
+
+                    // Reset the patrol timer
+                    patrolDetectionTimer.Reset();
+
                     OnMovementStateChanged?.Invoke(this, previousMovementState, _currentMovementState);
                 }
 
@@ -388,6 +440,12 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
         for (var i = 0; i < patrolCheckpoints.Length; i++)
         {
             var nextIndex = (i + 1) % patrolCheckpoints.Length;
+
+            if (patrolCheckpoints[i] == null)
+                continue;
+
+            if (patrolCheckpoints[nextIndex] == null)
+                continue;
 
             Gizmos.color = Color.red;
             Gizmos.DrawLine(patrolCheckpoints[i].position, patrolCheckpoints[nextIndex].position);
