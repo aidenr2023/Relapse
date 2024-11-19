@@ -386,7 +386,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8663240538957391025}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 4396011209320078298}
+        m_TargetAssemblyTypeName: VendorShopButton, Assembly-CSharp
+        m_MethodName: BuyPower
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &4396011209320078298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -402,6 +414,9 @@ MonoBehaviour:
   powerNameText: {fileID: 4695941613639251136}
   powerImage: {fileID: 8057093618444170357}
   power: {fileID: 0}
+  vendorInteractable: {fileID: 6920113364394744074, guid: 3dbc1a83b93bb1e49997afa3626e84d6,
+    type: 3}
+  canUseShop: 1
 --- !u!114 &8242124293917332780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -420,21 +435,33 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 0}
-          m_TargetAssemblyTypeName: VendorShopButton, Assembly-CSharp
-          m_MethodName: 
+          m_TargetAssemblyTypeName: VendorMenu, Assembly-CSharp
+          m_MethodName: SetShopDescriptions
           m_Mode: 2
           m_Arguments:
-            m_ObjectArgument: {fileID: 0}
-            m_ObjectArgumentAssemblyTypeName: TMPro.TMP_Text, Unity.TextMeshPro
+            m_ObjectArgument: {fileID: 4396011209320078298}
+            m_ObjectArgumentAssemblyTypeName: VendorShopButton, Assembly-CSharp
             m_IntArgument: 0
             m_FloatArgument: 0
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
-  - eventID: 8
+  - eventID: 0
     callback:
       m_PersistentCalls:
-        m_Calls: []
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: VendorMenu, Assembly-CSharp
+          m_MethodName: SetShopDescriptions
+          m_Mode: 2
+          m_Arguments:
+            m_ObjectArgument: {fileID: 4396011209320078298}
+            m_ObjectArgumentAssemblyTypeName: VendorShopButton, Assembly-CSharp
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!1 &8222414062569457637
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,7 +12,12 @@ public class VendorShopButton : MonoBehaviour
 
     [SerializeField] private PowerScriptableObject power;
 
+    [SerializeField] private GameObject vendorInteractable;
+
     public PowerScriptableObject Power => power;
+    public bool canUseShop = true;
+
+    public bool IsInteractable { get; set; } = true;
 
     private void Start()
     {
@@ -65,5 +72,21 @@ public class VendorShopButton : MonoBehaviour
 
         text.text = power.Description;
     }
+    public void BuyPower()
+    {
+        Debug.Log("I was clicked!");
+        Debug.Log("You purchased: " + power.PowerName);
 
+        // Add the power clicked
+        Player.Instance.PlayerPowerManager.AddPower(power);
+        Debug.Log("Added a power: " + power);
+
+        //NOT WORKING (make sure to set only that specific vendor and not all vendors. May require duping the buttons?)
+        // Set IsInteractable to false
+        //vendorInteractable.GetComponent<VendorInteractable>().IsInteractable = false;
+        Debug.Log(vendorInteractable.GetComponent<VendorInteractable>());
+
+        // Close the shop
+        VendorMenu.Instance.EndVendor();
+    }
 }
