@@ -12,12 +12,6 @@ public class PlayerLook : MonoBehaviour
     [Header("Settings")] [SerializeField] [Min(1)]
     private float sensitivityMultiplier = 50;
 
-    [SerializeField] [Range(0.01f, 1)] private float sensX = 1;
-    [SerializeField] [Range(0.01f, 1)] private float sensY = 1;
-
-    [SerializeField] [Range(0.01f, 1)] private float controllerSensX = 1;
-    [SerializeField] [Range(0.01f, 1)] private float controllerSensY = 1;
-
     [SerializeField] [Range(0, 90)] private float upDownAngleLimit = 5;
 
     [Header("References")]
