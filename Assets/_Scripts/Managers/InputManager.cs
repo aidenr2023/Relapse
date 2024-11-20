@@ -8,9 +8,19 @@ public class InputManager : MonoBehaviour
 {
     public static InputManager Instance { get; private set; }
 
-    public PlayerControls PlayerControls { get; private set; }
+    #region Private Fields
 
     private HashSet<IUsesInput> _registeredItems;
+
+    #endregion
+
+    #region Getters
+
+    public PlayerControls PlayerControls { get; private set; }
+
+    private bool CursorActive => PauseManager.Instance.IsPaused || VendorMenu.Instance.IsVendorActive;
+
+    #endregion
 
     #region Initialization Functions
 
@@ -48,6 +58,13 @@ public class InputManager : MonoBehaviour
         PlayerControls.Disable();
     }
 
+    private void Update()
+    {
+        SetCursorState(CursorActive);
+    }
+
+    #region Public Methods
+
     public void Register(IUsesInput item)
     {
         // If the item is already in the registered items, return
@@ -66,4 +83,29 @@ public class InputManager : MonoBehaviour
 
         item.RemoveInput();
     }
+
+    /// <summary>
+    /// Disable the player controls.
+    /// Hide / show the cursor.
+    ///
+    /// True - Unlocks the cursor and shows it. Used for menus and pause states.
+    /// False - Locks the cursor and hides it. Used for gameplay.
+    /// </summary>
+    /// <param name="state"></param>
+    private void SetCursorState(bool state)
+    {
+        // Set the cursor state
+        Cursor.lockState = state ? CursorLockMode.None : CursorLockMode.Locked;
+
+        // Show / hide the cursor
+        Cursor.visible = state;
+
+        // // Enable / disable the player controls
+        // if (state)
+        //     PlayerControls.Disable();
+        // else
+        //     PlayerControls.Enable();
+    }
+
+    #endregion
 }

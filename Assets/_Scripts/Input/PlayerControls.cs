@@ -269,6 +269,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pause"",
+                    ""type"": ""Button"",
+                    ""id"": ""13a32e3d-9614-4068-b876-1c6560228e13"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -445,6 +454,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": ""ScaleVector2(x=50,y=50)"",
                     ""groups"": ""Gamepad"",
                     ""action"": ""LookController"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d6ca5b67-5f90-494c-84bb-abcde3c93cca"",
+                    ""path"": ""<Gamepad>/start"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3693f6d7-f062-4e1d-96ce-f4d4b278f3f6"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KB n M"",
+                    ""action"": ""Pause"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -878,6 +909,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Power = m_Player.FindAction("Power", throwIfNotFound: true);
         m_Player_ChangePower = m_Player.FindAction("ChangePower", throwIfNotFound: true);
         m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
+        m_Player_Pause = m_Player.FindAction("Pause", throwIfNotFound: true);
         // PlayerMovementBasic
         m_PlayerMovementBasic = asset.FindActionMap("PlayerMovementBasic", throwIfNotFound: true);
         m_PlayerMovementBasic_Move = m_PlayerMovementBasic.FindAction("Move", throwIfNotFound: true);
@@ -1080,6 +1112,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Power;
     private readonly InputAction m_Player_ChangePower;
     private readonly InputAction m_Player_Reload;
+    private readonly InputAction m_Player_Pause;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -1091,6 +1124,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Power => m_Wrapper.m_Player_Power;
         public InputAction @ChangePower => m_Wrapper.m_Player_ChangePower;
         public InputAction @Reload => m_Wrapper.m_Player_Reload;
+        public InputAction @Pause => m_Wrapper.m_Player_Pause;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1121,6 +1155,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Reload.started += instance.OnReload;
             @Reload.performed += instance.OnReload;
             @Reload.canceled += instance.OnReload;
+            @Pause.started += instance.OnPause;
+            @Pause.performed += instance.OnPause;
+            @Pause.canceled += instance.OnPause;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1146,6 +1183,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Reload.started -= instance.OnReload;
             @Reload.performed -= instance.OnReload;
             @Reload.canceled -= instance.OnReload;
+            @Pause.started -= instance.OnPause;
+            @Pause.performed -= instance.OnPause;
+            @Pause.canceled -= instance.OnPause;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1326,6 +1366,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnPower(InputAction.CallbackContext context);
         void OnChangePower(InputAction.CallbackContext context);
         void OnReload(InputAction.CallbackContext context);
+        void OnPause(InputAction.CallbackContext context);
     }
     public interface IPlayerMovementBasicActions
     {

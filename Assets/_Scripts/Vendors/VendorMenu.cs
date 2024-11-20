@@ -41,6 +41,8 @@ public class VendorMenu : MonoBehaviour
 
     public GameObject GossipMenu => gossipMenu;
 
+    public bool IsVendorActive => gameObject.activeSelf;
+
     #endregion
 
     private void Awake()
@@ -121,12 +123,7 @@ public class VendorMenu : MonoBehaviour
         gameObject.SetActive(true);
 
         // Set the cursor to visible
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-
-
-        // Disable the playercontrols in the input manager
-        InputManager.Instance.PlayerControls.Disable();
+        // InputManager.Instance.SetCursorState(true);
 
         // Pause the game
         Time.timeScale = 0;
@@ -141,13 +138,9 @@ public class VendorMenu : MonoBehaviour
         gameObject.SetActive(false);
 
         // Set the cursor to invisible
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        // InputManager.Instance.SetCursorState(false);
 
         // Unpause the game
         Time.timeScale = 1;
-
-        // Re-enable the playercontrols in the input manager
-        InputManager.Instance.PlayerControls.Enable();
     }
 }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization; // Include the new Input System namespace
+using UnityEngine.Serialization;
 
 public class PlayerLook : MonoBehaviour
 {
@@ -38,7 +38,7 @@ public class PlayerLook : MonoBehaviour
 
     private Vector2 _lookInput;
 
-    private float _currentSens;
+    private Vector2 _currentSens;
 
     #endregion
 
@@ -61,7 +61,7 @@ public class PlayerLook : MonoBehaviour
     private void OnLookMousePerformed(InputAction.CallbackContext obj)
     {
         // Set the current sensitivity to the mouse sensitivity
-        _currentSens = sensX;
+        _currentSens = UserSettings.Instance.MouseSens;
 
         // Call the look performed function
         OnLookPerformed(obj);
@@ -70,7 +70,7 @@ public class PlayerLook : MonoBehaviour
     private void OnLookControllerPerformed(InputAction.CallbackContext obj)
     {
         // Set the current sensitivity to the controller sensitivity
-        _currentSens = controllerSensX;
+        _currentSens = UserSettings.Instance.ControllerSens;
 
         // Call the look performed function
         OnLookPerformed(obj);
@@ -78,8 +78,6 @@ public class PlayerLook : MonoBehaviour
 
     private void OnLookPerformed(InputAction.CallbackContext obj)
     {
-        Debug.Log($"{obj.control.path} is sending input!");
-
         // Get the look input
         _lookInput = obj.ReadValue<Vector2>();
     }
@@ -103,8 +101,8 @@ public class PlayerLook : MonoBehaviour
         var constantSense = sensitivityMultiplier * Time.deltaTime;
 
         // Adjust rotation based on mouse input
-        _yRotation += _lookInput.x * _currentSens * constantSense;
-        _xRotation -= _lookInput.y * _currentSens * constantSense;
+        _yRotation += _lookInput.x * _currentSens.x * constantSense;
+        _xRotation -= _lookInput.y * _currentSens.y * constantSense;
 
         // Clamp the X rotation to prevent over-rotation
         _xRotation = Mathf.Clamp(_xRotation, -90f + upDownAngleLimit, 90f - upDownAngleLimit);
