@@ -66,13 +66,13 @@ public class WallRunning : MonoBehaviour
 
     void OnEnable()
     {
-        playerInputActions.GamePlay.jump.performed += OnJumpPerformed;
+        playerInputActions.PlayerMovementBasic.Jump.performed += OnJumpPerformed;
         playerInputActions.Enable();
     }
 
     void OnDisable()
     {
-        playerInputActions.GamePlay.jump.performed -= OnJumpPerformed;
+        playerInputActions.PlayerMovementBasic.Jump.performed -= OnJumpPerformed;
         playerInputActions.Disable();
     }
 
@@ -180,7 +180,7 @@ public class WallRunning : MonoBehaviour
         rb.velocity = new Vector3(wallRunDirection.x * wallRunForce, rb.velocity.y, wallRunDirection.z * wallRunForce);
 
         // Get vertical movement input (e.g., W/S or joystick vertical axis)
-        float verticalInput = playerInputActions.GamePlay.Movement.ReadValue<Vector2>().y;
+        float verticalInput = playerInputActions.PlayerMovementBasic.Move.ReadValue<Vector2>().y;
 
         // Adjust the player's velocity for vertical movement on the wall
         rb.velocity = new Vector3(rb.velocity.x, verticalInput * verticalWallRunSpeed, rb.velocity.z);

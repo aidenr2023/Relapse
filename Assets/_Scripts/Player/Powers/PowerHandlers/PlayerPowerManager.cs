@@ -79,10 +79,10 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
 
     private void InitializeInput()
     {
-        InputManager.Instance.PlayerControls.GamePlay.Power.performed += OnPowerPerformed;
-        InputManager.Instance.PlayerControls.GamePlay.Power.canceled += OnPowerCanceled;
+        InputManager.Instance.PlayerControls.Player.Power.performed += OnPowerPerformed;
+        InputManager.Instance.PlayerControls.Player.Power.canceled += OnPowerCanceled;
 
-        InputManager.Instance.PlayerControls.GamePlay.ChangePower.performed += OnPowerChanged;
+        InputManager.Instance.PlayerControls.Player.ChangePower.performed += OnPowerChanged;
     }
 
 

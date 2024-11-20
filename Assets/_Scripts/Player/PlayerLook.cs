@@ -6,12 +6,17 @@ using UnityEngine.Serialization; // Include the new Input System namespace
 
 public class PlayerLook : MonoBehaviour
 {
+    #region Serialized Fields
+
     // Mouse sensitivity
     [Header("Settings")] [SerializeField] [Min(1)]
     private float sensitivityMultiplier = 50;
 
     [SerializeField] [Range(0.01f, 1)] private float sensX = 1;
     [SerializeField] [Range(0.01f, 1)] private float sensY = 1;
+
+    [SerializeField] [Range(0.01f, 1)] private float controllerSensX = 1;
+    [SerializeField] [Range(0.01f, 1)] private float controllerSensY = 1;
 
     [SerializeField] [Range(0, 90)] private float upDownAngleLimit = 5;
 
@@ -21,11 +26,21 @@ public class PlayerLook : MonoBehaviour
     [SerializeField]
     private Transform orientation;
 
+    #endregion
+
+    #region Private Fields
+
     // Current rotation around the X axis
     private float _xRotation;
 
     // Current rotation around the Y axis
     private float _yRotation;
+
+    private Vector2 _lookInput;
+
+    private float _currentSens;
+
+    #endregion
 
     private void Start()
     {
@@ -36,20 +51,60 @@ public class PlayerLook : MonoBehaviour
     private void InitializeInput()
     {
         // Initialize the input
-        InputManager.Instance.PlayerControls.GamePlay.Look.performed += OnLook;
+        InputManager.Instance.PlayerControls.Player.LookMouse.performed += OnLookMousePerformed;
+        InputManager.Instance.PlayerControls.Player.LookMouse.canceled += OnLookCanceled;
+
+        InputManager.Instance.PlayerControls.Player.LookController.performed += OnLookControllerPerformed;
+        InputManager.Instance.PlayerControls.Player.LookController.canceled += OnLookCanceled;
     }
 
-    private void OnLook(InputAction.CallbackContext obj)
+    private void OnLookMousePerformed(InputAction.CallbackContext obj)
     {
-        var lookInput = obj.ReadValue<Vector2>();
+        // Set the current sensitivity to the mouse sensitivity
+        _currentSens = sensX;
 
-        // Calculate the constant sensitivity multiplier that does not 
+        // Call the look performed function
+        OnLookPerformed(obj);
+    }
+
+    private void OnLookControllerPerformed(InputAction.CallbackContext obj)
+    {
+        // Set the current sensitivity to the controller sensitivity
+        _currentSens = controllerSensX;
+
+        // Call the look performed function
+        OnLookPerformed(obj);
+    }
+
+    private void OnLookPerformed(InputAction.CallbackContext obj)
+    {
+        Debug.Log($"{obj.control.path} is sending input!");
+
+        // Get the look input
+        _lookInput = obj.ReadValue<Vector2>();
+    }
+
+    private void OnLookCanceled(InputAction.CallbackContext obj)
+    {
+        // Reset the look input
+        _lookInput = Vector2.zero;
+    }
+
+    private void Update()
+    {
+        // Run the look update
+        LookUpdate();
+    }
+
+    private void LookUpdate()
+    {
+        // Calculate the constant sensitivity multiplier that does not
         // depend on x or y sensitivity / input
         var constantSense = sensitivityMultiplier * Time.deltaTime;
 
         // Adjust rotation based on mouse input
-        _yRotation += lookInput.x * sensX * constantSense;
-        _xRotation -= lookInput.y * sensY * constantSense;
+        _yRotation += _lookInput.x * _currentSens * constantSense;
+        _xRotation -= _lookInput.y * _currentSens * constantSense;
 
         // Clamp the X rotation to prevent over-rotation
         _xRotation = Mathf.Clamp(_xRotation, -90f + upDownAngleLimit, 90f - upDownAngleLimit);
@@ -60,10 +115,11 @@ public class PlayerLook : MonoBehaviour
 
     private void OnDestroy()
     {
-        InputManager.Instance.PlayerControls.GamePlay.Look.performed -= OnLook;
-    }
+        // Unsubscribe from the input events
+        InputManager.Instance.PlayerControls.Player.LookMouse.performed -= OnLookMousePerformed;
+        InputManager.Instance.PlayerControls.Player.LookMouse.canceled -= OnLookCanceled;
 
-    private void Update()
-    {
+        InputManager.Instance.PlayerControls.Player.LookController.performed -= OnLookControllerPerformed;
+        InputManager.Instance.PlayerControls.Player.LookController.canceled -= OnLookCanceled;
     }
 }

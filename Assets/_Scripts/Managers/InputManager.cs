@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class InputManager : MonoBehaviour
     public PlayerControls PlayerControls { get; private set; }
 
     private HashSet<IUsesInput> _registeredItems;
-    
+
     #region Initialization Functions
 
     private void Awake()
@@ -20,7 +21,7 @@ public class InputManager : MonoBehaviour
 
         // Create a new instance of the PlayerControls
         PlayerControls = new PlayerControls();
-        
+
         // Initialize the registered items
         _registeredItems = new HashSet<IUsesInput>();
     }
@@ -52,18 +53,17 @@ public class InputManager : MonoBehaviour
         // If the item is already in the registered items, return
         if (!_registeredItems.Add(item))
             return;
-        
+
         // Add the item to the registered items
-        item.InitializeInput();        
+        item.InitializeInput();
     }
-    
+
     public void Unregister(IUsesInput item)
     {
         // If the item is not in the registered items, return
         if (!_registeredItems.Remove(item))
             return;
-        
+
         item.RemoveInput();
     }
-    
 }

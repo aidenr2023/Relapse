@@ -39,7 +39,7 @@ public class PlayerInteraction : MonoBehaviour
     private void InitializeControls()
     {
         // Subscribe to the interact event
-        InputManager.Instance.PlayerControls.GamePlay.Interact.performed += OnInteractPerformed;
+        InputManager.Instance.PlayerControls.Player.Interact.performed += OnInteractPerformed;
     }
 
     private void OnInteractPerformed(InputAction.CallbackContext obj)

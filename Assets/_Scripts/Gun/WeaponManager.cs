@@ -89,20 +89,20 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
         // Initialize the input
 
         // Shoot input
-        InputManager.Instance.PlayerControls.GamePlay.Shoot.performed += OnShoot;
-        InputManager.Instance.PlayerControls.GamePlay.Shoot.canceled += OnShootCanceled;
+        InputManager.Instance.PlayerControls.Player.Attack.performed += OnShoot;
+        InputManager.Instance.PlayerControls.Player.Attack.canceled += OnShootCanceled;
 
         // Reload
-        InputManager.Instance.PlayerControls.GamePlay.Reload.performed += OnReload;
+        InputManager.Instance.PlayerControls.Player.Reload.performed += OnReload;
     }
 
     public void RemoveInput()
     {
         // Remove the input
-        InputManager.Instance.PlayerControls.GamePlay.Shoot.performed -= OnShoot;
-        InputManager.Instance.PlayerControls.GamePlay.Shoot.canceled -= OnShootCanceled;
+        InputManager.Instance.PlayerControls.Player.Attack.performed -= OnShoot;
+        InputManager.Instance.PlayerControls.Player.Attack.canceled -= OnShootCanceled;
 
-        InputManager.Instance.PlayerControls.GamePlay.Reload.performed -= OnReload;
+        InputManager.Instance.PlayerControls.Player.Reload.performed -= OnReload;
     }
 
     private void OnShoot(InputAction.CallbackContext obj)

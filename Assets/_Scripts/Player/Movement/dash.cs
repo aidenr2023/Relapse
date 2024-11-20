@@ -85,13 +85,13 @@ public class Dash : MonoBehaviour, IDashScript
 
     private void OnEnable()
     {
-        _playerInputActions.GamePlay.dash.performed += OnDashPerformed;
+        _playerInputActions.PlayerMovementBasic.Dash.performed += OnDashPerformed;
         _playerInputActions.Enable();
     }
 
     private void OnDisable()
     {
-        _playerInputActions.GamePlay.dash.performed -= OnDashPerformed;
+        _playerInputActions.PlayerMovementBasic.Dash.performed -= OnDashPerformed;
         _playerInputActions.Disable();
     }
 

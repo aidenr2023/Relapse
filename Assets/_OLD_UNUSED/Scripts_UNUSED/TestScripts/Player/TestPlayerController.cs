@@ -57,10 +57,10 @@ public class TestPlayerController : MonoBehaviour, IPlayerController
     private void InitializeInputs()
     {
         // Movement
-        InputManager.Instance.PlayerControls.GamePlay.Movement.performed += OnMovePerformed;
-        InputManager.Instance.PlayerControls.GamePlay.Movement.canceled += OnMoveCanceled;
+        InputManager.Instance.PlayerControls.PlayerMovementBasic.Move.performed += OnMovePerformed;
+        InputManager.Instance.PlayerControls.PlayerMovementBasic.Move.canceled += OnMoveCanceled;
 
-        InputManager.Instance.PlayerControls.GamePlay.Look.performed += OnLookPerformed;
+        InputManager.Instance.PlayerControls.Player.LookMouse.performed += OnLookPerformed;
     }
 
     #endregion
