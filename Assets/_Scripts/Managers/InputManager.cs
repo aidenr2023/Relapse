@@ -18,7 +18,9 @@ public class InputManager : MonoBehaviour
 
     public PlayerControls PlayerControls { get; private set; }
 
-    private bool CursorActive => PauseManager.Instance?.IsPaused || VendorMenu.Instance?.IsVendorActive;
+    private bool CursorActive =>
+        (PauseManager.Instance != null && PauseManager.Instance.IsPaused) ||
+        (VendorMenu.Instance != null && VendorMenu.Instance.IsVendorActive);
 
     #endregion
 
