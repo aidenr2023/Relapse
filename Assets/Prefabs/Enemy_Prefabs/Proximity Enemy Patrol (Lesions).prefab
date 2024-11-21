@@ -614,7 +614,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   navMeshAgent: {fileID: 8784981969918071950}
   animator: {fileID: 4976750792299437694}
-  canMove: 0
 --- !u!1 &9135739522977811353
 GameObject:
   m_ObjectHideFlags: 0
@@ -698,6 +697,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5068059002006286072}
     m_Modifications:
+    - target: {fileID: -9191776264482791591, guid: db6e6372cdff8b147bb69cbf2c06927e,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 087c85026171f644ba56c2f78c41806d, type: 2}
     - target: {fileID: -9083184764698298019, guid: db6e6372cdff8b147bb69cbf2c06927e,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1488,6 +1492,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 20.660507
       objectReference: {fileID: 0}
+    - target: {fileID: -3932196025408490005, guid: db6e6372cdff8b147bb69cbf2c06927e,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 087c85026171f644ba56c2f78c41806d, type: 2}
     - target: {fileID: -3489760466321041362, guid: db6e6372cdff8b147bb69cbf2c06927e,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2062,6 +2071,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 39.900036
       objectReference: {fileID: 0}
+    - target: {fileID: 874034102042809870, guid: db6e6372cdff8b147bb69cbf2c06927e,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 087c85026171f644ba56c2f78c41806d, type: 2}
     - target: {fileID: 903023114265462898, guid: db6e6372cdff8b147bb69cbf2c06927e,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
