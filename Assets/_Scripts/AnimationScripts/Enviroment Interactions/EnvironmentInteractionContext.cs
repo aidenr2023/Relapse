@@ -61,6 +61,9 @@ public class EnvironmentInteractionContext : MonoBehaviour
     public Transform _currentShoulderTransform {get; private set;}
     public Ebodyside _currentBodySide {get; private set;}
     public Vector3 ClosestPointOnColliderFromShoulder { get; set; } = Vector3.positiveInfinity;
+
+    public float InteractionPointOffsetY { get; set; } = 0;
+    public float ColliderCenterY { get;  set; } 
     #endregion getters
     
     

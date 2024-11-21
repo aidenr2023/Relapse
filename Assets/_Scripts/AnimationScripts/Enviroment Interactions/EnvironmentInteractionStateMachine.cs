@@ -16,7 +16,7 @@ public class EnvironmentInteractionStateMachine : StateManager<EnvironmentIntera
    }
    
    //context for the state machine
-   public EnvironmentInteractionContext _context;
+   protected EnvironmentInteractionContext Context;
    
    //referemces to the rigging constraints
    [SerializeField] private TwoBoneIKConstraint _leftIKConstraint;
@@ -29,19 +29,20 @@ public class EnvironmentInteractionStateMachine : StateManager<EnvironmentIntera
    //may need to include the root transform
    [SerializeField] private Transform _rootTransform;
 
-   private void OnDrawGizmosSelected()
+   private void OnDrawGizmos()
    {
+      Debug.Log("Drawing Gizmos");
       Gizmos.color = Color.red;
-      if(_context != null && _context.ClosestPointOnColliderFromShoulder != null)
+      if(Context != null && Context.ClosestPointOnColliderFromShoulder != null)
       {
-         Gizmos.DrawSphere(_context.ClosestPointOnColliderFromShoulder, 0.03f);
+         Gizmos.DrawSphere(Context.ClosestPointOnColliderFromShoulder, 10f);
       }
    }
 
    void Awake()
    {
       //initialize the context
-      _context = new EnvironmentInteractionContext(_leftIKConstraint, _rightIKConstraint, 
+      Context = new EnvironmentInteractionContext(_leftIKConstraint, _rightIKConstraint, 
          _headIKConstraint, _leftMultiRotationConstraint, _rightMultiRotationConstraint, _rigidbody, _rootCollider ,transform.root);
          InitializeState();
          ConstructorEnvironmentDetectionCollider();
@@ -52,9 +53,9 @@ public class EnvironmentInteractionStateMachine : StateManager<EnvironmentIntera
    {
       //add states to the state machine dictionary
 
-      States.Add(EEnvironmentInteractionState.Reset, new ResetState(_context, EEnvironmentInteractionState.Reset));
-      States.Add(EEnvironmentInteractionState.Search, new SearchState(_context, EEnvironmentInteractionState.Search));
-      // States.Add(EEnvironmentInteractionState.Approach, new ApproachState(_context, EEnvironmentInteractionState.Approach));
+      States.Add(EEnvironmentInteractionState.Reset, new ResetState(Context, EEnvironmentInteractionState.Reset));
+      States.Add(EEnvironmentInteractionState.Search, new SearchState(Context, EEnvironmentInteractionState.Search));
+      States.Add(EEnvironmentInteractionState.Approach, new ApproachState(Context, EEnvironmentInteractionState.Approach));
       // States.Add(EEnvironmentInteractionState.Rise, new RiseState(_context, EEnvironmentInteractionState.Rise));
       // States.Add(EEnvironmentInteractionState.Touch, new TouchState(_context, EEnvironmentInteractionState.Touch));
       CurrentState = States[EEnvironmentInteractionState.Reset];
@@ -70,6 +71,8 @@ public class EnvironmentInteractionStateMachine : StateManager<EnvironmentIntera
       boxCollider.size = new Vector3(wingspan, wingspan, wingspan);
       boxCollider.center = new Vector3(_rootCollider.center.x, _rootCollider.center.y + (0.25f * wingspan), _rootCollider.center.z + (.75f * wingspan)); 
       boxCollider.isTrigger = true;
+      
+      Context.ColliderCenterY = _rootCollider.center.y;
    }
 
 

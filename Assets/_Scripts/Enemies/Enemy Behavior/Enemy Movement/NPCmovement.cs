@@ -6,6 +6,9 @@ public class NPCmovement : MonoBehaviour
 {
     public UnityEngine.AI.NavMeshAgent navMeshAgent;  // Reference to the NavMeshAgent
     public Animator animator;          // Reference to the Animator
+    public bool canMove = false;
+    
+  
     
     void Update()
     {
@@ -17,5 +20,21 @@ public class NPCmovement : MonoBehaviour
 
         // Optionally, you can control other NPC behaviors or animations here as well
         animator.speed = navMeshAgent.speed / 3f;
+    }
+    
+    public void DisableMovement()
+    {
+        canMove = false;
+        navMeshAgent.enabled = false;
+        //navMeshAgent.isStopped = true;
+       // animator.SetFloat("Speed", 0);
+    }
+    
+    public void EnableMovement()
+    {
+        canMove = true;
+        navMeshAgent.enabled = true;
+        //navMeshAgent.isStopped = false;
+        animator.SetFloat("Speed", 2);
     }
 }

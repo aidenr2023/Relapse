@@ -8,6 +8,9 @@ using UnityEngine.UI;
 
 public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugged
 {
+    //Adding this ref here dont fight me
+    public NPCmovement npcMovement;
+    
     #region Serialized Fields
 
     [Header("Checkpoint Traversal")] [SerializeField] [Tooltip("The checkpoints that the enemy will traverse.")]
@@ -269,6 +272,16 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
         switch (_currentMovementState)
         {
             case EnemyMovementState.Patrol:
+                
+                // if tagged as "stationary" then disable movement
+                if (gameObject.CompareTag("Stationary") && !npcMovement.canMove)
+                {
+                    npcMovement.DisableMovement();
+                }
+                else
+                {
+                    npcMovement.EnableMovement();
+                }
                 // Update the player detection timer
                 if (_playerDetected)
                     patrolDetectionTimer.Update(Time.deltaTime);
