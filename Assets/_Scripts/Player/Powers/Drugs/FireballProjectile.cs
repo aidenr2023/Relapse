@@ -55,12 +55,12 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
         // Set the projectile to explode in 10 seconds
         Invoke(nameof(Explode), lifetime);
 
-        // Instantiate the fireball VFX prefab
-        var fireballVFX = Instantiate(fireballVFXPrefab, transform.position, Quaternion.identity);
-
-        // Set the parent of the fireball VFX to the game object
-        fireballVFX.transform.parent = transform;
-        fireballVFX.transform.localPosition = Vector3.zero;
+        // // Instantiate the fireball VFX prefab
+        // var fireballVFX = Instantiate(fireballVFXPrefab, transform.position, Quaternion.identity);
+        //
+        // // Set the parent of the fireball VFX to the game object
+        // fireballVFX.transform.parent = transform;
+        // fireballVFX.transform.localPosition = Vector3.zero;
     }
 
     private void FixedUpdate()
@@ -128,10 +128,10 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
         _isExploded = true;
 
         // // Create explosion particles
-        // CreateExplosionParticles();
+        CreateExplosionParticles();
 
         // Create explosion VFX
-        CreateExplosionVFX();
+        // CreateExplosionVFX();
 
         // Destroy the projectile
         Destroy(gameObject);
