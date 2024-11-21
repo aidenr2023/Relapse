@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugged
 {
     //Adding this ref here dont fight me
-    public NPCmovement npcMovement;
+    //public NPCmovement npcMovement;
     
     #region Serialized Fields
 
@@ -273,15 +273,15 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
         {
             case EnemyMovementState.Patrol:
                 
-                // if tagged as "stationary" then disable movement
-                if (gameObject.CompareTag("Stationary") && !npcMovement.canMove)
-                {
-                    npcMovement.DisableMovement();
-                }
-                else
-                {
-                    npcMovement.EnableMovement();
-                }
+                // // if tagged as "stationary" then disable movement
+                // if (gameObject.CompareTag("Stationary") && !npcMovement.canMove)
+                // {
+                //     npcMovement.DisableMovement();
+                // }
+                // else
+                // {
+                //     npcMovement.EnableMovement();
+                // }
                 // Update the player detection timer
                 if (_playerDetected)
                     patrolDetectionTimer.Update(Time.deltaTime);

@@ -27,7 +27,7 @@ public class MoveOnTrigger : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
             audioSource.PlayOneShot(audioSource.clip);
-            npcMovement.EnableMovement();
+            //npcMovement.EnableMovement();
 
           //  StartCoroutine(MoveObject());
     }
