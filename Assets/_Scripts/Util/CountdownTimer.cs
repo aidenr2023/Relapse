@@ -22,9 +22,11 @@ public class CountdownTimer
 
     public float Percentage => 1 - (TimeLeft / MaxTime);
 
+    public virtual float OutputValue => Percentage;
+
     public CountdownTimer(float maxTime, bool isActive = false, bool zeroByDefault = false)
     {
-        MaxTime = maxTime;
+        MaxTime = Mathf.Max(0, maxTime);
         TimeLeft = zeroByDefault ? 0 : maxTime;
         IsActive = isActive;
     }

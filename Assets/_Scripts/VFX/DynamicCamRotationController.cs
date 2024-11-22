@@ -82,7 +82,7 @@ public class DynamicCamRotationController : MonoBehaviour, IDebugged
             return;
 
         // Calculate the angle of the camera tilt
-        var tiltAngle = tiltTimer.Percentage * wallRunningTileAngle;
+        var tiltAngle = tiltTimer.OutputValue * wallRunningTileAngle;
 
         // Set the camera's rotation
         _recomposer.m_Dutch = tiltAngle * _wallRunningDirection;
@@ -91,6 +91,6 @@ public class DynamicCamRotationController : MonoBehaviour, IDebugged
     public string GetDebugText()
     {
         return $"Dynamic Camera Rotation\n" +
-               $"\tTilt On: {tiltTimer.Percentage}\n";
+               $"\tTilt On: {tiltTimer.OutputValue}\n";
     }
 }

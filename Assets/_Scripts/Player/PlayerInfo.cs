@@ -288,7 +288,7 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
             return;
 
         // Update the relapse image's opacity
-        var opacity = relapseOpacityCurve.Evaluate(relapseOpacityTimer.Percentage);
+        var opacity = relapseOpacityCurve.Evaluate(relapseOpacityTimer.OutputValue);
 
         // Set the opacity of the relapse image
         relapseImage.color = new Color(
