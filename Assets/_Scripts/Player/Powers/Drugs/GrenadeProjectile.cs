@@ -26,12 +26,19 @@ public class GrenadeProjectile : MonoBehaviour, IPowerProjectile
     float despawnTimer;
     public void Shoot(IPower power, PlayerPowerManager powerManager, PowerToken pToken, Vector3 position, Vector3 forward)
     {
+        // Move the projectile to the position parameter
+        transform.position = position;
+        
+        // Set the forward of the game object to the forward parameter
+        transform.forward = _forward = forward;
+
         _grenade = (Grenade)power;
         _powerManager = powerManager;
         _pToken = pToken;
         Destroy(gameObject, despawnTimer);
 
-        GetComponent<Rigidbody>().AddRelativeForce(new Vector3(0, yLaunchVelocity, zLaunchVelocity));
+        GetComponent<Rigidbody>()
+            .AddRelativeForce(new Vector3(0, yLaunchVelocity, zLaunchVelocity), ForceMode.VelocityChange);
     }
 
     // Start is called before the first frame update
