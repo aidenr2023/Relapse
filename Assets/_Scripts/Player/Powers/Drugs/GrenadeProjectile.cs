@@ -28,7 +28,7 @@ public class GrenadeProjectile : MonoBehaviour, IPowerProjectile
     {
         // Move the projectile to the position parameter
         transform.position = position;
-        
+
         // Set the forward of the game object to the forward parameter
         transform.forward = _forward = forward;
 

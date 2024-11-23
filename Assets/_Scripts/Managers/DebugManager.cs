@@ -26,7 +26,7 @@ public class DebugManager : MonoBehaviour, IDebugged, IDamager
     private float _healthChange;
     private float _toleranceChange;
 
-    [SerializeField] [Min(0)] private float healthMult = 1f;
+    [SerializeField] [Range(0, 1)] private float healthMult = 1f;
     [SerializeField] [Min(0)] private float toleranceMult = 10f;
 
     public GameObject GameObject => gameObject;
@@ -88,7 +88,10 @@ public class DebugManager : MonoBehaviour, IDebugged, IDamager
 
     private void UpdateToleranceAndHealth()
     {
-        _player.PlayerInfo.ChangeHealth(_healthChange * Time.deltaTime * healthMult, _player.PlayerInfo, this);
+        _player.PlayerInfo.ChangeHealth(
+            _healthChange * Time.deltaTime *
+            healthMult * _player.PlayerInfo.MaxHealth
+            , _player.PlayerInfo, this);
         _player.PlayerInfo.ChangeTolerance(_toleranceChange * Time.deltaTime * toleranceMult);
     }
 
