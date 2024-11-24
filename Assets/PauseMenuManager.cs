@@ -67,14 +67,9 @@ public class PauseMenuManager : MonoBehaviour
         else
         {
             // Check if the menu stack has more than one item
+            // If it does, go back to the previous menu
             if (_menuStack.Count > 1)
-            {
-                // Pop the current menu off the stack
-                _menuStack.Pop();
-
-                // Isolate the new current menu
-                IsolateMenu(_menuStack.Peek());
-            }
+                Back();
 
             // Resume the game
             else
@@ -85,7 +80,7 @@ public class PauseMenuManager : MonoBehaviour
 
     public void OnPointerEnter(GameObject textObject)
     {
-        TMP_Text tmpText = textObject.GetComponent<TMP_Text>();
+        var tmpText = textObject.GetComponent<TMP_Text>();
 
         if (tmpText != null)
             tmpText.color = hoverColor;
@@ -97,7 +92,7 @@ public class PauseMenuManager : MonoBehaviour
     /// </summary>
     public void OnPointerExit(GameObject textObject)
     {
-        TMP_Text tmpText = textObject.GetComponent<TMP_Text>();
+        var tmpText = textObject.GetComponent<TMP_Text>();
 
         if (tmpText != null)
             tmpText.color = normalColor;
@@ -112,7 +107,7 @@ public class PauseMenuManager : MonoBehaviour
     {
         return;
 
-        TMP_Text tmpText = textObject.GetComponent<TMP_Text>();
+        var tmpText = textObject.GetComponent<TMP_Text>();
 
         if (tmpText != null)
             tmpText.color = clickColor;
@@ -133,6 +128,16 @@ public class PauseMenuManager : MonoBehaviour
 
         // Show the selected menu
         obj?.SetActive(true);
+
+        if (obj == null)
+            return;
+
+        // Get all the tmp_text objects in the selected menu
+        var tmpTexts = obj.GetComponentsInChildren<TMP_Text>();
+
+        // Reset the color of all the text objects in the selected menu
+        foreach (var tmpText in tmpTexts)
+            tmpText.color = normalColor;
     }
 
     /// <summary>
@@ -228,5 +233,14 @@ public class PauseMenuManager : MonoBehaviour
 
         //Go back to main menu
         //SceneManager.LoadScene("MainMenu");
+    }
+
+    public void Back()
+    {
+        // Pop the current menu off the stack
+        _menuStack.Pop();
+
+        // Isolate the new current menu
+        IsolateMenu(_menuStack.Peek());
     }
 }
