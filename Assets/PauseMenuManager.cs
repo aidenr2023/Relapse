@@ -105,7 +105,7 @@ public class PauseMenuManager : MonoBehaviour
     /// <param name="textObject">The GameObject associated with the button.</param>
     private void ChangeClickColor(GameObject textObject)
     {
-        return;
+        // return;
 
         var tmpText = textObject.GetComponent<TMP_Text>();
 
