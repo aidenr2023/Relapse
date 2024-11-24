@@ -18,7 +18,7 @@ public class PauseManager : MonoBehaviour
 
     private void Start()
     {
-        InputManager.Instance.PlayerControls.Player.Pause.performed += _ => TogglePause();
+        // InputManager.Instance.PlayerControls.Player.Pause.performed += _ => TogglePause();
     }
 
     public void Pause()

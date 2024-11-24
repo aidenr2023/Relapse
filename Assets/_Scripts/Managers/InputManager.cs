@@ -20,7 +20,8 @@ public class InputManager : MonoBehaviour
 
     private bool CursorActive =>
         (PauseManager.Instance != null && PauseManager.Instance.IsPaused) ||
-        (VendorMenu.Instance != null && VendorMenu.Instance.IsVendorActive);
+        (VendorMenu.Instance != null && VendorMenu.Instance.IsVendorActive) ||
+         (ButtonManager.Instance != null && ButtonManager.Instance.IsPaused);
 
     #endregion
 

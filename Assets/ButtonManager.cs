@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,32 +7,55 @@ using UnityEngine.SceneManagement;
 
 public class ButtonManager : MonoBehaviour
 {
+    public static ButtonManager Instance { get; private set; }
+
     private float tempTimeScale;
     private float fixedDeltaTime;
-    [SerializeField]public GameObject PauseMenu;
+    [SerializeField] public GameObject PauseMenu;
 
     // Colors for normal, hover, and click states
     public Color normalColor = Color.white;
     public Color hoverColor = Color.yellow;
     public Color clickColor = Color.red;
 
+    private bool _isPaused;
+
+    public bool IsPaused => _isPaused;
+
     /// <summary>
     /// Changes the text color of the TextMeshPro to the hover color.
     /// Attach this to the PointerEnter event.
     /// </summary>
-
     private void Awake()
     {
-        this.fixedDeltaTime = Time.fixedDeltaTime;
+        // Set the instance to this object
+        Instance = this;
     }
+
+    private void Start()
+    {
+        // Connect to input system
+        InputManager.Instance.PlayerControls.Player.Pause.performed += _ => TogglePause();
+
+        // Hide the pause menu at the start
+        PauseMenu.SetActive(false);
+    }
+
+    private void TogglePause()
+    {
+        if (_isPaused)
+            Resume(PauseMenu.transform.GetChild(0).gameObject);
+        else
+            LoadPauseMenu();
+    }
+
 
     public void OnPointerEnter(GameObject textObject)
     {
         TMP_Text tmpText = textObject.GetComponent<TMP_Text>();
+
         if (tmpText != null)
-        {
             tmpText.color = hoverColor;
-        }
     }
 
     /// <summary>
@@ -41,10 +65,30 @@ public class ButtonManager : MonoBehaviour
     public void OnPointerExit(GameObject textObject)
     {
         TMP_Text tmpText = textObject.GetComponent<TMP_Text>();
+
         if (tmpText != null)
-        {
             tmpText.color = normalColor;
-        }
+    }
+
+
+    /// <summary>
+    /// Changes the color of the TextMeshPro text to the click color.
+    /// </summary>
+    /// <param name="textObject">The GameObject associated with the button.</param>
+    private void ChangeClickColor(GameObject textObject)
+    {
+        return;
+        
+        TMP_Text tmpText = textObject.GetComponent<TMP_Text>();
+
+        if (tmpText != null)
+            tmpText.color = clickColor;
+    }
+
+
+    private void FixPhysics()
+    {
+        Time.fixedDeltaTime = this.fixedDeltaTime * Time.timeScale;
     }
 
     /// <summary>
@@ -53,6 +97,7 @@ public class ButtonManager : MonoBehaviour
     public void Resume(GameObject textObject)
     {
         ChangeClickColor(textObject);
+
         // Add your Resume logic here
         Debug.Log("Resume game");
 
@@ -62,6 +107,28 @@ public class ButtonManager : MonoBehaviour
         //Hide menu
         PauseMenu.SetActive(false);
 
+        //Set pause to false
+        _isPaused = false;
+    }
+
+    private void LoadPauseMenu()
+    {
+        fixedDeltaTime = Time.fixedDeltaTime;
+
+        // Un-hide the pause menu
+        PauseMenu.SetActive(true);
+
+        // Save the current timescale
+        tempTimeScale = Time.timeScale;
+
+        //Pause the game
+        Time.timeScale = 0;
+        FixPhysics();
+
+        // Set pause to true
+        _isPaused = true;
+
+        //Make pause menu work with controller and keyboard
     }
 
     /// <summary>
@@ -70,9 +137,11 @@ public class ButtonManager : MonoBehaviour
     public void Journal(GameObject textObject)
     {
         ChangeClickColor(textObject);
+
         // Add your Journal logic here
         Debug.Log("Open Journal");
     }
+
 
     /// <summary>
     /// Called when the Settings button is clicked.
@@ -96,38 +165,4 @@ public class ButtonManager : MonoBehaviour
         //Go back to main menu
         //SceneManager.LoadScene("MainMenu");
     }
-
-    /// <summary>
-    /// Changes the color of the TextMeshPro text to the click color.
-    /// </summary>
-    /// <param name="textObject">The GameObject associated with the button.</param>
-    private void ChangeClickColor(GameObject textObject)
-    {
-        TMP_Text tmpText = textObject.GetComponent<TMP_Text>();
-        if (tmpText != null)
-        {
-            tmpText.color = clickColor;
-        }
-    }
-    private void LoadPauseMenu()
-    {
-        //Unhide the pause menu
-        PauseMenu.SetActive(true);
-        //Save the current time scale
-        tempTimeScale = Time.timeScale;
-        //Pause the game
-        Time.timeScale = 0;
-        FixPhysics();
-
-        //Make pause menu work with controller and keyboard
-
-    }
-    private void FixPhysics()
-    {
-        Time.fixedDeltaTime = this.fixedDeltaTime * Time.timeScale;
-    }
-
-
-
-
 }
