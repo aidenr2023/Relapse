@@ -5,19 +5,17 @@ using UnityEngine;
 public class Grenade : MonoBehaviour, IPower
 {
     public GameObject grenadePrefab;
-    
+
     public GameObject GameObject => gameObject;
 
     public PowerScriptableObject PowerScriptableObject { get; set; }
 
     void Start()
     {
-
     }
 
     void Update()
     {
-    
     }
 
     public string PassiveEffectDebugText(PlayerPowerManager powerManager, PowerToken pToken)
@@ -35,15 +33,22 @@ public class Grenade : MonoBehaviour, IPower
 
     public void Release(PlayerPowerManager powerManager, PowerToken pToken, bool isCharged)
     {
-        
     }
 
     public void Use(PlayerPowerManager powerManager, PowerToken pToken)
     {
         //Create object at current position
-        GameObject grenade = Instantiate(grenadePrefab, powerManager.Player.PlayerController.CameraPivot.transform.position, powerManager.Player.PlayerController.CameraPivot.transform.rotation);
+        var grenade = Instantiate(grenadePrefab,
+            powerManager.Player.PlayerController.CameraPivot.transform.position,
+            powerManager.Player.PlayerController.CameraPivot.transform.rotation);
 
-        grenade.GetComponent<GrenadeProjectile>().Shoot(this,powerManager,pToken,default,default);
+        var grenadeProjectile = grenade.GetComponent<GrenadeProjectile>();
+
+        grenadeProjectile.Shoot(
+            this, powerManager, pToken,
+            powerManager.Player.WeaponManager.FireTransform.position,
+            powerManager.Player.WeaponManager.FireTransform.forward
+        );
     }
 
     public void StartActiveEffect(PlayerPowerManager powerManager, PowerToken pToken)

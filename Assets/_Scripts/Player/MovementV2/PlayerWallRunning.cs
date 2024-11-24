@@ -241,7 +241,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
         var upwardMovement = upwardDirection * 0;
 
         // Move the player in the direction of the wall a little bit to prevent them from falling off
-        forwardDirection -= contactPoint.normal * 0.025f;
+        // forwardDirection -= contactPoint.normal * 0.025f;
 
         // Remove the y component of the forward direction
         forwardDirection = new Vector3(forwardDirection.x, 0, forwardDirection.z);
