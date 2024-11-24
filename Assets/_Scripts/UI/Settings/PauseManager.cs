@@ -5,11 +5,24 @@ public class PauseManager : MonoBehaviour
 {
     public static PauseManager Instance { get; private set; }
 
+    #region Serialized Fields
+
+    [SerializeField] private GameObject pauseMenu;
+
+    #endregion
+
+
+    #region Private Fields
+
     private bool _isPaused;
+
+    #endregion
+
+    #region Getters
 
     public bool IsPaused => _isPaused;
 
-    public GameObject pauseMenu;
+    #endregion
 
     private void Awake()
     {

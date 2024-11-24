@@ -4,23 +4,41 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
-public class ButtonManager : MonoBehaviour
+public class PauseMenuManager : MonoBehaviour
 {
-    public static ButtonManager Instance { get; private set; }
+    public static PauseMenuManager Instance { get; private set; }
 
-    private float tempTimeScale;
-    private float fixedDeltaTime;
-    [SerializeField] public GameObject PauseMenu;
+    #region Serialized Fields
+
+    [SerializeField] private GameObject pauseMenuParent;
+
+    [SerializeField] private GameObject pauseMenuPanel;
+    [SerializeField] private GameObject journalPanel;
+    [SerializeField] private GameObject settingsPanel;
 
     // Colors for normal, hover, and click states
-    public Color normalColor = Color.white;
-    public Color hoverColor = Color.yellow;
-    public Color clickColor = Color.red;
+    [SerializeField] private Color normalColor = Color.white;
+    [SerializeField] private Color hoverColor = Color.yellow;
+    [SerializeField] private Color clickColor = Color.red;
 
-    private bool _isPaused;
+    #endregion
 
-    public bool IsPaused => _isPaused;
+    #region Private Fields
+
+    private float _tempTimeScale;
+    private float _fixedDeltaTime;
+
+    private readonly Stack<GameObject> _menuStack = new();
+
+    #endregion
+
+    #region Getters
+
+    public bool IsPaused { get; private set; }
+
+    #endregion
 
     /// <summary>
     /// Changes the text color of the TextMeshPro to the hover color.
@@ -38,15 +56,30 @@ public class ButtonManager : MonoBehaviour
         InputManager.Instance.PlayerControls.Player.Pause.performed += _ => TogglePause();
 
         // Hide the pause menu at the start
-        PauseMenu.SetActive(false);
+        pauseMenuParent.SetActive(false);
     }
 
     private void TogglePause()
     {
-        if (_isPaused)
-            Resume(PauseMenu.transform.GetChild(0).gameObject);
+        if (!IsPaused)
+            Pause();
+
         else
-            LoadPauseMenu();
+        {
+            // Check if the menu stack has more than one item
+            if (_menuStack.Count > 1)
+            {
+                // Pop the current menu off the stack
+                _menuStack.Pop();
+
+                // Isolate the new current menu
+                IsolateMenu(_menuStack.Peek());
+            }
+
+            // Resume the game
+            else
+                Resume(pauseMenuPanel.transform.GetChild(0).gameObject);
+        }
     }
 
 
@@ -78,7 +111,7 @@ public class ButtonManager : MonoBehaviour
     private void ChangeClickColor(GameObject textObject)
     {
         return;
-        
+
         TMP_Text tmpText = textObject.GetComponent<TMP_Text>();
 
         if (tmpText != null)
@@ -88,7 +121,18 @@ public class ButtonManager : MonoBehaviour
 
     private void FixPhysics()
     {
-        Time.fixedDeltaTime = this.fixedDeltaTime * Time.timeScale;
+        Time.fixedDeltaTime = _fixedDeltaTime * Time.timeScale;
+    }
+
+    private void IsolateMenu(GameObject obj)
+    {
+        // Hide all the menus
+        pauseMenuPanel.SetActive(false);
+        journalPanel.SetActive(false);
+        settingsPanel.SetActive(false);
+
+        // Show the selected menu
+        obj?.SetActive(true);
     }
 
     /// <summary>
@@ -101,34 +145,41 @@ public class ButtonManager : MonoBehaviour
         // Add your Resume logic here
         Debug.Log("Resume game");
 
-        Time.timeScale = tempTimeScale;
+        Time.timeScale = _tempTimeScale;
         FixPhysics();
 
         //Hide menu
-        PauseMenu.SetActive(false);
+        pauseMenuParent.SetActive(false);
 
         //Set pause to false
-        _isPaused = false;
+        IsPaused = false;
     }
 
-    private void LoadPauseMenu()
+    public void Pause()
     {
-        fixedDeltaTime = Time.fixedDeltaTime;
+        _fixedDeltaTime = Time.fixedDeltaTime;
 
         // Un-hide the pause menu
-        PauseMenu.SetActive(true);
+        pauseMenuParent.SetActive(true);
 
         // Save the current timescale
-        tempTimeScale = Time.timeScale;
+        _tempTimeScale = Time.timeScale;
 
         //Pause the game
         Time.timeScale = 0;
         FixPhysics();
 
         // Set pause to true
-        _isPaused = true;
+        IsPaused = true;
 
-        //Make pause menu work with controller and keyboard
+        // Clear the menu stack
+        _menuStack.Clear();
+
+        // Isolate the pause menu
+        _menuStack.Push(pauseMenuPanel);
+
+        // Isolate the pause menu
+        IsolateMenu(_menuStack.Peek());
     }
 
     /// <summary>
@@ -137,6 +188,12 @@ public class ButtonManager : MonoBehaviour
     public void Journal(GameObject textObject)
     {
         ChangeClickColor(textObject);
+
+        // Push the journal panel onto the stack
+        _menuStack.Push(journalPanel);
+
+        // Isolate the journal panel
+        IsolateMenu(_menuStack.Peek());
 
         // Add your Journal logic here
         Debug.Log("Open Journal");
@@ -149,6 +206,13 @@ public class ButtonManager : MonoBehaviour
     public void Settings(GameObject textObject)
     {
         ChangeClickColor(textObject);
+
+        // Push the settings panel onto the stack
+        _menuStack.Push(settingsPanel);
+
+        // Isolate the settings panel
+        IsolateMenu(_menuStack.Peek());
+
         // Add your Settings logic here
         Debug.Log("Open Settings");
     }
