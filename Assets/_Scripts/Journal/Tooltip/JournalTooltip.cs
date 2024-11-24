@@ -19,6 +19,10 @@ public class JournalTooltip : MonoBehaviour
 
     public event Action OnTooltipEnd;
 
+    public event Action OnIntroBegin;
+
+    public event Action OnOutroBegin;
+
     #region Private Fields
 
     private Animator _animator;
@@ -26,9 +30,28 @@ public class JournalTooltip : MonoBehaviour
     // Timer that starts after the intro animation finishes
     private CountdownTimer _activeTimer;
 
-    private CountdownTimer _introOutroTimer;
+    private CountdownTimer _introTimer;
+    private CountdownTimer _outroTimer;
 
     private Func<string> _textFunction;
+
+    private bool _isMarkedForDestruction;
+
+    #endregion
+
+    #region Getters
+
+    public CountdownTimer IntroTimer => _introTimer;
+
+    public CountdownTimer OutroTimer => _outroTimer;
+
+    public CountdownTimer ActiveTimer => _activeTimer;
+
+    public bool IsIntro => _introTimer.IsActive;
+
+    public RectTransform RectTransform => (RectTransform)transform;
+
+    public bool IsMarkedForDestruction => _isMarkedForDestruction;
 
     #endregion
 
@@ -50,7 +73,7 @@ public class JournalTooltip : MonoBehaviour
         _textFunction = func;
 
         // Set up the active timer
-        _activeTimer = new CountdownTimer(duration);
+        _activeTimer = new CountdownTimer(duration, isActive: false);
 
         // Start the outro animation when the active timer finishes
         _activeTimer.OnTimerEnd += () =>
@@ -61,15 +84,17 @@ public class JournalTooltip : MonoBehaviour
             // Get the length of the outro animation
             var outroDuration = _animator.GetCurrentAnimatorStateInfo(0).length;
 
-            // Initialize the intro/outro timer
-            _introOutroTimer.SetMaxTimeAndReset(outroDuration);
-            _introOutroTimer.Start();
+            // Initialize the outro timer
+            _outroTimer.SetMaxTimeAndReset(outroDuration);
+            _outroTimer.Start();
 
             // Start the active timer when the outro animation finishes
-            _introOutroTimer.OnTimerEnd += () => Destroy(gameObject);
+            _outroTimer.OnTimerEnd += () => _isMarkedForDestruction = true;
 
-            // Clear the intro/outro timer
-            _introOutroTimer = null;
+            // Call the OnOutroBegin event
+            OnOutroBegin?.Invoke();
+
+            _activeTimer.Stop();
         };
 
         // Play the intro animation
@@ -79,14 +104,18 @@ public class JournalTooltip : MonoBehaviour
         var introDuration = _animator.GetCurrentAnimatorStateInfo(0).length;
 
         // Initialize the intro/outro timer
-        _introOutroTimer = new CountdownTimer(introDuration, isActive: true);
+        _introTimer = new CountdownTimer(introDuration, isActive: true);
+        _outroTimer = new CountdownTimer(introDuration, isActive: false);
 
         // Start the active timer when the intro animation finishes
-        _introOutroTimer.OnTimerEnd += () =>
+        _introTimer.OnTimerEnd += () =>
         {
-            _introOutroTimer.Stop();
+            _introTimer.Stop();
             _activeTimer.Start();
         };
+
+        // Call the OnIntroBegin event
+        OnIntroBegin?.Invoke();
     }
 
     public void Initialize(string text, float duration)
@@ -96,11 +125,18 @@ public class JournalTooltip : MonoBehaviour
 
     private void Update()
     {
+        if (_isMarkedForDestruction)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         // Set the text to the result of the text function
         Text = _textFunction();
 
         // Update the timers
         _activeTimer.Update(Time.deltaTime);
-        _introOutroTimer.Update(Time.deltaTime);
+        _introTimer.Update(Time.deltaTime);
+        _outroTimer.Update(Time.deltaTime);
     }
 }

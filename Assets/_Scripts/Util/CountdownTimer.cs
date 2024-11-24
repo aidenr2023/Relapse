@@ -14,7 +14,7 @@ public class CountdownTimer
 
     public float TimeLeft { get; private set; }
 
-    public bool IsActive { get; private set; } = true;
+    public bool IsActive { get; private set; }
 
     public bool IsTicking => TimeLeft > 0;
 
