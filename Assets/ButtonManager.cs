@@ -2,9 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class ButtonManager : MonoBehaviour
 {
+    private float tempTimeScale;
+    private float fixedDeltaTime;
+    [SerializeField]public GameObject PauseMenu;
+
     // Colors for normal, hover, and click states
     public Color normalColor = Color.white;
     public Color hoverColor = Color.yellow;
@@ -14,6 +19,12 @@ public class ButtonManager : MonoBehaviour
     /// Changes the text color of the TextMeshPro to the hover color.
     /// Attach this to the PointerEnter event.
     /// </summary>
+
+    private void Awake()
+    {
+        this.fixedDeltaTime = Time.fixedDeltaTime;
+    }
+
     public void OnPointerEnter(GameObject textObject)
     {
         TMP_Text tmpText = textObject.GetComponent<TMP_Text>();
@@ -44,6 +55,13 @@ public class ButtonManager : MonoBehaviour
         ChangeClickColor(textObject);
         // Add your Resume logic here
         Debug.Log("Resume game");
+
+        Time.timeScale = tempTimeScale;
+        FixPhysics();
+
+        //Hide menu
+        PauseMenu.SetActive(false);
+
     }
 
     /// <summary>
@@ -74,6 +92,9 @@ public class ButtonManager : MonoBehaviour
         ChangeClickColor(textObject);
         // Add your Exit logic here
         Debug.Log("Exit the game");
+
+        //Go back to main menu
+        //SceneManager.LoadScene("MainMenu");
     }
 
     /// <summary>
@@ -88,4 +109,25 @@ public class ButtonManager : MonoBehaviour
             tmpText.color = clickColor;
         }
     }
+    private void LoadPauseMenu()
+    {
+        //Unhide the pause menu
+        PauseMenu.SetActive(true);
+        //Save the current time scale
+        tempTimeScale = Time.timeScale;
+        //Pause the game
+        Time.timeScale = 0;
+        FixPhysics();
+
+        //Make pause menu work with controller and keyboard
+
+    }
+    private void FixPhysics()
+    {
+        Time.fixedDeltaTime = this.fixedDeltaTime * Time.timeScale;
+    }
+
+
+
+
 }
