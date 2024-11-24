@@ -17,6 +17,8 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable
 
     [SerializeField] private string interactText;
 
+    [SerializeField] [TextArea(1, 8)] private string failedInteractText;
+
     [SerializeField] private UnityEvent onInventoryObjectFound;
 
     #endregion
@@ -58,7 +60,13 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable
 
         // Return if the player does not have the required inventory object
         if (!hasAllItems)
+        {
+            // Create a tooltip if the player does not have the required inventory object
+            if (!string.IsNullOrEmpty(failedInteractText))
+                JournalTooltipManager.Instance.AddTooltip(failedInteractText);
+
             return;
+        }
 
         // Set the object as interacted with
         _hasInteracted = true;

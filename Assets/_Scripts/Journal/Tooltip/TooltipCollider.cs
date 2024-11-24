@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class TooltipCollider : MonoBehaviour
 {
-    [SerializeField] private string tooltipText;
+    [SerializeField] [TextArea(1, 8)] private string tooltipText;
 
     [SerializeField] private bool destroyOnEnter;
 
