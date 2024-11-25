@@ -10,6 +10,8 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
 
     public GameObject GameObject => gameObject;
 
+    public bool HasOutline { get; set; }
+
     public void Interact(PlayerInteraction playerInteraction)
     {
         Checkpoint.Instance.SaveCheckpoint(this);

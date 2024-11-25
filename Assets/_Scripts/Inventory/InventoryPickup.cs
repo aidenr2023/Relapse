@@ -14,6 +14,9 @@ public class InventoryPickup : MonoBehaviour, IInteractable
 
     public bool IsInteractable => true;
 
+    public bool HasOutline { get; set; }
+
+
     public void Interact(PlayerInteraction playerInteraction)
     {
         // Add the inventory entry to the player's inventory

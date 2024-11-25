@@ -1,18 +1,32 @@
 ﻿using System;
+using System.Collections.Generic;
+using Cinemachine;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerInteraction : MonoBehaviour
 {
+    private static readonly int CachedScaleProperty = Shader.PropertyToID("Scale");
+
+    [SerializeField] private Camera cam;
+
     [SerializeField] [Min(0)] private float interactDistance = 5;
 
     [SerializeField] private TMP_Text interactText;
+
+    [SerializeField] private Material outlineMaterial;
+    [SerializeField] [Min(0)] private float outlineScale = 1.1f;
+    [SerializeField] private Color outLineColor = Color.white;
+    [SerializeField] private Color lookedAtColor = Color.yellow;
 
     /// <summary>
     /// A reference to the interactable that the player is currently looking at.
     /// </summary>
     private IInteractable _selectedInteractable;
+
+    public event Action<IInteractable> OnLookAtInteractable;
+    public event Action<IInteractable> OnStopLookingAtInteractable;
 
     #region Getters
 
@@ -32,6 +46,10 @@ public class PlayerInteraction : MonoBehaviour
     {
         // Initialize the controls
         InitializeControls();
+
+        // Events
+        OnLookAtInteractable += SetLookedAtMaterial;
+        OnStopLookingAtInteractable += UnsetLookedAtMaterial;
     }
 
     #region Controls
@@ -73,12 +91,14 @@ public class PlayerInteraction : MonoBehaviour
 
     private void UpdateSelectedInteractable()
     {
+        var previousInteractable = _selectedInteractable;
+
         // // Reset the currently looked at flag for the previous interactable
         // if (_selectedInteractable != null)
         //     _selectedInteractable.IsCurrentlySelected = false;
 
         // Get the camera pivot
-        var cameraPivot = Player.PlayerController.CameraPivot.transform;
+        var cameraPivot = cam.transform;
 
         // Is there a ray cast hit within the interact distance?
         var hit = Physics.Raycast(
@@ -111,9 +131,15 @@ public class PlayerInteraction : MonoBehaviour
         // If the player is not looking at an interactable, set the current selected interactable to null
         else _selectedInteractable = null;
 
-        // // Set the currently looked at flag for the new interactable
-        // if (_selectedInteractable != null)
-        //     _selectedInteractable.IsCurrentlySelected = true;
+        // Events for looking at interactable(s)
+        if (previousInteractable != _selectedInteractable)
+        {
+            if (previousInteractable != null)
+                OnStopLookingAtInteractable?.Invoke(previousInteractable);
+
+            if (_selectedInteractable != null)
+                OnLookAtInteractable?.Invoke(_selectedInteractable);
+        }
     }
 
     private void UpdateInteractText()
@@ -155,5 +181,75 @@ public class PlayerInteraction : MonoBehaviour
 
         // Draw a sphere at the interactable's position
         Gizmos.DrawSphere(_selectedInteractable.GameObject.transform.position, 0.5f);
+    }
+
+    private void SetLookedAtMaterial(IInteractable interactable)
+    {
+        // Return if the interactable is null
+        if (interactable == null || interactable.GameObject == null)
+            return;
+
+        // Get all the renderer components of the interactable
+        var cRenderers = interactable.GameObject.GetComponentsInChildren<Renderer>();
+
+        var scale = interactable.HasOutline ? outlineScale : 0;
+
+        // Set the outline material for each renderer
+        foreach (var cRenderer in cRenderers)
+            SetOutlineMaterial(cRenderer, outlineMaterial, lookedAtColor, scale);
+    }
+
+    private void UnsetLookedAtMaterial(IInteractable interactable)
+    {
+        // Return if the interactable is null
+        if (interactable == null || interactable.GameObject == null)
+            return;
+
+        // Get all the renderer components of the interactable
+        var cRenderers = interactable.GameObject.GetComponentsInChildren<Renderer>();
+
+        var scale = interactable.HasOutline ? outlineScale : 0;
+
+        // Set the outline material for each renderer
+        foreach (var cRenderer in cRenderers)
+            SetOutlineMaterial(cRenderer, outlineMaterial, outLineColor, scale);
+    }
+
+    private void SetOutlineMaterial(Renderer cRenderer, Material material, Color color, float scale)
+    {
+        // Return if the renderer is null
+        if (cRenderer == null)
+            return;
+
+        // Get the list of current materials
+        List<Material> materials = new();
+        cRenderer.GetMaterials(materials);
+
+        // Get all the materials with the same shader as the looked at material
+        var lookedAtMaterials = materials.FindAll(m => m.shader == material.shader);
+
+        Material lookedAtMaterialInstance;
+
+        // If there are none, add the looked at material
+        if (lookedAtMaterials.Count == 0)
+        {
+            // Create a new instance of the looked at material
+            lookedAtMaterialInstance = new Material(material);
+
+            // Add the looked at material to the materials list
+            materials.Add(lookedAtMaterialInstance);
+
+            // Set the materials
+            cRenderer.SetMaterials(materials);
+        }
+        // Get the first material in the list
+        else
+            lookedAtMaterialInstance = lookedAtMaterials[0];
+
+        // Set the material's color to the looked at material's color
+        lookedAtMaterialInstance.color = color;
+
+        // Set the scale of the outline
+        lookedAtMaterialInstance.SetFloat(CachedScaleProperty, scale);
     }
 }

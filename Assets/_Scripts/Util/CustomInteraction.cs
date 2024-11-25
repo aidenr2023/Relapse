@@ -10,6 +10,8 @@ public class CustomInteraction : MonoBehaviour, IInteractable
     public GameObject GameObject => gameObject;
     public bool IsInteractable => true;
 
+    public bool HasOutline { get; set; }
+
     public void Interact(PlayerInteraction playerInteraction)
     {
         // Invoke the event

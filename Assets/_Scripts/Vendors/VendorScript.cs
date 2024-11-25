@@ -30,6 +30,8 @@ public class VendorScript : MonoBehaviour, IInteractable
     public bool IsCurrentlySelected { get; set; }
     public bool IsInteractable => true;
 
+    public bool HasOutline { get; set; }
+
     #endregion
 
     private void Awake()

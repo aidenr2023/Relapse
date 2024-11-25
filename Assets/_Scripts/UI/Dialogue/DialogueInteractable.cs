@@ -16,6 +16,8 @@ public class DialogueInteractable : MonoBehaviour, IInteractable
 
     public bool IsInteractable => true;
 
+    public bool HasOutline { get; set; }
+
     #endregion
 
     public void Interact(PlayerInteraction playerInteraction)

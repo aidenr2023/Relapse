@@ -81,6 +81,8 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
 
     public float ReloadingPercentage => (gunInformation.ReloadTime - _currentReloadTime) / gunInformation.ReloadTime;
 
+    public bool HasOutline { get; set; }
+
     #region IInteractable
 
     public bool IsInteractable => true;

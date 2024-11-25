@@ -12,6 +12,8 @@ public interface IInteractable : IInterfacedObject
     /// </summary>
     public bool IsInteractable { get; }
 
+    public bool HasOutline { get; }
+
     /// <summary>
     /// The function that is called when the player interacts with the object.
     /// </summary>

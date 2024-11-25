@@ -37,6 +37,8 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable
 
     public bool IsInteractable => requiresInteractionToActivate;
 
+    public bool HasOutline { get; set; }
+
     #endregion
 
     public void Interact(PlayerInteraction playerInteraction)

@@ -6,6 +6,8 @@ public class VendorInteractable : MonoBehaviour, IInteractable
 
     public bool IsInteractable { get; set; } = true;
 
+    public bool HasOutline { get; set; }
+
     public void Interact(PlayerInteraction playerInteraction)
     {
         // Get the vendor menu instance & activate the shop
