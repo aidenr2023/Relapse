@@ -10,7 +10,11 @@ public class EnemyInfo : MonoBehaviour, IActor
     [SerializeField] private float maxHealth = 3f;
     [SerializeField] private float currentHealth;
 
+    [SerializeField] [Min(0)] private int moneyReward;
+
     #endregion
+
+    private bool _isDead;
 
     #region Getters
 
@@ -78,6 +82,15 @@ public class EnemyInfo : MonoBehaviour, IActor
 
     private void Die()
     {
+        // Return if the enemy is already dead
+        if (_isDead)
+            return;
+
+        // Set the isDead flag to true
+        _isDead = true;
+
+        Player.Instance.PlayerInventory.AddItem(Player.Instance.PlayerInventory.MoneyObject, moneyReward);
+
         // TODO: Implement death logic
         Destroy(gameObject);
     }

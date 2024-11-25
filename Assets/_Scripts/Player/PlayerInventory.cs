@@ -27,6 +27,8 @@ public class PlayerInventory : MonoBehaviour
 
     #region Getters
 
+    public InventoryObject MoneyObject => moneyObject;
+
     public int MoneyCount => GetItemCount(moneyObject);
 
     #endregion
@@ -119,6 +121,6 @@ public class PlayerInventory : MonoBehaviour
 
         // Show the tooltip
         JournalTooltipManager.Instance.AddTooltip(
-            $"Picked up {quantity} {inventoryObject.Name}!\nTotal: {GetItemCount(moneyObject)}");
+            $"+${quantity}!\nTotal: {GetItemCount(moneyObject)}");
     }
 }
