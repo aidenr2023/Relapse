@@ -14,6 +14,7 @@ public class Player : MonoBehaviour
     private IPlayerController _playerController;
     private PlayerLook _playerLook;
 
+    private PlayerInteraction _playerInteraction;
     private PlayerPowerManager _playerPowerManager;
     private WeaponManager _weaponManager;
     private PlayerInventory _playerInventory;
@@ -26,6 +27,7 @@ public class Player : MonoBehaviour
 
     public PlayerLook PlayerLook => _playerLook;
 
+    public PlayerInteraction PlayerInteraction => _playerInteraction;
     public PlayerPowerManager PlayerPowerManager => _playerPowerManager;
 
     public WeaponManager WeaponManager => _weaponManager;
@@ -55,6 +57,9 @@ public class Player : MonoBehaviour
 
         // Get the PlayerLook component
         _playerLook = GetComponent<PlayerLook>();
+
+        // Get the PlayerInteraction component
+        _playerInteraction = GetComponent<PlayerInteraction>();
 
         // Get the TestPlayerPowerManager component
         _playerPowerManager = GetComponent<PlayerPowerManager>();

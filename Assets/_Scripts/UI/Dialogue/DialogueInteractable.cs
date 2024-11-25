@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -17,6 +18,8 @@ public class DialogueInteractable : MonoBehaviour, IInteractable
     public bool IsInteractable => true;
 
     public bool HasOutline { get; set; }
+
+    public HashSet<Material> OutlineMaterials { get; } = new();
 
     #endregion
 

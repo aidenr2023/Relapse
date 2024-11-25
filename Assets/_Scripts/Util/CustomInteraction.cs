@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Events;
 
 public class CustomInteraction : MonoBehaviour, IInteractable
@@ -11,6 +12,8 @@ public class CustomInteraction : MonoBehaviour, IInteractable
     public bool IsInteractable => true;
 
     public bool HasOutline { get; set; }
+
+    public HashSet<Material> OutlineMaterials { get; } = new();
 
     public void Interact(PlayerInteraction playerInteraction)
     {

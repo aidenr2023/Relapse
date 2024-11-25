@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class VendorInteractable : MonoBehaviour, IInteractable
 {
@@ -7,6 +8,8 @@ public class VendorInteractable : MonoBehaviour, IInteractable
     public bool IsInteractable { get; set; } = true;
 
     public bool HasOutline { get; set; }
+
+    public HashSet<Material> OutlineMaterials { get; } = new();
 
     public void Interact(PlayerInteraction playerInteraction)
     {

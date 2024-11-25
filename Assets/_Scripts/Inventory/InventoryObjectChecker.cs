@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
@@ -38,6 +39,8 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable
     public bool IsInteractable => requiresInteractionToActivate;
 
     public bool HasOutline { get; set; }
+
+    public HashSet<Material> OutlineMaterials { get; } = new();
 
     #endregion
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -83,6 +84,8 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
 
     public bool HasOutline { get; set; }
 
+    public HashSet<Material> OutlineMaterials { get; } = new();
+
     #region IInteractable
 
     public bool IsInteractable => true;
@@ -124,6 +127,9 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
 
         // Update the reload time if the gun is currently reloading
         UpdateReload();
+
+        // Update the outline
+        UpdateOutline(_weaponManager);
     }
 
     private void UpdateReload()
@@ -166,10 +172,9 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
         if (IsReloading)
             return;
 
-
         // Set the firing flag to true
         _isFiring = true;
-        //
+
         // Set the fired this frame flag to true
         _hasFiredThisFrame = true;
     }
@@ -317,6 +322,13 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
 
         // Clear the weapon manager
         _weaponManager = null;
+
+        // Set the outline scale to 0
+        foreach (var mat in OutlineMaterials)
+            weaponManager.Player.PlayerInteraction.SetOutlineMaterial(
+                mat, mat.color,
+                weaponManager.Player.PlayerInteraction.OutlineScale
+            );
     }
 
     public string GetDebugText()
@@ -362,5 +374,15 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
     public string InteractText(PlayerInteraction playerInteraction)
     {
         return $"Pick up {gunInformation.GunName}";
+    }
+
+    public void UpdateOutline(WeaponManager weaponManager)
+    {
+        if (_weaponManager == null)
+            return;
+
+        // Set the outline scale to 0
+        foreach (var mat in OutlineMaterials)
+            _weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, mat.color, 0);
     }
 }

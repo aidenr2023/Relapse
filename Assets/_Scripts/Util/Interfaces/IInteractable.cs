@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// An interface that defines an object that can be interacted with.
@@ -13,6 +14,8 @@ public interface IInteractable : IInterfacedObject
     public bool IsInteractable { get; }
 
     public bool HasOutline { get; }
+
+    public HashSet<Material> OutlineMaterials { get; }
 
     /// <summary>
     /// The function that is called when the player interacts with the object.
@@ -39,5 +42,32 @@ public static class IInteractableExtensions
     public static bool IsCurrentlySelected(this IInteractable interactable, PlayerInteraction playerInteraction)
     {
         return playerInteraction.SelectedInteractable == interactable;
+    }
+
+    public static void GetOutlineMaterials(this IInteractable interactable, Shader shader)
+    {
+        // If the hash set for the outline materials is null, throw an exception
+        if (interactable.OutlineMaterials == null)
+            throw new System.NullReferenceException("IInteractable: OutlineMaterials hash set is null.");
+
+        // Get the renderers of the interactable
+        var renderers = interactable.GameObject.GetComponentsInChildren<Renderer>();
+
+        // Get the materials of the renderer, including the materials in the children
+        var materials = new List<Material>();
+
+        foreach (var renderer in renderers)
+            materials.AddRange(renderer.materials);
+
+        // Loop through the materials
+        foreach (var material in materials)
+        {
+            // Continue if the material's shader is not the shader
+            if (material.shader != shader)
+                continue;
+
+            // Add the material to the hash set
+            interactable.OutlineMaterials.Add(material);
+        }
     }
 }

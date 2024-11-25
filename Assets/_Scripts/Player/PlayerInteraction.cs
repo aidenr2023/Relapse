@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerInteraction : MonoBehaviour
 {
-    private static readonly int CachedScaleProperty = Shader.PropertyToID("Scale");
+    private static readonly int CachedScaleProperty = Shader.PropertyToID("_Scale");
 
     [SerializeField] private Camera cam;
 
@@ -33,6 +33,8 @@ public class PlayerInteraction : MonoBehaviour
     public Player Player { get; private set; }
 
     public IInteractable SelectedInteractable => _selectedInteractable;
+
+    public float OutlineScale => outlineScale;
 
     #endregion
 
@@ -92,10 +94,6 @@ public class PlayerInteraction : MonoBehaviour
     private void UpdateSelectedInteractable()
     {
         var previousInteractable = _selectedInteractable;
-
-        // // Reset the currently looked at flag for the previous interactable
-        // if (_selectedInteractable != null)
-        //     _selectedInteractable.IsCurrentlySelected = false;
 
         // Get the camera pivot
         var cameraPivot = cam.transform;
@@ -189,14 +187,18 @@ public class PlayerInteraction : MonoBehaviour
         if (interactable == null || interactable.GameObject == null)
             return;
 
-        // Get all the renderer components of the interactable
-        var cRenderers = interactable.GameObject.GetComponentsInChildren<Renderer>();
+        // Return if the interactable has no outline materials
+        if (interactable.OutlineMaterials == null)
+            return;
 
-        var scale = interactable.HasOutline ? outlineScale : 0;
+        // Check if the interactable has outline materials
+        // Get the outline materials
+        if (interactable.OutlineMaterials != null && interactable.OutlineMaterials.Count == 0)
+            interactable.GetOutlineMaterials(outlineMaterial.shader);
 
-        // Set the outline material for each renderer
-        foreach (var cRenderer in cRenderers)
-            SetOutlineMaterial(cRenderer, outlineMaterial, lookedAtColor, scale);
+        // Set the outline materials to the looked at color
+        foreach (var material in interactable.OutlineMaterials)
+            SetOutlineMaterial(material, lookedAtColor, outlineScale);
     }
 
     private void UnsetLookedAtMaterial(IInteractable interactable)
@@ -205,51 +207,29 @@ public class PlayerInteraction : MonoBehaviour
         if (interactable == null || interactable.GameObject == null)
             return;
 
-        // Get all the renderer components of the interactable
-        var cRenderers = interactable.GameObject.GetComponentsInChildren<Renderer>();
-
-        var scale = interactable.HasOutline ? outlineScale : 0;
-
-        // Set the outline material for each renderer
-        foreach (var cRenderer in cRenderers)
-            SetOutlineMaterial(cRenderer, outlineMaterial, outLineColor, scale);
-    }
-
-    private void SetOutlineMaterial(Renderer cRenderer, Material material, Color color, float scale)
-    {
-        // Return if the renderer is null
-        if (cRenderer == null)
+        // Return if the interactable has no outline materials
+        if (interactable.OutlineMaterials == null)
             return;
 
-        // Get the list of current materials
-        List<Material> materials = new();
-        cRenderer.GetMaterials(materials);
+        // Check if the interactable has outline materials
+        // Get the outline materials
+        if (interactable.OutlineMaterials != null && interactable.OutlineMaterials.Count == 0)
+            interactable.GetOutlineMaterials(outlineMaterial.shader);
 
-        // Get all the materials with the same shader as the looked at material
-        var lookedAtMaterials = materials.FindAll(m => m.shader == material.shader);
+        // Set the outline materials to the looked at color
+        foreach (var material in interactable.OutlineMaterials)
+            SetOutlineMaterial(material, outLineColor, outlineScale);
+    }
 
-        Material lookedAtMaterialInstance;
-
-        // If there are none, add the looked at material
-        if (lookedAtMaterials.Count == 0)
-        {
-            // Create a new instance of the looked at material
-            lookedAtMaterialInstance = new Material(material);
-
-            // Add the looked at material to the materials list
-            materials.Add(lookedAtMaterialInstance);
-
-            // Set the materials
-            cRenderer.SetMaterials(materials);
-        }
-        // Get the first material in the list
-        else
-            lookedAtMaterialInstance = lookedAtMaterials[0];
+    public void SetOutlineMaterial(Material material, Color color, float scale)
+    {
+        if (material == null)
+            return;
 
         // Set the material's color to the looked at material's color
-        lookedAtMaterialInstance.color = color;
+        material.color = color;
 
         // Set the scale of the outline
-        lookedAtMaterialInstance.SetFloat(CachedScaleProperty, scale);
+        material.SetFloat(CachedScaleProperty, scale);
     }
 }

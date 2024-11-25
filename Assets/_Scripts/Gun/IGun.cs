@@ -22,4 +22,6 @@ public interface IGun : IInteractable, IDamager
 
     public void OnEquip(WeaponManager weaponManager);
     public void OnRemoval(WeaponManager weaponManager);
+
+    public void UpdateOutline(WeaponManager weaponManager);
 }

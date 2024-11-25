@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
@@ -16,6 +17,7 @@ public class InventoryPickup : MonoBehaviour, IInteractable
 
     public bool HasOutline { get; set; }
 
+    public HashSet<Material> OutlineMaterials { get; } = new();
 
     public void Interact(PlayerInteraction playerInteraction)
     {

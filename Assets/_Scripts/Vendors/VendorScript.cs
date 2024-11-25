@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,6 +32,8 @@ public class VendorScript : MonoBehaviour, IInteractable
     public bool IsInteractable => true;
 
     public bool HasOutline { get; set; }
+
+    public HashSet<Material> OutlineMaterials { get; } = new();
 
     #endregion
 

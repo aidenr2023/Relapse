@@ -12,6 +12,8 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
 
     public bool HasOutline { get; set; }
 
+    public HashSet<Material> OutlineMaterials { get; } = new();
+
     public void Interact(PlayerInteraction playerInteraction)
     {
         Checkpoint.Instance.SaveCheckpoint(this);
