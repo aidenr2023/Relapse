@@ -86,7 +86,7 @@ public class JournalTooltipManager : MonoBehaviour
             if (tooltip.IsMarkedForDestruction)
                 continue;
 
-            const float timerAcceleration = 5f;
+            const float timerAcceleration = 2f;
 
             if (tooltip.IntroTimer.IsActive)
                 _tooltipYAdjustments[tooltip] =

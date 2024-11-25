@@ -1,14 +1,55 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class PlayerInventory : MonoBehaviour
 {
+    #region Serialized Fields
+
+    /// <summary>
+    /// The object that represents the amount of money the player has
+    /// </summary>
+    [SerializeField] private InventoryObject moneyObject;
+
     [SerializeField] private List<InventoryEntry> inventoryEntries;
+
+    #endregion
+
+    #region Events
+
+    public event Action<InventoryObject, int> OnItemAdded;
+
+    public event Action<InventoryObject, int> OnItemRemoved;
+
+    #endregion
+
+
+    #region Getters
+
+    public int MoneyCount => GetItemCount(moneyObject);
+
+    #endregion
+
+    private void Start()
+    {
+        // Subscribe to the OnItemAdded event
+        OnItemAdded += MoneyTooltipOnPickup;
+
+        // Subscribe to the OnItemAdded event
+        OnItemAdded += ItemTooltipOnPickup;
+    }
 
     private InventoryEntry GetInventoryEntry(InventoryObject inventoryObject)
     {
         return inventoryEntries.FirstOrDefault(inventoryEntry => inventoryEntry.InventoryObject == inventoryObject);
+    }
+
+    public int GetItemCount(InventoryObject inventoryObject)
+    {
+        var inventoryEntry = GetInventoryEntry(inventoryObject);
+
+        return inventoryEntry?.Quantity ?? 0;
     }
 
     public void AddItem(InventoryObject inventoryObject, int quantity = 1)
@@ -25,6 +66,9 @@ public class PlayerInventory : MonoBehaviour
         inventoryEntry.AddQuantity(quantity);
 
         Debug.Log($"Added {quantity} {inventoryObject.Name} to the inventory!");
+
+        // Invoke the event
+        OnItemAdded?.Invoke(inventoryObject, quantity);
     }
 
     public void AddItem(InventoryEntry entry)
@@ -53,5 +97,28 @@ public class PlayerInventory : MonoBehaviour
         // If the quantity is 0, remove the inventory entry from the list
         if (inventoryEntry.Quantity <= 0)
             inventoryEntries.Remove(inventoryEntry);
+
+        // Invoke the event
+        OnItemRemoved?.Invoke(inventoryObject, quantity);
+    }
+
+    private void ItemTooltipOnPickup(InventoryObject inventoryObject, int quantity)
+    {
+        // Return if the item is money
+        if (inventoryObject == moneyObject)
+            return;
+
+        // Show the tooltip
+        JournalTooltipManager.Instance.AddTooltip($"Picked up {quantity}x {inventoryObject.Name}!");
+    }
+
+    private void MoneyTooltipOnPickup(InventoryObject inventoryObject, int quantity)
+    {
+        if (inventoryObject != moneyObject)
+            return;
+
+        // Show the tooltip
+        JournalTooltipManager.Instance.AddTooltip(
+            $"Picked up {quantity} {inventoryObject.Name}!\nTotal: {GetItemCount(moneyObject)}");
     }
 }
