@@ -11,8 +11,16 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
 {
     public static PlayerPowerManager Instance { get; private set; }
 
+    #region Serialized Fields
+
     [SerializeField] private PowerScroll powerScroll;
     [SerializeField] private PowerScriptableObject[] powers;
+
+    #endregion
+
+    public event Action<PlayerPowerManager, PowerToken> OnPowerUsed;
+
+    #region Private Fields
 
     private Player _player;
 
@@ -23,9 +31,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
     private int _currentPowerIndex;
     private bool _isChargingPower;
 
-    [Header("REMOVE LATER")] [SerializeField]
-    private TMP_Text buffText;
-
+    #endregion
 
     #region Getters
 
@@ -75,6 +81,10 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
     private void InitializeEvents()
     {
         _player.PlayerInfo.OnRelapseStart += OnRelapseStart;
+
+        // Add the event for the power used
+        OnPowerUsed += PlaySoundOnUse;
+        OnPowerUsed += DisplayTooltipOnUse;
     }
 
     private void InitializeInput()
@@ -193,9 +203,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
 
         // Update the power UI
         UpdatePowerUI();
-
-        // Update the buff text
-        UpdateBuffText();
     }
 
     private void UpdateCharge()
@@ -365,35 +372,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
         _currentPowerIndex = 0;
     }
 
-    private void UpdateBuffText()
-    {
-        // Return if the buff text is null
-        if (buffText == null)
-            return;
-
-        // Create a string builder to store the text
-        StringBuilder buffStringBuilder = new();
-
-        // Loop through all the power tokens
-        foreach (var powerToken in _powerTokens.Values)
-        {
-            // Skip if the power token is not active or passive
-            if (!powerToken.IsActiveEffectOn && !powerToken.IsPassiveEffectOn)
-                continue;
-
-            // Append the power name and the active percentage to the string builder
-            buffStringBuilder.Append(
-                powerToken
-                    .PowerScriptableObject
-                    .PowerLogic
-                    .PassiveEffectDebugText(this, powerToken)
-            );
-        }
-
-        // Set the buff text to the string builder
-        buffText.text = buffStringBuilder.ToString();
-    }
-
     #endregion
 
     private bool StopCharge()
@@ -447,8 +425,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
         // Change the player's tolerance
         _player.PlayerInfo.ChangeTolerance(CurrentPowerToken.ToleranceMeterImpact);
 
-        // Play the power use sound
-        SoundManager.Instance.PlaySfx(CurrentPower.PowerUseSound);
+        // Invoke the event for the power used
+        OnPowerUsed?.Invoke(this, CurrentPowerToken);
     }
 
     public void ResetPlayer()
@@ -457,6 +435,64 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
         _powerTokens.Clear();
     }
 
+    #region Event Functions
+
+    private static void PlaySoundOnUse(PlayerPowerManager powerManager, PowerToken powerToken)
+    {
+        // Play the power use sound
+        SoundManager.Instance.PlaySfx(powerToken.PowerScriptableObject.PowerUseSound);
+    }
+
+    private static void DisplayTooltipOnUse(PlayerPowerManager powerManager, PowerToken powerToken)
+    {
+        var powerName = powerToken.PowerScriptableObject.PowerName;
+
+        // Display a tooltip for the active effect (if applicable)
+        if (powerToken.PowerScriptableObject.ActiveEffectDuration > 0)
+        {
+            // The function to display the tooltip
+            string Func()
+            {
+                var activeDurationRemaining =
+                    powerToken.PowerScriptableObject.ActiveEffectDuration - powerToken.CurrentActiveDuration;
+
+                return $"{powerName}'s Active Effect: {activeDurationRemaining:0.00}s Remaining!";
+            }
+
+            // Calculate how long the tooltip should be displayed
+            var duration =
+                powerToken.PowerScriptableObject.ActiveEffectDuration
+                - JournalTooltipManager.Instance.IntroDuration
+                - JournalTooltipManager.Instance.OutroDuration;
+
+            // Add the tooltip
+            JournalTooltipManager.Instance.AddTooltip(Func, duration);
+        }
+
+        // Display a tooltip for the passive effect (if applicable)
+        if (powerToken.PowerScriptableObject.PassiveEffectDuration > 0)
+        {
+            // The function to display the tooltip
+            string Func()
+            {
+                var passiveDurationRemaining =
+                    powerToken.PowerScriptableObject.PassiveEffectDuration - powerToken.CurrentPassiveDuration;
+
+                return $"{powerName}'s Passive Effect: {passiveDurationRemaining:0.00}s Remaining!";
+            }
+
+            // Calculate how long the tooltip should be displayed
+            var duration =
+                powerToken.PowerScriptableObject.PassiveEffectDuration
+                - JournalTooltipManager.Instance.IntroDuration
+                - JournalTooltipManager.Instance.OutroDuration;
+
+            // Add the tooltip
+            JournalTooltipManager.Instance.AddTooltip(Func, duration);
+        }
+    }
+
+    #endregion
 
     #region Public Methods
 

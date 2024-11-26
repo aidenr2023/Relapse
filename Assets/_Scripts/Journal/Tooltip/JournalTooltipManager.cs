@@ -23,6 +23,14 @@ public class JournalTooltipManager : MonoBehaviour
 
     #endregion
 
+    #region Getters
+
+    public float IntroDuration => tooltipPrefab.IntroTimer.MaxTime;
+
+    public float OutroDuration => tooltipPrefab.OutroTimer.MaxTime;
+
+    #endregion
+
     private void Awake()
     {
         // Set the instance to this object
