@@ -28,7 +28,7 @@ public class BasicPlayerMovement : PlayerMovementScript
     private bool _isSprinting;
     private bool _isJumpThisFrame;
 
-    private CountdownTimer footstepTimer = new(0.5f, true, false);
+    private CountdownTimer _footstepTimer = new(0.5f, true, false);
 
 
     #region Getters
@@ -40,6 +40,8 @@ public class BasicPlayerMovement : PlayerMovementScript
     private bool CanSprint => canSprintWithoutPower && ParentComponent.IsGrounded;
 
     public bool IsSprinting => _isSprinting;
+
+    public float SprintMultiplier => sprintMultiplier;
 
     #endregion
 
@@ -69,7 +71,7 @@ public class BasicPlayerMovement : PlayerMovementScript
     private void InitializeFootsteps()
     {
         // Set up the footstep timer
-        footstepTimer.OnTimerEnd += PlayFootstepSound;
+        _footstepTimer.OnTimerEnd += PlayFootstepSound;
     }
 
     private void PlayFootstepSound()
@@ -78,7 +80,7 @@ public class BasicPlayerMovement : PlayerMovementScript
         SoundManager.Instance.PlaySfx(footstepSoundPool.GetRandomSound());
 
         // Reset the timer
-        footstepTimer.Reset();
+        _footstepTimer.Reset();
     }
 
     #endregion
@@ -143,14 +145,14 @@ public class BasicPlayerMovement : PlayerMovementScript
     private void UpdateFootsteps()
     {
         // Update the footstep timer
-        footstepTimer.Update(Time.deltaTime);
+        _footstepTimer.Update(Time.deltaTime);
 
         // Set the footstep timer's max time based on the player's walking/sprinting state
-        footstepTimer.SetMaxTime(!_isSprinting ? walkingFootstepInterval : sprintingFootstepInterval);
+        _footstepTimer.SetMaxTime(!_isSprinting ? walkingFootstepInterval : sprintingFootstepInterval);
 
         // If this is NOT the active movement script, disable the footstep timer
         if (ParentComponent.CurrentMovementScript != this)
-            footstepTimer.SetActive(false);
+            _footstepTimer.SetActive(false);
     }
 
     public override void FixedMovementUpdate()
@@ -178,7 +180,7 @@ public class BasicPlayerMovement : PlayerMovementScript
             ParentComponent.Rigidbody.velocity = new Vector3(0, 0, 0);
 
             // Stop the footstep timer to prevent footstep sounds
-            footstepTimer.SetActive(false);
+            _footstepTimer.SetActive(false);
 
             return;
         }
@@ -223,13 +225,13 @@ public class BasicPlayerMovement : PlayerMovementScript
 
 
         // Set the footstep timer to active
-        footstepTimer.SetActive(true);
+        _footstepTimer.SetActive(true);
     }
 
     private void UpdateAirborneLateralMovement()
     {
         // Disable the footstep timer
-        footstepTimer.SetActive(false);
+        _footstepTimer.SetActive(false);
 
         // Return if the movement input is zero
         if (_movementInput == Vector2.zero)
