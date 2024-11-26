@@ -205,7 +205,7 @@ public class PlayerInteraction : MonoBehaviour
     private void UnsetLookedAtMaterial(IInteractable interactable)
     {
         // Return if the interactable is null
-        if (interactable == null || interactable.GameObject == null)
+        if (interactable == null || (interactable is MonoBehaviour mb && mb == null))
             return;
 
         // Return if the interactable has no outline materials

@@ -28,6 +28,8 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable
 
     private bool _hasInteracted;
 
+    private bool _isMarkedForDestruction;
+
     #endregion
 
     #region Getters
@@ -93,7 +95,7 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable
 
         // Destroy the game object if destroyOnInteract is true
         if (destroyOnInteract)
-            Destroy(gameObject);
+            _isMarkedForDestruction = true;
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)
@@ -107,6 +109,13 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable
 
     private void Update()
     {
+        // Destroy the game object if it is marked for destruction
+        if (_isMarkedForDestruction)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         // If the object does not require interaction to activate,
         // activate it if the conditions are met
 

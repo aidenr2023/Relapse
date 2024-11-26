@@ -566,7 +566,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 00f877605ff3c3a4f9d1a25c2ea80edd, type: 2}
   - {fileID: 11400000, guid: 144b7df19accdd542aa5c22f83309e61, type: 2}
   - {fileID: 11400000, guid: 29fa51786e262b04b8571ce53c2d4575, type: 2}
-  buffText: {fileID: 3658807759508138457}
 --- !u!114 &-7043807009064224948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2250,18 +2249,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &3658807759508138457 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5953209971373414262, guid: 4e1f2c1c363960402afcef7794835969,
-    type: 3}
-  m_PrefabInstance: {fileID: 6942508457977872047}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4381525105559914916 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6671787587548526347, guid: 4e1f2c1c363960402afcef7794835969,
@@ -2298,6 +2285,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &6692811926915853122 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 4375557461511984621, guid: 4e1f2c1c363960402afcef7794835969,
+    type: 3}
+  m_PrefabInstance: {fileID: 6942508457977872047}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &7697902502445989847 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 760210185175712120, guid: 4e1f2c1c363960402afcef7794835969,
@@ -5564,6 +5557,11 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6119260393742430968, guid: de2161465cf4d45419107cb178b6bbdb,
+        type: 3}
+      propertyPath: tooltipManager.tooltipParent
+      value: 
+      objectReference: {fileID: 6692811926915853122}
     - target: {fileID: 6153039002448679819, guid: de2161465cf4d45419107cb178b6bbdb,
         type: 3}
       propertyPath: m_AnchorMax.x

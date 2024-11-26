@@ -17,6 +17,8 @@ public class InventoryPickup : MonoBehaviour, IInteractable
 
     public bool HasOutline { get; set; }
 
+    private bool _isMarkedForDestruction;
+
     public HashSet<Material> OutlineMaterials { get; } = new();
 
     public void Interact(PlayerInteraction playerInteraction)
@@ -29,7 +31,7 @@ public class InventoryPickup : MonoBehaviour, IInteractable
 
         // Destroy the game object if destroyOnPickup is true
         if (destroyOnPickup)
-            Destroy(gameObject);
+            _isMarkedForDestruction = true;
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)
@@ -52,5 +54,11 @@ public class InventoryPickup : MonoBehaviour, IInteractable
 
     private void Update()
     {
+        // Destroy the game object if it is marked for destruction
+        if (_isMarkedForDestruction)
+        {
+            Destroy(gameObject);
+            return;
+        }
     }
 }

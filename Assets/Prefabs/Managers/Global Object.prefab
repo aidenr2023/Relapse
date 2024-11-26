@@ -374,6 +374,7 @@ GameObject:
   - component: {fileID: 7461741275535498135}
   - component: {fileID: 5672246406717395661}
   - component: {fileID: 8121163762531252177}
+  - component: {fileID: 6119260393742430968}
   m_Layer: 0
   m_Name: Global Object
   m_TagString: Untagged
@@ -454,6 +455,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 623c11c1c460403b885d92aae4804dd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &6119260393742430968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6471966129962626125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7db1ef155c3249faa3a479af10204594, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tooltipManager:
+    tooltipParent: {fileID: 0}
+    tooltipPrefab: {fileID: 5804828632193392717, guid: 86c9db42a750c30489f6912161acad0e,
+      type: 3}
+    tooltipSpacing: -144
+    tooltipDuration: 3
 --- !u!1 &8085881436303134512
 GameObject:
   m_ObjectHideFlags: 0

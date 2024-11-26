@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
-public class JournalTooltipManager : MonoBehaviour
+[Serializable]
+public class JournalTooltipManager
 {
-    public static JournalTooltipManager Instance { get; private set; }
+    public static JournalTooltipManager Instance => Journal.Instance.JournalTooltipManager;
 
     #region Serialized Fields
+
+    [SerializeField] private Transform tooltipParent;
 
     [SerializeField] private JournalTooltip tooltipPrefab;
 
@@ -17,6 +21,8 @@ public class JournalTooltipManager : MonoBehaviour
     #endregion
 
     #region Private Fields
+
+    private Journal _journal;
 
     private readonly List<JournalTooltip> _tooltips = new();
     private readonly Dictionary<JournalTooltip, float> _tooltipYAdjustments = new();
@@ -31,13 +37,10 @@ public class JournalTooltipManager : MonoBehaviour
 
     #endregion
 
-    private void Awake()
+    public void Initialize(Journal journal)
     {
-        // Set the instance to this object
-        Instance = this;
-
-        // Don't destroy the Journal when changing scenes
-        DontDestroyOnLoad(gameObject);
+        // Set the journal
+        _journal = journal;
     }
 
     public void AddTooltip(string text, float duration)
@@ -53,7 +56,7 @@ public class JournalTooltipManager : MonoBehaviour
     public void AddTooltip(Func<string> text, float duration)
     {
         // Instantiate a new tooltip
-        var tooltip = Instantiate(tooltipPrefab, transform);
+        var tooltip = Object.Instantiate(tooltipPrefab, tooltipParent);
 
         // Add the tooltip to the list of tooltips
         _tooltips.Add(tooltip);
@@ -76,11 +79,8 @@ public class JournalTooltipManager : MonoBehaviour
         AddTooltip(text, tooltipDuration);
     }
 
-    private void Update()
+    public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.K))
-            AddTooltip(() => $"Pos: {Player.Instance.gameObject.transform.position}", 3);
-
         // Update the Y values of the tooltips
         UpdateTooltipYAdjustment();
     }
