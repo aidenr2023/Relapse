@@ -323,12 +323,9 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
         // Clear the weapon manager
         _weaponManager = null;
 
-        // Set the outline scale to 0
+        // Remove the outline from the weapon manager
         foreach (var mat in OutlineMaterials)
-            weaponManager.Player.PlayerInteraction.SetOutlineMaterial(
-                mat, mat.color,
-                weaponManager.Player.PlayerInteraction.OutlineScale
-            );
+            weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, mat.color, true);
     }
 
     public string GetDebugText()
@@ -381,8 +378,8 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
         if (_weaponManager == null)
             return;
 
-        // Set the outline scale to 0
+        // Remove the outline from the previous weapon manager
         foreach (var mat in OutlineMaterials)
-            _weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, mat.color, 0);
+            _weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, mat.color, false);
     }
 }

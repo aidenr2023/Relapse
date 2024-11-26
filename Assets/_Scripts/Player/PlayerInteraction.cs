@@ -8,6 +8,7 @@ using UnityEngine.InputSystem;
 public class PlayerInteraction : MonoBehaviour
 {
     private static readonly int CachedScaleProperty = Shader.PropertyToID("_Scale");
+    private static readonly int CachedIsOutlinedProperty = Shader.PropertyToID("_IsOutlined");
 
     [SerializeField] private Camera cam;
 
@@ -198,7 +199,7 @@ public class PlayerInteraction : MonoBehaviour
 
         // Set the outline materials to the looked at color
         foreach (var material in interactable.OutlineMaterials)
-            SetOutlineMaterial(material, lookedAtColor, outlineScale);
+            SetOutlineMaterial(material, lookedAtColor, true);
     }
 
     private void UnsetLookedAtMaterial(IInteractable interactable)
@@ -218,10 +219,10 @@ public class PlayerInteraction : MonoBehaviour
 
         // Set the outline materials to the looked at color
         foreach (var material in interactable.OutlineMaterials)
-            SetOutlineMaterial(material, outLineColor, outlineScale);
+            SetOutlineMaterial(material, outLineColor, true);
     }
 
-    public void SetOutlineMaterial(Material material, Color color, float scale)
+    public void SetOutlineMaterial(Material material, Color color, bool isOutlined)
     {
         if (material == null)
             return;
@@ -229,7 +230,10 @@ public class PlayerInteraction : MonoBehaviour
         // Set the material's color to the looked at material's color
         material.color = color;
 
-        // Set the scale of the outline
-        material.SetFloat(CachedScaleProperty, scale);
+        // // Set the scale of the outline
+        // material.SetFloat(CachedScaleProperty, scale);
+
+        // Set the material's outline state
+        material.SetFloat(CachedIsOutlinedProperty, isOutlined ? 1 : 0);
     }
 }
