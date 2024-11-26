@@ -192,7 +192,9 @@ GameObject:
   - component: {fileID: 7862424965626924277}
   - component: {fileID: 7986816652180132302}
   - component: {fileID: 7431782075243913118}
+  - component: {fileID: 2838171847411418177}
   - component: {fileID: 5124894468928815017}
+  - component: {fileID: 4446822864761967248}
   m_Layer: 9
   m_Name: VCAM (Move off player later?)
   m_TagString: Untagged
@@ -209,7 +211,7 @@ Transform:
   m_GameObject: {fileID: 2506446620300482759}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.6521754, y: 0.21718907, z: 0.13227272}
+  m_LocalPosition: {x: 0.65217555, y: 0.21718907, z: 0.13227272}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -267,6 +269,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40005ba5e5043224daedd618c12f5475, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2838171847411418177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2506446620300482759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 027cd40e0a4af9146a67af463ec9d8d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  virtualCam: {fileID: 4446822864761967248}
+  restPosition: {x: 0, y: 0, z: 0}
+  transitionSpeed: 20
+  bobSpeed: 4.8
+  bobAmount: 0.05
 --- !u!114 &5124894468928815017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,6 +305,21 @@ MonoBehaviour:
   m_ZoomScale: 1
   m_FollowAttachment: 1
   m_LookAtAttachment: 1
+--- !u!114 &4446822864761967248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2506446620300482759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44d70cc20219cd84593f67d248eafe36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Offset: {x: 0, y: 0, z: 0}
+  m_ApplyAfter: 1
+  m_PreserveComposition: 0
 --- !u!1 &3703685084401515452
 GameObject:
   m_ObjectHideFlags: 0
@@ -838,7 +872,7 @@ Transform:
   m_GameObject: {fileID: 4820879495186663749}
   serializedVersion: 2
   m_LocalRotation: {x: 0.37169608, y: 0.6266405, z: 0.45465043, w: -0.5123053}
-  m_LocalPosition: {x: 0.6521754, y: 0.21718907, z: 0.13227272}
+  m_LocalPosition: {x: -14.277824, y: 0.21718907, z: 44.59227}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1099,10 +1133,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68bb026fafb42b14791938953eaace77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_NoiseProfile: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
+  m_NoiseProfile: {fileID: 11400000, guid: e9ce97b7a206dc64d90931ea044e0c72, type: 2}
   m_PivotOffset: {x: 0, y: 0, z: 0}
-  m_AmplitudeGain: 0
-  m_FrequencyGain: 1
+  m_AmplitudeGain: 2
+  m_FrequencyGain: 3
   mNoiseOffsets: {x: 558.3324, y: 884.71155, z: -852.39124}
 --- !u!114 &3598679940667769780
 MonoBehaviour:
