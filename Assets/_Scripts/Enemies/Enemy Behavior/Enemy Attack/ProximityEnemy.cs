@@ -189,7 +189,7 @@ public class ProximityEnemy : MonoBehaviour, IEnemyAttackBehavior
             player.ChangeHealth(-explosionDamage, Enemy.EnemyInfo, this);
 
             // Get the rigidbody component from the player
-            if (!player.transform.root.TryGetComponent(out Rigidbody rb))
+            if (!player.TryGetComponentInParent(out Rigidbody rb))
                 continue;
 
             // Apply the explosive force to the player

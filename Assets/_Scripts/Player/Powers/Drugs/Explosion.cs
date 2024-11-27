@@ -55,11 +55,11 @@ public class Explosion : MonoBehaviour, IPower
                 continue;
 
             // Add an explosion force to the collider
-            if (cCollider.transform.root.TryGetComponent(out Rigidbody rb))
+            if (cCollider.TryGetComponentInParent(out Rigidbody rb))
                 rb.AddExplosionForce(explosionForce, explosionPosition, explosionRadius);
 
             // Get the Actor component of the collider
-            if (!cCollider.transform.root.TryGetComponent(out IActor actor))
+            if (!cCollider.TryGetComponentInParent(out IActor actor))
                 continue;
 
             Debug.Log($"Explosion: {actor.GameObject.name}");

@@ -10,7 +10,7 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
 {
     //Adding this ref here dont fight me
     //public NPCmovement npcMovement;
-    
+
     #region Serialized Fields
 
     [Header("Checkpoint Traversal")] [SerializeField] [Tooltip("The checkpoints that the enemy will traverse.")]
@@ -72,7 +72,16 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
 
     public IReadOnlyCollection<Transform> PatrolCheckpoints => patrolCheckpoints;
 
-    public Transform CurrentCheckpoint => patrolCheckpoints[_currentCheckpointIndex];
+    public Transform CurrentCheckpoint
+    {
+        get
+        {
+            if (patrolCheckpoints == null || patrolCheckpoints.Length == 0)
+                return null;
+
+            return patrolCheckpoints[_currentCheckpointIndex];
+        }
+    }
 
     private bool NavMeshEnabled => _externallyEnabled;
 
@@ -272,7 +281,7 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
         switch (_currentMovementState)
         {
             case EnemyMovementState.Patrol:
-                
+
                 // // if tagged as "stationary" then disable movement
                 // if (gameObject.CompareTag("Stationary") && !npcMovement.canMove)
                 // {
@@ -397,6 +406,10 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
 
         // If the enemy is close enough to the checkpoint, move to the next checkpoint
         if (distanceToCheckpoint > checkpointProximityThreshold)
+            return;
+
+        // Return if there are no checkpoints
+        if (patrolCheckpoints.Length == 0)
             return;
 
         // Increment the checkpoint index
