@@ -219,9 +219,9 @@ public class BasicPlayerMovement : PlayerMovementScript
         //     ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, move.y, move.z), ForceMode.VelocityChange);
 
         if (move.y >= 0)
-            ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, 0, move.z) / 8, ForceMode.VelocityChange);
+            ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, 0, move.z), ForceMode.VelocityChange);
         else
-            ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, move.y, move.z) / 8, ForceMode.VelocityChange);
+            ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, move.y, move.z), ForceMode.VelocityChange);
 
 
         // Set the footstep timer to active
