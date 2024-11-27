@@ -24,6 +24,8 @@ public class ViewBobbing : MonoBehaviour
     // How smooth the lerping on the bob is.
     [SerializeField] [Range(0, 1)] private float bobSmoothness = 0.95f;
 
+    [SerializeField] [Min(0)] private float sprintStrengthMultiplier = 1.5f;
+
     #endregion
 
     #region Private Fields
@@ -55,18 +57,21 @@ public class ViewBobbing : MonoBehaviour
         if (IsViewBobbingActive)
         {
             // Make the bob faster if the player is sprinting
-            var sprintMult = _playerMovement.IsSprinting ? _playerMovement.SprintMultiplier : 1;
-            var currentBobSpeed = bobSpeed * sprintMult;
+            var sprintSpeedMult = _playerMovement.IsSprinting ? _playerMovement.SprintMultiplier : 1;
+            var currentBobSpeed = bobSpeed * sprintSpeedMult;
+
+            var sprintStrengthMult = _playerMovement.IsSprinting ? sprintStrengthMultiplier : 1;
+            var currentBobAmount = bobAmount * sprintStrengthMult;
 
             // Make a timer for the bob speed
             _timer += currentBobSpeed * Time.deltaTime;
 
             // absolute value of y for a parabolic path
-            var yValue = Vector3.zero.y + Mathf.Abs((Mathf.Sin(_timer) * bobAmount));
+            var yValue = Vector3.zero.y + Mathf.Abs((Mathf.Sin(_timer) * currentBobAmount));
 
             // Where the camera should be
             var desiredOffset = new Vector3(
-                Mathf.Cos(_timer) * bobAmount,
+                Mathf.Cos(_timer) * currentBobAmount,
                 yValue,
                 Vector3.zero.z
             );
