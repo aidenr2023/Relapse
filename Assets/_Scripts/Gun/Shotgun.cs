@@ -325,7 +325,7 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
 
         // Remove the outline from the weapon manager
         foreach (var mat in OutlineMaterials)
-            weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, mat.color, true);
+            weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, false, true);
     }
 
     public string GetDebugText()
@@ -380,6 +380,6 @@ public class Shotgun : MonoBehaviour, IGun, IDebugged
 
         // Remove the outline from the previous weapon manager
         foreach (var mat in OutlineMaterials)
-            _weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, mat.color, false);
+            _weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, false, false);
     }
 }

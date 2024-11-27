@@ -321,9 +321,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Clear the weapon manager
         _weaponManager = null;
 
-        // Remove the outline from the weapon manager
+        // Add the outline to the weapon manager
         foreach (var mat in OutlineMaterials)
-            weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, mat.color, true);
+            weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, false, true);
     }
 
     public string GetDebugText()
@@ -393,6 +393,6 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Remove the outline from the previous weapon manager
         foreach (var mat in OutlineMaterials)
-            _weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, mat.color, false);
+            _weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, false, false);
     }
 }

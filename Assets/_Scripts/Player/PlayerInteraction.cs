@@ -9,6 +9,7 @@ public class PlayerInteraction : MonoBehaviour
 {
     private static readonly int CachedScaleProperty = Shader.PropertyToID("_Scale");
     private static readonly int CachedIsOutlinedProperty = Shader.PropertyToID("_IsOutlined");
+    private static readonly int CachedIsSelectedProperty = Shader.PropertyToID("_IsSelected");
 
     [SerializeField] private Camera cam;
 
@@ -159,11 +160,16 @@ public class PlayerInteraction : MonoBehaviour
         // If the interact text is empty,
         // set the interact text to the default interact text
         if (interactTextString == string.Empty)
-            interactText.text = "Press E to interact";
+        {
+            // interactText.text = "Press E to interact";
+            interactText.text = "";
+        }
 
         // Set the interact text to the interactable's interact text
         else
-            interactText.text = $"Press E to\n{interactTextString}";
+        {
+            interactText.text = $"{interactTextString}";
+        }
     }
 
     #endregion
@@ -199,7 +205,7 @@ public class PlayerInteraction : MonoBehaviour
 
         // Set the outline materials to the looked at color
         foreach (var material in interactable.OutlineMaterials)
-            SetOutlineMaterial(material, lookedAtColor, true);
+            SetOutlineMaterial(material, true, true);
     }
 
     private void UnsetLookedAtMaterial(IInteractable interactable)
@@ -219,16 +225,16 @@ public class PlayerInteraction : MonoBehaviour
 
         // Set the outline materials to the looked at color
         foreach (var material in interactable.OutlineMaterials)
-            SetOutlineMaterial(material, outLineColor, true);
+            SetOutlineMaterial(material, false, true);
     }
 
-    public void SetOutlineMaterial(Material material, Color color, bool isOutlined)
+    public void SetOutlineMaterial(Material material, bool isSelected, bool isOutlined)
     {
         if (material == null)
             return;
 
         // Set the material's color to the looked at material's color
-        material.color = color;
+        material.SetFloat(CachedIsSelectedProperty, isSelected ? 1 : 0);
 
         // // Set the scale of the outline
         // material.SetFloat(CachedScaleProperty, scale);
