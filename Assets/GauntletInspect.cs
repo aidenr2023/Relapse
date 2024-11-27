@@ -8,7 +8,7 @@ public class GauntletInspectController : MonoBehaviour
     // Flag to track if the animation is currently paused
     private bool isPaused = false;
 
-    // Optional: Flag to ensure PauseAnimation is only called once per event
+    // Flag to ensure PauseAnimation is only called once per event
     private bool hasPaused = false;
 
     void Start()
@@ -59,6 +59,10 @@ public class GauntletInspectController : MonoBehaviour
             animator.SetTrigger("PlayTrigger");
             Debug.Log("GauntletInspectController: PlayTrigger activated.");
         }
+        else
+        {
+            Debug.LogWarning("GauntletInspectController: Animator not assigned. Cannot trigger animation.");
+        }
     }
 
     /// <summary>
@@ -75,6 +79,10 @@ public class GauntletInspectController : MonoBehaviour
                 isPaused = true;
                 hasPaused = true; // Prevent multiple pauses from multiple events
                 Debug.Log("GauntletInspectController: Animation paused via PauseAnimation event.");
+            }
+            else
+            {
+                Debug.Log("GauntletInspectController: Animation already paused.");
             }
         }
         else
@@ -94,6 +102,10 @@ public class GauntletInspectController : MonoBehaviour
             isPaused = false;
             hasPaused = false; // Reset for potential future pauses
             Debug.Log("GauntletInspectController: Animation resumed after releasing 'I' key.");
+        }
+        else
+        {
+            Debug.LogWarning("GauntletInspectController: Animator not assigned. Cannot resume animation.");
         }
     }
 }
