@@ -227,12 +227,16 @@ public class PauseMenuManager : MonoBehaviour
     /// </summary>
     public void Exit(GameObject textObject)
     {
+        // Resume the game
+        Time.timeScale = _tempTimeScale;
+        FixPhysics();
+
         ChangeClickColor(textObject);
         // Add your Exit logic here
         Debug.Log("Exit the game");
 
-        //Go back to main menu
-        //SceneManager.LoadScene("MainMenu");
+        // Go back to main menu
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void Back()

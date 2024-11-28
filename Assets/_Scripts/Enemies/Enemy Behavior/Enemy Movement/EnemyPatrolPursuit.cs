@@ -115,12 +115,6 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
 
     private void Start()
     {
-        // Determine the closest checkpoint
-        _currentCheckpointIndex = DetermineClosestCheckpoint();
-
-        // Set the destination to the closest checkpoint
-        NavMeshAgent.SetDestination(patrolCheckpoints[_currentCheckpointIndex].position);
-
         OnMovementStateChanged += (enemy, oldState, newState) =>
             Debug.Log($"{enemy.name} changed movement state to {newState} from {oldState}");
 
@@ -128,6 +122,16 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
 
         // Add this to the debug manager
         DebugManager.Instance.AddDebuggedObject(this);
+
+        // Determine the closest checkpoint
+        _currentCheckpointIndex = DetermineClosestCheckpoint();
+
+        // Return if the closest checkpoint is invalid
+        if (_currentCheckpointIndex < 0 || _currentCheckpointIndex >= patrolCheckpoints.Length)
+            return;
+
+        // Set the destination to the closest checkpoint
+        NavMeshAgent.SetDestination(patrolCheckpoints[_currentCheckpointIndex].position);
     }
 
     private void ResetTimersOnStateChange(EnemyPatrolPursuit enemy,
@@ -242,6 +246,10 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior, IDebugg
 
                 // Check if the enemy has reached the checkpoint
                 CheckCheckpoint();
+
+                // Break if the current checkpoint is null
+                if (CurrentCheckpoint == null)
+                    return;
 
                 // Set the destination to the current checkpoint
                 if (NavMeshAgent.destination != CurrentCheckpoint.position)
