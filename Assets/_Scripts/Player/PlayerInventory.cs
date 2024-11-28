@@ -41,6 +41,9 @@ public class PlayerInventory : MonoBehaviour
 
         // Subscribe to the OnItemAdded event
         OnItemAdded += ItemTooltipOnPickup;
+
+        // Force the money object to be in the inventory
+        ForceItem(moneyObject, 0);
     }
 
     private InventoryEntry GetInventoryEntry(InventoryObject inventoryObject)
@@ -77,6 +80,19 @@ public class PlayerInventory : MonoBehaviour
     public void AddItem(InventoryEntry entry)
     {
         AddItem(entry.InventoryObject, entry.Quantity);
+    }
+
+    private void ForceItem(InventoryObject obj, int quantity)
+    {
+        var entry = GetInventoryEntry(obj);
+
+        if (entry == null)
+        {
+            entry = new InventoryEntry(obj, quantity);
+            inventoryEntries.Add(entry);
+        }
+        else
+            entry.AddQuantity(quantity);
     }
 
     public bool HasItem(InventoryObject inventoryObject, int quantity = 1)

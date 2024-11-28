@@ -271,9 +271,9 @@ public class JournalUIManager : MonoBehaviour
         foreach (Transform child in inventoryContentArea.transform)
             Destroy(child.gameObject);
 
-        // TODO: Delete
-        for (var i = 0; i < 10; i++)
-            CreateInventoryItem(testInventoryEntry);
+        // // TODO: Delete
+        // for (var i = 0; i < 10; i++)
+        //     CreateInventoryItem(testInventoryEntry);
 
 
         // Return if the instance of the InventoryManager is null
@@ -316,8 +316,8 @@ public class JournalUIManager : MonoBehaviour
         foreach (Transform child in powersContentArea.transform)
             Destroy(child.gameObject);
 
-        // TODO: Delete
-        CreatePowerItem(testPower);
+        // // TODO: Delete
+        // CreatePowerItem(testPower);
 
         // If the instance of the PowerManager is null, return
         if (Player.Instance?.PlayerPowerManager == null)
@@ -385,8 +385,9 @@ public class JournalUIManager : MonoBehaviour
         foreach (var memory in memories)
             CreateMemoryItem(memory);
 
-        for (var i = 0; i < 10; i++)
-            CreateMemoryItem(testMemory);
+        // // TODO: Delete
+        // for (var i = 0; i < 10; i++)
+        //     CreateMemoryItem(testMemory);
     }
 
     private void SetSelectedMemory(MemoryScriptableObject memory)
