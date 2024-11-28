@@ -10,9 +10,7 @@ public class VendorMenu : MonoBehaviour
     #region Serialized Fields
 
     [Header("Powers Shop Screen")] [SerializeField]
-    private PowerScriptableObject[] powers;
-
-    [SerializeField] private VendorShopButton[] powerButtons;
+    private VendorShopButton[] powerButtons;
 
     [SerializeField] private TMP_Text powerTypeText;
     [SerializeField] private TMP_Text priceText;
@@ -21,9 +19,7 @@ public class VendorMenu : MonoBehaviour
     [SerializeField] private TMP_Text descriptionText;
 
     [Header("Gossip Dialogue")] [SerializeField]
-    private DialogueNode gossipDialogue;
-
-    [SerializeField] private DialogueUI dialogueUI;
+    private DialogueUI dialogueUI;
 
     [Header("Menus")] [SerializeField] private GameObject initialMenu;
     [SerializeField] private GameObject powerMenu;
@@ -31,9 +27,12 @@ public class VendorMenu : MonoBehaviour
 
     #endregion
 
+    private VendorScriptableObject _currentVendor;
+    private PowerScriptableObject[] _powers;
+
     #region Getters
 
-    public IEnumerable<PowerScriptableObject> Powers => powers;
+    public IEnumerable<PowerScriptableObject> Powers => _powers;
 
     public GameObject InitialMenu => initialMenu;
 
@@ -42,6 +41,10 @@ public class VendorMenu : MonoBehaviour
     public GameObject GossipMenu => gossipMenu;
 
     public bool IsVendorActive => gameObject.activeSelf;
+
+    public VendorScriptableObject CurrentVendor => _currentVendor;
+
+    private DialogueNode GossipDialogue => _currentVendor.GossipDialogue;
 
     #endregion
 
@@ -55,18 +58,22 @@ public class VendorMenu : MonoBehaviour
     {
         // Isolate the initial menu
         IsolateMenu(initialMenu);
-
-        // Populate the shop
-        PopulateShop();
     }
 
     public void StartDialogue()
     {
-        dialogueUI.StartDialogue(gossipDialogue);
+        dialogueUI.StartDialogue(GossipDialogue);
     }
 
     public void IsolateMenu(GameObject menu)
     {
+        // If the menu is the power menu, but the player can no longer buy from the vendor, return
+        if (menu == powerMenu && !_currentVendor.CanBuyFromVendor)
+        {
+            JournalTooltipManager.Instance.AddTooltip($"You can no longer buy from {_currentVendor.VendorName}.");
+            return;
+        }
+
         initialMenu.SetActive(false);
         powerMenu.SetActive(false);
         gossipMenu.SetActive(false);
@@ -74,16 +81,16 @@ public class VendorMenu : MonoBehaviour
         menu.SetActive(true);
     }
 
-    public void PopulateShop()
+    private void PopulateShop()
     {
         // Reset all the power buttons
         foreach (var button in powerButtons)
             button.Reset();
 
-        for (var i = 0; i < powers.Length; i++)
+        for (var i = 0; i < _powers.Length; i++)
         {
             // Get the current power
-            var power = powers[i];
+            var power = _powers[i];
 
             // Get the current power button
             var button = powerButtons[i];
@@ -117,8 +124,15 @@ public class VendorMenu : MonoBehaviour
         descriptionText.text = power.Description;
     }
 
-    public void StartVendor()
+    public void StartVendor(VendorScriptableObject vendor)
     {
+        // Set the current vendor
+        _currentVendor = vendor;
+
+        // Set the powers
+        // TODO: Fix this. This should include all drug and medicine powers
+        _powers = vendor.MedicinePowers;
+
         // Set this menu to active
         gameObject.SetActive(true);
 
@@ -127,6 +141,9 @@ public class VendorMenu : MonoBehaviour
 
         // Pause the game
         Time.timeScale = 0;
+
+        // Populate the shop
+        PopulateShop();
 
         // Isolate the initial menu
         IsolateMenu(initialMenu);
@@ -141,6 +158,7 @@ public class VendorMenu : MonoBehaviour
         // InputManager.Instance.SetCursorState(false);
 
         // Unpause the game
+        // TODO: Connect with timescale manager
         Time.timeScale = 1;
     }
 }

@@ -579,10 +579,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   powerScroll: {fileID: 4381525105559914916}
   powers:
-  - {fileID: 11400000, guid: acab2dfd548eb2c479d0be22cef871ba, type: 2}
-  - {fileID: 11400000, guid: 00f877605ff3c3a4f9d1a25c2ea80edd, type: 2}
-  - {fileID: 11400000, guid: 144b7df19accdd542aa5c22f83309e61, type: 2}
-  - {fileID: 11400000, guid: 29fa51786e262b04b8571ce53c2d4575, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!114 &-7043807009064224948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2320,12 +2320,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &6692811926915853122 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 4375557461511984621, guid: 4e1f2c1c363960402afcef7794835969,
-    type: 3}
-  m_PrefabInstance: {fileID: 6942508457977872047}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &7697902502445989847 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 760210185175712120, guid: 4e1f2c1c363960402afcef7794835969,
@@ -5616,7 +5610,7 @@ PrefabInstance:
         type: 3}
       propertyPath: tooltipManager.tooltipParent
       value: 
-      objectReference: {fileID: 6692811926915853122}
+      objectReference: {fileID: 1520356322811073465}
     - target: {fileID: 6153039002448679819, guid: de2161465cf4d45419107cb178b6bbdb,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -5697,6 +5691,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7666583957015521617, guid: de2161465cf4d45419107cb178b6bbdb,
+        type: 3}
+      propertyPath: m_Name
+      value: Tooltip Canvas
+      objectReference: {fileID: 0}
     - target: {fileID: 8061614798814176857, guid: de2161465cf4d45419107cb178b6bbdb,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -5733,6 +5732,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: de2161465cf4d45419107cb178b6bbdb, type: 3}
+--- !u!224 &1520356322811073465 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7665031001907339127, guid: de2161465cf4d45419107cb178b6bbdb,
+    type: 3}
+  m_PrefabInstance: {fileID: 9171243163885980878}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2519060424233887747 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6751824976234669261, guid: de2161465cf4d45419107cb178b6bbdb,

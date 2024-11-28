@@ -1,23 +1,17 @@
-﻿using JetBrains.Annotations;
-using System;
-using TMPro;
-using Unity.VisualScripting;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class VendorShopButton : MonoBehaviour
 {
+    [SerializeField] private VendorMenu vendorMenu;
+
     [SerializeField] private TMP_Text powerNameText;
     [SerializeField] private Image powerImage;
 
     [SerializeField] private PowerScriptableObject power;
 
-    [SerializeField] private GameObject vendorInteractable;
-
     public PowerScriptableObject Power => power;
-    public bool canUseShop = true;
-
-    public bool IsInteractable { get; set; } = true;
 
     private void Start()
     {
@@ -72,21 +66,36 @@ public class VendorShopButton : MonoBehaviour
 
         text.text = power.Description;
     }
+
     public void BuyPower()
     {
-        Debug.Log("I was clicked!");
-        Debug.Log("You purchased: " + power.PowerName);
+        // Return if the power is null
+        if (power == null)
+            return;
+
+        // Return if the player already has the power
+        if (Player.Instance.PlayerPowerManager.HasPower(power))
+        {
+            JournalTooltipManager.Instance.AddTooltip($"You already have {power.PowerName}.");
+            return;
+        }
+
+        // Go back to the initial menu
+        vendorMenu.IsolateMenu(vendorMenu.InitialMenu);
+
+        // Return if the player cannot buy from the vendor
+        if (!VendorMenu.Instance.CurrentVendor.CanBuyFromVendor)
+        {
+            JournalTooltipManager.Instance.AddTooltip($"You can no longer buy from {vendorMenu.CurrentVendor.VendorName}.");
+            return;
+        }
+
+        // The player can no longer buy from the vendor
+        VendorMenu.Instance.CurrentVendor.CanBuyFromVendor = false;
+
+        JournalTooltipManager.Instance.AddTooltip($"You can no longer buy from {vendorMenu.CurrentVendor.VendorName}.");
 
         // Add the power clicked
         Player.Instance.PlayerPowerManager.AddPower(power);
-        Debug.Log("Added a power: " + power);
-
-        //NOT WORKING (make sure to set only that specific vendor and not all vendors. May require duping the buttons?)
-        // Set IsInteractable to false
-        //vendorInteractable.GetComponent<VendorInteractable>().IsInteractable = false;
-        Debug.Log(vendorInteractable.GetComponent<VendorInteractable>());
-
-        // Close the shop
-        VendorMenu.Instance.EndVendor();
     }
 }

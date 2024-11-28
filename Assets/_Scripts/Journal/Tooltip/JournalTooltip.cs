@@ -135,8 +135,8 @@ public class JournalTooltip : MonoBehaviour
         Text = _textFunction();
 
         // Update the timers
-        _activeTimer.Update(Time.deltaTime);
-        _introTimer.Update(Time.deltaTime);
-        _outroTimer.Update(Time.deltaTime);
+        _activeTimer.Update(Time.unscaledDeltaTime);
+        _introTimer.Update(Time.unscaledDeltaTime);
+        _outroTimer.Update(Time.unscaledDeltaTime);
     }
 }

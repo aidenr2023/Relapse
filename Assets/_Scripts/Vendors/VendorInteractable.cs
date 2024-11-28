@@ -3,6 +3,14 @@ using UnityEngine;
 
 public class VendorInteractable : MonoBehaviour, IInteractable
 {
+    #region Serialized Fields
+
+    [SerializeField] private VendorScriptableObject vendorInformation;
+
+    #endregion
+
+    #region Getters
+
     public GameObject GameObject => gameObject;
 
     public bool IsInteractable { get; set; } = true;
@@ -11,12 +19,13 @@ public class VendorInteractable : MonoBehaviour, IInteractable
 
     public HashSet<Material> OutlineMaterials { get; } = new();
 
+    #endregion
+
     public void Interact(PlayerInteraction playerInteraction)
     {
         // Get the vendor menu instance & activate the shop
-        VendorMenu.Instance.StartVendor();
-        Debug.Log("Did a thing");
-
+        VendorMenu.Instance.StartVendor(vendorInformation);
+        Debug.Log($"Starting vendor with information: {vendorInformation.VendorName}");
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)
@@ -25,6 +34,6 @@ public class VendorInteractable : MonoBehaviour, IInteractable
 
     public string InteractText(PlayerInteraction playerInteraction)
     {
-        return $"Open Shop";
+        return $"Talk to {vendorInformation.VendorName}";
     }
 }

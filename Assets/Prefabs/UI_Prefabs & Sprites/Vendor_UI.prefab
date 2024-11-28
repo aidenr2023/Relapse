@@ -1515,6 +1515,7 @@ GameObject:
   - component: {fileID: 4083257252040449543}
   - component: {fileID: 1942450077726613842}
   - component: {fileID: 3545074023880493709}
+  - component: {fileID: 14612438854615930}
   m_Layer: 0
   m_Name: Vendor_UI
   m_TagString: Untagged
@@ -1550,11 +1551,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 437af9a0f9fc4a13a4a42bc8a87f6d2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  powers:
-  - {fileID: 11400000, guid: acab2dfd548eb2c479d0be22cef871ba, type: 2}
-  - {fileID: 11400000, guid: 00f877605ff3c3a4f9d1a25c2ea80edd, type: 2}
-  - {fileID: 11400000, guid: 144b7df19accdd542aa5c22f83309e61, type: 2}
-  - {fileID: 11400000, guid: 29fa51786e262b04b8571ce53c2d4575, type: 2}
   powerButtons:
   - {fileID: 5188232931471337295}
   - {fileID: 2131288782006189686}
@@ -1569,7 +1565,6 @@ MonoBehaviour:
   toleranceImpactText: {fileID: 4025208337801182816}
   cooldownText: {fileID: 690374821889711198}
   descriptionText: {fileID: 3350106125096242427}
-  gossipDialogue: {fileID: 11400000, guid: 0a64e37a78e38674db68d44680167b69, type: 2}
   dialogueUI: {fileID: 4423869734371706138}
   initialMenu: {fileID: 8091447353729656482}
   powerMenu: {fileID: 3285595921002501030}
@@ -1588,6 +1583,45 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueUI: {fileID: 4423869734371706138}
   charactersPerSecond: 30
+--- !u!114 &14612438854615930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3085049939021589306}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f455382193294707baff09a274867734, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  OnAwakeEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  OnStartEvent:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 3085049939021589306}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnEnableEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDisableEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  OnDestroyEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3106881579096678520
 GameObject:
   m_ObjectHideFlags: 0
@@ -4829,6 +4863,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4396011209320078298, guid: ff70d0a2a71bbba47b2759ce9988bf18,
+        type: 3}
+      propertyPath: vendorMenu
+      value: 
+      objectReference: {fileID: 1942450077726613842}
     - target: {fileID: 7890577925521567198, guid: ff70d0a2a71bbba47b2759ce9988bf18,
         type: 3}
       propertyPath: m_Name
@@ -4975,6 +5014,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4396011209320078298, guid: ff70d0a2a71bbba47b2759ce9988bf18,
+        type: 3}
+      propertyPath: vendorMenu
+      value: 
+      objectReference: {fileID: 1942450077726613842}
     - target: {fileID: 7890577925521567198, guid: ff70d0a2a71bbba47b2759ce9988bf18,
         type: 3}
       propertyPath: m_Name
@@ -5121,6 +5165,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4396011209320078298, guid: ff70d0a2a71bbba47b2759ce9988bf18,
+        type: 3}
+      propertyPath: vendorMenu
+      value: 
+      objectReference: {fileID: 1942450077726613842}
     - target: {fileID: 7890577925521567198, guid: ff70d0a2a71bbba47b2759ce9988bf18,
         type: 3}
       propertyPath: m_Name
@@ -5267,6 +5316,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4396011209320078298, guid: ff70d0a2a71bbba47b2759ce9988bf18,
+        type: 3}
+      propertyPath: vendorMenu
+      value: 
+      objectReference: {fileID: 1942450077726613842}
     - target: {fileID: 7890577925521567198, guid: ff70d0a2a71bbba47b2759ce9988bf18,
         type: 3}
       propertyPath: m_Name
@@ -5413,6 +5467,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4396011209320078298, guid: ff70d0a2a71bbba47b2759ce9988bf18,
+        type: 3}
+      propertyPath: vendorMenu
+      value: 
+      objectReference: {fileID: 1942450077726613842}
     - target: {fileID: 7890577925521567198, guid: ff70d0a2a71bbba47b2759ce9988bf18,
         type: 3}
       propertyPath: m_Name
@@ -5559,6 +5618,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4396011209320078298, guid: ff70d0a2a71bbba47b2759ce9988bf18,
+        type: 3}
+      propertyPath: vendorMenu
+      value: 
+      objectReference: {fileID: 1942450077726613842}
     - target: {fileID: 7890577925521567198, guid: ff70d0a2a71bbba47b2759ce9988bf18,
         type: 3}
       propertyPath: m_Name
@@ -5705,6 +5769,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4396011209320078298, guid: ff70d0a2a71bbba47b2759ce9988bf18,
+        type: 3}
+      propertyPath: vendorMenu
+      value: 
+      objectReference: {fileID: 1942450077726613842}
     - target: {fileID: 7890577925521567198, guid: ff70d0a2a71bbba47b2759ce9988bf18,
         type: 3}
       propertyPath: m_Name
@@ -5851,30 +5920,15 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4396011209320078298, guid: ff70d0a2a71bbba47b2759ce9988bf18,
+        type: 3}
+      propertyPath: vendorMenu
+      value: 
+      objectReference: {fileID: 1942450077726613842}
     - target: {fileID: 7890577925521567198, guid: ff70d0a2a71bbba47b2759ce9988bf18,
         type: 3}
       propertyPath: m_Name
       value: Vendor Power Button
-      objectReference: {fileID: 0}
-    - target: {fileID: 8095249884221347307, guid: ff70d0a2a71bbba47b2759ce9988bf18,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8095249884221347307, guid: ff70d0a2a71bbba47b2759ce9988bf18,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8095249884221347307, guid: ff70d0a2a71bbba47b2759ce9988bf18,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8095249884221347307, guid: ff70d0a2a71bbba47b2759ce9988bf18,
-        type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8242124293917332780, guid: ff70d0a2a71bbba47b2759ce9988bf18,
         type: 3}
