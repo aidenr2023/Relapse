@@ -517,6 +517,11 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
 
         // Update the power collections
         UpdatePowerCollections(powerScriptableObject);
+
+        // Display a tooltip for the power
+        JournalTooltipManager.Instance.AddTooltip(
+            $"New {powerScriptableObject.PowerType}: {powerScriptableObject.PowerName}"
+        );
     }
 
     public void RemovePower(PowerScriptableObject powerScriptableObject)
