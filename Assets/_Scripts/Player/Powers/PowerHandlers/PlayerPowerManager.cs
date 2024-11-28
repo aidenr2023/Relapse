@@ -44,6 +44,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
             ? _powerTokens.GetValueOrDefault(CurrentPower)
             : null;
 
+    public IReadOnlyCollection<PowerScriptableObject> Powers => powers;
+
     #endregion
 
     #region Initialization Functions

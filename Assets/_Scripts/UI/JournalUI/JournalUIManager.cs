@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -10,6 +11,7 @@ public class JournalUIManager : MonoBehaviour
 
     [SerializeField] private JournalObjective testObjective;
     [SerializeField] private InventoryEntry testInventoryEntry;
+    [SerializeField] private PowerScriptableObject testPower;
 
     [Header("Menus")] [SerializeField] private GameObject tasksMenu;
     [SerializeField] private GameObject inventoryMenu;
@@ -27,6 +29,13 @@ public class JournalUIManager : MonoBehaviour
 
     [SerializeField] private JournalUIInventoryItem inventoryItemPrefab;
 
+    [Header("Powers Menu")] [SerializeField]
+    private GameObject powersContentArea;
+
+    [SerializeField] private JournalUIPowerItem powerItemPrefab;
+
+    [SerializeField] private TMP_Text drugDescriptionText;
+
     #endregion
 
     #region Private Fields
@@ -38,6 +47,10 @@ public class JournalUIManager : MonoBehaviour
     // Private objective UI fields
     private int _currentObjectiveIndex;
     private readonly List<JournalUIObjective> _objectives = new();
+
+    private PowerType _currentPowerType = PowerType.Drug;
+
+    private PowerScriptableObject _selectedPower;
 
     #endregion
 
@@ -63,6 +76,9 @@ public class JournalUIManager : MonoBehaviour
 
         if (_currentMenu == tasksMenu)
             UpdateObjectivesMenu();
+
+        if (_currentMenu == powersMenu)
+            UpdatePowersMenu();
     }
 
     #region Objectives Menu
@@ -164,6 +180,8 @@ public class JournalUIManager : MonoBehaviour
         objectiveDescriptionArea.text = _objectives[_currentObjectiveIndex].Objective.LongDescription;
     }
 
+    #endregion
+
     #region Open Menus
 
     private void OpenMenu(GameObject menu)
@@ -201,11 +219,22 @@ public class JournalUIManager : MonoBehaviour
         PopulateInventory();
     }
 
-    public void OpenPowersMenu()
+    public void OpenPowersMenu() => OpenPowersMenu(_currentPowerType);
+
+    private void OpenPowersMenu(PowerType powerType)
     {
         // Open the powers menu
         OpenMenu(powersMenu);
+
+        // Populate the powers area
+        PopulatePowers(powerType);
     }
+
+    // Open the drug powers menu
+    public void OpenDrugPowersMenu() => OpenPowersMenu(PowerType.Drug);
+
+    // Open the medicine powers menu
+    public void OpenMedicinePowersMenu() => OpenPowersMenu(PowerType.Medicine);
 
     public void OpenMemoriesMenu()
     {
@@ -247,6 +276,66 @@ public class JournalUIManager : MonoBehaviour
     }
 
     #endregion
+
+    #region Powers Menu
+
+    private void CreatePowerItem(PowerScriptableObject power)
+    {
+        var powerItem = Instantiate(powerItemPrefab, powersContentArea.transform);
+        powerItem.SetPower(power);
+
+        // Add the button click event
+        powerItem.Button.onClick.AddListener(() => SetSelectedPower(power));
+
+        // Add the event trigger
+        var entry = new EventTrigger.Entry { eventID = EventTriggerType.Select };
+
+        // Add the event trigger callback
+        entry.callback.AddListener(_ => SetSelectedPower(power));
+    }
+
+    private void PopulatePowers(PowerType powerType)
+    {
+        // Set the current power type
+        _currentPowerType = powerType;
+
+        // Clear the content area
+        foreach (Transform child in powersContentArea.transform)
+            Destroy(child.gameObject);
+
+        // TODO: Delete
+        CreatePowerItem(testPower);
+
+        // If the instance of the PowerManager is null, return
+        if (Player.Instance?.PlayerPowerManager == null)
+            return;
+
+        // Get the powers
+        var powers = Player.Instance.PlayerPowerManager.Powers;
+
+        // Filter the powers by power type
+        var filteredPowers = powers.Where(power => power.PowerType == powerType);
+
+        // Populate the content area with the powers
+        foreach (var power in filteredPowers)
+            CreatePowerItem(power);
+    }
+
+    private void UpdatePowersMenu()
+    {
+        // Return if the selected power is null
+        if (_selectedPower == null)
+            return;
+
+        // Set the drug description text
+        drugDescriptionText.text = _selectedPower.Description;
+    }
+
+    public void SetSelectedPower(PowerScriptableObject power)
+    {
+        _selectedPower = power;
+        drugDescriptionText.text = power.Description;
+    }
 
     #endregion
 }
