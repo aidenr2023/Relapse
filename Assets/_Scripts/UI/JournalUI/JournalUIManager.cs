@@ -9,6 +9,7 @@ public class JournalUIManager : MonoBehaviour
     #region Serialized Fields
 
     [SerializeField] private JournalObjective testObjective;
+    [SerializeField] private InventoryEntry testInventoryEntry;
 
     [Header("Menus")] [SerializeField] private GameObject tasksMenu;
     [SerializeField] private GameObject inventoryMenu;
@@ -20,6 +21,11 @@ public class JournalUIManager : MonoBehaviour
 
     [SerializeField] private JournalUIObjective objectiveUIPrefab;
     [SerializeField] private TMP_Text objectiveDescriptionArea;
+
+    [Header("Inventory Menu")] [SerializeField]
+    private GameObject inventoryContentArea;
+
+    [SerializeField] private JournalUIInventoryItem inventoryItemPrefab;
 
     #endregion
 
@@ -190,6 +196,9 @@ public class JournalUIManager : MonoBehaviour
     {
         // Open the inventory menu
         OpenMenu(inventoryMenu);
+
+        // Populate the inventory area
+        PopulateInventory();
     }
 
     public void OpenPowersMenu()
@@ -202,6 +211,39 @@ public class JournalUIManager : MonoBehaviour
     {
         // Open the memories menu
         OpenMenu(memoriesMenu);
+    }
+
+    #endregion
+
+    #region Inventory Menu
+
+    private void CreateInventoryItem(InventoryEntry entry)
+    {
+        var inventoryItem = Instantiate(inventoryItemPrefab, inventoryContentArea.transform);
+        inventoryItem.SetInventoryEntry(entry);
+    }
+
+    private void PopulateInventory()
+    {
+        // Clear the content area
+        foreach (Transform child in inventoryContentArea.transform)
+            Destroy(child.gameObject);
+
+        // TODO: Delete
+        for (var i = 0; i < 10; i++)
+            CreateInventoryItem(testInventoryEntry);
+
+
+        // Return if the instance of the InventoryManager is null
+        if (Player.Instance?.PlayerInventory == null)
+            return;
+
+        // Get the inventory entries
+        var inventoryEntries = Player.Instance.PlayerInventory.InventoryEntries;
+
+        // Populate the content area with the inventory entries
+        foreach (var entry in inventoryEntries)
+            CreateInventoryItem(entry);
     }
 
     #endregion

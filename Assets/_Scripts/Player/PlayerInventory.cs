@@ -24,12 +24,13 @@ public class PlayerInventory : MonoBehaviour
 
     #endregion
 
-
     #region Getters
 
     public InventoryObject MoneyObject => moneyObject;
 
     public int MoneyCount => GetItemCount(moneyObject);
+
+    public IReadOnlyCollection<InventoryEntry> InventoryEntries => inventoryEntries;
 
     #endregion
 

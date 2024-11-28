@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class JournalUIObjective : MonoBehaviour
 {
+    #region Serialized Fields
+
     [SerializeField] private JournalObjective objective;
 
     [SerializeField] private Color incompleteColor;
@@ -15,11 +17,17 @@ public class JournalUIObjective : MonoBehaviour
     [SerializeField] private Button button;
     [SerializeField] private EventTrigger eventTrigger;
 
+    #endregion
+
+    #region Getters
+
     public JournalObjective Objective => objective;
 
     public Button Button => button;
 
     public EventTrigger EventTrigger => eventTrigger;
+
+    #endregion
 
     private void Update()
     {
