@@ -5,7 +5,7 @@ using UnityEngine;
 [Serializable]
 public class JournalObjectiveManager
 {
-    public static JournalObjectiveManager Instance => Journal.Instance.JournalObjectiveManager;
+    public static JournalObjectiveManager Instance => Journal.Instance?.JournalObjectiveManager;
 
     #region Serialized Fields
 
@@ -98,5 +98,10 @@ public class JournalObjectiveManager
 
         // Add a tooltip for the objective
         _journal.JournalTooltipManager.AddTooltip(objectiveText, objectiveTooltipDuration);
+    }
+
+    public bool IsObjectiveComplete(JournalObjective objective)
+    {
+        return completeObjectives.Contains(objective);
     }
 }
