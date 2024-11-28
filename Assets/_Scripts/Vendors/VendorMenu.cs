@@ -10,7 +10,9 @@ public class VendorMenu : MonoBehaviour
     #region Serialized Fields
 
     [Header("Powers Shop Screen")] [SerializeField]
-    private VendorShopButton[] powerButtons;
+    private VendorShopButton[] medButtons;
+
+    [SerializeField] private VendorShopButton[] drugButtons;
 
     [SerializeField] private TMP_Text powerTypeText;
     [SerializeField] private TMP_Text priceText;
@@ -28,11 +30,13 @@ public class VendorMenu : MonoBehaviour
     #endregion
 
     private VendorScriptableObject _currentVendor;
-    private PowerScriptableObject[] _powers;
+    private PowerScriptableObject[] _medPowers;
+    private PowerScriptableObject[] _drugPowers;
 
     #region Getters
 
-    public IEnumerable<PowerScriptableObject> Powers => _powers;
+    public IEnumerable<PowerScriptableObject> MedPowers => _medPowers;
+    public IEnumerable<PowerScriptableObject> DrugPowers => _drugPowers;
 
     public GameObject InitialMenu => initialMenu;
 
@@ -84,16 +88,35 @@ public class VendorMenu : MonoBehaviour
     private void PopulateShop()
     {
         // Reset all the power buttons
-        foreach (var button in powerButtons)
+        foreach (var button in medButtons)
             button.Reset();
 
-        for (var i = 0; i < _powers.Length; i++)
+        // Reset all the power buttons
+        foreach (var button in drugButtons)
+            button.Reset();
+
+        for (var i = 0; i < _medPowers.Length; i++)
         {
             // Get the current power
-            var power = _powers[i];
+            var power = _medPowers[i];
 
             // Get the current power button
-            var button = powerButtons[i];
+            var button = medButtons[i];
+
+            // Set the power
+            button.SetPower(power);
+
+            // Enable the button
+            button.Enable();
+        }
+
+        for (var i = 0; i < _drugPowers.Length; i++)
+        {
+            // Get the current power
+            var power = _drugPowers[i];
+
+            // Get the current power button
+            var button = drugButtons[i];
 
             // Set the power
             button.SetPower(power);
@@ -130,8 +153,8 @@ public class VendorMenu : MonoBehaviour
         _currentVendor = vendor;
 
         // Set the powers
-        // TODO: Fix this. This should include all drug and medicine powers
-        _powers = vendor.MedicinePowers;
+        _medPowers = vendor.MedicinePowers;
+        _drugPowers = vendor.DrugPowers;
 
         // Set this menu to active
         gameObject.SetActive(true);
