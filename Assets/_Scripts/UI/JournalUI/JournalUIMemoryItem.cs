@@ -1,14 +1,14 @@
 ﻿using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class JournalUIPowerItem : MonoBehaviour
+public class JournalUIMemoryItem : MonoBehaviour
 {
     #region Serialized Fields
 
-    [SerializeField] private PowerScriptableObject power;
+    [SerializeField] private MemoryScriptableObject memory;
 
     [SerializeField] private TMP_Text powerNameText;
     [SerializeField] private Image powerImage;
@@ -21,7 +21,7 @@ public class JournalUIPowerItem : MonoBehaviour
 
     #region Getters
 
-    public PowerScriptableObject Power => power;
+    public MemoryScriptableObject Memory => memory;
 
     public Button Button => button;
 
@@ -31,7 +31,7 @@ public class JournalUIPowerItem : MonoBehaviour
 
     private void Update()
     {
-        if (power == null)
+        if (memory == null)
             throw new Exception("Power not set");
 
         // Update the power item data
@@ -40,12 +40,15 @@ public class JournalUIPowerItem : MonoBehaviour
 
     private void UpdatePowerItemData()
     {
-        powerNameText.text = power.PowerName;
-        powerImage.sprite = power.Icon;
+        if (powerNameText != null)
+            powerNameText.text = memory.MemoryName;
+
+        if (powerImage != null)
+            powerImage.sprite = memory.MemoryImage;
     }
 
-    public void SetPower(PowerScriptableObject powerObject)
+    public void SetMemory(MemoryScriptableObject memoryObject)
     {
-        power = powerObject;
+        memory = memoryObject;
     }
 }

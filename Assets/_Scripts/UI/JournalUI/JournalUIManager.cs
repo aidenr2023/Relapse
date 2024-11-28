@@ -9,9 +9,11 @@ public class JournalUIManager : MonoBehaviour
 {
     #region Serialized Fields
 
+    // TODO: Delete
     [SerializeField] private JournalObjective testObjective;
     [SerializeField] private InventoryEntry testInventoryEntry;
     [SerializeField] private PowerScriptableObject testPower;
+    [SerializeField] private MemoryScriptableObject testMemory;
 
     [Header("Menus")] [SerializeField] private GameObject tasksMenu;
     [SerializeField] private GameObject inventoryMenu;
@@ -36,6 +38,12 @@ public class JournalUIManager : MonoBehaviour
 
     [SerializeField] private TMP_Text drugDescriptionText;
 
+    [Header("Memories Menu")] [SerializeField]
+    private GameObject memoriesContentArea;
+
+    [SerializeField] private TMP_Text memoryDescriptionText;
+    [SerializeField] private JournalUIMemoryItem memoryItemPrefab;
+
     #endregion
 
     #region Private Fields
@@ -51,6 +59,8 @@ public class JournalUIManager : MonoBehaviour
     private PowerType _currentPowerType = PowerType.Drug;
 
     private PowerScriptableObject _selectedPower;
+
+    private MemoryScriptableObject _selectedMemory;
 
     #endregion
 
@@ -240,6 +250,9 @@ public class JournalUIManager : MonoBehaviour
     {
         // Open the memories menu
         OpenMenu(memoriesMenu);
+
+        // Populate the memories area
+        PopulateMemories();
     }
 
     #endregion
@@ -335,6 +348,51 @@ public class JournalUIManager : MonoBehaviour
     {
         _selectedPower = power;
         drugDescriptionText.text = power.Description;
+    }
+
+    #endregion
+
+    #region Memories Menu
+
+    private void CreateMemoryItem(MemoryScriptableObject memory)
+    {
+        // Return if the memory is null
+        if (memory == null)
+            return;
+
+        var memoryItem = Instantiate(memoryItemPrefab, memoriesContentArea.transform);
+        memoryItem.SetMemory(memory);
+
+        // Add the button click event
+        memoryItem.Button.onClick.AddListener(() => SetSelectedMemory(memory));
+
+        // Add the event trigger
+        var entry = new EventTrigger.Entry { eventID = EventTriggerType.Select };
+
+        // Add the event trigger callback
+        entry.callback.AddListener(_ => SetSelectedMemory(memory));
+    }
+
+    private void PopulateMemories()
+    {
+        // Clear the content area
+        foreach (Transform child in memoriesContentArea.transform)
+            Destroy(child.gameObject);
+
+        // TODO: Memories management
+        IEnumerable<MemoryScriptableObject> memories = new MemoryScriptableObject[4];
+
+        foreach (var memory in memories)
+            CreateMemoryItem(memory);
+
+        for (var i = 0; i < 10; i++)
+            CreateMemoryItem(testMemory);
+    }
+
+    private void SetSelectedMemory(MemoryScriptableObject memory)
+    {
+        _selectedMemory = memory;
+        memoryDescriptionText.text = memory.LongDescription;
     }
 
     #endregion
