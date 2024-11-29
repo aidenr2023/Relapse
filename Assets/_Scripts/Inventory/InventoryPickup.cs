@@ -17,9 +17,9 @@ public class InventoryPickup : MonoBehaviour, IInteractable
 
     public bool HasOutline { get; set; }
 
-    private bool _isMarkedForDestruction;
-
     public HashSet<Material> OutlineMaterials { get; } = new();
+
+    private bool _isMarkedForDestruction;
 
     public void Interact(PlayerInteraction playerInteraction)
     {

@@ -379,8 +379,8 @@ public class JournalUIManager : MonoBehaviour
         foreach (Transform child in memoriesContentArea.transform)
             Destroy(child.gameObject);
 
-        // TODO: Memories management
-        IEnumerable<MemoryScriptableObject> memories = new MemoryScriptableObject[4];
+        // Get the list of memories
+        var memories = MemoryManager.Instance.Memories;
 
         foreach (var memory in memories)
             CreateMemoryItem(memory);
