@@ -446,6 +446,7 @@ GameObject:
   - component: {fileID: 8784981969918071950}
   - component: {fileID: 8932513790679332165}
   - component: {fileID: 5830201516360384326}
+  - component: {fileID: 2093531034627724029}
   - component: {fileID: 1562862804367130674}
   - component: {fileID: 7911376860155475657}
   - component: {fileID: 3095957901210559264}
@@ -575,6 +576,33 @@ MonoBehaviour:
   maxHealth: 12
   currentHealth: 12
   moneyReward: 50
+--- !u!114 &2093531034627724029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8754773797763522373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6db7d14cf168478bacea0720a538d891, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visionDistance: 30
+  visionAngle: 50
+  patrolDetectionTimer:
+    maxTime: 0.25
+  searchDetectionTimer:
+    maxTime: 1
+  pursuitDetectionTimer:
+    maxTime: 0.5
+  debugCanvas: {fileID: 8307219171016231559}
+  pursuitDetectionSlider: {fileID: 8588873680922162116}
+  pursuitDetectionText: {fileID: 1105104387778251481}
+  pursuitDetectionColorImage: {fileID: 8789403633112731216}
+  patrolDetectionColor: {r: 0, g: 1, b: 0, a: 1}
+  searchDetectionColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  pursuitDetectionColor: {r: 1, g: 0, b: 0, a: 1}
 --- !u!114 &1562862804367130674
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -587,7 +615,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cc601c4836b49da97804b75a0eec5b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  patrolCheckpoints: []
+  patrolCheckpoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   checkpointProximityThreshold: 0.5
   visionDistance: 30
   visionAngle: 50
