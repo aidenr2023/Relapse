@@ -15,6 +15,16 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
     [SerializeField] [Min(0)] [Tooltip("How close the enemy needs to be to the checkpoint to consider it reached.")]
     private float checkpointProximityThreshold = 0.5f;
 
+    [Header("Animations")] [SerializeField]
+    private Animator animator;
+
+    [SerializeField] private string idleAnimationName = "Idle";
+    [SerializeField] private string walkAnimationName = "Walk";
+    [SerializeField] private string runAnimationName = "Run";
+
+    [SerializeField] [Min(0)] private float walkAnimationThreshold;
+    [SerializeField] [Min(0)] private float runAnimationThreshold;
+
     #endregion
 
     #region Private Fields
@@ -84,11 +94,18 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
 
     private void Update()
     {
+        // Set the NavMeshAgent enabled state
+        NavMeshAgent.enabled = IsMovementEnabled;
+
+        // Return if disabled
+        if (!IsMovementEnabled)
+            return;
+
         // Update the destination
         UpdateDestination();
 
-        // Set the NavMeshAgent enabled state
-        NavMeshAgent.enabled = IsMovementEnabled;
+        // Update the movement animation
+        UpdateMovementAnimation();
     }
 
     private void UpdateDestination()
@@ -130,6 +147,31 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
                 Debug.LogError($"Case not handled: {currentDetectionState}");
                 break;
         }
+    }
+
+    private void UpdateMovementAnimation()
+    {
+        // Return if the animator is null
+        if (animator == null)
+            return;
+
+        // // If the NavMeshAgent is not enabled, play the idle animation
+        // if (!NavMeshAgent.enabled)
+        // {
+        //     animator.Play(idleAnimationName);
+        //     return;
+        // }
+
+        // Get the velocity of the NavMeshAgent
+        var velocity = NavMeshAgent.velocity.magnitude;
+
+        // Determine the animation to play based on the velocity
+        if (velocity < walkAnimationThreshold)
+            animator.Play(idleAnimationName);
+        else if (velocity < runAnimationThreshold)
+            animator.Play(walkAnimationName);
+        else
+            animator.Play(runAnimationName);
     }
 
     private void CheckCheckpoint()
