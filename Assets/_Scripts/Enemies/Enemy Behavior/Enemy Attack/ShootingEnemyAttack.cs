@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class ShootingEnemy : MonoBehaviour, IEnemyAttackBehavior
+public class ShootingEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 {
     private EnemyInfo _enemyInfo;
 

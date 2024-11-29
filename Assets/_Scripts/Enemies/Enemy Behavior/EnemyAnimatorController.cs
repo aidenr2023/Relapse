@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
-public class NPCmovement : MonoBehaviour
+public class EnemyAnimatorController : MonoBehaviour
 {
-    public UnityEngine.AI.NavMeshAgent navMeshAgent;  // Reference to the NavMeshAgent
-    public Animator animator;          // Reference to the Animator
-   // public bool canMove = false;
-    
-  
-    
+    // Reference to the NavMeshAgent
+    public NavMeshAgent navMeshAgent;
+
+    // Reference to the Animator
+    public Animator animator;
+
+    // public bool canMove = false;
+
     void Update()
     {
         // Get the current speed from the NavMeshAgent
@@ -21,7 +24,7 @@ public class NPCmovement : MonoBehaviour
         // Optionally, you can control other NPC behaviors or animations here as well
         animator.speed = navMeshAgent.speed / 3f;
     }
-    
+
     // public void DisableMovement()
     // {
     //     canMove = false;

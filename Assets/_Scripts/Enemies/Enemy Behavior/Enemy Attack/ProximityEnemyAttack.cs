@@ -5,7 +5,7 @@ using UnityEngine.Serialization;
 using UnityEngine.VFX;
 
 [RequireComponent(typeof(EnemyInfo))]
-public class ProximityEnemy : MonoBehaviour, IEnemyAttackBehavior
+public class ProximityEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 {
     #region Serialized Fields
 
@@ -77,14 +77,14 @@ public class ProximityEnemy : MonoBehaviour, IEnemyAttackBehavior
     private void Awake()
     {
         // Get the components
-        GetComponents();
+        InitializeComponents();
     }
 
     private void Start()
     {
     }
 
-    private void GetComponents()
+    private void InitializeComponents()
     {
         // Get the Enemy component
         Enemy = GetComponent<Enemy>();

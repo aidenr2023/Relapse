@@ -15,7 +15,7 @@ public class MoveOnTrigger : MonoBehaviour
     [SerializeField] private AudioSource audioSource; // ManagedAudioSource component for the object
 
     //reference to NPCmovement script
-    public NPCmovement npcMovement;
+    public EnemyAnimatorController npcMovement;
     
     //on awake get the NPCmovement script
      // private void Awake()

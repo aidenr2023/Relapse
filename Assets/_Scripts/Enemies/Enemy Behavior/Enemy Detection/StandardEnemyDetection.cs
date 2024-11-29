@@ -22,9 +22,9 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
     [SerializeField] private TMP_Text pursuitDetectionText;
     [SerializeField] private Image pursuitDetectionColorImage;
 
-    [SerializeField] private Color patrolDetectionColor = Color.green;
-    [SerializeField] private Color searchDetectionColor = Color.yellow;
-    [SerializeField] private Color pursuitDetectionColor = Color.red;
+    // [SerializeField] private Color patrolDetectionColor = Color.green;
+    // [SerializeField] private Color searchDetectionColor = Color.yellow;
+    // [SerializeField] private Color pursuitDetectionColor = Color.red;
 
     #endregion
 

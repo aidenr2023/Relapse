@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior
+public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
 {
     //Adding this ref here dont fight me
     //public NPCmovement npcMovement;
