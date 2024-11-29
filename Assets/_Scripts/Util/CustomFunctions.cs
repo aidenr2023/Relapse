@@ -4,7 +4,7 @@ using Object = UnityEngine.Object;
 
 public static class CustomFunctions
 {
-    private const int MAX_COMPONENT_SEARCH_DEPTH = 2;
+    private const int MAX_COMPONENT_SEARCH_DEPTH = 5;
 
     /// <summary>
     /// The standard AddForce waits until the next physics update to apply the force.
@@ -58,7 +58,7 @@ public static class CustomFunctions
                 return component;
 
             // Move to the parent of the current item
-            cItem = cItem.transform;
+            cItem = cItem.transform.parent;
         }
 
         // There is none of the component in any of the parents
@@ -73,8 +73,6 @@ public static class CustomFunctions
     {
         var cItem = mb.transform;
 
-        // while (cItem != null)
-
         for (var i = 0; i < maxDepth && cItem != null; i++)
         {
             // Try to get the component
@@ -85,7 +83,7 @@ public static class CustomFunctions
                 return true;
 
             // Move to the parent of the current item
-            cItem = cItem.transform;
+            cItem = cItem.transform.parent;
         }
 
         // There is none of the component in any of the parents

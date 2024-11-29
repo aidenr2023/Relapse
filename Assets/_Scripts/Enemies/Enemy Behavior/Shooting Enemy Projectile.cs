@@ -6,7 +6,7 @@ public class ShootingEnemyProjectile : MonoBehaviour
 {
     [SerializeField] private float damage = 100f;
 
-    private ShootingEnemy _shootingEnemy;
+    private ShootingEnemyAttack _shootingEnemyAttack;
     private IDamager _damager;
     // Start is called before the first frame update
     void Start()
@@ -26,9 +26,9 @@ public class ShootingEnemyProjectile : MonoBehaviour
         }
         actor.ChangeHealth(-damage, actor, _damager);
     }
-    public void Shoot(IDamager damager, ShootingEnemy shootingEnemy)
+    public void Shoot(IDamager damager, ShootingEnemyAttack shootingEnemyAttack)
     {
         _damager = damager;
-        _shootingEnemy = shootingEnemy;
+        _shootingEnemyAttack = shootingEnemyAttack;
     }
 }
