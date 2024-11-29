@@ -7,14 +7,18 @@ public class Enemy : MonoBehaviour
     #region Fields
 
     private EnemyInfo _enemyInfo;
-    private IEnemyAttackBehavior _enemyAttackBehavior;
+
+    private IEnemyDetectionBehavior _enemyDetectionBehavior;
     private IEnemyMovementBehavior _enemyMovementBehavior;
+    private IEnemyAttackBehavior _enemyAttackBehavior;
 
     #endregion
 
     #region Getters
 
     public EnemyInfo EnemyInfo => _enemyInfo;
+
+    public IEnemyDetectionBehavior EnemyDetectionBehavior => _enemyDetectionBehavior;
 
     public IEnemyAttackBehavior EnemyAttackBehavior => _enemyAttackBehavior;
 
@@ -38,16 +42,22 @@ public class Enemy : MonoBehaviour
         // Get the EnemyInfo component
         _enemyInfo = GetComponent<EnemyInfo>();
 
-        // Get the IEnemyAttackBehavior component
-        _enemyAttackBehavior = GetComponent<IEnemyAttackBehavior>();
+        // Get the IEnemyDetectionBehavior component
+        _enemyDetectionBehavior = GetComponent<IEnemyDetectionBehavior>();
 
         // Get the IEnemyMovementBehavior component
         _enemyMovementBehavior = GetComponent<IEnemyMovementBehavior>();
 
-        // Assert that the IEnemyAttackBehavior component is not null
-        Debug.Assert(_enemyAttackBehavior != null, "The IEnemyAttackBehavior component is null.");
+        // Get the IEnemyAttackBehavior component
+        _enemyAttackBehavior = GetComponent<IEnemyAttackBehavior>();
+
+        // Assert that the IEnemyDetectionBehavior component is not null
+        Debug.Assert(_enemyDetectionBehavior != null, "The IEnemyDetectionBehavior component is null.");
 
         // Assert that the IEnemyMovementBehavior component is not null
         Debug.Assert(_enemyMovementBehavior != null, "The IEnemyMovementBehavior component is null.");
+
+        // Assert that the IEnemyAttackBehavior component is not null
+        Debug.Assert(_enemyAttackBehavior != null, "The IEnemyAttackBehavior component is null.");
     }
 }
