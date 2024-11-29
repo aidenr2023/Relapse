@@ -15,6 +15,8 @@ public class EnemyAnimatorController : MonoBehaviour
 
     void Update()
     {
+        // return;
+
         // Get the current speed from the NavMeshAgent
         float speed = navMeshAgent.velocity.magnitude;
 

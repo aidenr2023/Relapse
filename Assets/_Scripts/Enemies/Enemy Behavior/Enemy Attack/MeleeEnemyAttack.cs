@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 {
+    private static readonly int animatiorAttackProperty = Animator.StringToHash("Attack");
+
     #region Serialized Fields
 
     [SerializeField] [Min(0)] private float damage;
@@ -118,8 +120,11 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         if (animator == null)
             return;
 
+        // // Play the melee attack animation
+        // animator.Play(attackAnimationName);
+
         // Play the melee attack animation
-        animator.Play(attackAnimationName);
+        animator.SetTrigger(animatiorAttackProperty);
 
         var animationInfo = animator.GetCurrentAnimatorStateInfo(0);
 

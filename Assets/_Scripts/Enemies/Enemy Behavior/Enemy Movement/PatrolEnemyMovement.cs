@@ -2,8 +2,13 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
+public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebugged
 {
+    private static readonly int animatorIsMovingProperty = Animator.StringToHash("IsMoving");
+
+    private static readonly int animatorSpeedProperty = Animator.StringToHash("Speed");
+
+    private static readonly int animatorIsRunningProperty = Animator.StringToHash("IsRunning");
     //Adding this ref here dont fight me
     //public NPCmovement npcMovement;
 
@@ -79,6 +84,9 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
 
     private void Start()
     {
+        // Add this to the debug manager
+        DebugManager.Instance.AddDebuggedObject(this);
+
         // Determine the closest checkpoint
         _currentCheckpointIndex = DetermineClosestCheckpoint();
 
@@ -165,13 +173,20 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
         // Get the velocity of the NavMeshAgent
         var velocity = NavMeshAgent.velocity.magnitude;
 
-        // Determine the animation to play based on the velocity
-        if (velocity < walkAnimationThreshold)
-            animator.Play(idleAnimationName);
-        else if (velocity < runAnimationThreshold)
-            animator.Play(walkAnimationName);
-        else
-            animator.Play(runAnimationName);
+        // // Determine the animation to play based on the velocity
+        // if (velocity < walkAnimationThreshold)
+        //     animator.Play(idleAnimationName);
+        // else if (velocity < runAnimationThreshold)
+        //     animator.Play(walkAnimationName);
+        // else
+        //     animator.Play(runAnimationName);
+
+        var isMoving = velocity > walkAnimationThreshold;
+        var isRunning = velocity >= runAnimationThreshold;
+
+        animator.SetBool(animatorIsMovingProperty, isMoving);
+        animator.SetFloat(animatorSpeedProperty, velocity);
+        animator.SetBool(animatorIsRunningProperty, isRunning);
     }
 
     private void CheckCheckpoint()
@@ -257,4 +272,20 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
     }
 
     #endregion
+
+    public string GetDebugText()
+    {
+        if (animator == null)
+            return "UHHH";
+
+        var isMoving = animator.GetBool(animatorIsMovingProperty);
+        var speed = animator.GetFloat(animatorSpeedProperty);
+        var isRunning = animator.GetBool(animatorIsRunningProperty);
+
+        return
+            $"ANIMATOR:\n" +
+            $"\tIs Moving: {isMoving}\n" +
+            $"\tSpeed: {speed}\n" +
+            $"\tIs Running: {isRunning}\n";
+    }
 }
