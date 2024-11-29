@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class VendorMenu : MonoBehaviour
 {
@@ -19,6 +20,7 @@ public class VendorMenu : MonoBehaviour
     [SerializeField] private TMP_Text toleranceImpactText;
     [SerializeField] private TMP_Text cooldownText;
     [SerializeField] private TMP_Text descriptionText;
+    [SerializeField] private Image biggerPowerImage;
 
     [Header("Gossip Dialogue")] [SerializeField]
     private DialogueUI dialogueUI;
@@ -29,9 +31,13 @@ public class VendorMenu : MonoBehaviour
 
     #endregion
 
+    #region Private Fields
+
     private VendorScriptableObject _currentVendor;
     private PowerScriptableObject[] _medPowers;
     private PowerScriptableObject[] _drugPowers;
+
+    #endregion
 
     #region Getters
 
@@ -62,6 +68,9 @@ public class VendorMenu : MonoBehaviour
     {
         // Isolate the initial menu
         IsolateMenu(initialMenu);
+
+        // Set the bigger icon image to null
+        SetBiggerIconImage(null);
     }
 
     public void StartDialogue()
@@ -145,6 +154,30 @@ public class VendorMenu : MonoBehaviour
 
         // Set the description
         descriptionText.text = power.Description;
+
+        // Set the bigger icon image
+        SetBiggerIconImage(power);
+    }
+
+    private void SetBiggerIconImage(PowerScriptableObject power)
+    {
+        // If the power has an image, set the image
+        if (power != null && power.Icon != null)
+        {
+            // Enable the image
+            biggerPowerImage.enabled = true;
+
+            biggerPowerImage.sprite = power.Icon;
+            biggerPowerImage.preserveAspect = true;
+        }
+        else
+        {
+            // Otherwise, set the image to null
+            biggerPowerImage.sprite = null;
+
+            // Disable the image
+            biggerPowerImage.enabled = false;
+        }
     }
 
     public void StartVendor(VendorScriptableObject vendor)
