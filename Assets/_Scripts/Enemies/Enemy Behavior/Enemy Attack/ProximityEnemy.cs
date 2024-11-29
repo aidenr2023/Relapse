@@ -28,9 +28,7 @@ public class ProximityEnemy : MonoBehaviour, IEnemyAttackBehavior
 
     [SerializeField] [Min(0)] private float explosionDamage = 5f;
 
-    [Header("Visuals")]
-
-    [SerializeField] private ParticleSystem fuseParticles;
+    [Header("Visuals")] [SerializeField] private ParticleSystem fuseParticles;
 
     [SerializeField] private VisualEffect explosionVFX;
 
@@ -60,6 +58,8 @@ public class ProximityEnemy : MonoBehaviour, IEnemyAttackBehavior
     /// </summary>
     private ParticleSystem _fuseParticlesInstance;
 
+    private bool _isExternallyEnabled = true;
+
     #endregion
 
     #region Getters
@@ -67,6 +67,8 @@ public class ProximityEnemy : MonoBehaviour, IEnemyAttackBehavior
     public GameObject GameObject => gameObject;
 
     public Enemy Enemy { get; private set; }
+
+    public bool IsAttackEnabled => _isExternallyEnabled;
 
     #endregion
 
@@ -99,6 +101,10 @@ public class ProximityEnemy : MonoBehaviour, IEnemyAttackBehavior
         if (_isActivated)
             _currentFuseTime += Time.deltaTime;
 
+        // Return if disabled
+        if (!IsAttackEnabled)
+            return;
+
         // If the fuse time is greater than the explosion delay, explode
         if (_currentFuseTime >= explosionDelay)
             Explode();
@@ -106,20 +112,34 @@ public class ProximityEnemy : MonoBehaviour, IEnemyAttackBehavior
 
     private void CheckForPlayerInRange()
     {
-        // Get all the test players in the scene
-        var players = FindObjectsOfType<Player>();
+        // // Get all the test players in the scene
+        // var players = FindObjectsOfType<Player>();
+        //
+        // // Sort them based on their distance from the enemy
+        // Array.Sort(players, (player1, player2) =>
+        // {
+        //     var distance1 = Vector3.Distance(transform.position, player1.transform.position);
+        //     var distance2 = Vector3.Distance(transform.position, player2.transform.position);
+        //
+        //     return distance1.CompareTo(distance2);
+        // });
+        //
+        // // If the closest player is not within range, return
+        // if (Vector3.Distance(transform.position, players[0].transform.position) > detectionRadius)
+        //     return;
 
-        // Sort them based on their distance from the enemy
-        Array.Sort(players, (player1, player2) =>
-        {
-            var distance1 = Vector3.Distance(transform.position, player1.transform.position);
-            var distance2 = Vector3.Distance(transform.position, player2.transform.position);
+        // Check if the detection mode is Aware
+        if (Enemy.EnemyDetectionBehavior?.CurrentDetectionState != EnemyDetectionState.Aware)
+            return;
 
-            return distance1.CompareTo(distance2);
-        });
+        // Check the detection script for a target
+        if (Enemy.EnemyDetectionBehavior?.Target == null)
+            return;
 
-        // If the closest player is not within range, return
-        if (Vector3.Distance(transform.position, players[0].transform.position) > detectionRadius)
+        var targetPosition = Enemy.EnemyDetectionBehavior.Target.GameObject.transform.position;
+
+        // Check if the target is within range
+        if (Vector3.Distance(transform.position, targetPosition) > detectionRadius)
             return;
 
         // Start the activation process
@@ -230,5 +250,10 @@ public class ProximityEnemy : MonoBehaviour, IEnemyAttackBehavior
         // Draw a circle around the enemy to represent the explosion radius
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, explosionRange);
+    }
+
+    public void SetAttackEnabled(bool on)
+    {
+        _isExternallyEnabled = on;
     }
 }

@@ -32,6 +32,8 @@ public class ShootingEnemy : MonoBehaviour, IEnemyAttackBehavior
 
     private GameObject _target;
 
+    private bool _isExternallyEnabled = true;
+
     #endregion
 
     #region Getters
@@ -39,6 +41,8 @@ public class ShootingEnemy : MonoBehaviour, IEnemyAttackBehavior
     public GameObject GameObject => gameObject;
 
     public Enemy Enemy { get; private set; }
+
+    public bool IsAttackEnabled => _isExternallyEnabled;
 
     #endregion
 
@@ -114,5 +118,11 @@ public class ShootingEnemy : MonoBehaviour, IEnemyAttackBehavior
         // Draw a circle around the enemy to represent the detection radius
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
+    }
+
+
+    public void SetAttackEnabled(bool on)
+    {
+        _isExternallyEnabled = on;
     }
 }

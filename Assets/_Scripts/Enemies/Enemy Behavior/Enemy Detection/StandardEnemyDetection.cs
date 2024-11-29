@@ -45,7 +45,7 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
 
     public GameObject GameObject => gameObject;
 
-    public bool IsDetectionEnabled { get; set; } = true;
+    public bool IsDetectionEnabled { get; private set; } = true;
 
     public EnemyDetectionState CurrentDetectionState { get; private set; }
 
@@ -356,4 +356,10 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
     }
 
     #endregion
+
+    public void SetDetectionEnabled(bool on)
+    {
+        IsDetectionEnabled = on;
+    }
+
 }

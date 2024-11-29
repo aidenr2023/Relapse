@@ -21,7 +21,7 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior
 
     private int _currentCheckpointIndex;
 
-    private bool _externallyEnabled = true;
+    private bool _isExternallyEnabled = true;
 
     #endregion
 
@@ -46,7 +46,7 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior
         }
     }
 
-    private bool NavMeshEnabled => _externallyEnabled;
+    public bool IsMovementEnabled => _isExternallyEnabled;
 
     #endregion
 
@@ -88,7 +88,7 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior
         UpdateDestination();
 
         // Set the NavMeshAgent enabled state
-        NavMeshAgent.enabled = NavMeshEnabled;
+        NavMeshAgent.enabled = IsMovementEnabled;
     }
 
     private void UpdateDestination()
@@ -184,7 +184,7 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior
 
     public void SetMovementEnabled(bool on)
     {
-        NavMeshAgent.enabled = on;
+        _isExternallyEnabled = on;
     }
 
     #region Debugging
@@ -215,23 +215,4 @@ public class EnemyPatrolPursuit : MonoBehaviour, IEnemyMovementBehavior
     }
 
     #endregion
-
-    // public enum EnemyMovementState
-    // {
-    //     /// <summary>
-    //     /// The player is nowhere in sight.
-    //     /// The enemy is going along their route
-    //     /// </summary>
-    //     Patrol,
-    //
-    //     /// <summary>
-    //     /// The player is in sight, but the enemy hasn't had sight of them for long.
-    //     /// </summary>
-    //     Searching,
-    //
-    //     /// <summary>
-    //     /// The player is in sight and the enemy is actively pursuing them.
-    //     /// </summary>
-    //     Pursuit,
-    // }
 }

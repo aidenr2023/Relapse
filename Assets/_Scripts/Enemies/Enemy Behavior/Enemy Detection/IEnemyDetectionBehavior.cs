@@ -5,7 +5,7 @@ public interface IEnemyDetectionBehavior : IEnemyBehavior
 {
     public event Action<IEnemyDetectionBehavior, EnemyDetectionState, EnemyDetectionState> OnDetectionStateChanged;
 
-    public bool IsDetectionEnabled { get; set; }
+    public bool IsDetectionEnabled { get; }
 
     public EnemyDetectionState CurrentDetectionState { get; }
 
@@ -14,4 +14,6 @@ public interface IEnemyDetectionBehavior : IEnemyBehavior
     public IActor Target { get; }
 
     public Vector3 LastKnownTargetPosition { get; }
+
+    public void SetDetectionEnabled(bool on);
 }
