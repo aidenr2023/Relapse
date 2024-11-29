@@ -127,6 +127,10 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
         if (CurrentPowerToken.IsActiveEffectOn)
             return;
 
+        // Reset the charge if the power is charging
+        if (_isChargingPower)
+            StopCharge();
+
         // Get the float value of the change power input
         var changePowerValue = obj.ReadValue<float>();
 
