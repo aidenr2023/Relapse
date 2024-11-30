@@ -1,53 +1,41 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.LowLevel;
 
 public class EnemyIdleStateHandler : StateMachineBehaviour
 {
-    [SerializeField] private float _timeUntilAttack = 3f; // Time before transitioning to idle
-    [SerializeField] private float _idleTime = 0; // Tracks time spent stationary
-
+    [SerializeField] private float numberOfAttackAnimations = 2f; // Time before transitioning to idle
+    private static readonly int animatiorAttackProperty = Animator.StringToHash("Attack");
     private float attackAnim;
-    //private Rigidbody _rb; // Reference to Rigidbody for player movement
-
+    
+    int numberofAttackAnimations = 3;
+    private static readonly int AttackBlendHash = Animator.StringToHash("AttackBlend");
+    
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        //_rb = animator.GetComponentInParent<Rigidbody>(); // Get Rigidbody from the player object
         
+    }
+    [SerializeField] private Animator animator;
+
+    private static readonly int AttackTriggerHash = Animator.StringToHash("Attack");
+
+    public void TriggerAttack()
+    {
+        animator.SetTrigger(AttackTriggerHash);
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        // randomize the attack animation to play
-        attackAnim = Random.Range(0, 2);
-        Debug.Log($"Enemy Animation is: {attackAnim}");
-        // Update Animator with current velocity
-        Debug.Log($"Setting Enemy Attack parameter: {attackAnim}");
-        
-        //on attack trigger chose random attack animation
-        
-        
-        // Reset idle time if moving, otherwise increment
+        // Randomize the attack blend value
+        float randomBlendValue = Random.Range(0, numberOfAttackAnimations);
 
-        /* Commented out to avoid broken
-        if ( )
-        {
-            _
-        }
-        else
-        {
-            
-        }
+        // Set the blend parameter dynamically
+        animator.SetFloat(AttackBlendHash, randomBlendValue);
 
-        // Determine if idle animation should trigger
-        if ()
-        {
-            animator.SetFloat("AttackTrigger", 0, 0.1f, Time.deltaTime); // Set velocity to 0 to trigger idle in the blend tree
-            Debug.Log("Idle time exceeded threshold. Setting playerSpeed to 0 for idle animation.");
-        }
-        */
-        
+        Debug.Log($"Random attack animation selected: {randomBlendValue}");
+   
     }
 }
