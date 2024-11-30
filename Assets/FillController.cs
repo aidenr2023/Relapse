@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,44 +6,48 @@ using System.Collections.Generic;
 
 public class FillController : MonoBehaviour
 {
-    // --- Fill Amount Control ---
+    #region Serialized Fields
 
-    // Reference to the Image component
-    private Image image;
+    [SerializeField] private Player player;
 
     // Speed at which the fill amount changes
-    [SerializeField]
-    private float fillSpeed = 0.5f;
-
-    // --- GameObject Switching ---
+    [SerializeField] private float fillSpeed = 0.5f;
 
     // Array of GameObjects to switch between
-    [SerializeField]
-    private GameObject[] gameObjects;
+    [SerializeField] private GameObject[] gameObjects;
+
+    #endregion
+
+    #region Private Fields
+
+    // Reference to the Image component
+    private Image _image;
 
     // Current active GameObject index
-    private int currentIndex = 0;
+    private int _currentIndex;
+
+    #endregion
+
+    private void Awake()
+    {
+        // Get the Image component attached to the same GameObject
+        _image = GetComponent<Image>();
+
+        // Assert that the image is not null
+        Debug.Assert(_image != null, "FillController: Image component not found on this GameObject.");
+
+
+        // Assert that the player is not null
+        Debug.Assert(player != null, "FillController: Player is null.");
+    }
 
     // Initialization
-    void Start()
+    private void Start()
     {
-        // --- Initialize Fill Amount ---
-
-        // Get the Image component attached to the same GameObject
-        image = GetComponent<Image>();
-
-        if (image == null)
-        {
-            Debug.LogError("FillController: No Image component found on this GameObject.");
-        }
-        else
-        {
-            // Set the initial fill amount to 0
-            image.fillAmount = 0f;
-        }
+        // Set the fill amount to the player's toxicity level
+        SetFillAmount(player.PlayerInfo.ToxicityPercentage);
 
         // --- Initialize GameObject Switching ---
-
         if (gameObjects == null || gameObjects.Length == 0)
         {
             Debug.LogError("FillController: No GameObjects assigned for switching.");
@@ -50,28 +55,22 @@ public class FillController : MonoBehaviour
         }
 
         // Ensure that only the first GameObject is active at start
-        for (int i = 0; i < gameObjects.Length; i++)
+        for (var i = 0; i < gameObjects.Length; i++)
         {
             if (gameObjects[i] != null)
-            {
-                gameObjects[i].SetActive(i == currentIndex);
-            }
+                gameObjects[i].SetActive(i == _currentIndex);
             else
-            {
                 Debug.LogWarning($"FillController: GameObject at index {i} is not assigned.");
-            }
         }
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         // --- Handle Fill Amount Changes ---
-
         HandleFillAmount();
 
         // --- Handle GameObject Switching ---
-
         HandleGameObjectSwitching();
     }
 
@@ -80,27 +79,23 @@ public class FillController : MonoBehaviour
     /// </summary>
     private void HandleFillAmount()
     {
-        if (image == null)
+        if (_image == null)
             return;
 
-        // Check if the Up Arrow key is being held down
-        if (Input.GetKey(KeyCode.UpArrow))
-        {
-            // Increase the fill amount
-            image.fillAmount += fillSpeed * Time.deltaTime;
+        // If the player is null, return
+        if (player == null)
+            return;
 
-            // Clamp the fill amount to a maximum of 1
-            image.fillAmount = Mathf.Clamp(image.fillAmount, 0f, 1f);
-        }
-        // Check if the Down Arrow key is being held down
-        else if (Input.GetKey(KeyCode.DownArrow))
-        {
-            // Decrease the fill amount
-            image.fillAmount -= fillSpeed * Time.deltaTime;
+        // Set the fill amount to the player's toxicity level
+        SetFillAmount(player.PlayerInfo.ToxicityPercentage);
 
-            // Clamp the fill amount to a minimum of 0
-            image.fillAmount = Mathf.Clamp(image.fillAmount, 0f, 1f);
-        }
+        // // Check if the Up Arrow key is being held down
+        // if (Input.GetKey(KeyCode.UpArrow))
+        //     SetFillAmount(_image.fillAmount + fillSpeed * Time.deltaTime);
+        //
+        // // Check if the Down Arrow key is being held down
+        // else if (Input.GetKey(KeyCode.DownArrow))
+        //     SetFillAmount(_image.fillAmount - fillSpeed * Time.deltaTime);
     }
 
     /// <summary>
@@ -110,15 +105,11 @@ public class FillController : MonoBehaviour
     {
         // Right Arrow Key Pressed
         if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
             SwitchToNextGameObject();
-        }
 
         // Left Arrow Key Pressed
         if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
             SwitchToPreviousGameObject();
-        }
     }
 
     /// <summary>
@@ -126,31 +117,23 @@ public class FillController : MonoBehaviour
     /// </summary>
     private void SwitchToNextGameObject()
     {
-        if (currentIndex < gameObjects.Length - 1)
+        if (_currentIndex < gameObjects.Length - 1)
         {
             // Disable current GameObject
-            if (gameObjects[currentIndex] != null)
-            {
-                gameObjects[currentIndex].SetActive(false);
-            }
+            if (gameObjects[_currentIndex] != null)
+                gameObjects[_currentIndex].SetActive(false);
 
             // Increment index
-            currentIndex++;
+            _currentIndex++;
 
             // Enable next GameObject
-            if (gameObjects[currentIndex] != null)
-            {
-                gameObjects[currentIndex].SetActive(true);
-            }
+            if (gameObjects[_currentIndex] != null)
+                gameObjects[_currentIndex].SetActive(true);
             else
-            {
-                Debug.LogWarning($"FillController: GameObject at index {currentIndex} is not assigned.");
-            }
+                Debug.LogWarning($"FillController: GameObject at index {_currentIndex} is not assigned.");
         }
         else
-        {
             Debug.Log("FillController: Already at the last GameObject. Cannot move to next.");
-        }
     }
 
     /// <summary>
@@ -158,30 +141,30 @@ public class FillController : MonoBehaviour
     /// </summary>
     private void SwitchToPreviousGameObject()
     {
-        if (currentIndex > 0)
+        if (_currentIndex > 0)
         {
             // Disable current GameObject
-            if (gameObjects[currentIndex] != null)
-            {
-                gameObjects[currentIndex].SetActive(false);
-            }
+            if (gameObjects[_currentIndex] != null)
+                gameObjects[_currentIndex].SetActive(false);
 
             // Decrement index
-            currentIndex--;
+            _currentIndex--;
 
             // Enable previous GameObject
-            if (gameObjects[currentIndex] != null)
-            {
-                gameObjects[currentIndex].SetActive(true);
-            }
+            if (gameObjects[_currentIndex] != null)
+                gameObjects[_currentIndex].SetActive(true);
             else
-            {
-                Debug.LogWarning($"FillController: GameObject at index {currentIndex} is not assigned.");
-            }
+                Debug.LogWarning($"FillController: GameObject at index {_currentIndex} is not assigned.");
         }
         else
-        {
             Debug.Log("FillController: Already at the first GameObject. Cannot move to previous.");
-        }
+    }
+
+    public void SetFillAmount(float fillAmount)
+    {
+        if (_image == null)
+            return;
+
+        _image.fillAmount = Mathf.Clamp(fillAmount, 0f, 1f);
     }
 }

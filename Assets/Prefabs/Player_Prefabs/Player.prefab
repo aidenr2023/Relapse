@@ -5524,6 +5524,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e53c38d49c893884a8ed6d80f4ccf179, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 3845154698197607556}
 --- !u!4 &2172896088652093723 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7688201972992544905, guid: 043e3ec98abea57459696b3c3c798eee,
@@ -5713,6 +5714,17 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6110456137508801618, guid: de2161465cf4d45419107cb178b6bbdb,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee,
+        type: 2}
+    - target: {fileID: 6110456137508801618, guid: de2161465cf4d45419107cb178b6bbdb,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
     - target: {fileID: 6119260393742430968, guid: de2161465cf4d45419107cb178b6bbdb,
         type: 3}
       propertyPath: tooltipManager.tooltipParent

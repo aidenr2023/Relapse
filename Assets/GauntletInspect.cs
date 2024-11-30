@@ -1,29 +1,47 @@
+using System;
 using UnityEngine;
 
 public class GauntletInspectController : MonoBehaviour
 {
+    #region Serialized Fields
+
+    [SerializeField] private Player player;
+
+
+
+    #endregion
+
+    #region Private Fields
+
     // Reference to the Animator component
-    private Animator animator;
+    private Animator _animator;
 
     // Flag to track if the animation is currently paused
-    private bool isPaused = false;
+    private bool _isPaused;
 
     // Flag to ensure PauseAnimation is only called once per event
-    private bool hasPaused = false;
+    private bool _hasPaused;
 
-    void Start()
+    #endregion
+
+    private void Awake()
     {
-        // Get the Animator component attached to this GameObject
-        animator = GetComponent<Animator>();
+        // Get the animator component attached to this GameObject
+        _animator = GetComponent<Animator>();
 
         // Error handling if Animator is not found
-        if (animator == null)
-        {
-            Debug.LogError("GauntletInspectController: Animator component not found on " + gameObject.name);
-        }
+        if (_animator == null)
+            Debug.LogError($"GauntletInspectController: Animator component not found on {gameObject.name}");
+
+        // Initialize flags
+        _isPaused = false;
+        _hasPaused = false;
+
+        // Assert that the player is not null
+        Debug.Assert(player != null, "GauntletInspectController: Player is null.");
     }
 
-    void Update()
+    private void Update()
     {
         HandleInput();
     }
@@ -35,18 +53,12 @@ public class GauntletInspectController : MonoBehaviour
     {
         // Detect when the "I" key is pressed down
         if (Input.GetKeyDown(KeyCode.I))
-        {
             TriggerGauntletInspect();
-        }
 
         // Detect when the "I" key is released
         if (Input.GetKeyUp(KeyCode.I))
-        {
-            if (isPaused)
-            {
+            if (_isPaused)
                 ResumeAnimation();
-            }
-        }
     }
 
     /// <summary>
@@ -54,15 +66,14 @@ public class GauntletInspectController : MonoBehaviour
     /// </summary>
     private void TriggerGauntletInspect()
     {
-        if (animator != null)
-        {
-            animator.SetTrigger("PlayTrigger");
-            Debug.Log("GauntletInspectController: PlayTrigger activated.");
-        }
-        else
+        if (_animator == null)
         {
             Debug.LogWarning("GauntletInspectController: Animator not assigned. Cannot trigger animation.");
+            return;
         }
+
+        _animator.SetTrigger("PlayTrigger");
+        Debug.Log("GauntletInspectController: PlayTrigger activated.");
     }
 
     /// <summary>
@@ -70,25 +81,24 @@ public class GauntletInspectController : MonoBehaviour
     /// </summary>
     public void PauseAnimation()
     {
+        if (_animator == null)
+            return;
+
         // Ensure the Animator exists and the "I" key is being held
-        if (animator != null && Input.GetKey(KeyCode.I))
+        if (Input.GetKey(KeyCode.I))
         {
-            if (!hasPaused)
+            if (!_hasPaused)
             {
-                animator.speed = 0f; // Pause the animation
-                isPaused = true;
-                hasPaused = true; // Prevent multiple pauses from multiple events
+                _animator.speed = 0f; // Pause the animation
+                _isPaused = true;
+                _hasPaused = true; // Prevent multiple pauses from multiple events
                 Debug.Log("GauntletInspectController: Animation paused via PauseAnimation event.");
             }
             else
-            {
                 Debug.Log("GauntletInspectController: Animation already paused.");
-            }
         }
         else
-        {
             Debug.Log("GauntletInspectController: PauseAnimation event triggered, but 'I' key is not held.");
-        }
     }
 
     /// <summary>
@@ -96,16 +106,15 @@ public class GauntletInspectController : MonoBehaviour
     /// </summary>
     private void ResumeAnimation()
     {
-        if (animator != null)
-        {
-            animator.speed = 1f; // Resume the animation
-            isPaused = false;
-            hasPaused = false; // Reset for potential future pauses
-            Debug.Log("GauntletInspectController: Animation resumed after releasing 'I' key.");
-        }
-        else
+        if (_animator == null)
         {
             Debug.LogWarning("GauntletInspectController: Animator not assigned. Cannot resume animation.");
+            return;
         }
+
+        _animator.speed = 1f; // Resume the animation
+        _isPaused = false;
+        _hasPaused = false; // Reset for potential future pauses
+        Debug.Log("GauntletInspectController: Animation resumed after releasing 'I' key.");
     }
 }

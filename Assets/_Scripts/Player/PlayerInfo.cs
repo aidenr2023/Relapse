@@ -71,6 +71,8 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
     public float CurrentTolerance => currentTolerance;
 
+    public float ToxicityPercentage => currentTolerance / maxTolerance;
+
     public bool IsRelapsing => _isRelapsing;
 
     #endregion
@@ -306,7 +308,6 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
         // Remove all input
         _inputUserHandler?.RemoveAll();
     }
-
 
     public void ChangeHealth(float amount, IActor changer, IDamager damager)
     {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using TMPro;
@@ -429,7 +430,12 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
         CurrentPower.PowerLogic.StartPassiveEffect(this, CurrentPowerToken);
 
         // Change the player's tolerance
-        _player.PlayerInfo.ChangeTolerance(CurrentPowerToken.ToleranceMeterImpact);
+        // _player.PlayerInfo.ChangeTolerance(CurrentPowerToken.ToleranceMeterImpact);
+        StartCoroutine(
+            AddToxicityOverTime(
+                CurrentPowerToken.ToleranceMeterImpact,
+                .5f)
+        );
 
         // Invoke the event for the power used
         OnPowerUsed?.Invoke(this, CurrentPowerToken);
@@ -499,6 +505,31 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
     }
 
     #endregion
+
+    private IEnumerator AddToxicityOverTime(float amount, float duration)
+    {
+        // Calculate the amount to add each frame
+        var amountPerSecond = amount / duration;
+
+        var totalAdded = 0f;
+
+        // Loop through the duration
+        for (var i = 0f; i < duration; i += Time.deltaTime)
+        {
+            // Add the toxicity
+            _player.PlayerInfo.ChangeTolerance(amountPerSecond * Time.deltaTime);
+
+            totalAdded += amountPerSecond * Time.deltaTime;
+
+            // Wait for the next frame
+            yield return null;
+        }
+
+        var amountRemaining = amount - totalAdded;
+
+        // Add the remaining toxicity
+        _player.PlayerInfo.ChangeTolerance(amountRemaining);
+    }
 
     #region Public Methods
 
