@@ -1,49 +1,47 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerBlendAnim : StateMachineBehaviour
 {
-    // Parameters for controlling the blend tree
-    [SerializeField] private float _timeUntilIdle;
+    [SerializeField] private float _timeUntilIdle = 3f; // Time before transitioning to idle
+    [SerializeField] private float _idleTime = 0; // Tracks time spent stationary
+    private Rigidbody _rb; // Reference to Rigidbody for player movement
 
-    [SerializeField] float idleTime;
-    [SerializeField]  int _numidleStates;
-    
-    [SerializeField] bool isMoving;
-    
-   
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        ResetIdle(animator);
+        _rb = animator.GetComponentInParent<Rigidbody>(); // Get Rigidbody from the player object
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (isMoving == false)
+        // Calculate velocity based on Rigidbody's movement
+        float playerSpeed = _rb.velocity.magnitude;
+        Debug.Log($"Player Speed: {playerSpeed}");
+        // Update Animator with current velocity
+        Debug.Log($"Setting Animator Velocity parameter: {playerSpeed}");
+        
+        
+        // Reset idle time if moving, otherwise increment
+        if (playerSpeed > 0.1f)
         {
-            idleTime += Time.deltaTime;
-            if (idleTime > _timeUntilIdle)
-            {
-                isMoving = true;
-                int randomIdle = Random.Range(0, _numidleStates+1);
-                
-                animator.SetFloat("idleAnimatins", randomIdle);
-            }
+            _idleTime = 0f; // Reset idle time when moving
+            animator.SetFloat("Movement", 1, 0.1f, Time.deltaTime); 
+            Debug.Log("Player is moving. Idle time reset to 0.");
         }
-        else if(stateInfo.normalizedTime % 1 > 0.9f)
+        else
         {
-            ResetIdle(animator);
+            _idleTime += Time.deltaTime; // Increment idle time when stationary
+            Debug.Log($"Player is stationary. Idle time incremented: {_idleTime}");
         }
-    }
 
-    private void ResetIdle(Animator animator)
-    {
-        isMoving = false;
-        idleTime = 0;
-        animator.SetFloat("idleAnimatins", 0);
+        // Determine if idle animation should trigger
+        if (_idleTime > _timeUntilIdle)
+        {
+            animator.SetFloat("Movement", 0, 0.1f, Time.deltaTime); // Set velocity to 0 to trigger idle in the blend tree
+            Debug.Log("Idle time exceeded threshold. Setting playerSpeed to 0 for idle animation.");
+        }
+
+        
     }
-    
 }
