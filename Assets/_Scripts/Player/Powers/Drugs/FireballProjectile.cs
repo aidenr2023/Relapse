@@ -16,7 +16,10 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
     private bool _isExploded;
 
     [SerializeField] private float speed = 10f;
-    [SerializeField] private float damage = 100f;
+    [SerializeField] private float baseDamage = 100f;
+    private float damage;
+
+    [SerializeField] private float level = 1;
 
     [SerializeField] [Min(0)] private float lifetime = 10;
 
@@ -42,6 +45,8 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
         Vector3 position, Vector3 forward
     )
     {
+        CalculateLevel();
+
         _fireball = (Fireball)power;
         _powerManager = powerManager;
         _pToken = pToken;
@@ -135,5 +140,11 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
 
         // Destroy the projectile
         Destroy(gameObject);
+    }
+    private void CalculateLevel()
+    {
+        damage = baseDamage * level;
+        Debug.Log("Damage done: "+ damage);
+        Debug.Log("Base damage: "+ baseDamage);
     }
 }
