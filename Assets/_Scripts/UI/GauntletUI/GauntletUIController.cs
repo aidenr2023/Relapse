@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class GauntletUIController : MonoBehaviour
 {
+    #region Serialized Fields
+
     [SerializeField] private Player player;
 
     [SerializeField] private Image powerImage;
@@ -23,6 +25,14 @@ public class GauntletUIController : MonoBehaviour
 
     [SerializeField] private TMP_Text relapseCounter;
 
+    #endregion
+
+    #region Private Fields
+
+    private CountdownTimer flashTimer = new CountdownTimer(0.5f, true);
+
+    #endregion
+
     private void Awake()
     {
         // Assert that the player is not null
@@ -30,10 +40,20 @@ public class GauntletUIController : MonoBehaviour
 
         // Assert that the powerImage is not null
         Debug.Assert(powerImage != null, "GauntletUIController: Power Image is null.");
+
+        // Set up the timer
+        // Restart the timer
+        flashTimer.OnTimerEnd += () => flashTimer.Reset();
+
+        flashTimer.Reset();
+        flashTimer.Start();
     }
 
     private void Update()
     {
+        // Update the flash timer
+        UpdateFlashTimer();
+
         // Update the power image
         UpdatePowerImage();
 
@@ -60,8 +80,27 @@ public class GauntletUIController : MonoBehaviour
             return;
         }
 
+        var opacity = 1f;
+
+        var powerToken = player.PlayerPowerManager.CurrentPowerToken;
+
+        // If the power is done charging OR the power is currently active, flash the image
+        if (powerToken != null)
+        {
+            // Create a sine wave from 0 to 1
+            var value = Mathf.Sin(flashTimer.Percentage * Mathf.PI) / 2 + 0.5f;
+
+            // If the power is done cooling down, flash the image
+            if (powerToken.CooldownPercentage >= 1)
+                opacity = value;
+
+            // If the power is currently active, flash the image
+            else if (powerToken.IsActiveEffectOn)
+                opacity = value;
+        }
+
         // Set the color to white
-        powerImage.color = Color.white;
+        powerImage.color = new Color(1, 1, 1, opacity);
 
         // Set the image to the current power's icon
         powerImage.sprite = player.PlayerPowerManager.CurrentPower.Icon;
@@ -69,9 +108,18 @@ public class GauntletUIController : MonoBehaviour
         // Set the fill amount to 1
         powerImage.fillAmount = 1;
 
-        // If the current power token is not null, set the fill amount to the cooldown percentage
+        // If the current power token is not null,
+        // set the fill amount to the cooldown percentage
         if (player.PlayerPowerManager.CurrentPowerToken != null)
-            powerImage.fillAmount = player.PlayerPowerManager.CurrentPowerToken.CooldownPercentage;
+        {
+            // If the power is active, set the fill amount to 1 - the active effect percentage
+            if (player.PlayerPowerManager.CurrentPowerToken.IsActiveEffectOn)
+                powerImage.fillAmount = 1 - player.PlayerPowerManager.CurrentPowerToken.ActivePercentage;
+
+            // Otherwise, set the fill amount to the cooldown percentage
+            else
+                powerImage.fillAmount = player.PlayerPowerManager.CurrentPowerToken.CooldownPercentage;
+        }
     }
 
     private void UpdateOtherPowerImages()
@@ -155,5 +203,25 @@ public class GauntletUIController : MonoBehaviour
 
         // Set the relapse counter text to the player's relapse count
         relapseCounter.text = $"x{player.PlayerInfo.RelapseCount}";
+    }
+
+    private void UpdateFlashTimer()
+    {
+        var timeChange = Time.deltaTime;
+
+        // If the power is done with the cooldown,
+        if (player.PlayerPowerManager.CurrentPowerToken != null)
+        {
+            // If the active effect is on, multiply the time change by 1
+            if (player.PlayerPowerManager.CurrentPowerToken.IsActiveEffectOn)
+                timeChange *= 1;
+
+            // Otherwise, if the cooldown percentage is >= 1, multiply the time change by 4
+            else if (player.PlayerPowerManager.CurrentPowerToken.CooldownPercentage >= 1)
+                timeChange *= 4;
+        }
+
+
+        flashTimer.Update(timeChange);
     }
 }
