@@ -218,11 +218,11 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Create a ray cast from the starting point in the direction with the specified range
 
-        // // Emit the fire particles
-        PlayParticles(muzzleParticles, muzzleLocation.position, muzzleParticlesCount);
+        // Emit the fire particles
+        // PlayParticles(muzzleParticles, muzzleLocation.position, muzzleParticlesCount);
 
         // Play the muzzle flash VFX
-        // PlayMuzzleFlash();
+        PlayMuzzleFlash();
 
         // Fire the gun
         for (var i = 0; i < timesToFire; i++)
