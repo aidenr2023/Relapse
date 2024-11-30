@@ -1772,6 +1772,7 @@ MonoBehaviour:
   fireballPower: {fileID: 11400000, guid: acab2dfd548eb2c479d0be22cef871ba, type: 2}
   regenPower: {fileID: 11400000, guid: 29fa51786e262b04b8571ce53c2d4575, type: 2}
   damageMultPower: {fileID: 11400000, guid: 144b7df19accdd542aa5c22f83309e61, type: 2}
+  relapseCounter: {fileID: 1737318205692990906}
 --- !u!1 &6411885995686777461
 GameObject:
   m_ObjectHideFlags: 0
@@ -6804,6 +6805,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 3845154698197607556}
+--- !u!114 &1737318205692990906 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7821176106747845672, guid: 043e3ec98abea57459696b3c3c798eee,
+    type: 3}
+  m_PrefabInstance: {fileID: 8400998426604210578}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &2172896088652093723 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7688201972992544905, guid: 043e3ec98abea57459696b3c3c798eee,

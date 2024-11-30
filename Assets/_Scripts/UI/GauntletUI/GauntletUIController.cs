@@ -16,11 +16,12 @@ public class GauntletUIController : MonoBehaviour
     [SerializeField] private GameObject fireballEquipped;
     [SerializeField] private GameObject regenEquipped;
     [SerializeField] private GameObject damageMultEquipped;
-    [SerializeField] private GameObject otherEquipped;
 
     [SerializeField] private PowerScriptableObject fireballPower;
     [SerializeField] private PowerScriptableObject regenPower;
     [SerializeField] private PowerScriptableObject damageMultPower;
+
+    [SerializeField] private TMP_Text relapseCounter;
 
     private void Awake()
     {
@@ -41,6 +42,9 @@ public class GauntletUIController : MonoBehaviour
 
         // Update the game object thing
         UpdateGameObjectThing();
+
+        // Update the relapse counter
+        UpdateRelapseCounter();
     }
 
     private void UpdatePowerImage()
@@ -141,5 +145,15 @@ public class GauntletUIController : MonoBehaviour
         // // If the current power is not any of the above, set the other equipped game object to true
         // else
         //     otherEquipped.SetActive(true);
+    }
+
+    private void UpdateRelapseCounter()
+    {
+        // If the relapse counter is null, return
+        if (relapseCounter == null)
+            return;
+
+        // Set the relapse counter text to the player's relapse count
+        relapseCounter.text = $"x{player.PlayerInfo.RelapseCount}";
     }
 }

@@ -75,6 +75,8 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
     public bool IsRelapsing => _isRelapsing;
 
+    public int RelapseCount => _relapseCount;
+
     #endregion
 
     #region Events
