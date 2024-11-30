@@ -147,4 +147,8 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
         Debug.Log("Damage done: "+ damage);
         Debug.Log("Base damage: "+ baseDamage);
     }
+    private void IncreaseLevel()
+    {
+        level += 1;
+    }
 }
