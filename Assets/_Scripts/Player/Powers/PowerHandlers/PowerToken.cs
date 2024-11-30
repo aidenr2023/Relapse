@@ -94,6 +94,9 @@ public class PowerToken
 
         // Initialize the data dictionary
         _dataDictionary = new Dictionary<string, object>();
+
+        // Set the current level to the max
+        _currentCooldownDuration = powerScriptableObject.Cooldown;
     }
 
     #region Token Control

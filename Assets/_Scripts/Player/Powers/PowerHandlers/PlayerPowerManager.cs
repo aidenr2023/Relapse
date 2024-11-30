@@ -38,9 +38,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
 
     public Player Player => _player;
 
-    private PowerScriptableObject CurrentPower => powers.Length > 0 ? powers[_currentPowerIndex] : null;
+    public PowerScriptableObject CurrentPower => powers.Length > 0 ? powers[_currentPowerIndex] : null;
 
-    private PowerToken CurrentPowerToken =>
+    public PowerToken CurrentPowerToken =>
         CurrentPower != null
             ? _powerTokens.GetValueOrDefault(CurrentPower)
             : null;
