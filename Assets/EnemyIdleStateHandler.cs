@@ -4,48 +4,48 @@ using UnityEngine;
 
 public class EnemyIdleStateHandler : StateMachineBehaviour
 {
-    // OnStateEnter is called before OnStateEnter is called on any state inside this state machine
-    
+    [SerializeField] private float _timeUntilAttack = 3f; // Time before transitioning to idle
+    [SerializeField] private float _idleTime = 0; // Tracks time spent stationary
+
+    private float attackAnim;
+    //private Rigidbody _rb; // Reference to Rigidbody for player movement
+
+    // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        // Get the EnemyAnimatorController component from the parent object
-        EnemyAnimatorController enemyAnimatorController = animator.GetComponentInParent<EnemyAnimatorController>();
+        //_rb = animator.GetComponentInParent<Rigidbody>(); // Get Rigidbody from the player object
         
     }
 
-    // OnStateUpdate is called before OnStateUpdate is called on any state inside this state machine
+    // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        // randomize the attack animation to play
+        attackAnim = Random.Range(0, 2);
+        Debug.Log($"Enemy Animation is: {attackAnim}");
+        // Update Animator with current velocity
+        Debug.Log($"Setting Enemy Attack parameter: {attackAnim}");
+        
+        //on attack trigger chose random attack animation
+        
+        
+        // Reset idle time if moving, otherwise increment
+        if ( )
+        {
+            _
+        }
+        else
+        {
+            
+        }
+
+        // Determine if idle animation should trigger
+        if ()
+        {
+            animator.SetFloat("AttackTrigger", 0, 0.1f, Time.deltaTime); // Set velocity to 0 to trigger idle in the blend tree
+            Debug.Log("Idle time exceeded threshold. Setting playerSpeed to 0 for idle animation.");
+        }
+
         
     }
-
-    // OnStateExit is called before OnStateExit is called on any state inside this state machine
-    //override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
-    //    
-    //}
-
-    // OnStateMove is called before OnStateMove is called on any state inside this state machine
-    //override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
-    //    
-    //}
-
-    // OnStateIK is called before OnStateIK is called on any state inside this state machine
-    //override public void OnStateIK(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
-    //    
-    //}
-
-    // OnStateMachineEnter is called when entering a state machine via its Entry Node
-    //override public void OnStateMachineEnter(Animator animator, int stateMachinePathHash)
-    //{
-    //    
-    //}
-
-    // OnStateMachineExit is called when exiting a state machine via its Exit Node
-    //override public void OnStateMachineExit(Animator animator, int stateMachinePathHash)
-    //{
-    //    
-    //}
 }
