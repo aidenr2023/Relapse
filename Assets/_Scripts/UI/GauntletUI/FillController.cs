@@ -103,13 +103,15 @@ public class FillController : MonoBehaviour
     /// </summary>
     private void HandleGameObjectSwitching()
     {
-        // Right Arrow Key Pressed
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-            SwitchToNextGameObject();
+        // // Right Arrow Key Pressed
+        // if (Input.GetKeyDown(KeyCode.RightArrow))
+        //     SwitchToNextGameObject();
+        //
+        // // Left Arrow Key Pressed
+        // if (Input.GetKeyDown(KeyCode.LeftArrow))
+        //     SwitchToPreviousGameObject();
 
-        // Left Arrow Key Pressed
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-            SwitchToPreviousGameObject();
+
     }
 
     /// <summary>

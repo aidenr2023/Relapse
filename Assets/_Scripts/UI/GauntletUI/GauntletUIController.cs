@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -11,6 +12,15 @@ public class GauntletUIController : MonoBehaviour
     [SerializeField] private Image powerImage;
 
     [SerializeField] private Image[] otherPowerImages;
+
+    [SerializeField] private GameObject fireballEquipped;
+    [SerializeField] private GameObject regenEquipped;
+    [SerializeField] private GameObject damageMultEquipped;
+    [SerializeField] private GameObject otherEquipped;
+
+    [SerializeField] private PowerScriptableObject fireballPower;
+    [SerializeField] private PowerScriptableObject regenPower;
+    [SerializeField] private PowerScriptableObject damageMultPower;
 
     private void Awake()
     {
@@ -28,6 +38,9 @@ public class GauntletUIController : MonoBehaviour
 
         // Update the other power images
         UpdateOtherPowerImages();
+
+        // Update the game object thing
+        UpdateGameObjectThing();
     }
 
     private void UpdatePowerImage()
@@ -96,5 +109,37 @@ public class GauntletUIController : MonoBehaviour
             // Increment the other power image index
             otherPowerImageIndex++;
         }
+    }
+
+    private void UpdateGameObjectThing()
+    {
+        // Get the current power
+        var currentPower = player.PlayerPowerManager.CurrentPower;
+
+        // Set all equipped game objects to false
+        fireballEquipped.SetActive(false);
+        regenEquipped.SetActive(false);
+        damageMultEquipped.SetActive(false);
+        // otherEquipped.SetActive(false);
+
+        // If the current power is null, return
+        if (currentPower == null)
+            return;
+
+        // If the current power is the fireball power, set the fireball equipped game object to true
+        if (currentPower == fireballPower)
+            fireballEquipped.SetActive(true);
+
+        // If the current power is the regen power, set the regen equipped game object to true
+        else if (currentPower == regenPower)
+            regenEquipped.SetActive(true);
+
+        // If the current power is the damage mult power, set the damage mult equipped game object to true
+        else if (currentPower == damageMultPower)
+            damageMultEquipped.SetActive(true);
+
+        // // If the current power is not any of the above, set the other equipped game object to true
+        // else
+        //     otherEquipped.SetActive(true);
     }
 }
