@@ -4,17 +4,15 @@ using UnityEngine;
 
 public class Gravity : MonoBehaviour, IPower
 {
-    //Time scale variables
-    [SerializeField][Range(0.01f, 1)] private float timeScaleAdjust = 1;
-    
-
     public GameObject GameObject => gameObject;
 
     public PowerScriptableObject PowerScriptableObject { get; set; }
 
+
     void Start()
     {
         //Get the player component
+        Debug.Log(Player.Instance.GetComponent<Rigidbody>().useGravity);
     }
     void Awake()
     {
@@ -67,6 +65,9 @@ public class Gravity : MonoBehaviour, IPower
         Debug.Log("Gravity Reduced");
 
         //Set player rigid body gravity to off
+        Player.Instance.GetComponent<Rigidbody>().useGravity = false;
+
+
 
 
     }
@@ -94,6 +95,7 @@ public class Gravity : MonoBehaviour, IPower
         Debug.Log("Gravity Reduction Done");
 
         //Set player gravity rigid body to on
+        Player.Instance.GetComponent<Rigidbody>().useGravity = true;
 
     }
 }

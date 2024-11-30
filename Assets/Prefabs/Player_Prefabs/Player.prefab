@@ -371,7 +371,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7385244519545234990}
   - component: {fileID: 4124278905754117778}
-  - component: {fileID: 3975810278072299327}
   - component: {fileID: 2962299826787148977}
   m_Layer: 9
   m_Name: HandsCam
@@ -446,14 +445,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &3975810278072299327
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1469704284257854784}
-  m_Enabled: 1
 --- !u!114 &2962299826787148977
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1536,7 +1527,7 @@ Transform:
   m_GameObject: {fileID: 4820879495186663749}
   serializedVersion: 2
   m_LocalRotation: {x: 0.37169608, y: 0.6266405, z: 0.45465043, w: -0.5123053}
-  m_LocalPosition: {x: -7.923697, y: 3.2171888, z: 21.604631}
+  m_LocalPosition: {x: 0.65217555, y: 0.21718907, z: 0.13227272}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -7833,12 +7824,12 @@ PrefabInstance:
     - target: {fileID: 8996517363021164877, guid: de2161465cf4d45419107cb178b6bbdb,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -868.99994
+      value: -868.9999
       objectReference: {fileID: 0}
     - target: {fileID: 8996517363021164877, guid: de2161465cf4d45419107cb178b6bbdb,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -24
+      value: -23.99997
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
