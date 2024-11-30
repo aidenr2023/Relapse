@@ -30,6 +30,8 @@ public class EnemyIdleStateHandler : StateMachineBehaviour
         
         
         // Reset idle time if moving, otherwise increment
+
+        /* Commented out to avoid broken
         if ( )
         {
             _
@@ -45,7 +47,7 @@ public class EnemyIdleStateHandler : StateMachineBehaviour
             animator.SetFloat("AttackTrigger", 0, 0.1f, Time.deltaTime); // Set velocity to 0 to trigger idle in the blend tree
             Debug.Log("Idle time exceeded threshold. Setting playerSpeed to 0 for idle animation.");
         }
-
+        */
         
     }
 }
