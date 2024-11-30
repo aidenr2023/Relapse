@@ -19,8 +19,6 @@ public class PlayerInteraction : MonoBehaviour
 
     [SerializeField] private Material outlineMaterial;
     [SerializeField] [Min(0)] private float outlineScale = 1.1f;
-    [SerializeField] private Color outLineColor = Color.white;
-    [SerializeField] private Color lookedAtColor = Color.yellow;
 
     /// <summary>
     /// A reference to the interactable that the player is currently looking at.
@@ -240,6 +238,6 @@ public class PlayerInteraction : MonoBehaviour
         // material.SetFloat(CachedScaleProperty, scale);
 
         // Set the material's outline state
-        material.SetFloat(CachedIsOutlinedProperty, isOutlined ? 1 : 0);
+        material.SetInt(CachedIsOutlinedProperty, isOutlined ? 1 : 0);
     }
 }
