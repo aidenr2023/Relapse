@@ -977,8 +977,6 @@ MonoBehaviour:
   interactText: {fileID: 7697902502445989847}
   outlineMaterial: {fileID: 2100000, guid: 22dd4d8cd8751df479a26194e0f34955, type: 2}
   outlineScale: 1.1
-  outLineColor: {r: 1, g: 1, b: 1, a: 1}
-  lookedAtColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!114 &27674651915690864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1768,7 +1766,6 @@ MonoBehaviour:
   fireballEquipped: {fileID: 3317291019149500543}
   regenEquipped: {fileID: 3015623487258340169}
   damageMultEquipped: {fileID: 8739116951662600022}
-  otherEquipped: {fileID: 0}
   fireballPower: {fileID: 11400000, guid: acab2dfd548eb2c479d0be22cef871ba, type: 2}
   regenPower: {fileID: 11400000, guid: 29fa51786e262b04b8571ce53c2d4575, type: 2}
   damageMultPower: {fileID: 11400000, guid: 144b7df19accdd542aa5c22f83309e61, type: 2}
@@ -2832,6 +2829,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 2869695285849943830, guid: 4e1f2c1c363960402afcef7794835969,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3018161914625273978, guid: 4e1f2c1c363960402afcef7794835969,
         type: 3}
       propertyPath: m_Layer
@@ -3016,6 +3018,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 9
       objectReference: {fileID: 0}
+    - target: {fileID: 4824849545248870116, guid: 4e1f2c1c363960402afcef7794835969,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4912576762681112080, guid: 4e1f2c1c363960402afcef7794835969,
         type: 3}
       propertyPath: m_Layer
@@ -3126,6 +3133,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 5975042841965791387, guid: 4e1f2c1c363960402afcef7794835969,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6179051427383959835, guid: 4e1f2c1c363960402afcef7794835969,
         type: 3}
@@ -3253,6 +3265,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 8021013084781174985, guid: 4e1f2c1c363960402afcef7794835969,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8166296124977761840, guid: 4e1f2c1c363960402afcef7794835969,
         type: 3}
