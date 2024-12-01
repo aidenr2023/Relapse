@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class VendorMenu : MonoBehaviour
@@ -28,6 +29,12 @@ public class VendorMenu : MonoBehaviour
     [Header("Menus")] [SerializeField] private GameObject initialMenu;
     [SerializeField] private GameObject powerMenu;
     [SerializeField] private GameObject gossipMenu;
+
+    [Header("Navigation Control")] [SerializeField]
+    private GameObject firstSelectedButton;
+
+    [SerializeField] private GameObject shopSelectedButton;
+    [SerializeField] private GameObject gossipSelectedButton;
 
     #endregion
 
@@ -92,6 +99,14 @@ public class VendorMenu : MonoBehaviour
         gossipMenu.SetActive(false);
 
         menu.SetActive(true);
+
+        // Set the selected button
+        if (menu == powerMenu)
+            SetSelectedGameObject(shopSelectedButton);
+        else if (menu == gossipMenu)
+            SetSelectedGameObject(gossipSelectedButton);
+        else
+            SetSelectedGameObject(firstSelectedButton);
     }
 
     private void PopulateShop()
@@ -216,5 +231,11 @@ public class VendorMenu : MonoBehaviour
         // Unpause the game
         // TODO: Connect with timescale manager
         Time.timeScale = 1;
+    }
+
+    public void SetSelectedGameObject(GameObject element)
+    {
+        // Set the selected element
+        EventSystem.current.SetSelectedGameObject(element);
     }
 }
