@@ -232,11 +232,11 @@ public class PauseMenuManager : MonoBehaviour
         FixPhysics();
 
         ChangeClickColor(textObject);
-        // Add your Exit logic here
-        Debug.Log("Exit the game");
 
         // Go back to main menu
         SceneManager.LoadScene("MainMenu");
+
+        Debug.Log($"RANNNNNNN: {textObject.name}");
     }
 
     public void Back()

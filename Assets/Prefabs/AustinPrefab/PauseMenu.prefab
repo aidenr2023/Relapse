@@ -68,7 +68,7 @@ MonoBehaviour:
   m_text: PAUSED
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a2e2bff8836862f49847d94ce4313830, type: 2}
-  m_sharedMaterial: {fileID: -4290467362284612193, guid: a2e2bff8836862f49847d94ce4313830,
+  m_sharedMaterial: {fileID: 8734331512354339897, guid: a2e2bff8836862f49847d94ce4313830,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -203,7 +203,7 @@ MonoBehaviour:
   m_text: PAUSED
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a2e2bff8836862f49847d94ce4313830, type: 2}
-  m_sharedMaterial: {fileID: -4290467362284612193, guid: a2e2bff8836862f49847d94ce4313830,
+  m_sharedMaterial: {fileID: 8734331512354339897, guid: a2e2bff8836862f49847d94ce4313830,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -497,7 +497,7 @@ MonoBehaviour:
   m_text: BACK
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a2e2bff8836862f49847d94ce4313830, type: 2}
-  m_sharedMaterial: {fileID: -4290467362284612193, guid: a2e2bff8836862f49847d94ce4313830,
+  m_sharedMaterial: {fileID: 8734331512354339897, guid: a2e2bff8836862f49847d94ce4313830,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -614,18 +614,6 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 8055345699348382442}
-          m_TargetAssemblyTypeName: ButtonManager, Assembly-CSharp
-          m_MethodName: Exit
-          m_Mode: 2
-          m_Arguments:
-            m_ObjectArgument: {fileID: 2851878801520429813}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
-        - m_Target: {fileID: 8055345699348382442}
           m_TargetAssemblyTypeName: PauseMenuManager, Assembly-CSharp
           m_MethodName: Back
           m_Mode: 1
@@ -706,7 +694,7 @@ MonoBehaviour:
   m_text: RESUME
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a2e2bff8836862f49847d94ce4313830, type: 2}
-  m_sharedMaterial: {fileID: -4290467362284612193, guid: a2e2bff8836862f49847d94ce4313830,
+  m_sharedMaterial: {fileID: 8734331512354339897, guid: a2e2bff8836862f49847d94ce4313830,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -903,7 +891,7 @@ MonoBehaviour:
   m_text: SETTINGS
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a2e2bff8836862f49847d94ce4313830, type: 2}
-  m_sharedMaterial: {fileID: -4290467362284612193, guid: a2e2bff8836862f49847d94ce4313830,
+  m_sharedMaterial: {fileID: 8734331512354339897, guid: a2e2bff8836862f49847d94ce4313830,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1136,7 +1124,7 @@ MonoBehaviour:
   m_text: JOURNAL
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a2e2bff8836862f49847d94ce4313830, type: 2}
-  m_sharedMaterial: {fileID: -4290467362284612193, guid: a2e2bff8836862f49847d94ce4313830,
+  m_sharedMaterial: {fileID: 8734331512354339897, guid: a2e2bff8836862f49847d94ce4313830,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -1485,18 +1473,6 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 8055345699348382442}
-          m_TargetAssemblyTypeName: ButtonManager, Assembly-CSharp
-          m_MethodName: Exit
-          m_Mode: 2
-          m_Arguments:
-            m_ObjectArgument: {fileID: 4286660530084309727}
-            m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-            m_IntArgument: 0
-            m_FloatArgument: 0
-            m_StringArgument: 
-            m_BoolArgument: 0
-          m_CallState: 2
         - m_Target: {fileID: 8055345699348382442}
           m_TargetAssemblyTypeName: PauseMenuManager, Assembly-CSharp
           m_MethodName: Back
@@ -2015,7 +1991,7 @@ MonoBehaviour:
   m_text: EXIT
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a2e2bff8836862f49847d94ce4313830, type: 2}
-  m_sharedMaterial: {fileID: -4290467362284612193, guid: a2e2bff8836862f49847d94ce4313830,
+  m_sharedMaterial: {fileID: 8734331512354339897, guid: a2e2bff8836862f49847d94ce4313830,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -2503,22 +2479,32 @@ PrefabInstance:
     - target: {fileID: 2896115921561634897, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 428
+      value: 438
       objectReference: {fileID: 0}
     - target: {fileID: 2896115921561634897, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 96
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 2896115921561634897, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 230
+      value: 227
       objectReference: {fileID: 0}
     - target: {fileID: 2896115921561634897, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -64
+      value: -48
+      objectReference: {fileID: 0}
+    - target: {fileID: 3068470024543365183, guid: 620f8883a2659444898445af48c1612e,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3068470024543365183, guid: 620f8883a2659444898445af48c1612e,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3262830249314346156, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
@@ -2533,22 +2519,22 @@ PrefabInstance:
     - target: {fileID: 3262830249314346156, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 428
+      value: 438
       objectReference: {fileID: 0}
     - target: {fileID: 3262830249314346156, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 96
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 3262830249314346156, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 1562
+      value: 1565
       objectReference: {fileID: 0}
     - target: {fileID: 3262830249314346156, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -64
+      value: -48
       objectReference: {fileID: 0}
     - target: {fileID: 3320113354452908655, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
@@ -2563,22 +2549,22 @@ PrefabInstance:
     - target: {fileID: 3320113354452908655, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 428
+      value: 438
       objectReference: {fileID: 0}
     - target: {fileID: 3320113354452908655, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 96
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 3320113354452908655, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 674
+      value: 673
       objectReference: {fileID: 0}
     - target: {fileID: 3320113354452908655, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -64
+      value: -48
       objectReference: {fileID: 0}
     - target: {fileID: 3389166463425292526, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
@@ -2593,22 +2579,22 @@ PrefabInstance:
     - target: {fileID: 3389166463425292526, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 428
+      value: 438
       objectReference: {fileID: 0}
     - target: {fileID: 3389166463425292526, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 96
+      value: 80
       objectReference: {fileID: 0}
     - target: {fileID: 3389166463425292526, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 1118
+      value: 1119
       objectReference: {fileID: 0}
     - target: {fileID: 3389166463425292526, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -64
+      value: -48
       objectReference: {fileID: 0}
     - target: {fileID: 6574589036017554972, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
@@ -2624,6 +2610,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Journal Menu
+      objectReference: {fileID: 0}
+    - target: {fileID: 6671362023202559956, guid: 620f8883a2659444898445af48c1612e,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6671362023202559956, guid: 620f8883a2659444898445af48c1612e,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6671362023202559956, guid: 620f8883a2659444898445af48c1612e,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -29
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
