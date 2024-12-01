@@ -91,6 +91,15 @@ public class JournalUIManager : MonoBehaviour
             UpdatePowersMenu();
     }
 
+    private void OnEnable()
+    {
+        // Populate each menu
+        PopulateObjectives();
+        PopulateMemories();
+        PopulateInventory();
+        PopulatePowers(_currentPowerType);
+    }
+
     #region Objectives Menu
 
     private void CreateObjectiveButton(JournalObjective objective)
