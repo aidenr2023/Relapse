@@ -23,6 +23,8 @@ public class DialogueUI : MonoBehaviour
     [Header("Buttons")] [SerializeField] private GameObject dialogueButtonsParent;
     [SerializeField] private Button[] buttons = new Button[4];
 
+    [SerializeField] private Button nextButton;
+
     #endregion
 
     #region Getters
@@ -249,7 +251,7 @@ public class DialogueUI : MonoBehaviour
                 // Invoke the next dialogue's start event
                 _currentDialogue.OnDialogueStart.Invoke();
 
-                Debug.Log($"Now using: {_currentDialogue} - {_currentDialogue.DialogueText}");
+                // Debug.Log($"Now using: {_currentDialogue} - {_currentDialogue.DialogueText}");
             }
         }
 
@@ -300,11 +302,17 @@ public class DialogueUI : MonoBehaviour
         // TODO: Put this in a better place or something. This goes against SOLID
         if (_currentDialogue is DialogueChoiceNode dialogueChoiceNode)
             ActivateChoiceButtons(dialogueChoiceNode);
+
+        if (nextButton != null)
+            nextButton.gameObject.SetActive(_currentDialogue is not DialogueChoiceNode);
     }
 
     private void ActivateChoiceButtons(DialogueChoiceNode dialogueChoiceNode)
     {
         Debug.Log("Activating choice buttons");
+
+        // Stop typing
+        _typingTimer.Stop();
 
         // Activate the dialogue buttons parent
         dialogueButtonsParent.SetActive(true);
@@ -340,6 +348,14 @@ public class DialogueUI : MonoBehaviour
 
                 // Call the next dialogue
                 AdvanceDialogue();
+
+                // Reset the current text
+                ResetCurrentText();
+                _currentCharacterIndex = 0;
+
+                // Resume typing
+                _typingTimer.Reset();
+                _typingTimer.Start();
 
                 Debug.Log($"ADVANCED DIALOGUE TO: {choice.NextDialogue}");
             });

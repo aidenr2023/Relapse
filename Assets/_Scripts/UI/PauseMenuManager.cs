@@ -116,6 +116,8 @@ public class PauseMenuManager : MonoBehaviour
 
     private void FixPhysics()
     {
+        return;
+
         Time.fixedDeltaTime = _fixedDeltaTime * Time.timeScale;
     }
 
