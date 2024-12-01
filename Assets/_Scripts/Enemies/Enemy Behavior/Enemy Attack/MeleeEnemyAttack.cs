@@ -15,8 +15,6 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     [SerializeField] private Animator animator;
 
-    [SerializeField] private string attackAnimationName;
-
     [SerializeField] private MeleeAttackHitbox[] meleeAttackHitboxes;
 
     #endregion
@@ -128,9 +126,6 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
         if (animator == null)
             return;
-
-        // // Play the melee attack animation
-        // animator.Play(attackAnimationName);
 
         // Play the melee attack animation
         animator.SetTrigger(animatiorAttackProperty);
