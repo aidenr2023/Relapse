@@ -5,37 +5,46 @@ using UnityEngine.InputSystem.LowLevel;
 
 public class EnemyIdleStateHandler : StateMachineBehaviour
 {
-    [SerializeField] private float numberOfAttackAnimations = 2f; // Time before transitioning to idle
-    private static readonly int animatiorAttackProperty = Animator.StringToHash("Attack");
-    private float attackAnim;
-    
-    int numberofAttackAnimations = 3;
+    [SerializeField] private int numberOfAttackAnimations = 2; // Number of attack animations
+    private static readonly int AnimatorAttackTrigger = Animator.StringToHash("Attack");
     private static readonly int AttackBlendHash = Animator.StringToHash("AttackBlend");
-    
-    // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
+    private bool hasTriggeredAttack = false; // Prevent spamming attacks
+    void UpdateStateInfo(Animator animator)
+    {
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+
+        if (stateInfo.IsName("Lesion_Attack"))
+        {
+            Debug.Log("The Animator is now in the Attack State.");
+            hasTriggeredAttack = true;
+        }
+    }
+    // Called when the state is entered
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        
-    }
-    [SerializeField] private Animator animator;
-
-    private static readonly int AttackTriggerHash = Animator.StringToHash("Attack");
-
-    public void TriggerAttack()
-    {
-        animator.SetTrigger(AttackTriggerHash);
+        // Reset the attack flag
+        hasTriggeredAttack = false;
+        Debug.Log("Entered Idle State. Waiting to attack...");
     }
 
-    // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
+    // Called on each update frame
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        // Randomize the attack blend value
-        float randomBlendValue = Random.Range(0, numberOfAttackAnimations);
+        //Update state info to check on attack state
+        UpdateStateInfo(animator);
+        if (!hasTriggeredAttack) // Ensure the attack triggers only once
+        {
+            // Trigger the attack
+            //animator.SetTrigger(AnimatorAttackTrigger);
 
-        // Set the blend parameter dynamically
-        animator.SetFloat(AttackBlendHash, randomBlendValue);
+            // Randomize the attack animation
+            float randomBlendValue = Random.Range(0, numberOfAttackAnimations);
+            animator.SetFloat(AttackBlendHash, randomBlendValue);
 
-        Debug.Log($"Random attack animation selected: {randomBlendValue}");
-   
+            Debug.Log($"Attack was triggered in prev state with blend value: {randomBlendValue}");
+
+            // Set the flag to prevent repeated triggering
+            hasTriggeredAttack = true;
+        }
     }
 }

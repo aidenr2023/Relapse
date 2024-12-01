@@ -72,6 +72,7 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
             // Turn off all the hit boxes
             SetAllHitBoxes(false);
         };
+        
     }
 
     private void InitializeComponents()
@@ -82,6 +83,14 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     private void Start()
     {
+        Enemy.EnemyInfo.OnDamaged += (_, args) =>
+        {
+            //debug log to check if hit trigger is activated
+            Debug.Log("Hit Trigger Activated");
+            // Activate the animator's hit trigger
+            animator.SetTrigger("Hit");
+            
+        };
     }
 
     #endregion
