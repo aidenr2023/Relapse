@@ -40,8 +40,6 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private Rigidbody _rigidbody;
 
-    private BasicPlayerMovement _basicPlayerMovement;
-
     private CustomStack<PlayerMovementScript> _movementScripts;
 
     private InputActionMap _currentActionMap;
@@ -60,7 +58,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public Rigidbody Rigidbody => _rigidbody;
 
-    public Vector2 MovementInput => _basicPlayerMovement.MovementInput;
+    public Vector2 MovementInput => BasicPlayerMovement.MovementInput;
 
     public bool IsGrounded { get; private set; }
 
@@ -78,6 +76,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     public Vector3 GroundCollisionRight =>
         Vector3.Cross(_groundCollideHitInfo.normal, CameraPivot.transform.forward).normalized;
 
+    public BasicPlayerMovement BasicPlayerMovement { get; private set; }
+
     #endregion
 
     protected override void CustomAwake()
@@ -92,7 +92,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         _rigidbody = GetComponent<Rigidbody>();
 
         // Get the basic player movement
-        _basicPlayerMovement = GetComponent<BasicPlayerMovement>();
+        BasicPlayerMovement = GetComponent<BasicPlayerMovement>();
 
         // Get the wall running component
         WallRunning = GetComponent<PlayerWallRunning>();
@@ -107,7 +107,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         _movementScripts = new CustomStack<PlayerMovementScript>();
 
         // Push the basic player movement onto the stack
-        PushMovementScript(_basicPlayerMovement);
+        PushMovementScript(BasicPlayerMovement);
 
         // Enable the top most input map
         EnableTopMostInputMap();
@@ -210,7 +210,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     {
         var previousInputMap = _currentActionMap;
 
-        PlayerMovementScript topMostMovementScript = _basicPlayerMovement;
+        PlayerMovementScript topMostMovementScript = BasicPlayerMovement;
 
         var allMovementScripts = GetComponents<PlayerMovementScript>();
 
