@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
@@ -18,10 +19,14 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private GameObject journalPanel;
     [SerializeField] private GameObject settingsPanel;
 
+    [SerializeField] private GameObject firstSelectedButton;
+
     // Colors for normal, hover, and click states
     [SerializeField] private Color normalColor = Color.white;
     [SerializeField] private Color hoverColor = Color.yellow;
     [SerializeField] private Color clickColor = Color.red;
+
+
 
     #endregion
 
@@ -59,6 +64,12 @@ public class PauseMenuManager : MonoBehaviour
         pauseMenuParent.SetActive(false);
     }
 
+    private void OnEnable()
+    {
+        // Set the event system's selected object to the first button
+        SetSelectedButton(firstSelectedButton);
+    }
+
     private void TogglePause()
     {
         if (!IsPaused)
@@ -80,6 +91,8 @@ public class PauseMenuManager : MonoBehaviour
 
     public void OnPointerEnter(GameObject textObject)
     {
+        return;
+
         var tmpText = textObject.GetComponent<TMP_Text>();
 
         if (tmpText != null)
@@ -92,6 +105,8 @@ public class PauseMenuManager : MonoBehaviour
     /// </summary>
     public void OnPointerExit(GameObject textObject)
     {
+        return;
+
         var tmpText = textObject.GetComponent<TMP_Text>();
 
         if (tmpText != null)
@@ -105,7 +120,7 @@ public class PauseMenuManager : MonoBehaviour
     /// <param name="textObject">The GameObject associated with the button.</param>
     private void ChangeClickColor(GameObject textObject)
     {
-        // return;
+        return;
 
         var tmpText = textObject.GetComponent<TMP_Text>();
 
@@ -248,5 +263,10 @@ public class PauseMenuManager : MonoBehaviour
 
         // Isolate the new current menu
         IsolateMenu(_menuStack.Peek());
+    }
+
+    public void SetSelectedButton(GameObject button)
+    {
+        EventSystem.current.SetSelectedGameObject(button);
     }
 }
