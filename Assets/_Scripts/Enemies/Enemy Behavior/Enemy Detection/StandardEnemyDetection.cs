@@ -311,8 +311,19 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         if (angle > visionAngle)
             return false;
 
+        // Create a layerMask to ignore the NonPhysical layer
+        var layerMask = ~(1 << LayerMask.NameToLayer("NonPhysical"));
+
+        var raycastHit = Physics.Raycast(
+            transform.position,
+            line,
+            out var hit,
+            visionDistance,
+            layerMask
+        );
+
         // Check a raycast to the player
-        if (!Physics.Raycast(transform.position, line, out var hit, visionDistance))
+        if (!raycastHit)
             return false;
 
         // Return false if the raycast does not hit the player
@@ -361,5 +372,4 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
     {
         IsDetectionEnabled = on;
     }
-
 }
