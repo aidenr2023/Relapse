@@ -19,14 +19,16 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private GameObject journalPanel;
     [SerializeField] private GameObject settingsPanel;
 
-    [SerializeField] private GameObject firstSelectedButton;
-
     // Colors for normal, hover, and click states
     [SerializeField] private Color normalColor = Color.white;
     [SerializeField] private Color hoverColor = Color.yellow;
     [SerializeField] private Color clickColor = Color.red;
 
 
+    [Header("Navigation Control")]
+    [SerializeField] private GameObject firstSelectedButton;
+    [SerializeField] private GameObject settingsFirstSelected;
+    [SerializeField] private GameObject journalFirstSelected;
 
     #endregion
 
@@ -219,6 +221,9 @@ public class PauseMenuManager : MonoBehaviour
 
         // Add your Journal logic here
         Debug.Log("Open Journal");
+
+        // Set the event system's selected object to the first button
+        SetSelectedButton(journalFirstSelected);
     }
 
 
@@ -237,6 +242,9 @@ public class PauseMenuManager : MonoBehaviour
 
         // Add your Settings logic here
         Debug.Log("Open Settings");
+
+        // Set the event system's selected object to the first button
+        SetSelectedButton(settingsFirstSelected);
     }
 
     /// <summary>
@@ -252,8 +260,6 @@ public class PauseMenuManager : MonoBehaviour
 
         // Go back to main menu
         SceneManager.LoadScene("MainMenu");
-
-        Debug.Log($"RANNNNNNN: {textObject.name}");
     }
 
     public void Back()
@@ -263,6 +269,14 @@ public class PauseMenuManager : MonoBehaviour
 
         // Isolate the new current menu
         IsolateMenu(_menuStack.Peek());
+
+        // Set the event system's selected object to the first button
+        if (_menuStack.Peek() == journalPanel)
+            SetSelectedButton(journalFirstSelected);
+        else if (_menuStack.Peek() == settingsPanel)
+            SetSelectedButton(settingsFirstSelected);
+        else
+            SetSelectedButton(firstSelectedButton);
     }
 
     public void SetSelectedButton(GameObject button)
