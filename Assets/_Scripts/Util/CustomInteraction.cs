@@ -29,4 +29,22 @@ public class CustomInteraction : MonoBehaviour, IInteractable
     {
         return interactText;
     }
+
+    public void AddTooltip(string message)
+    {
+        // Add the tooltip
+        JournalTooltipManager.Instance.AddTooltip(message);
+    }
+
+    public void AddObjective(JournalObjective objective)
+    {
+        // Add the objective
+        JournalObjectiveManager.Instance.AddObjective(objective);
+    }
+
+    public void CompleteObjective(JournalObjective objective)
+    {
+        // Complete the objective
+        JournalObjectiveManager.Instance.CompleteObjective(objective);
+    }
 }
