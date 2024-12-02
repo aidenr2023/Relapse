@@ -49,6 +49,6 @@ public class MemoryPickup : MonoBehaviour, IInteractable
 
     public string InteractText(PlayerInteraction playerInteraction)
     {
-        return string.Empty;
+        return $"Pick Up {memory.MemoryName}";
     }
 }
