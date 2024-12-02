@@ -4,6 +4,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class JournalUIManager : MonoBehaviour
 {
@@ -14,6 +15,14 @@ public class JournalUIManager : MonoBehaviour
     [SerializeField] private InventoryEntry testInventoryEntry;
     [SerializeField] private PowerScriptableObject testPower;
     [SerializeField] private MemoryScriptableObject testMemory;
+    [SerializeField] private Button backButton;
+
+    [Header("Header Buttons")] [SerializeField]
+    private Button objectivesButton;
+
+    [SerializeField] private Button inventoryButton;
+    [SerializeField] private Button powersButton;
+    [SerializeField] private Button memoriesButton;
 
     [Header("Menus")] [SerializeField] private GameObject tasksMenu;
     [SerializeField] private GameObject inventoryMenu;
@@ -102,7 +111,7 @@ public class JournalUIManager : MonoBehaviour
 
     #region Objectives Menu
 
-    private void CreateObjectiveButton(JournalObjective objective)
+    private JournalUIObjective CreateObjectiveButton(JournalObjective objective)
     {
         var objectiveUI = Instantiate(objectiveUIPrefab, objectiveContentArea.transform);
         objectiveUI.SetObjective(objective);
@@ -121,6 +130,8 @@ public class JournalUIManager : MonoBehaviour
 
         // Add the event trigger entry
         objectiveUI.EventTrigger.triggers.Add(entry);
+
+        return objectiveUI;
     }
 
     private void PopulateObjectives()
@@ -146,12 +157,24 @@ public class JournalUIManager : MonoBehaviour
         // Clear the objectives list
         _objectives.Clear();
 
+        JournalUIObjective first = null;
+
         // Populate the content area with the objectives
         foreach (var objective in completeObjectives)
-            CreateObjectiveButton(objective);
+        {
+            var button = CreateObjectiveButton(objective);
+            if (first == null)
+                first = button;
+        }
 
         foreach (var objective in activeObjectives)
             CreateObjectiveButton(objective);
+
+        // Set the header navigation down
+        if (first != null)
+            SetHeaderNavDown(first.Button);
+        else
+            SetHeaderNavDown(backButton);
     }
 
     private void ChangeJournalObjectiveIndex(int index)
@@ -268,10 +291,12 @@ public class JournalUIManager : MonoBehaviour
 
     #region Inventory Menu
 
-    private void CreateInventoryItem(InventoryEntry entry)
+    private JournalUIInventoryItem CreateInventoryItem(InventoryEntry entry)
     {
         var inventoryItem = Instantiate(inventoryItemPrefab, inventoryContentArea.transform);
         inventoryItem.SetInventoryEntry(entry);
+
+        return inventoryItem;
     }
 
     private void PopulateInventory()
@@ -292,16 +317,29 @@ public class JournalUIManager : MonoBehaviour
         // Get the inventory entries
         var inventoryEntries = Player.Instance.PlayerInventory.InventoryEntries;
 
+        JournalUIInventoryItem firstInventoryItem = null;
+
         // Populate the content area with the inventory entries
         foreach (var entry in inventoryEntries)
-            CreateInventoryItem(entry);
+        {
+            var item = CreateInventoryItem(entry);
+
+            if (firstInventoryItem == null)
+                firstInventoryItem = item;
+        }
+
+        // Set the header navigation down
+        if (firstInventoryItem != null)
+            SetHeaderNavDown(firstInventoryItem.Button);
+        else
+            SetHeaderNavDown(backButton);
     }
 
     #endregion
 
     #region Powers Menu
 
-    private void CreatePowerItem(PowerScriptableObject power)
+    private JournalUIPowerItem CreatePowerItem(PowerScriptableObject power)
     {
         var powerItem = Instantiate(powerItemPrefab, powersContentArea.transform);
         powerItem.SetPower(power);
@@ -314,6 +352,8 @@ public class JournalUIManager : MonoBehaviour
 
         // Add the event trigger callback
         entry.callback.AddListener(_ => SetSelectedPower(power));
+
+        return powerItem;
     }
 
     private void PopulatePowers(PowerType powerType)
@@ -338,9 +378,22 @@ public class JournalUIManager : MonoBehaviour
         // Filter the powers by power type
         var filteredPowers = powers.Where(power => power.PowerType == powerType);
 
+        JournalUIPowerItem firstPowerItem = null;
+
         // Populate the content area with the powers
         foreach (var power in filteredPowers)
-            CreatePowerItem(power);
+        {
+            var powerItem = CreatePowerItem(power);
+
+            if (firstPowerItem == null)
+                firstPowerItem = powerItem;
+        }
+
+        // Set the header navigation down
+        if (firstPowerItem != null)
+            SetHeaderNavDown(firstPowerItem.Button);
+        else
+            SetHeaderNavDown(backButton);
     }
 
     private void UpdatePowersMenu()
@@ -363,11 +416,11 @@ public class JournalUIManager : MonoBehaviour
 
     #region Memories Menu
 
-    private void CreateMemoryItem(MemoryScriptableObject memory)
+    private JournalUIMemoryItem CreateMemoryItem(MemoryScriptableObject memory)
     {
         // Return if the memory is null
         if (memory == null)
-            return;
+            return null;
 
         var memoryItem = Instantiate(memoryItemPrefab, memoriesContentArea.transform);
         memoryItem.SetMemory(memory);
@@ -380,6 +433,8 @@ public class JournalUIManager : MonoBehaviour
 
         // Add the event trigger callback
         entry.callback.AddListener(_ => SetSelectedMemory(memory));
+
+        return memoryItem;
     }
 
     private void PopulateMemories()
@@ -391,12 +446,25 @@ public class JournalUIManager : MonoBehaviour
         // Get the list of memories
         var memories = MemoryManager.Instance.Memories;
 
+        JournalUIMemoryItem firstMemoryItem = null;
+
         foreach (var memory in memories)
-            CreateMemoryItem(memory);
+        {
+            var powerItem = CreateMemoryItem(memory);
+
+            if (firstMemoryItem == null)
+                firstMemoryItem = powerItem;
+        }
 
         // // TODO: Delete
         // for (var i = 0; i < 10; i++)
         //     CreateMemoryItem(testMemory);
+
+        // Set the header navigation down
+        if (firstMemoryItem != null)
+            SetHeaderNavDown(firstMemoryItem.Button);
+        else
+            SetHeaderNavDown(backButton);
     }
 
     private void SetSelectedMemory(MemoryScriptableObject memory)
@@ -406,4 +474,32 @@ public class JournalUIManager : MonoBehaviour
     }
 
     #endregion
+
+    private void SetHeaderNavDown(Selectable obj)
+    {
+        // Set up an array of all the header buttons
+        var headerButtons = new[] { objectivesButton, inventoryButton, powersButton, memoriesButton };
+
+        Debug.Log($"Setting header nav down to {obj.name}");
+
+        foreach (var button in headerButtons)
+        {
+            // If the button is null, continue
+            if (button == null)
+                continue;
+
+            // If the button is the same as the object, continue
+            if (button == obj)
+                continue;
+
+            // Get the navigation object
+            var nav = button.navigation;
+
+            // Set the down navigation object
+            nav.selectOnDown = obj;
+
+            // Set the navigation object
+            button.navigation = nav;
+        }
+    }
 }
