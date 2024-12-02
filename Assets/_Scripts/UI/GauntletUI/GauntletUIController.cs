@@ -84,14 +84,14 @@ public class GauntletUIController : MonoBehaviour
 
         var powerToken = player.PlayerPowerManager.CurrentPowerToken;
 
-        // If the power is done charging OR the power is currently active, flash the image
+        // If the power is done charging, flash the image
         if (powerToken != null)
         {
             // Create a sine wave from 0 to 1
             var value = Mathf.Sin(flashTimer.Percentage * Mathf.PI) / 2 + 0.5f;
 
-            // If the power is done cooling down, flash the image
-            if (powerToken.CooldownPercentage >= 1)
+            // If the power is done charging, flash the image
+            if (powerToken.ChargePercentage >= 1)
                 opacity = value;
 
             // If the power is currently active, flash the image
@@ -216,7 +216,7 @@ public class GauntletUIController : MonoBehaviour
             if (player.PlayerPowerManager.CurrentPowerToken.IsActiveEffectOn)
                 timeChange *= 1;
 
-            // Otherwise, if the cooldown percentage is >= 1, multiply the time change by 4
+            // Otherwise, if the charge percentage is >= 1, multiply the time change by 4
             else if (player.PlayerPowerManager.CurrentPowerToken.CooldownPercentage >= 1)
                 timeChange *= 4;
         }
