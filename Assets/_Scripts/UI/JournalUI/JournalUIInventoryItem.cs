@@ -13,6 +13,8 @@ public class JournalUIInventoryItem : MonoBehaviour
     [SerializeField] private TMP_Text itemNameText;
     [SerializeField] private EventTrigger eventTrigger;
 
+    [SerializeField] private Button button;
+
     #endregion
 
     #region Getters
@@ -22,6 +24,8 @@ public class JournalUIInventoryItem : MonoBehaviour
     public EventTrigger EventTrigger => eventTrigger;
 
     #endregion
+
+    public Button Button => button;
 
     private void Update()
     {
