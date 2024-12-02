@@ -23,6 +23,8 @@ public class DialogueUI : MonoBehaviour
     [Header("Buttons")] [SerializeField] private GameObject dialogueButtonsParent;
     [SerializeField] private Button[] buttons = new Button[4];
 
+    [SerializeField] private Button nextButton;
+
     #endregion
 
     #region Getters
@@ -249,7 +251,7 @@ public class DialogueUI : MonoBehaviour
                 // Invoke the next dialogue's start event
                 _currentDialogue.OnDialogueStart.Invoke();
 
-                Debug.Log($"Now using: {_currentDialogue} - {_currentDialogue.DialogueText}");
+                // Debug.Log($"Now using: {_currentDialogue} - {_currentDialogue.DialogueText}");
             }
         }
 
@@ -300,11 +302,18 @@ public class DialogueUI : MonoBehaviour
         // TODO: Put this in a better place or something. This goes against SOLID
         if (_currentDialogue is DialogueChoiceNode dialogueChoiceNode)
             ActivateChoiceButtons(dialogueChoiceNode);
+        // Select the next button
+        else
+            nextButton.Select();
+
+        if (nextButton != null)
+            nextButton.gameObject.SetActive(_currentDialogue is not DialogueChoiceNode);
     }
 
     private void ActivateChoiceButtons(DialogueChoiceNode dialogueChoiceNode)
     {
-        Debug.Log("Activating choice buttons");
+        // Stop typing
+        _typingTimer.Stop();
 
         // Activate the dialogue buttons parent
         dialogueButtonsParent.SetActive(true);
@@ -341,9 +350,47 @@ public class DialogueUI : MonoBehaviour
                 // Call the next dialogue
                 AdvanceDialogue();
 
+                // Reset the current text
+                ResetCurrentText();
+                _currentCharacterIndex = 0;
+
+                // Resume typing
+                _typingTimer.Reset();
+                _typingTimer.Start();
+
                 Debug.Log($"ADVANCED DIALOGUE TO: {choice.NextDialogue}");
             });
         }
+
+        // Set up navigation
+        for (var i = 0; i < buttons.Length; i++)
+        {
+            var button = buttons[i];
+
+            var nav = button.navigation;
+            nav.mode = Navigation.Mode.Explicit;
+
+            if (i == 0)
+            {
+                nav.selectOnDown = buttons[i + 1];
+                nav.selectOnUp = buttons[^1];
+            }
+            else if (i == buttons.Length - 1)
+            {
+                nav.selectOnUp = buttons[i - 1];
+                nav.selectOnDown = buttons[0];
+            }
+            else
+            {
+                nav.selectOnDown = buttons[i + 1];
+                nav.selectOnUp = buttons[i - 1];
+            }
+
+            button.navigation = nav;
+        }
+
+        // Set the event system's selected object to the first button
+        buttons[0].Select();
     }
 
     private void AddCharacterOnTimerEnd()

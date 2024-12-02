@@ -9,30 +9,21 @@ public class Player : MonoBehaviour
 {
     public static Player Instance { get; private set; }
 
-    private PlayerInfo _playerInfo;
-
-    private IPlayerController _playerController;
-    private PlayerLook _playerLook;
-
-    private PlayerInteraction _playerInteraction;
-    private PlayerPowerManager _playerPowerManager;
-    private WeaponManager _weaponManager;
-    private PlayerInventory _playerInventory;
-
     #region Getters
 
-    public PlayerInfo PlayerInfo => _playerInfo;
+    public PlayerInfo PlayerInfo { get; private set; }
 
-    public IPlayerController PlayerController => _playerController;
+    public IPlayerController PlayerController { get; private set; }
 
-    public PlayerLook PlayerLook => _playerLook;
+    public PlayerLook PlayerLook { get; private set; }
 
-    public PlayerInteraction PlayerInteraction => _playerInteraction;
-    public PlayerPowerManager PlayerPowerManager => _playerPowerManager;
+    public PlayerInteraction PlayerInteraction { get; private set; }
 
-    public WeaponManager WeaponManager => _weaponManager;
+    public PlayerPowerManager PlayerPowerManager { get; private set; }
 
-    public PlayerInventory PlayerInventory => _playerInventory;
+    public WeaponManager WeaponManager { get; private set; }
+
+    public PlayerInventory PlayerInventory { get; private set; }
 
     #endregion
 
@@ -50,25 +41,25 @@ public class Player : MonoBehaviour
     private void InitializeComponents()
     {
         // Get the Player Info component
-        _playerInfo = GetComponent<PlayerInfo>();
+        PlayerInfo = GetComponent<PlayerInfo>();
 
         // Get the TestPlayerController component
-        _playerController = GetComponent<IPlayerController>();
+        PlayerController = GetComponent<IPlayerController>();
 
         // Get the PlayerLook component
-        _playerLook = GetComponent<PlayerLook>();
+        PlayerLook = GetComponent<PlayerLook>();
 
         // Get the PlayerInteraction component
-        _playerInteraction = GetComponent<PlayerInteraction>();
+        PlayerInteraction = GetComponent<PlayerInteraction>();
 
         // Get the TestPlayerPowerManager component
-        _playerPowerManager = GetComponent<PlayerPowerManager>();
+        PlayerPowerManager = GetComponent<PlayerPowerManager>();
 
         // Get the WeaponManager component
-        _weaponManager = GetComponent<WeaponManager>();
+        WeaponManager = GetComponent<WeaponManager>();
 
         // Get the PlayerInventory component
-        _playerInventory = GetComponent<PlayerInventory>();
+        PlayerInventory = GetComponent<PlayerInventory>();
     }
 
     #endregion
@@ -78,12 +69,12 @@ public class Player : MonoBehaviour
         Debug.Log("Resetting Player");
 
         // Reset the health
-        _playerInfo.ResetPlayer();
+        PlayerInfo.ResetPlayer();
 
         // Reset the powers
-        _playerPowerManager.ResetPlayer();
+        PlayerPowerManager.ResetPlayer();
 
         // Reset the weapon
-        _weaponManager.ResetPlayer();
+        WeaponManager.ResetPlayer();
     }
 }

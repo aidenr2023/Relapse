@@ -31,6 +31,16 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
     {
         Checkpoint.Instance?.SaveCheckpoint(this);
 
+        if (HasBeenCollected)
+        {
+            // Make a tooltip appear
+            JournalTooltipManager.Instance?.AddTooltip("You already saved this checkpoint!");
+            return;
+        }
+
+        // Make a tooltip appear
+        JournalTooltipManager.Instance?.AddTooltip("Checkpoint saved!");
+
         // Set the has been collected flag to true
         HasBeenCollected = true;
     }

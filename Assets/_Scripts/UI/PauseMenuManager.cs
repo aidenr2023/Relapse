@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
@@ -22,6 +23,12 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private Color normalColor = Color.white;
     [SerializeField] private Color hoverColor = Color.yellow;
     [SerializeField] private Color clickColor = Color.red;
+
+
+    [Header("Navigation Control")]
+    [SerializeField] private GameObject firstSelectedButton;
+    [SerializeField] private GameObject settingsFirstSelected;
+    [SerializeField] private GameObject journalFirstSelected;
 
     #endregion
 
@@ -59,6 +66,12 @@ public class PauseMenuManager : MonoBehaviour
         pauseMenuParent.SetActive(false);
     }
 
+    private void OnEnable()
+    {
+        // Set the event system's selected object to the first button
+        SetSelectedButton(firstSelectedButton);
+    }
+
     private void TogglePause()
     {
         if (!IsPaused)
@@ -80,6 +93,8 @@ public class PauseMenuManager : MonoBehaviour
 
     public void OnPointerEnter(GameObject textObject)
     {
+        return;
+
         var tmpText = textObject.GetComponent<TMP_Text>();
 
         if (tmpText != null)
@@ -92,6 +107,8 @@ public class PauseMenuManager : MonoBehaviour
     /// </summary>
     public void OnPointerExit(GameObject textObject)
     {
+        return;
+
         var tmpText = textObject.GetComponent<TMP_Text>();
 
         if (tmpText != null)
@@ -105,7 +122,7 @@ public class PauseMenuManager : MonoBehaviour
     /// <param name="textObject">The GameObject associated with the button.</param>
     private void ChangeClickColor(GameObject textObject)
     {
-        // return;
+        return;
 
         var tmpText = textObject.GetComponent<TMP_Text>();
 
@@ -116,6 +133,8 @@ public class PauseMenuManager : MonoBehaviour
 
     private void FixPhysics()
     {
+        return;
+
         Time.fixedDeltaTime = _fixedDeltaTime * Time.timeScale;
     }
 
@@ -202,6 +221,9 @@ public class PauseMenuManager : MonoBehaviour
 
         // Add your Journal logic here
         Debug.Log("Open Journal");
+
+        // Set the event system's selected object to the first button
+        SetSelectedButton(journalFirstSelected);
     }
 
 
@@ -220,6 +242,9 @@ public class PauseMenuManager : MonoBehaviour
 
         // Add your Settings logic here
         Debug.Log("Open Settings");
+
+        // Set the event system's selected object to the first button
+        SetSelectedButton(settingsFirstSelected);
     }
 
     /// <summary>
@@ -232,8 +257,6 @@ public class PauseMenuManager : MonoBehaviour
         FixPhysics();
 
         ChangeClickColor(textObject);
-        // Add your Exit logic here
-        Debug.Log("Exit the game");
 
         // Go back to main menu
         SceneManager.LoadScene("MainMenu");
@@ -246,5 +269,18 @@ public class PauseMenuManager : MonoBehaviour
 
         // Isolate the new current menu
         IsolateMenu(_menuStack.Peek());
+
+        // Set the event system's selected object to the first button
+        if (_menuStack.Peek() == journalPanel)
+            SetSelectedButton(journalFirstSelected);
+        else if (_menuStack.Peek() == settingsPanel)
+            SetSelectedButton(settingsFirstSelected);
+        else
+            SetSelectedButton(firstSelectedButton);
+    }
+
+    public void SetSelectedButton(GameObject button)
+    {
+        EventSystem.current.SetSelectedGameObject(button);
     }
 }

@@ -71,7 +71,7 @@ public class PlayerInventory : MonoBehaviour
 
         inventoryEntry.AddQuantity(quantity);
 
-        Debug.Log($"Added {quantity} {inventoryObject.Name} to the inventory!");
+        // Debug.Log($"Added {quantity} {inventoryObject.Name} to the inventory!");
 
         // Invoke the event
         OnItemAdded?.Invoke(inventoryObject, quantity);
@@ -127,8 +127,14 @@ public class PlayerInventory : MonoBehaviour
         if (inventoryObject == moneyObject)
             return;
 
+        string message;
+        if (quantity > 1)
+            message = $"Picked up {quantity}x {inventoryObject.Name}!";
+        else
+            message = $"Picked up a {inventoryObject.Name}!";
+
         // Show the tooltip
-        JournalTooltipManager.Instance.AddTooltip($"Picked up {quantity}x {inventoryObject.Name}!");
+        JournalTooltipManager.Instance.AddTooltip(message);
     }
 
     private void MoneyTooltipOnPickup(InventoryObject inventoryObject, int quantity)

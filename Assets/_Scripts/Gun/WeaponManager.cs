@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -35,7 +36,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
     public IGun EquippedGun => _equippedGun;
 
     public Transform FireTransform => fireTransform;
-    
+
     public float CurrentDamageMultiplier
     {
         get
@@ -192,20 +193,30 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
 
         // Play the equip sound
         SoundManager.Instance.PlaySfx(gun.GunInformation.PickupSound);
-        
+
         // TODO: DELETE THIS EVENTUALLY
         // Get all the renderers in the gun
         var renderers = gun.GameObject.GetComponentsInChildren<Renderer>();
-        
+
         // Deactivate the renderers
         foreach (var cRenderer in renderers)
         {
             // Skip the cRenderer if the object has a particle system
             if (cRenderer.TryGetComponent(out ParticleSystem ps))
                 continue;
-            
+
             cRenderer.enabled = false;
         }
+
+        // Get the gun's game object and child objects
+        var gunTransforms = gun.GameObject.GetComponentsInChildren<Transform>().ToList();
+
+        // Add the gun's game object to the child objects
+        gunTransforms.Add(gun.GameObject.transform);
+
+        // Set all the renderers to the hand holder layer
+        foreach (var cTransform in gunTransforms)
+            cTransform.gameObject.layer = LayerMask.NameToLayer("GunHandHolder");
     }
 
     public void RemoveGun()
@@ -231,6 +242,16 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
 
         // Call the OnRemoval function
         _equippedGun.OnRemoval(this);
+
+        // Get the gun's game object and child objects
+        var gunTransforms = _equippedGun.GameObject.GetComponentsInChildren<Transform>().ToList();
+
+        // Add the gun's game object to the child objects
+        gunTransforms.Add(_equippedGun.GameObject.transform);
+
+        // Set all the renderers to the hand holder layer
+        foreach (var cTransform in gunTransforms)
+            cTransform.gameObject.layer = LayerMask.NameToLayer("Gun");
 
         _equippedGun = null;
     }

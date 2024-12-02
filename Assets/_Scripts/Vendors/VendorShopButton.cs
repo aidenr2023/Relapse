@@ -6,12 +6,16 @@ public class VendorShopButton : MonoBehaviour
 {
     [SerializeField] private VendorMenu vendorMenu;
 
+    [SerializeField] private Button button;
+
     [SerializeField] private TMP_Text powerNameText;
     [SerializeField] private Image powerImage;
 
     [SerializeField] private PowerScriptableObject power;
 
     public PowerScriptableObject Power => power;
+
+    public Button Button => button;
 
     private void Start()
     {
@@ -98,4 +102,49 @@ public class VendorShopButton : MonoBehaviour
         // Add the power clicked
         Player.Instance.PlayerPowerManager.AddPower(power);
     }
+
+    public void SetNavigationUp(Selectable selectable)
+    {
+        var nav = button.navigation;
+
+        nav.selectOnUp = selectable;
+
+        button.navigation = nav;
+
+        Debug.Log($"Setting {gameObject.name}'s up navigation to {selectable.name}");
+    }
+
+    public void SetNavigationDown(Selectable selectable)
+    {
+        var nav = button.navigation;
+
+        nav.selectOnDown = selectable;
+
+        button.navigation = nav;
+
+        Debug.Log($"Setting {gameObject.name}'s down navigation to {selectable.name}");
+    }
+
+    public void SetNavigationLeft(Selectable selectable)
+    {
+        var nav = button.navigation;
+
+        nav.selectOnLeft = selectable;
+
+        button.navigation = nav;
+
+        Debug.Log($"Setting {gameObject.name}'s left navigation to {selectable.name}");
+    }
+
+    public void SetNavigationRight(Selectable selectable)
+    {
+        var nav = button.navigation;
+
+        nav.selectOnRight = selectable;
+
+        button.navigation = nav;
+
+        Debug.Log($"Setting {gameObject.name}'s right navigation to {selectable.name}");
+    }
+
 }

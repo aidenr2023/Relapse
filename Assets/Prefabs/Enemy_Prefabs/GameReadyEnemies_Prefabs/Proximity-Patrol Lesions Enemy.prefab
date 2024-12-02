@@ -449,7 +449,6 @@ GameObject:
   - component: {fileID: 1321240230866553819}
   - component: {fileID: 1562862804367130674}
   - component: {fileID: 1645904041578154685}
-  - component: {fileID: 7158624350154412511}
   m_Layer: 0
   m_Name: Proximity-Patrol Lesions Enemy
   m_TagString: Untagged
@@ -612,6 +611,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   patrolCheckpoints: []
   checkpointProximityThreshold: 0.5
+  animator: {fileID: 0}
+  idleAnimationName: Idle
+  walkAnimationName: Walk
+  runAnimationName: Run
+  walkAnimationThreshold: 0
+  runAnimationThreshold: 0
 --- !u!114 &1645904041578154685
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -633,20 +638,6 @@ MonoBehaviour:
     type: 3}
   explosionVFX: {fileID: 6758546207660555887, guid: e844959fe8937b14097af37fa61e64e2,
     type: 3}
---- !u!114 &7158624350154412511
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8754773797763522373}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f23efbaf781bed42a4978e51c1997df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  navMeshAgent: {fileID: 8784981969918071950}
-  animator: {fileID: 4976750792299437694}
 --- !u!1 &9135739522977811353
 GameObject:
   m_ObjectHideFlags: 0

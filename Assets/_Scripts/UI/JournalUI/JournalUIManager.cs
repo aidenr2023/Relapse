@@ -4,6 +4,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class JournalUIManager : MonoBehaviour
 {
@@ -14,6 +15,14 @@ public class JournalUIManager : MonoBehaviour
     [SerializeField] private InventoryEntry testInventoryEntry;
     [SerializeField] private PowerScriptableObject testPower;
     [SerializeField] private MemoryScriptableObject testMemory;
+    [SerializeField] private Button backButton;
+
+    [Header("Header Buttons")] [SerializeField]
+    private Button objectivesButton;
+
+    [SerializeField] private Button inventoryButton;
+    [SerializeField] private Button powersButton;
+    [SerializeField] private Button memoriesButton;
 
     [Header("Menus")] [SerializeField] private GameObject tasksMenu;
     [SerializeField] private GameObject inventoryMenu;
@@ -37,6 +46,9 @@ public class JournalUIManager : MonoBehaviour
     [SerializeField] private JournalUIPowerItem powerItemPrefab;
 
     [SerializeField] private TMP_Text drugDescriptionText;
+
+    [SerializeField] private Button medsButton;
+    [SerializeField] private Button drugsButton;
 
     [Header("Memories Menu")] [SerializeField]
     private GameObject memoriesContentArea;
@@ -91,9 +103,21 @@ public class JournalUIManager : MonoBehaviour
             UpdatePowersMenu();
     }
 
+    private void OnEnable()
+    {
+        // Populate each menu
+        PopulateObjectives();
+        PopulateMemories();
+        PopulateInventory();
+        PopulatePowers(_currentPowerType);
+
+        // Open the objectives menu
+        OpenObjectivesMenu();
+    }
+
     #region Objectives Menu
 
-    private void CreateObjectiveButton(JournalObjective objective)
+    private JournalUIObjective CreateObjectiveButton(JournalObjective objective)
     {
         var objectiveUI = Instantiate(objectiveUIPrefab, objectiveContentArea.transform);
         objectiveUI.SetObjective(objective);
@@ -112,6 +136,8 @@ public class JournalUIManager : MonoBehaviour
 
         // Add the event trigger entry
         objectiveUI.EventTrigger.triggers.Add(entry);
+
+        return objectiveUI;
     }
 
     private void PopulateObjectives()
@@ -137,12 +163,72 @@ public class JournalUIManager : MonoBehaviour
         // Clear the objectives list
         _objectives.Clear();
 
+        JournalUIObjective first = null;
+
+        var objectivesList = new List<JournalUIObjective>();
+
         // Populate the content area with the objectives
         foreach (var objective in completeObjectives)
-            CreateObjectiveButton(objective);
+        {
+            var button = CreateObjectiveButton(objective);
+
+            // Add the button to the list of objectives
+            objectivesList.Add(button);
+
+            if (first == null)
+                first = button;
+        }
 
         foreach (var objective in activeObjectives)
-            CreateObjectiveButton(objective);
+        {
+            var button = CreateObjectiveButton(objective);
+
+            // Add the button to the list of objectives
+            objectivesList.Add(button);
+        }
+
+        // Set the header navigation down
+        if (first != null)
+            SetHeaderNavDown(first.Button);
+        else
+            SetHeaderNavDown(backButton);
+
+        // Set the navigation between objectives
+        for (var i = 0; i < objectivesList.Count; i++)
+        {
+            var button = objectivesList[i].Button;
+
+            var nav = button.navigation;
+
+            // Up navigation
+            nav.selectOnUp = i > 0
+                ? objectivesList[i - 1].Button
+                : objectivesButton;
+
+            // Down navigation
+            nav.selectOnDown = i < objectivesList.Count - 1
+                ? objectivesList[i + 1].Button
+                : backButton;
+
+            // Set the navigation
+            button.navigation = nav;
+        }
+
+        // Set the back button's up navigation to the last item in the objectives list
+        if (objectivesList.Count > 0)
+        {
+            var lastItem = objectivesList[^1];
+
+            var nav = backButton.navigation;
+            nav.selectOnUp = lastItem.Button;
+            backButton.navigation = nav;
+        }
+        else
+        {
+            var nav = backButton.navigation;
+            nav.selectOnUp = objectivesButton;
+            backButton.navigation = nav;
+        }
     }
 
     private void ChangeJournalObjectiveIndex(int index)
@@ -259,10 +345,12 @@ public class JournalUIManager : MonoBehaviour
 
     #region Inventory Menu
 
-    private void CreateInventoryItem(InventoryEntry entry)
+    private JournalUIInventoryItem CreateInventoryItem(InventoryEntry entry)
     {
         var inventoryItem = Instantiate(inventoryItemPrefab, inventoryContentArea.transform);
         inventoryItem.SetInventoryEntry(entry);
+
+        return inventoryItem;
     }
 
     private void PopulateInventory()
@@ -275,7 +363,6 @@ public class JournalUIManager : MonoBehaviour
         // for (var i = 0; i < 10; i++)
         //     CreateInventoryItem(testInventoryEntry);
 
-
         // Return if the instance of the InventoryManager is null
         if (Player.Instance?.PlayerInventory == null)
             return;
@@ -283,16 +370,74 @@ public class JournalUIManager : MonoBehaviour
         // Get the inventory entries
         var inventoryEntries = Player.Instance.PlayerInventory.InventoryEntries;
 
+        JournalUIInventoryItem firstInventoryItem = null;
+
+        // Create a list for the inventory UI items
+        var inventoryItems = new List<JournalUIInventoryItem>();
+
         // Populate the content area with the inventory entries
         foreach (var entry in inventoryEntries)
-            CreateInventoryItem(entry);
+        {
+            var item = CreateInventoryItem(entry);
+
+            // Add the item to the list of inventory items
+            inventoryItems.Add(item);
+
+            if (firstInventoryItem == null)
+                firstInventoryItem = item;
+        }
+
+        // Set the header navigation down
+        if (firstInventoryItem != null)
+            SetHeaderNavDown(firstInventoryItem.Button);
+        else
+            SetHeaderNavDown(backButton);
+
+        // Set up the navigation between inventory items
+        for (var i = 0; i < inventoryItems.Count; i++)
+        {
+            var button = inventoryItems[i].Button;
+
+            var nav = button.navigation;
+
+            // Up navigation
+            nav.selectOnUp = i > 0
+                ? inventoryItems[i - 1].Button
+                : inventoryButton;
+
+            // Down navigation
+            nav.selectOnDown = i < inventoryItems.Count - 1
+                ? inventoryItems[i + 1].Button
+                : backButton;
+
+            // Set the navigation
+            button.navigation = nav;
+        }
+
+        // Set the back button's up navigation to the last inventory item
+        if (inventoryItems.Count > 0)
+        {
+            var lastItem = inventoryItems[^1];
+
+            var nav = backButton.navigation;
+            nav.selectOnUp = lastItem.Button;
+            backButton.navigation = nav;
+        }
+        else
+        {
+            SetHeaderNavDown(backButton);
+
+            var nav = backButton.navigation;
+            nav.selectOnUp = inventoryButton;
+            backButton.navigation = nav;
+        }
     }
 
     #endregion
 
     #region Powers Menu
 
-    private void CreatePowerItem(PowerScriptableObject power)
+    private JournalUIPowerItem CreatePowerItem(PowerScriptableObject power)
     {
         var powerItem = Instantiate(powerItemPrefab, powersContentArea.transform);
         powerItem.SetPower(power);
@@ -305,6 +450,8 @@ public class JournalUIManager : MonoBehaviour
 
         // Add the event trigger callback
         entry.callback.AddListener(_ => SetSelectedPower(power));
+
+        return powerItem;
     }
 
     private void PopulatePowers(PowerType powerType)
@@ -329,9 +476,75 @@ public class JournalUIManager : MonoBehaviour
         // Filter the powers by power type
         var filteredPowers = powers.Where(power => power.PowerType == powerType);
 
+        // Create a list for the power UI items
+        var powerItems = new List<JournalUIPowerItem>();
+
         // Populate the content area with the powers
         foreach (var power in filteredPowers)
-            CreatePowerItem(power);
+        {
+            var powerItem = CreatePowerItem(power);
+
+            // Add the power item to the list of power items
+            powerItems.Add(powerItem);
+        }
+
+        var subheaderButton = powerType == PowerType.Medicine
+            ? medsButton
+            : drugsButton;
+
+        Debug.Log($"Setting Nav down to {subheaderButton.name}");
+
+        // Set the header navigation down based on the powertype
+        SetHeaderNavDown(subheaderButton);
+
+        // Set the navigation between power items
+        for (var i = 0; i < powerItems.Count; i++)
+        {
+            var button = powerItems[i].Button;
+
+            var nav = button.navigation;
+
+            // Up navigation
+            nav.selectOnUp = i > 0
+                ? powerItems[i - 1].Button
+                : subheaderButton;
+
+            // Down navigation
+            nav.selectOnDown = i < powerItems.Count - 1
+                ? powerItems[i + 1].Button
+                : backButton;
+
+            // Set the navigation
+            button.navigation = nav;
+        }
+
+        // Set the down navigation of the subheader buttons
+        var subHeaders = new[] { medsButton, drugsButton };
+
+        foreach (var subHeader in subHeaders)
+        {
+            var nav = subHeader.navigation;
+            nav.selectOnDown = powerItems.Count > 0
+                ? powerItems[0].Button
+                : backButton;
+            subHeader.navigation = nav;
+        }
+
+        // Set the back button's up navigation to the last power item
+        if (powerItems.Count > 0)
+        {
+            var lastItem = powerItems[^1];
+
+            var nav = backButton.navigation;
+            nav.selectOnUp = lastItem.Button;
+            backButton.navigation = nav;
+        }
+        else
+        {
+            var nav = backButton.navigation;
+            nav.selectOnUp = subheaderButton;
+            backButton.navigation = nav;
+        }
     }
 
     private void UpdatePowersMenu()
@@ -354,11 +567,11 @@ public class JournalUIManager : MonoBehaviour
 
     #region Memories Menu
 
-    private void CreateMemoryItem(MemoryScriptableObject memory)
+    private JournalUIMemoryItem CreateMemoryItem(MemoryScriptableObject memory)
     {
         // Return if the memory is null
         if (memory == null)
-            return;
+            return null;
 
         var memoryItem = Instantiate(memoryItemPrefab, memoriesContentArea.transform);
         memoryItem.SetMemory(memory);
@@ -371,6 +584,8 @@ public class JournalUIManager : MonoBehaviour
 
         // Add the event trigger callback
         entry.callback.AddListener(_ => SetSelectedMemory(memory));
+
+        return memoryItem;
     }
 
     private void PopulateMemories()
@@ -382,12 +597,119 @@ public class JournalUIManager : MonoBehaviour
         // Get the list of memories
         var memories = MemoryManager.Instance.Memories;
 
-        foreach (var memory in memories)
-            CreateMemoryItem(memory);
+        // Create a list for the memory UI items
+        var memoryItems = new List<JournalUIMemoryItem>();
 
-        // // TODO: Delete
-        // for (var i = 0; i < 10; i++)
-        //     CreateMemoryItem(testMemory);
+        JournalUIMemoryItem firstMemoryItem = null;
+
+        foreach (var memory in memories)
+        {
+            var powerItem = CreateMemoryItem(memory);
+
+            if (firstMemoryItem == null)
+                firstMemoryItem = powerItem;
+        }
+
+        // Set the header navigation down
+        if (firstMemoryItem != null)
+            SetHeaderNavDown(firstMemoryItem.Button);
+        else
+            SetHeaderNavDown(backButton);
+
+        var selectableMemoryItems = memoryItems.Select(item => item.Button).ToList();
+
+        // Add the back button to the list of selectable memory items
+        selectableMemoryItems.Add(backButton);
+
+        // Set the navigation between memory items
+        for (var i = 0; i < memoryItems.Count; i++)
+        {
+            var button = memoryItems[i].Button;
+
+            var nav = button.navigation;
+
+            // // Up navigation
+            // nav.selectOnUp = i > 0
+            //     ? GetClosestElement(button, Vector2.up, selectableMemoryItems)
+            //     : backButton;
+            //
+            // // Down navigation
+            // nav.selectOnDown = i < memoryItems.Count - 1
+            //     ? GetClosestElement(button, Vector2.down, selectableMemoryItems)
+            //     : backButton;
+            //
+            // // Left navigation
+            // nav.selectOnLeft = i > 0
+            //     ? GetClosestElement(button, Vector2.left, selectableMemoryItems)
+            //     : backButton;
+            //
+            // // Right navigation
+            // nav.selectOnRight = i < memoryItems.Count - 1
+            //     ? GetClosestElement(button, Vector2.right, selectableMemoryItems)
+            //     : backButton;
+
+            // Up navigation
+            nav.selectOnUp = i > 0
+                ? memoryItems[i - 1].Button
+                : memoriesButton;
+
+            // Down navigation
+            nav.selectOnDown = i < memoryItems.Count - 1
+                ? memoryItems[i + 1].Button
+                : backButton;
+            
+            // Set the navigation
+            button.navigation = nav;
+        }
+
+        // Set the back button's up navigation to the last memory item
+        if (memoryItems.Count > 0)
+        {
+            var lastItem = memoryItems[^1];
+
+            var nav = backButton.navigation;
+            nav.selectOnUp = lastItem.Button;
+            backButton.navigation = nav;
+        }
+        else
+        {
+            var nav = backButton.navigation;
+            nav.selectOnUp = memoriesButton;
+            backButton.navigation = nav;
+        }
+
+        return;
+
+        Selectable GetClosestElement(Selectable origin, Vector2 direction, List<Button> elements)
+        {
+            var closest = origin;
+
+            // Map the elements and their dot products in relation to the direction
+            var elementDistances = elements.ToDictionary(
+                element => element,
+                element =>
+                {
+                    // Get the dot product
+                    var dot = Vector2.Dot(
+                        direction,
+                        element.transform.position - origin.transform.position
+                    );
+
+                    return dot;
+                });
+
+            // Sort the elements by their dot product
+            var sortedElements = elementDistances.OrderBy(kvp => kvp.Value).ToList();
+
+            // Get the closest element
+            closest = sortedElements.First().Key;
+
+            // If the first element has the same dot product as the origin, return the origin
+            if (sortedElements.First().Value == 0)
+                return origin;
+
+            return closest;
+        }
     }
 
     private void SetSelectedMemory(MemoryScriptableObject memory)
@@ -397,4 +719,36 @@ public class JournalUIManager : MonoBehaviour
     }
 
     #endregion
+
+    private void SetHeaderNavDown(Selectable obj)
+    {
+        // Set up an array of all the header buttons
+        var headerButtons = new[] { objectivesButton, inventoryButton, powersButton, memoriesButton };
+
+        // Debug.Log($"Setting header nav down to {obj.name}");
+
+        foreach (var button in headerButtons)
+        {
+            // If the button is null, continue
+            if (button == null)
+            {
+                // Log error
+                Debug.LogError("Button is null");
+                continue;
+            }
+
+            // If the button is the same as the object, continue
+            if (button == obj)
+                continue;
+
+            // Get the navigation object
+            var nav = button.navigation;
+
+            // Set the down navigation object
+            nav.selectOnDown = obj;
+
+            // Set the navigation object
+            button.navigation = nav;
+        }
+    }
 }

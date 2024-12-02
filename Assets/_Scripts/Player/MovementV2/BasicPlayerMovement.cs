@@ -134,6 +134,7 @@ public class BasicPlayerMovement : PlayerMovementScript
 
     #endregion
 
+
     #region Update Functions
 
     private void Update()
@@ -302,6 +303,15 @@ public class BasicPlayerMovement : PlayerMovementScript
 
     #endregion
 
+    public void SetCanSprintWithoutPower(bool canSprint)
+    {
+        canSprintWithoutPower = canSprint;
+    }
+
+    public void SetCanJumpWithoutPower(bool canJump)
+    {
+        canJumpWithoutPower = canJump;
+    }
 
     public override string GetDebugText()
     {

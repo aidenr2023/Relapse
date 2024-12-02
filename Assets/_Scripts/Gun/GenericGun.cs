@@ -236,8 +236,17 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             var yBloom = UnityEngine.Random.Range(-gunInformation.BloomAngle / 2, gunInformation.BloomAngle / 2);
             var spreadDirection = Quaternion.Euler(xBloom, yBloom, 0) * direction;
 
+            // Create a layerMask to ignore the NonPhysical layer
+            var layerMask = ~(1 << LayerMask.NameToLayer("NonPhysical"));
+
             // Perform the raycast
-            var hit = Physics.Raycast(startingPosition, spreadDirection, out var hitInfo, gunInformation.Range);
+            var hit = Physics.Raycast(
+                startingPosition,
+                spreadDirection,
+                out var hitInfo,
+                gunInformation.Range,
+                layerMask
+            );
 
             // Decrease the magazine size
             _currentMagazineSize--;
@@ -368,6 +377,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Play the muzzle flash
         muzzleFlashInstance.Play();
+
+        // Set the particles to be a child of the gun
+        muzzleFlashInstance.transform.SetParent(muzzleLocation);
     }
 
     public void Interact(PlayerInteraction playerInteraction)

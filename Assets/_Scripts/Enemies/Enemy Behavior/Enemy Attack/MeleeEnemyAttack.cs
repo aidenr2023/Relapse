@@ -15,8 +15,6 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     [SerializeField] private Animator animator;
 
-    [SerializeField] private string attackAnimationName;
-
     [SerializeField] private MeleeAttackHitbox[] meleeAttackHitboxes;
 
     #endregion
@@ -72,6 +70,7 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
             // Turn off all the hit boxes
             SetAllHitBoxes(false);
         };
+        
     }
 
     private void InitializeComponents()
@@ -82,6 +81,14 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     private void Start()
     {
+        Enemy.EnemyInfo.OnDamaged += (_, args) =>
+        {
+            //debug log to check if hit trigger is activated
+            Debug.Log("Hit Trigger Activated");
+            // Activate the animator's hit trigger
+            animator.SetTrigger("Hit");
+            
+        };
     }
 
     #endregion
@@ -119,9 +126,6 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
         if (animator == null)
             return;
-
-        // // Play the melee attack animation
-        // animator.Play(attackAnimationName);
 
         // Play the melee attack animation
         animator.SetTrigger(animatiorAttackProperty);
@@ -163,8 +167,12 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     {
         Debug.Log($"Setting HitBox colliders to {on}");
 
+        // Return if there are no hit boxes
+        if (meleeAttackHitboxes == null)
+            return;
+
         foreach (var hitBox in meleeAttackHitboxes)
-            hitBox.SetEnabled(on);
+            hitBox?.SetEnabled(on);
     }
 
     #endregion
