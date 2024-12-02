@@ -278,6 +278,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Inspect"",
+                    ""type"": ""Button"",
+                    ""id"": ""df08003b-fa13-4424-b5aa-29bc11e777d4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -476,6 +485,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""KB n M"",
                     ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""85d6042d-b89e-4085-94f4-aa2ccbc1585d"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KB n M"",
+                    ""action"": ""Inspect"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6840d21d-2aa8-4e0e-8314-2f96b063b71e"",
+                    ""path"": ""<Gamepad>/dpad/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Inspect"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -910,6 +941,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_ChangePower = m_Player.FindAction("ChangePower", throwIfNotFound: true);
         m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
         m_Player_Pause = m_Player.FindAction("Pause", throwIfNotFound: true);
+        m_Player_Inspect = m_Player.FindAction("Inspect", throwIfNotFound: true);
         // PlayerMovementBasic
         m_PlayerMovementBasic = asset.FindActionMap("PlayerMovementBasic", throwIfNotFound: true);
         m_PlayerMovementBasic_Move = m_PlayerMovementBasic.FindAction("Move", throwIfNotFound: true);
@@ -1113,6 +1145,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_ChangePower;
     private readonly InputAction m_Player_Reload;
     private readonly InputAction m_Player_Pause;
+    private readonly InputAction m_Player_Inspect;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -1125,6 +1158,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @ChangePower => m_Wrapper.m_Player_ChangePower;
         public InputAction @Reload => m_Wrapper.m_Player_Reload;
         public InputAction @Pause => m_Wrapper.m_Player_Pause;
+        public InputAction @Inspect => m_Wrapper.m_Player_Inspect;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1158,6 +1192,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Pause.started += instance.OnPause;
             @Pause.performed += instance.OnPause;
             @Pause.canceled += instance.OnPause;
+            @Inspect.started += instance.OnInspect;
+            @Inspect.performed += instance.OnInspect;
+            @Inspect.canceled += instance.OnInspect;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1186,6 +1223,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Pause.started -= instance.OnPause;
             @Pause.performed -= instance.OnPause;
             @Pause.canceled -= instance.OnPause;
+            @Inspect.started -= instance.OnInspect;
+            @Inspect.performed -= instance.OnInspect;
+            @Inspect.canceled -= instance.OnInspect;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1367,6 +1407,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnChangePower(InputAction.CallbackContext context);
         void OnReload(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
+        void OnInspect(InputAction.CallbackContext context);
     }
     public interface IPlayerMovementBasicActions
     {
