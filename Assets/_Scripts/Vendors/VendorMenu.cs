@@ -102,7 +102,19 @@ public class VendorMenu : MonoBehaviour
 
         // Set the selected button
         if (menu == powerMenu)
-            SetSelectedGameObject(shopSelectedButton);
+        {
+            // SetSelectedGameObject(shopSelectedButton);
+
+            // If, the first med button is enabled, select it
+            if (medButtons[0].isActiveAndEnabled)
+                SetSelectedGameObject(medButtons[0].gameObject);
+            // Else if the first drug button is enabled, select it
+            else if (drugButtons[0].isActiveAndEnabled)
+                SetSelectedGameObject(drugButtons[0].gameObject);
+            // Otherwise, select the shop selected button
+            else
+                SetSelectedGameObject(shopSelectedButton);
+        }
         else if (menu == gossipMenu)
             SetSelectedGameObject(gossipSelectedButton);
         else
@@ -111,6 +123,7 @@ public class VendorMenu : MonoBehaviour
 
     private void PopulateShop()
     {
+
         // Reset all the power buttons
         foreach (var button in medButtons)
             button.Reset();
@@ -119,6 +132,7 @@ public class VendorMenu : MonoBehaviour
         foreach (var button in drugButtons)
             button.Reset();
 
+        // Enable buttons
         for (var i = 0; i < _medPowers.Length; i++)
         {
             // Get the current power
@@ -132,6 +146,7 @@ public class VendorMenu : MonoBehaviour
 
             // Enable the button
             button.Enable();
+
         }
 
         for (var i = 0; i < _drugPowers.Length; i++)
@@ -147,7 +162,75 @@ public class VendorMenu : MonoBehaviour
 
             // Enable the button
             button.Enable();
+
         }
+
+        var backButton = shopSelectedButton.GetComponent<Button>();
+
+        // Set up navigation
+        for (var i = 0; i < _medPowers.Length; i++)
+        {
+            // Get the current power
+            var power = _medPowers[i];
+
+            // Get the current power button
+            var button = medButtons[i];
+
+            // If there is a button before this one, set up the up navigation
+            if (i > 0)
+                button.SetNavigationUp(medButtons[i - 1].Button);
+
+            // If there is a button after this one, set up the down navigation
+            if (i < _medPowers.Length - 1)
+                button.SetNavigationDown(medButtons[i + 1].Button);
+            // Otherwise, set the down navigation to the shop selected button
+            else
+                button.SetNavigationDown(backButton);
+
+            // Set the left navigation to the back button
+            button.SetNavigationLeft(backButton);
+
+            // Set the right navigation to the first drug button (if it is enabled)
+            if (drugButtons[0].isActiveAndEnabled)
+                button.SetNavigationRight(drugButtons[0].Button);
+        }
+
+        for (var i = 0; i < _drugPowers.Length; i++)
+        {
+            // Get the current power
+            var power = _drugPowers[i];
+
+            // Get the current power button
+            var button = drugButtons[i];
+
+            // If there is a button before this one, set up the up navigation
+            if (i > 0)
+                button.SetNavigationUp(drugButtons[i - 1].Button);
+
+            // If there is a button after this one, set up the down navigation
+            if (i < _drugPowers.Length - 1)
+                button.SetNavigationDown(drugButtons[i + 1].Button);
+            // Otherwise, set the down navigation to the shop selected button
+            else
+                button.SetNavigationDown(backButton);
+
+            // If there is a drug button, set the left navigation to the first drug button
+            if (medButtons[0].isActiveAndEnabled)
+                button.SetNavigationLeft(medButtons[0].Button);
+
+            // Set the right navigation to the back button
+            button.SetNavigationRight(backButton);
+        }
+
+        var nav = backButton.navigation;
+
+        // Set the back button's up to be the first med or drug
+        if (medButtons[0].isActiveAndEnabled)
+            nav.selectOnUp = medButtons[0].Button;
+        else if (drugButtons[0].isActiveAndEnabled)
+            nav.selectOnUp = drugButtons[0].Button;
+
+        backButton.navigation = nav;
     }
 
     public void SetShopDescriptions(VendorShopButton button)
