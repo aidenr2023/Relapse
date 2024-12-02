@@ -1054,18 +1054,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 0
+    m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
+    m_SelectOnUp: {fileID: 4877595448684718077}
     m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
+    m_SelectOnLeft: {fileID: 4886481492852282227}
+    m_SelectOnRight: {fileID: 4886481492852282227}
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.6084967, b: 0, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -3293,18 +3293,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 0
+    m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
+    m_SelectOnUp: {fileID: 4877595448684718077}
     m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
+    m_SelectOnLeft: {fileID: 8192260990631047255}
+    m_SelectOnRight: {fileID: 8192260990631047255}
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.6084967, b: 0, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -4249,7 +4249,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3965463789945711603}
   m_HandleRect: {fileID: 3739870147868057820}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4775,6 +4775,7 @@ MonoBehaviour:
     quantity: 3
   testPower: {fileID: 11400000, guid: 144b7df19accdd542aa5c22f83309e61, type: 2}
   testMemory: {fileID: 11400000, guid: 06f7b89a3a591c74c81381c2eb050aa7, type: 2}
+  backButton: {fileID: 0}
   objectivesButton: {fileID: 966390781101695172}
   inventoryButton: {fileID: 7100153050834073211}
   powersButton: {fileID: 4877595448684718077}
@@ -4794,6 +4795,8 @@ MonoBehaviour:
   powerItemPrefab: {fileID: 3801899728151072349, guid: 7eac43e4339714845bece5075eb1a042,
     type: 3}
   drugDescriptionText: {fileID: 3500911093416838581}
+  medsButton: {fileID: 4886481492852282227}
+  drugsButton: {fileID: 8192260990631047255}
   memoriesContentArea: {fileID: 6455477444131390160}
   memoryDescriptionText: {fileID: 7264937948632571847}
   memoryItemPrefab: {fileID: 8851908135196646656, guid: 140cbd48e586fa5448164926bff35f6c,
