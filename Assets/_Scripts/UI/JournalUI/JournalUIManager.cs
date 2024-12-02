@@ -628,28 +628,54 @@ public class JournalUIManager : MonoBehaviour
 
             var nav = button.navigation;
 
+            // // Up navigation
+            // nav.selectOnUp = i > 0
+            //     ? GetClosestElement(button, Vector2.up, selectableMemoryItems)
+            //     : backButton;
+            //
+            // // Down navigation
+            // nav.selectOnDown = i < memoryItems.Count - 1
+            //     ? GetClosestElement(button, Vector2.down, selectableMemoryItems)
+            //     : backButton;
+            //
+            // // Left navigation
+            // nav.selectOnLeft = i > 0
+            //     ? GetClosestElement(button, Vector2.left, selectableMemoryItems)
+            //     : backButton;
+            //
+            // // Right navigation
+            // nav.selectOnRight = i < memoryItems.Count - 1
+            //     ? GetClosestElement(button, Vector2.right, selectableMemoryItems)
+            //     : backButton;
+
             // Up navigation
             nav.selectOnUp = i > 0
-                ? GetClosestElement(button, Vector2.up, selectableMemoryItems)
-                : backButton;
+                ? memoryItems[i - 1].Button
+                : memoriesButton;
 
             // Down navigation
             nav.selectOnDown = i < memoryItems.Count - 1
-                ? GetClosestElement(button, Vector2.down, selectableMemoryItems)
+                ? memoryItems[i + 1].Button
                 : backButton;
-
-            // Left navigation
-            nav.selectOnLeft = i > 0
-                ? GetClosestElement(button, Vector2.left, selectableMemoryItems)
-                : backButton;
-
-            // Right navigation
-            nav.selectOnRight = i < memoryItems.Count - 1
-                ? GetClosestElement(button, Vector2.right, selectableMemoryItems)
-                : backButton;
-
+            
             // Set the navigation
             button.navigation = nav;
+        }
+
+        // Set the back button's up navigation to the last memory item
+        if (memoryItems.Count > 0)
+        {
+            var lastItem = memoryItems[^1];
+
+            var nav = backButton.navigation;
+            nav.selectOnUp = lastItem.Button;
+            backButton.navigation = nav;
+        }
+        else
+        {
+            var nav = backButton.navigation;
+            nav.selectOnUp = memoriesButton;
+            backButton.navigation = nav;
         }
 
         return;
