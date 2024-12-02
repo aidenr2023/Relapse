@@ -167,8 +167,12 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     {
         Debug.Log($"Setting HitBox colliders to {on}");
 
+        // Return if there are no hit boxes
+        if (meleeAttackHitboxes == null)
+            return;
+
         foreach (var hitBox in meleeAttackHitboxes)
-            hitBox.SetEnabled(on);
+            hitBox?.SetEnabled(on);
     }
 
     #endregion
