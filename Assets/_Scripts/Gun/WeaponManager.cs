@@ -13,6 +13,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
     private Transform fireTransform;
 
     [SerializeField] private Transform gunHolder;
+    [SerializeField] private Animator animator;
 
     /// <summary>
     /// A prefab that immediately equips the player with a gun.
@@ -193,6 +194,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
 
         // Play the equip sound
         SoundManager.Instance.PlaySfx(gun.GunInformation.PickupSound);
+        
+        //get animator set isArmed to true
+        animator.SetBool("isArmed", true);
 
         // TODO: DELETE THIS EVENTUALLY
         // Get all the renderers in the gun
