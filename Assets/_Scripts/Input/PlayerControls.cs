@@ -551,6 +551,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SprintToggle"",
+                    ""type"": ""Button"",
+                    ""id"": ""4ed6b462-7998-4d32-817e-79449796ae01"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -605,17 +614,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""KB n M"",
-                    ""action"": ""Sprint"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""8e5d2755-2152-450a-85fc-80c2ad57bc5f"",
-                    ""path"": ""<Gamepad>/leftStickPress"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Gamepad"",
                     ""action"": ""Sprint"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -729,6 +727,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d137e0da-54f3-4306-8625-8d04db73b618"",
+                    ""path"": ""<Gamepad>/leftStickPress"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SprintToggle"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -948,6 +957,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_PlayerMovementBasic_Jump = m_PlayerMovementBasic.FindAction("Jump", throwIfNotFound: true);
         m_PlayerMovementBasic_Dash = m_PlayerMovementBasic.FindAction("Dash", throwIfNotFound: true);
         m_PlayerMovementBasic_Sprint = m_PlayerMovementBasic.FindAction("Sprint", throwIfNotFound: true);
+        m_PlayerMovementBasic_SprintToggle = m_PlayerMovementBasic.FindAction("SprintToggle", throwIfNotFound: true);
         // PlayerMovementWallRunning
         m_PlayerMovementWallRunning = asset.FindActionMap("PlayerMovementWallRunning", throwIfNotFound: true);
         m_PlayerMovementWallRunning_Move = m_PlayerMovementWallRunning.FindAction("Move", throwIfNotFound: true);
@@ -1251,6 +1261,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerMovementBasic_Jump;
     private readonly InputAction m_PlayerMovementBasic_Dash;
     private readonly InputAction m_PlayerMovementBasic_Sprint;
+    private readonly InputAction m_PlayerMovementBasic_SprintToggle;
     public struct PlayerMovementBasicActions
     {
         private @PlayerControls m_Wrapper;
@@ -1259,6 +1270,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_PlayerMovementBasic_Jump;
         public InputAction @Dash => m_Wrapper.m_PlayerMovementBasic_Dash;
         public InputAction @Sprint => m_Wrapper.m_PlayerMovementBasic_Sprint;
+        public InputAction @SprintToggle => m_Wrapper.m_PlayerMovementBasic_SprintToggle;
         public InputActionMap Get() { return m_Wrapper.m_PlayerMovementBasic; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1280,6 +1292,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Sprint.started += instance.OnSprint;
             @Sprint.performed += instance.OnSprint;
             @Sprint.canceled += instance.OnSprint;
+            @SprintToggle.started += instance.OnSprintToggle;
+            @SprintToggle.performed += instance.OnSprintToggle;
+            @SprintToggle.canceled += instance.OnSprintToggle;
         }
 
         private void UnregisterCallbacks(IPlayerMovementBasicActions instance)
@@ -1296,6 +1311,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Sprint.started -= instance.OnSprint;
             @Sprint.performed -= instance.OnSprint;
             @Sprint.canceled -= instance.OnSprint;
+            @SprintToggle.started -= instance.OnSprintToggle;
+            @SprintToggle.performed -= instance.OnSprintToggle;
+            @SprintToggle.canceled -= instance.OnSprintToggle;
         }
 
         public void RemoveCallbacks(IPlayerMovementBasicActions instance)
@@ -1415,6 +1433,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
+        void OnSprintToggle(InputAction.CallbackContext context);
     }
     public interface IPlayerMovementWallRunningActions
     {

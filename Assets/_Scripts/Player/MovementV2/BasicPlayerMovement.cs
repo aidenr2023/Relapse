@@ -30,6 +30,7 @@ public class BasicPlayerMovement : PlayerMovementScript
 
     private CountdownTimer _footstepTimer = new(0.5f, true, false);
 
+    private bool _isSprintToggled;
 
     #region Getters
 
@@ -39,7 +40,7 @@ public class BasicPlayerMovement : PlayerMovementScript
 
     private bool CanSprint => canSprintWithoutPower && ParentComponent.IsGrounded;
 
-    public bool IsSprinting => _isSprinting;
+    public bool IsSprinting => _isSprinting || _isSprintToggled;
 
     public float SprintMultiplier => sprintMultiplier;
 
@@ -65,8 +66,11 @@ public class BasicPlayerMovement : PlayerMovementScript
         InputManager.Instance.PlayerControls.PlayerMovementBasic.Sprint.performed += OnSprintPerformed;
         InputManager.Instance.PlayerControls.PlayerMovementBasic.Sprint.canceled += OnSprintCanceled;
 
+        InputManager.Instance.PlayerControls.PlayerMovementBasic.SprintToggle.performed += OnSprintTogglePerformed;
+
         InputManager.Instance.PlayerControls.PlayerMovementBasic.Jump.performed += OnJumpPerformed;
     }
+
 
     private void InitializeFootsteps()
     {
@@ -132,6 +136,16 @@ public class BasicPlayerMovement : PlayerMovementScript
         _isJumpThisFrame = true;
     }
 
+    private void OnSprintTogglePerformed(InputAction.CallbackContext obj)
+    {
+        // Return if the player cannot sprint
+        if (!CanSprint)
+            return;
+
+        // Set the sprinting flag to true
+        _isSprintToggled = !_isSprintToggled;
+    }
+
     #endregion
 
 
@@ -141,6 +155,10 @@ public class BasicPlayerMovement : PlayerMovementScript
     {
         // Update the footstep sounds
         UpdateFootsteps();
+
+        // Update the sprinting state for toggled sprinting
+        if (ParentComponent.MovementInput == Vector2.zero)
+            _isSprintToggled = false;
     }
 
     private void UpdateFootsteps()
@@ -149,7 +167,7 @@ public class BasicPlayerMovement : PlayerMovementScript
         _footstepTimer.Update(Time.deltaTime);
 
         // Set the footstep timer's max time based on the player's walking/sprinting state
-        _footstepTimer.SetMaxTime(!_isSprinting ? walkingFootstepInterval : sprintingFootstepInterval);
+        _footstepTimer.SetMaxTime(!IsSprinting ? walkingFootstepInterval : sprintingFootstepInterval);
 
         // If this is NOT the active movement script, disable the footstep timer
         if (ParentComponent.CurrentMovementScript != this)
@@ -168,7 +186,7 @@ public class BasicPlayerMovement : PlayerMovementScript
         UpdateJump();
 
         // Apply the lateral speed
-        var sprintMod = _isSprinting ? sprintMultiplier : 1;
+        var sprintMod = IsSprinting ? sprintMultiplier : 1;
         ApplyLateralSpeedLimit(ParentComponent.MovementSpeed * sprintMod);
     }
 
@@ -206,7 +224,7 @@ public class BasicPlayerMovement : PlayerMovementScript
             cameraForward * _movementInput.y;
 
 
-        var sprintMult = _isSprinting ? sprintMultiplier : 1;
+        var sprintMult = IsSprinting ? sprintMultiplier : 1;
 
         // Calculate the move vector
         var move = movementDirection * (ParentComponent.MovementSpeed * sprintMult);
