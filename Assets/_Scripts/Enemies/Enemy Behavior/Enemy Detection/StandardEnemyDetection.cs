@@ -10,6 +10,8 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
     [Header("Detection")] [SerializeField] [Min(0)]
     private float visionDistance = 10f;
 
+    [SerializeField] [Min(0)] private float autoDetectionDistance = 5f;
+
     [SerializeField] [Min(0)] private float visionAngle = 45f;
 
     [SerializeField] private CountdownTimer patrolDetectionTimer;
@@ -305,6 +307,10 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         if (line.magnitude > visionDistance)
             return false;
 
+        // If the player is within the auto-detection distance, return true
+        if (line.magnitude <= autoDetectionDistance)
+            return true;
+
         var angle = Vector3.Angle(transform.forward, line);
 
         // Return false if the player is not within the enemy's field of view
@@ -364,6 +370,10 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         Gizmos.color = _isTargetInSight ? detectedColor : undetectedColor;
         Gizmos.DrawLine(transform.position, transform.position + left * visionDistance);
         Gizmos.DrawLine(transform.position, transform.position + right * visionDistance);
+
+        // Draw the auto-detection distance
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, autoDetectionDistance);
     }
 
     #endregion
