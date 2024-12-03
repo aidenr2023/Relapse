@@ -33,10 +33,13 @@ public class Checkpoint : MonoBehaviour
 
     private void LoadCheckpoint(object sender, HealthChangedEventArgs e)
     {
+        // Restart the scene when the player dies
         if (e.DamagerObject == e.Actor || highestCheckpoint == -1)
         {
-            //Restart the scene
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            // SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+            // Enable the Death Screen
+            RelapseScreen.Instance.Activate();
         }
         else
         {
