@@ -17,6 +17,10 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
     [SerializeField] private float health;
 
+    [SerializeField] [Min(0)] private float invincibilityDuration = 1f;
+
+    private CountdownTimer _invincibilityTimer;
+
     // TODO: Eventually, I might move this code to another script.
     // For now though, I'm keeping this here to make things easier
     [Header("Tolerance Meter Settings")] [SerializeField] [Min(.001f)]
@@ -76,6 +80,8 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
     public bool IsRelapsing => _isRelapsing;
 
     public int RelapseCount => _relapseCount;
+
+    public bool IsInvincible => _invincibilityTimer.IsActive;
 
     #endregion
 
@@ -139,6 +145,10 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
         // Initialize the events
         InitializeEvents();
+
+        // Initialize the invincibility timer
+        _invincibilityTimer = new CountdownTimer(invincibilityDuration, false, false);
+        _invincibilityTimer.OnTimerEnd += () => _invincibilityTimer.Stop();
     }
 
     private void InitializeInput()
@@ -210,6 +220,9 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
         if (maxTolerance > 0)
             tolereanceMeter.UpdateToleranceUI(currentTolerance / maxTolerance); // Scale to 0-1
+
+        // Update the invincibility timer
+        _invincibilityTimer.Update(Time.deltaTime);
     }
 
     private void UpdateRelapseDuration()
@@ -330,6 +343,10 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
     private void TakeDamage(float damageAmount, IActor changer, IDamager damager)
     {
+        // Return if the player is invincible
+        if (_invincibilityTimer.IsActive)
+            return;
+
         health = Mathf.Clamp(health - damageAmount, 0, maxHealth);
 
         // Invoke the OnDamaged event
@@ -345,6 +362,10 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
             if (winLose != null)
                 winLose.Lose("The Player Died!");
         }
+
+        // Start the invincibility timer
+        _invincibilityTimer.SetMaxTimeAndReset(invincibilityDuration);
+        _invincibilityTimer.Start();
     }
 
     private void ClampTolerance()
