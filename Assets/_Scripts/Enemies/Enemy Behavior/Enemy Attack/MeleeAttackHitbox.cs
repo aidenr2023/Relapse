@@ -26,16 +26,16 @@ public class MeleeAttackHitbox : MonoBehaviour
         if (!_isEnabled)
             return;
 
-        Debug.Log($"MeleeAttackHitbox.OnTriggerEnter: {other.name}");
-
         // Return if the other collider is not an actor
         // Try to get the actor component in the other collider
         if (!other.TryGetComponentInParent(out IActor actor))
             return;
 
-        // Return if the actor is the same as the enemy
-        if (actor is EnemyInfo enemyInfo && enemyInfo == meleeEnemyAttack.Enemy.EnemyInfo)
+        // Return if the actor is an enemy
+        if (actor is EnemyInfo enemyInfo)
             return;
+
+        Debug.Log($"Hit an actor! {actor.GameObject.name}");
 
         // Deal damage to the actor
         actor.ChangeHealth(-meleeEnemyAttack.Damage, meleeEnemyAttack.Enemy.EnemyInfo, meleeEnemyAttack);

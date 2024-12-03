@@ -7,8 +7,6 @@ public class GauntletInspectController : MonoBehaviour
 
     [SerializeField] private Player player;
 
-
-
     #endregion
 
     #region Private Fields
@@ -23,6 +21,8 @@ public class GauntletInspectController : MonoBehaviour
     private bool _hasPaused;
 
     #endregion
+
+    private bool _isInspectHeld;
 
     private void Awake()
     {
@@ -41,24 +41,25 @@ public class GauntletInspectController : MonoBehaviour
         Debug.Assert(player != null, "GauntletInspectController: Player is null.");
     }
 
-    private void Update()
+    private void Start()
     {
-        HandleInput();
-    }
-
-    /// <summary>
-    /// Handles user input for pressing and releasing the "I" key.
-    /// </summary>
-    private void HandleInput()
-    {
-        // Detect when the "I" key is pressed down
-        if (Input.GetKeyDown(KeyCode.I))
+        // Set up input actions
+        InputManager.Instance.PlayerControls.Player.Inspect.performed += _ =>
+        {
             TriggerGauntletInspect();
 
-        // Detect when the "I" key is released
-        if (Input.GetKeyUp(KeyCode.I))
+            // Set the flag to true
+            _isInspectHeld = true;
+        };
+
+        InputManager.Instance.PlayerControls.Player.Inspect.canceled += _ =>
+        {
+            // Set the flag to false
+            _isInspectHeld = false;
+
             if (_isPaused)
                 ResumeAnimation();
+        };
     }
 
     /// <summary>
@@ -85,7 +86,7 @@ public class GauntletInspectController : MonoBehaviour
             return;
 
         // Ensure the Animator exists and the "I" key is being held
-        if (Input.GetKey(KeyCode.I))
+        if (_isInspectHeld)
         {
             if (!_hasPaused)
             {
@@ -112,9 +113,12 @@ public class GauntletInspectController : MonoBehaviour
             return;
         }
 
-        _animator.speed = 1f; // Resume the animation
+        // Resume the animation
+        _animator.speed = 1f;
         _isPaused = false;
-        _hasPaused = false; // Reset for potential future pauses
+
+        // Reset for potential future pauses
+        _hasPaused = false;
         Debug.Log("GauntletInspectController: Animation resumed after releasing 'I' key.");
     }
 }

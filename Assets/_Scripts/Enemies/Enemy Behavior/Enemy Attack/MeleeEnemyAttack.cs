@@ -135,8 +135,10 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         // Get the length of the attack animation
         var animationLength = animationInfo.length;
 
+        var animationSpeed = animationInfo.speed;
+
         // Reset the movement disable timer
-        _movementDisableTimer.SetMaxTimeAndReset(animationLength * animationInfo.speed);
+        _movementDisableTimer.SetMaxTimeAndReset(animationLength / animationSpeed);
         _movementDisableTimer.Start();
 
         // Disable movement

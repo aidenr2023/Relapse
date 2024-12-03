@@ -266,7 +266,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             PlayParticles(impactParticles, hitInfo.point, impactParticlesCount);
 
             // Test if the cast hit an IActor (test the root object)
-            if (hitInfo.collider.TryGetComponentInParent(out IActor actor))
+            if (hitInfo.collider.TryGetComponentInParent(out IActor actor, 20))
             {
                 // continue if the actor is the player
                 if (actor is PlayerInfo info && info == weaponManager.PlayerInfo)
