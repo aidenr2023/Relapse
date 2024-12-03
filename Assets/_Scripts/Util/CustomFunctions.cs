@@ -4,7 +4,7 @@ using Object = UnityEngine.Object;
 
 public static class CustomFunctions
 {
-    private const int MAX_COMPONENT_SEARCH_DEPTH = 5;
+    private const int MAX_COMPONENT_SEARCH_DEPTH = 20;
 
     /// <summary>
     /// The standard AddForce waits until the next physics update to apply the force.
