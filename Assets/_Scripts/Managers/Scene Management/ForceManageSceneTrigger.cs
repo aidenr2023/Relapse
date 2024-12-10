@@ -1,8 +1,18 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class ForceManageSceneTrigger : MonoBehaviour
 {
-    [SerializeField] private SceneField[] scenesToManage;
+    [SerializeField] private LevelSectionSceneInfo[] scenesToManage;
+
+    [SerializeField] private LevelSectionSceneInfo[] immediateLoadScenes;
+
+    private void Start()
+    {
+        // Load the scenes via the scene manager
+        foreach (var scene in immediateLoadScenes)
+            AsyncSceneManager.Instance.LoadSceneSynchronous(scene);
+    }
 
     private void OnTriggerEnter(Collider other)
     {

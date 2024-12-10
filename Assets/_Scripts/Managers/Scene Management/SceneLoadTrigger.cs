@@ -11,7 +11,7 @@ public class SceneLoadTrigger : MonoBehaviour
             return;
 
         // Load the scenes via the scene manager
-        AsyncSceneManager.Instance.LoadScenesAsync(sceneLoader);
+        AsyncSceneManager.Instance.LoadSceneAsync(sceneLoader);
     }
 
 }

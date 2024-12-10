@@ -102,7 +102,7 @@ public class AsyncSceneManager : MonoBehaviour
         if (!_asyncSceneRecords.TryGetValue(scene, out var sceneRecord))
             return;
 
-        // Debug.Log($"Unloading scene {scene.SceneField.SceneName} - {sceneRecord.State}");
+        Debug.Log($"Unloading scene {scene.SceneField.SceneName} - {sceneRecord.State}");
 
         switch (sceneRecord.State)
         {
@@ -215,25 +215,107 @@ public class AsyncSceneManager : MonoBehaviour
         // Create a new record for the scene
         var sceneRecord = new AsyncSceneRecord(sceneField, null, AsyncSceneState.Loaded);
 
+        // Get the scene reference
+        sceneRecord.Scene = SceneManager.GetSceneByName(sceneField);
+
         // Add the record to the dictionary
         _asyncSceneRecords.Add(sceneField.SceneName, sceneRecord);
 
         // Debug.Log($"Forced management of scene {sceneField.SceneName}");
     }
 
-    public void LoadScenesAsync(SceneLoaderInformation sceneLoader)
+    public void ForceManageScene(LevelSectionSceneInfo sceneLoaderInformation)
+    {
+        // Load the section scene
+        if (sceneLoaderInformation.SectionScene != null)
+            ForceManageScene(sceneLoaderInformation.SectionScene);
+
+        // Load the section persistent data
+        if (sceneLoaderInformation.SectionPersistentData != null)
+            ForceManageScene(sceneLoaderInformation.SectionPersistentData);
+    }
+
+    public void LoadSceneAsync(SceneLoaderInformation sceneLoader)
     {
         // Unload all the scenes to unload
-        var scenesToUnload = sceneLoader.ScenesToUnload;
+        var scenesToUnload = sceneLoader.SectionsToUnload;
 
         foreach (var scene in scenesToUnload)
             UnloadSceneAsync(scene);
 
         // Load all the scenes to load
-        var scenesToLoad = sceneLoader.ScenesToLoad;
+        var scenesToLoad = sceneLoader.SectionsToLoad;
 
         foreach (var scene in scenesToLoad)
             LoadSceneAsync(scene);
+    }
+
+    public void LoadSceneAsync(LevelSectionSceneInfo levelSectionSceneInfo)
+    {
+        // Load the section scene
+        if (levelSectionSceneInfo.SectionScene != null)
+            LoadSceneAsync(levelSectionSceneInfo.SectionScene);
+
+        // Load the section persistent data
+        if (levelSectionSceneInfo.SectionPersistentData != null)
+            LoadSceneAsync(levelSectionSceneInfo.SectionPersistentData);
+    }
+
+    public void UnloadSceneAsync(LevelSectionSceneInfo levelSectionSceneInfo)
+    {
+        // Unload the section scene
+        if (levelSectionSceneInfo.SectionScene != null)
+        {
+            // Create a scene unload field
+            var sceneUnloadField = SceneUnloadField.Create(levelSectionSceneInfo.SectionScene, false);
+
+            // Unload the scene
+            UnloadSceneAsync(sceneUnloadField);
+        }
+
+        // Unload the section persistent data
+        if (levelSectionSceneInfo.SectionPersistentData != null)
+        {
+            Debug.Log(
+                $"Unloading Persistent Data: {levelSectionSceneInfo.SectionPersistentData.SceneName} - {levelSectionSceneInfo}");
+
+            // Create a scene unload field that disables the scene instead of unloading it
+            var sceneUnloadField = SceneUnloadField.Create(levelSectionSceneInfo.SectionPersistentData, true);
+
+            // Unload the scene
+            UnloadSceneAsync(sceneUnloadField);
+        }
+    }
+
+    private void LoadSceneSynchronous(SceneField scene)
+    {
+        // If the scene is already loaded, return
+        if (_asyncSceneRecords.TryGetValue(scene, out var sceneRecord) && sceneRecord.State == AsyncSceneState.Loaded)
+            return;
+
+        // Load the scene
+        SceneManager.LoadScene(scene, LoadSceneMode.Additive);
+
+        // Get the scene that was just loaded
+        var sceneLoaded = SceneManager.GetSceneByName(scene);
+
+        // Create a record for the scene
+        var record = new AsyncSceneRecord(scene, null, AsyncSceneState.Loaded);
+        record.Scene = sceneLoaded;
+
+        // Add the record to the dictionary
+        _asyncSceneRecords.Add(scene.SceneName, record);
+    }
+
+    public void LoadSceneSynchronous(LevelSectionSceneInfo levelSectionSceneInfo)
+    {
+        // Load the section scene
+        if (levelSectionSceneInfo.SectionScene != null)
+            LoadSceneSynchronous(levelSectionSceneInfo.SectionScene);
+
+        // Load the section persistent data
+        if (levelSectionSceneInfo.SectionPersistentData != null)
+            LoadSceneSynchronous(levelSectionSceneInfo.SectionPersistentData);
     }
 
     private enum AsyncSceneState

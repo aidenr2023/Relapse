@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "SceneLoadInformation", menuName = "Scene Load Information")]
+// [CreateAssetMenu(fileName = "SceneLoadInformation", menuName = "Scene Load Information")]
 public class SceneLoadInformation : ScriptableObject
 {
     [SerializeField] private SceneLoadInfoPriority[] scenes;

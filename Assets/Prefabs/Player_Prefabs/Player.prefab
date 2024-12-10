@@ -1353,7 +1353,7 @@ MonoBehaviour:
   groundChecker: {fileID: 142033525288301372}
   groundCheckDistance: 0.25
   groundCheckBoxAdjust: 0.25
-  movementSpeed: 9
+  movementSpeed: 10
 --- !u!114 &-1310880380803664248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1369,7 +1369,7 @@ MonoBehaviour:
   canSprintWithoutPower: 1
   canJumpWithoutPower: 1
   sprintMultiplier: 1.4
-  jumpForce: 8
+  jumpForce: 16
   footstepSoundPool:
     sounds:
     - clip: {fileID: 8300000, guid: 81def98cd06884940b95459db1a841f7, type: 3}
@@ -1493,7 +1493,7 @@ MonoBehaviour:
   virtualCam: {fileID: 4446822864761967248}
   transitionSpeed: 0.25
   bobSpeed: 8
-  bobAmount: 0.025
+  bobAmount: 0.05
   bobSmoothness: 0.05
   sprintStrengthMultiplier: 2
 --- !u!114 &1509308928883412678
@@ -8254,7 +8254,7 @@ PrefabInstance:
     - target: {fileID: 3445191350544877064, guid: de2161465cf4d45419107cb178b6bbdb,
         type: 3}
       propertyPath: m_Size
-      value: 0.9998995
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3839912161093852002, guid: de2161465cf4d45419107cb178b6bbdb,
         type: 3}
@@ -8520,7 +8520,7 @@ PrefabInstance:
     - target: {fileID: 7453708597521121393, guid: de2161465cf4d45419107cb178b6bbdb,
         type: 3}
       propertyPath: m_Size
-      value: 0.9998995
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7666583957015521617, guid: de2161465cf4d45419107cb178b6bbdb,
         type: 3}

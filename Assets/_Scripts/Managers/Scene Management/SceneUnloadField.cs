@@ -18,4 +18,11 @@ public class SceneUnloadField
 
     public static implicit operator string(SceneUnloadField sceneUnloadField) =>
         sceneUnloadField.sceneField;
+
+    public static SceneUnloadField Create(SceneField sceneField, bool isDisableInstead) =>
+        new SceneUnloadField
+        {
+            sceneField = sceneField,
+            isDisableInstead = isDisableInstead
+        };
 }
