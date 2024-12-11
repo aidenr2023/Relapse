@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
-public class PauseMenuManager : MonoBehaviour
+public class PauseMenuManager : MonoBehaviour, IUsesInput
 {
     public static PauseMenuManager Instance { get; private set; }
 
@@ -25,8 +26,9 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private Color clickColor = Color.red;
 
 
-    [Header("Navigation Control")]
-    [SerializeField] private GameObject firstSelectedButton;
+    [Header("Navigation Control")] [SerializeField]
+    private GameObject firstSelectedButton;
+
     [SerializeField] private GameObject settingsFirstSelected;
     [SerializeField] private GameObject journalFirstSelected;
 
@@ -43,6 +45,8 @@ public class PauseMenuManager : MonoBehaviour
 
     #region Getters
 
+    public HashSet<InputData> InputActions { get; } = new();
+
     public bool IsPaused { get; private set; }
 
     #endregion
@@ -55,21 +59,45 @@ public class PauseMenuManager : MonoBehaviour
     {
         // Set the instance to this object
         Instance = this;
+
+        // Initialize the input
+        InitializeInput();
+    }
+
+    public void InitializeInput()
+    {
+        // // Connect to input system
+        InputActions.Add(
+            new InputData(InputManager.Instance.pControls.Player.Pause, InputType.Performed, OnPausePerformed)
+        );
     }
 
     private void Start()
     {
-        // Connect to input system
-        InputManager.Instance.PlayerControls.Player.Pause.performed += _ => TogglePause();
-
         // Hide the pause menu at the start
         pauseMenuParent.SetActive(false);
     }
 
     private void OnEnable()
     {
+        // Register the input user
+        InputManager.Instance.Register(this);
+
         // Set the event system's selected object to the first button
         SetSelectedButton(firstSelectedButton);
+    }
+
+    private void OnDisable()
+    {
+        // Unregister the input user
+        InputManager.Instance.Unregister(this);
+    }
+
+    private void OnPausePerformed(InputAction.CallbackContext context)
+    {
+        TogglePause();
+
+        Debug.Log("Pause");
     }
 
     private void TogglePause()

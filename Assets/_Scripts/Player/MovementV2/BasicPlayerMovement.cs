@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class BasicPlayerMovement : PlayerMovementScript
+public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
 {
     #region Serialized Fields
 
@@ -34,7 +34,9 @@ public class BasicPlayerMovement : PlayerMovementScript
 
     #region Getters
 
-    public override InputActionMap InputActionMap => InputManager.Instance.PlayerControls.PlayerMovementBasic;
+    public HashSet<InputData> InputActions { get; } = new();
+
+    public override InputActionMap InputActionMap => InputManager.Instance.pControls.PlayerMovementBasic;
 
     public Vector2 MovementInput => _movementInput;
 
@@ -48,29 +50,55 @@ public class BasicPlayerMovement : PlayerMovementScript
 
     #region Initialization Functions
 
-    private void Start()
+    protected override void CustomAwake()
     {
         // Initialize the controls
-        InitializeControls();
+        InitializeInput();
+    }
 
+    private void Start()
+    {
         // Initialize the footstep sounds
         InitializeFootsteps();
     }
 
-    private void InitializeControls()
+    private void OnEnable()
     {
-        // Subscribe to the movement input
-        InputManager.Instance.PlayerControls.PlayerMovementBasic.Move.performed += OnMovePerformed;
-        InputManager.Instance.PlayerControls.PlayerMovementBasic.Move.canceled += OnMoveCanceled;
-
-        InputManager.Instance.PlayerControls.PlayerMovementBasic.Sprint.performed += OnSprintPerformed;
-        InputManager.Instance.PlayerControls.PlayerMovementBasic.Sprint.canceled += OnSprintCanceled;
-
-        InputManager.Instance.PlayerControls.PlayerMovementBasic.SprintToggle.performed += OnSprintTogglePerformed;
-
-        InputManager.Instance.PlayerControls.PlayerMovementBasic.Jump.performed += OnJumpPerformed;
+        // Register this script with the input manager
+        InputManager.Instance.Register(this);
     }
 
+    private void OnDisable()
+    {
+        // Unregister this script with the input manager
+        InputManager.Instance.Unregister(this);
+    }
+
+    public void InitializeInput()
+    {
+        InputActions.Add(new InputData(
+            InputManager.Instance.pControls.PlayerMovementBasic.Move, InputType.Performed, OnMovePerformed)
+        );
+        InputActions.Add(new InputData(
+            InputManager.Instance.pControls.PlayerMovementBasic.Move, InputType.Canceled, OnMoveCanceled)
+        );
+
+        InputActions.Add(new InputData(
+            InputManager.Instance.pControls.PlayerMovementBasic.Sprint, InputType.Performed, OnSprintPerformed)
+        );
+        InputActions.Add(new InputData(
+            InputManager.Instance.pControls.PlayerMovementBasic.Sprint, InputType.Canceled, OnSprintCanceled)
+        );
+
+        InputActions.Add(new InputData(
+            InputManager.Instance.pControls.PlayerMovementBasic.SprintToggle, InputType.Performed,
+            OnSprintTogglePerformed)
+        );
+
+        InputActions.Add(new InputData(
+            InputManager.Instance.pControls.PlayerMovementBasic.Jump, InputType.Performed, OnJumpPerformed)
+        );
+    }
 
     private void InitializeFootsteps()
     {
@@ -147,7 +175,6 @@ public class BasicPlayerMovement : PlayerMovementScript
     }
 
     #endregion
-
 
     #region Update Functions
 

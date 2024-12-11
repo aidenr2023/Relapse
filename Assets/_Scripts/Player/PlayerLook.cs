@@ -1,10 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
-public class PlayerLook : MonoBehaviour
+public class PlayerLook : MonoBehaviour, IUsesInput
 {
     #region Serialized Fields
 
@@ -36,21 +37,38 @@ public class PlayerLook : MonoBehaviour
 
     #endregion
 
-    private void Start()
+    public HashSet<InputData> InputActions { get; } = new();
+
+    private void Awake()
     {
-        // Initialize the input
+        // Initialize the input actions
         InitializeInput();
     }
 
-    private void InitializeInput()
+    private void Start()
+    {
+    }
+
+    public void InitializeInput()
     {
         // Initialize the input
-        InputManager.Instance.PlayerControls.Player.LookMouse.performed += OnLookMousePerformed;
-        InputManager.Instance.PlayerControls.Player.LookMouse.canceled += OnLookCanceled;
+        InputActions.Add(
+            new InputData(InputManager.Instance.pControls.Player.LookMouse, InputType.Performed, OnLookMousePerformed)
+        );
+        InputActions.Add(
+            new InputData(InputManager.Instance.pControls.Player.LookMouse, InputType.Canceled, OnLookCanceled)
+        );
 
-        InputManager.Instance.PlayerControls.Player.LookController.performed += OnLookControllerPerformed;
-        InputManager.Instance.PlayerControls.Player.LookController.canceled += OnLookCanceled;
+        InputActions.Add(
+            new InputData(InputManager.Instance.pControls.Player.LookController, InputType.Performed,
+                OnLookControllerPerformed)
+        );
+        InputActions.Add(
+            new InputData(InputManager.Instance.pControls.Player.LookController, InputType.Canceled, OnLookCanceled)
+        );
     }
+
+    #region Input Functions
 
     private void OnLookMousePerformed(InputAction.CallbackContext obj)
     {
@@ -82,6 +100,20 @@ public class PlayerLook : MonoBehaviour
         _lookInput = Vector2.zero;
     }
 
+    #endregion
+
+    private void OnEnable()
+    {
+        // Register the input
+        InputManager.Instance.Register(this);
+    }
+
+    private void OnDisable()
+    {
+        // Unregister the input
+        InputManager.Instance.Unregister(this);
+    }
+
     private void Update()
     {
         // Run the look update
@@ -103,15 +135,5 @@ public class PlayerLook : MonoBehaviour
 
         // Rotate the camera
         orientation.transform.rotation = Quaternion.Euler(_xRotation, _yRotation, 0f);
-    }
-
-    private void OnDestroy()
-    {
-        // Unsubscribe from the input events
-        InputManager.Instance.PlayerControls.Player.LookMouse.performed -= OnLookMousePerformed;
-        InputManager.Instance.PlayerControls.Player.LookMouse.canceled -= OnLookCanceled;
-
-        InputManager.Instance.PlayerControls.Player.LookController.performed -= OnLookControllerPerformed;
-        InputManager.Instance.PlayerControls.Player.LookController.canceled -= OnLookCanceled;
     }
 }

@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class DebugManager : MonoBehaviour, IDebugged, IDamager
+public class DebugManager : MonoBehaviour, IDebugged, IDamager, IUsesInput
 {
     public static DebugManager Instance { get; private set; }
 
@@ -31,6 +31,8 @@ public class DebugManager : MonoBehaviour, IDebugged, IDamager
 
     public GameObject GameObject => gameObject;
 
+    public HashSet<InputData> InputActions { get; } = new();
+
 
     #region Initialization Functions
 
@@ -44,14 +46,14 @@ public class DebugManager : MonoBehaviour, IDebugged, IDamager
 
         // Add this to the debug managed objects
         AddDebuggedObject(this);
+
+        // Initialize the input
+        InitializeInput();
     }
 
     // Start is called before the first frame update
     private void Start()
     {
-        // Initialize the input
-        InitializeInput();
-
         // // Set debug mode to true by default
         // IsDebugMode = true;
 
@@ -62,17 +64,72 @@ public class DebugManager : MonoBehaviour, IDebugged, IDamager
         _player = FindFirstObjectByType<Player>();
     }
 
-    private void InitializeInput()
+    private void OnEnable()
     {
-        // Toggle debug mode
-        InputManager.Instance.PlayerControls.Debug.ToggleDebug.performed += ToggleDebugMode;
-
-        InputManager.Instance.PlayerControls.Debug.DebugHealth.performed += OnDebugHealthPerformed;
-        InputManager.Instance.PlayerControls.Debug.DebugTolerance.performed += OnDebugTolerancePerformed;
-
-        InputManager.Instance.PlayerControls.Debug.DebugHealth.canceled += OnDebugHealthCanceled;
-        InputManager.Instance.PlayerControls.Debug.DebugTolerance.canceled += OnDebugToleranceCanceled;
+        // Register this to the input manager
+        InputManager.Instance.Register(this);
     }
+
+    private void OnDisable()
+    {
+        // Unregister this from the input manager
+        InputManager.Instance.Unregister(this);
+    }
+
+    public void InitializeInput()
+    {
+        InputActions.Add(
+            new InputData(InputManager.Instance.pControls.Debug.ToggleDebug, InputType.Performed, ToggleDebugMode)
+        );
+
+        InputActions.Add(new InputData(
+            InputManager.Instance.pControls.Debug.DebugHealth, InputType.Performed, OnDebugHealthPerformed)
+        );
+        InputActions.Add(new InputData(
+            InputManager.Instance.pControls.Debug.DebugHealth, InputType.Canceled, OnDebugHealthCanceled)
+        );
+
+        InputActions.Add(new InputData(
+            InputManager.Instance.pControls.Debug.DebugTolerance, InputType.Performed, OnDebugTolerancePerformed)
+        );
+        InputActions.Add(new InputData(
+            InputManager.Instance.pControls.Debug.DebugTolerance, InputType.Canceled, OnDebugToleranceCanceled)
+        );
+    }
+
+    #region Input Functions
+
+    private void ToggleDebugMode(InputAction.CallbackContext ctx)
+    {
+        // Toggle the debug mode
+        IsDebugMode = !IsDebugMode;
+
+        // Set the debug text visibility
+        SetDebugVisibility(IsDebugMode);
+    }
+
+
+    private void OnDebugHealthPerformed(InputAction.CallbackContext context)
+    {
+        _healthChange = context.ReadValue<float>();
+    }
+
+    private void OnDebugHealthCanceled(InputAction.CallbackContext context)
+    {
+        _healthChange = 0;
+    }
+
+    private void OnDebugTolerancePerformed(InputAction.CallbackContext context)
+    {
+        _toleranceChange = context.ReadValue<float>();
+    }
+
+    private void OnDebugToleranceCanceled(InputAction.CallbackContext context)
+    {
+        _toleranceChange = 0;
+    }
+
+    #endregion
 
     #endregion
 
@@ -108,36 +165,6 @@ public class DebugManager : MonoBehaviour, IDebugged, IDamager
 
         // Set the text
         debugText.text = textString.ToString();
-    }
-
-    private void ToggleDebugMode(InputAction.CallbackContext ctx)
-    {
-        // Toggle the debug mode
-        IsDebugMode = !IsDebugMode;
-
-        // Set the debug text visibility
-        SetDebugVisibility(IsDebugMode);
-    }
-
-
-    private void OnDebugHealthPerformed(InputAction.CallbackContext context)
-    {
-        _healthChange = context.ReadValue<float>();
-    }
-
-    private void OnDebugHealthCanceled(InputAction.CallbackContext context)
-    {
-        _healthChange = 0;
-    }
-
-    private void OnDebugTolerancePerformed(InputAction.CallbackContext context)
-    {
-        _toleranceChange = context.ReadValue<float>();
-    }
-
-    private void OnDebugToleranceCanceled(InputAction.CallbackContext context)
-    {
-        _toleranceChange = 0;
     }
 
     private void SetDebugVisibility(bool isVisible)

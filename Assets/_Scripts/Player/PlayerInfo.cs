@@ -4,13 +4,12 @@ using System.Collections.Generic;
 using Cinemachine;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class PlayerInfo : MonoBehaviour, IActor, IDamager
 {
     #region Fields
-
-    [SerializeField] private WinLose winLose; // Reference to the WinLose script
 
     [Header("Health Settings")] [SerializeField]
     private float maxHealth = 3f;
@@ -27,7 +26,7 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
     private float maxTolerance;
 
     [SerializeField] private float currentTolerance;
-    [SerializeField] private TolereanceMeter tolereanceMeter;
+    [SerializeField] private TolereanceMeter toleranceMeter;
 
     [Header("Relapse Image Overlay")] [SerializeField]
     private Image relapseImage;
@@ -55,8 +54,6 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
     private bool _isRelapsing;
 
     [SerializeField] private TMP_Text relapseText;
-
-    private InputUserHandler _inputUserHandler;
 
     // TODO: Find a better way to do this
     [SerializeField] private CinemachineVirtualCamera vCam;
@@ -112,19 +109,16 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
         // health = maxHealth;
 
         // Find the tolerance meter in the scene
-        if (tolereanceMeter == null)
-            tolereanceMeter = FindObjectOfType<TolereanceMeter>();
+        if (toleranceMeter == null)
+            toleranceMeter = FindObjectOfType<TolereanceMeter>();
 
         // If the tolerance meter is still null, log an error
-        if (tolereanceMeter == null)
+        if (toleranceMeter == null)
             Debug.LogError("Tolerance Meter is not assigned and could not be found.");
 
         // Hide the relapse text
         if (relapseText != null)
             relapseText.gameObject.SetActive(false);
-
-        // Initialize the input handler
-        InitializeInput();
 
         // OnHealed += (sender, args) =>
         //     Debug.Log(
@@ -149,12 +143,6 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
         // Initialize the invincibility timer
         _invincibilityTimer = new CountdownTimer(invincibilityDuration, false, false);
         _invincibilityTimer.OnTimerEnd += () => _invincibilityTimer.Stop();
-    }
-
-    private void InitializeInput()
-    {
-        // Create the input handler
-        _inputUserHandler = new InputUserHandler(gameObject);
     }
 
     private void InitializeEvents()
@@ -200,9 +188,6 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
     private void Update()
     {
-        // Update the input users
-        _inputUserHandler.UpdateInputUsers();
-
         // Update the relapse duration
         UpdateRelapseDuration();
 
@@ -219,7 +204,7 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
         RelapseImageUpdate();
 
         if (maxTolerance > 0)
-            tolereanceMeter.UpdateToleranceUI(currentTolerance / maxTolerance); // Scale to 0-1
+            toleranceMeter.UpdateToleranceUI(currentTolerance / maxTolerance); // Scale to 0-1
 
         // Update the invincibility timer
         _invincibilityTimer.Update(Time.deltaTime);
@@ -318,12 +303,6 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
     #endregion
 
-    private void OnDestroy()
-    {
-        // Remove all input
-        _inputUserHandler?.RemoveAll();
-    }
-
     public void ChangeHealth(float amount, IActor changer, IDamager damager)
     {
         // If the amount is negative, the player is taking damage
@@ -357,10 +336,6 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
         {
             // Invoke the OnDeath event
             OnDeath?.Invoke(this, args);
-
-            // Trigger the lose condition
-            if (winLose != null)
-                winLose.Lose("The Player Died!");
         }
 
         // Start the invincibility timer
@@ -376,7 +351,7 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
     public void ChangeTolerance(float amount)
     {
         currentTolerance = Mathf.Clamp(currentTolerance + amount, 0, maxTolerance);
-        tolereanceMeter.UpdateToleranceUI(currentTolerance / maxTolerance); // Scale the dial
+        toleranceMeter.UpdateToleranceUI(currentTolerance / maxTolerance); // Scale the dial
 
         // The player will relapse if the tolerance meter is too high
         if (currentTolerance >= maxTolerance)
@@ -432,10 +407,6 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
     private void DieFromRelapse()
     {
         ChangeHealth(-maxHealth, this, this);
-
-        // Trigger the lose condition
-        if (winLose != null)
-            winLose.Lose("Player relapsed too many times!");
     }
 
     public void ResetPlayer()

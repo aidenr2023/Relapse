@@ -84,8 +84,8 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
 
     private void Start()
     {
-        // Add this to the debug manager
-        DebugManager.Instance.AddDebuggedObject(this);
+        // // Add this to the debug manager
+        // DebugManager.Instance.AddDebuggedObject(this);
 
         // Determine the closest checkpoint
         _currentCheckpointIndex = DetermineClosestCheckpoint();

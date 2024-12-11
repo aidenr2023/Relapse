@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerInteraction : MonoBehaviour
+public class PlayerInteraction : MonoBehaviour, IUsesInput
 {
     private static readonly int CachedScaleProperty = Shader.PropertyToID("_Scale");
     private static readonly int CachedIsOutlinedProperty = Shader.PropertyToID("_IsOutlined");
@@ -30,6 +30,8 @@ public class PlayerInteraction : MonoBehaviour
 
     #region Getters
 
+    public HashSet<InputData> InputActions { get; } = new();
+
     public Player Player { get; private set; }
 
     public IInteractable SelectedInteractable => _selectedInteractable;
@@ -42,24 +44,38 @@ public class PlayerInteraction : MonoBehaviour
     {
         // Get the player component
         Player = GetComponent<Player>();
+
+        // Initialize the controls
+        InitializeInput();
     }
 
     private void Start()
     {
-        // Initialize the controls
-        InitializeControls();
-
         // Events
         OnLookAtInteractable += SetLookedAtMaterial;
         OnStopLookingAtInteractable += UnsetLookedAtMaterial;
     }
 
-    #region Controls
+    private void OnEnable()
+    {
+        // Register the player with the input system
+        InputManager.Instance.Register(this);
+    }
 
-    private void InitializeControls()
+    private void OnDisable()
+    {
+        // Unregister the player with the input system
+        InputManager.Instance.Unregister(this);
+    }
+
+    #region Input Functions
+
+    public void InitializeInput()
     {
         // Subscribe to the interact event
-        InputManager.Instance.PlayerControls.Player.Interact.performed += OnInteractPerformed;
+        InputActions.Add(
+            new InputData(InputManager.Instance.pControls.Player.Interact, InputType.Performed, OnInteractPerformed)
+        );
     }
 
     private void OnInteractPerformed(InputAction.CallbackContext obj)
@@ -172,19 +188,8 @@ public class PlayerInteraction : MonoBehaviour
 
     #endregion
 
-    private void OnDrawGizmos()
-    {
-        // Return if the selected interactable is null
-        if (_selectedInteractable == null)
-            return;
 
-        // return if the selected interactable's game object is null
-        if (_selectedInteractable.GameObject == null || _selectedInteractable.GameObject is null)
-            return;
-
-        // Draw a sphere at the interactable's position
-        Gizmos.DrawSphere(_selectedInteractable.GameObject.transform.position, 0.5f);
-    }
+    #region Materials Functions
 
     private void SetLookedAtMaterial(IInteractable interactable)
     {
@@ -239,5 +244,21 @@ public class PlayerInteraction : MonoBehaviour
 
         // Set the material's outline state
         material.SetInt(CachedIsOutlinedProperty, isOutlined ? 1 : 0);
+    }
+
+    #endregion
+
+    private void OnDrawGizmos()
+    {
+        // Return if the selected interactable is null
+        if (_selectedInteractable == null)
+            return;
+
+        // return if the selected interactable's game object is null
+        if (_selectedInteractable.GameObject == null || _selectedInteractable.GameObject is null)
+            return;
+
+        // Draw a sphere at the interactable's position
+        Gizmos.DrawSphere(_selectedInteractable.GameObject.transform.position, 0.5f);
     }
 }

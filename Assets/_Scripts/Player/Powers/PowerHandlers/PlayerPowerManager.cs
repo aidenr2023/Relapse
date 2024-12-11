@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Player))]
-public class PlayerPowerManager : MonoBehaviour, IDebugged
+public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
 {
     public static PlayerPowerManager Instance { get; private set; }
 
@@ -36,6 +36,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
 
     #region Getters
 
+    public HashSet<InputData> InputActions { get; } = new();
+
     public Player Player => _player;
 
     public PowerScriptableObject CurrentPower => powers.Length > 0 ? powers[_currentPowerIndex] : null;
@@ -60,19 +62,31 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
 
         // Initialize the power collections
         InitializePowerCollections();
+
+        // Initialize the input
+        InitializeInput();
     }
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         // Initialize the events
         InitializeEvents();
 
-        // Initialize the input
-        InitializeInput();
-
         // // Add this to the debug managed objects
         // DebugManager.Instance.AddDebuggedObject(this);
+    }
+
+    private void OnEnable()
+    {
+        // Register this with the input manager
+        InputManager.Instance.Register(this);
+    }
+
+    private void OnDisable()
+    {
+        // Unregister this with the input manager
+        InputManager.Instance.Unregister(this);
     }
 
     private void InitializeComponents()
@@ -90,12 +104,18 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
         OnPowerUsed += DisplayTooltipOnUse;
     }
 
-    private void InitializeInput()
+    public void InitializeInput()
     {
-        InputManager.Instance.PlayerControls.Player.Power.performed += OnPowerPerformed;
-        InputManager.Instance.PlayerControls.Player.Power.canceled += OnPowerCanceled;
+        InputActions.Add(
+            new InputData(InputManager.Instance.pControls.Player.Power, InputType.Performed, OnPowerPerformed)
+        );
+        InputActions.Add(
+            new InputData(InputManager.Instance.pControls.Player.Power, InputType.Canceled, OnPowerCanceled)
+        );
 
-        InputManager.Instance.PlayerControls.Player.ChangePower.performed += OnPowerChanged;
+        InputActions.Add(
+            new InputData(InputManager.Instance.pControls.Player.ChangePower, InputType.Performed, OnPowerChanged)
+        );
     }
 
 

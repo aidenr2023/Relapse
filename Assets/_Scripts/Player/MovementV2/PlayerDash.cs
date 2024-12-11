@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerDash : PlayerMovementScript, IDashScript
+public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
 {
     #region Serialized Fields
 
@@ -22,14 +23,23 @@ public class PlayerDash : PlayerMovementScript, IDashScript
 
     private Vector3 _dashDirection;
 
-    public override InputActionMap InputActionMap => null;
-
     public event Action<IDashScript> OnDashStart;
     public event Action<IDashScript> OnDashEnd;
+
+    public HashSet<InputData> InputActions { get; } = new();
+
+    public override InputActionMap InputActionMap => null;
 
     private bool IsDashing => dashDuration.IsTicking;
 
     public float DashDuration => dashDuration.MaxTime;
+
+
+    protected override void CustomAwake()
+    {
+        // Initialize the input
+        InitializeInput();
+    }
 
     private void Start()
     {
@@ -37,11 +47,28 @@ public class PlayerDash : PlayerMovementScript, IDashScript
         InitializeEvents();
     }
 
-    private void InitializeEvents()
+    private void OnEnable()
+    {
+        // Register the input
+        InputManager.Instance.Register(this);
+    }
+
+    private void OnDisable()
+    {
+        // Unregister the input
+        InputManager.Instance.Unregister(this);
+    }
+
+    public void InitializeInput()
     {
         // Initialize the event that is called when the button is pressed
-        InputManager.Instance.PlayerControls.PlayerMovementBasic.Dash.performed += OnDashPerformed;
+        InputActions.Add(new InputData(
+            InputManager.Instance.pControls.PlayerMovementBasic.Dash, InputType.Performed, OnDashPerformed)
+        );
+    }
 
+    private void InitializeEvents()
+    {
         OnDashStart += _ => PushControls(this);
         OnDashStart += StartDash;
         OnDashStart += _ => SoundManager.Instance.PlaySfx(dashSound);

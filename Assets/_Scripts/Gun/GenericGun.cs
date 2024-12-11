@@ -369,6 +369,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Instantiate the muzzle flash VFX
         var muzzleFlashInstance = Instantiate(muzzleFlashPrefab, muzzleLocation.position, muzzleLocation.rotation);
 
+        // Set the layer of the muzzle flash to the same layer as the gun
+        muzzleFlashInstance.gameObject.layer = gameObject.layer;
+
         // Get the max lifetime of the muzzle flash
         var maxLifetime = muzzleFlashInstance.GetFloat("MaxLifetime");
 

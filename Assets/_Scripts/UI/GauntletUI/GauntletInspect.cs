@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class GauntletInspectController : MonoBehaviour
+public class GauntletInspectController : MonoBehaviour, IUsesInput
 {
     #region Serialized Fields
 
@@ -20,9 +22,11 @@ public class GauntletInspectController : MonoBehaviour
     // Flag to ensure PauseAnimation is only called once per event
     private bool _hasPaused;
 
+    private bool _isInspectHeld;
+
     #endregion
 
-    private bool _isInspectHeld;
+    public HashSet<InputData> InputActions { get; } = new();
 
     private void Awake()
     {
@@ -39,27 +43,49 @@ public class GauntletInspectController : MonoBehaviour
 
         // Assert that the player is not null
         Debug.Assert(player != null, "GauntletInspectController: Player is null.");
+
+        // Initialize the input
+        InitializeInput();
     }
 
-    private void Start()
+    private void OnEnable()
+    {
+        // Register the input
+        InputManager.Instance.Register(this);
+    }
+
+    private void OnDisable()
+    {
+        // Unregister the input
+        InputManager.Instance.Unregister(this);
+    }
+
+    public void InitializeInput()
     {
         // Set up input actions
-        InputManager.Instance.PlayerControls.Player.Inspect.performed += _ =>
-        {
-            TriggerGauntletInspect();
+        InputActions.Add(
+            new InputData(InputManager.Instance.pControls.Player.Inspect, InputType.Performed, OnInspectPerformed)
+        );
+        InputActions.Add(
+            new InputData(InputManager.Instance.pControls.Player.Inspect, InputType.Canceled, OnInspectCanceled)
+        );
+    }
 
-            // Set the flag to true
-            _isInspectHeld = true;
-        };
+    private void OnInspectPerformed(InputAction.CallbackContext context)
+    {
+        TriggerGauntletInspect();
 
-        InputManager.Instance.PlayerControls.Player.Inspect.canceled += _ =>
-        {
-            // Set the flag to false
-            _isInspectHeld = false;
+        // Set the flag to true
+        _isInspectHeld = true;
+    }
 
-            if (_isPaused)
-                ResumeAnimation();
-        };
+    private void OnInspectCanceled(InputAction.CallbackContext context)
+    {
+        // Set the flag to false
+        _isInspectHeld = false;
+
+        if (_isPaused)
+            ResumeAnimation();
     }
 
     /// <summary>

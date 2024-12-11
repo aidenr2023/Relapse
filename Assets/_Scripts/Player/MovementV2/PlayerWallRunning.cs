@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-public class PlayerWallRunning : PlayerMovementScript, IDebugged
+public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 {
     #region Serialized Fields
 
@@ -63,7 +63,9 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
 
     #region Getters
 
-    public override InputActionMap InputActionMap => InputManager.Instance.PlayerControls.PlayerMovementWallRunning;
+    public HashSet<InputData> InputActions { get; } = new();
+
+    public override InputActionMap InputActionMap => InputManager.Instance.pControls.PlayerMovementWallRunning;
 
     public bool IsWallRunning => _isWallRunning;
 
@@ -79,6 +81,9 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
     {
         // Initialize the wall running objects
         _wallRunningObjects = new HashSet<GameObject>();
+
+        // Initialize the input
+        InitializeInput();
     }
 
     private void Start()
@@ -86,11 +91,20 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
         // Initialize the events
         InitializeEvents();
 
-        // Initialize the input
-        InitializeInput();
-
         // Initialize the footstep sounds
         InitializeFootsteps();
+    }
+
+    private void OnEnable()
+    {
+        // Register the input user
+        InputManager.Instance.Register(this);
+    }
+
+    private void OnDisable()
+    {
+        // Unregister the input user
+        InputManager.Instance.Unregister(this);
     }
 
     private void InitializeEvents()
@@ -105,13 +119,24 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged
         OnWallRunEnd += KinematicOnWallRunEnd;
     }
 
-    private void InitializeInput()
-    {
-        // Subscribe to the movement input
-        InputManager.Instance.PlayerControls.PlayerMovementWallRunning.Move.performed += OnMovePerformed;
-        InputManager.Instance.PlayerControls.PlayerMovementWallRunning.Move.canceled += OnMoveCanceled;
 
-        InputManager.Instance.PlayerControls.PlayerMovementWallRunning.Jump.performed += OnJumpPerformed;
+    public void InitializeInput()
+    {
+        // Add the input action to the input actions hashset
+        InputActions.Add(
+            new InputData(InputManager.Instance.pControls.PlayerMovementWallRunning.Move, InputType.Performed,
+                OnMovePerformed)
+        );
+
+        InputActions.Add(
+            new InputData(InputManager.Instance.pControls.PlayerMovementWallRunning.Move, InputType.Canceled,
+                OnMoveCanceled)
+        );
+
+        InputActions.Add(
+            new InputData(InputManager.Instance.pControls.PlayerMovementWallRunning.Jump, InputType.Performed,
+                OnJumpPerformed)
+        );
     }
 
     private void InitializeFootsteps()

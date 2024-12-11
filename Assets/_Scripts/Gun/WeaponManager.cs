@@ -32,6 +32,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
 
     #region Getters
 
+    public HashSet<InputData> InputActions { get; } = new();
+
     public Player Player => _player;
     public PlayerInfo PlayerInfo => _playerInfo;
     public IGun EquippedGun => _equippedGun;
@@ -59,6 +61,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
     {
         // Initialize the components
         GetComponents();
+
+        // Initialize the input actions
+        InitializeInput();
     }
 
     private void Start()
@@ -71,6 +76,18 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
         }
 
         DebugManager.Instance.AddDebuggedObject(this);
+    }
+
+    private void OnEnable()
+    {
+        // Register the input actions
+        InputManager.Instance.Register(this);
+    }
+
+    private void OnDisable()
+    {
+        // Unregister the input actions
+        InputManager.Instance.Unregister(this);
     }
 
     private void GetComponents()
@@ -88,23 +105,18 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
 
     public void InitializeInput()
     {
-        // Initialize the input
-
         // Shoot input
-        InputManager.Instance.PlayerControls.Player.Attack.performed += OnShoot;
-        InputManager.Instance.PlayerControls.Player.Attack.canceled += OnShootCanceled;
+        InputActions.Add(
+            new InputData(InputManager.Instance.pControls.Player.Attack, InputType.Performed, OnShoot)
+        );
+        InputActions.Add(
+            new InputData(InputManager.Instance.pControls.Player.Attack, InputType.Canceled, OnShootCanceled)
+        );
 
         // Reload
-        InputManager.Instance.PlayerControls.Player.Reload.performed += OnReload;
-    }
-
-    public void RemoveInput()
-    {
-        // Remove the input
-        InputManager.Instance.PlayerControls.Player.Attack.performed -= OnShoot;
-        InputManager.Instance.PlayerControls.Player.Attack.canceled -= OnShootCanceled;
-
-        InputManager.Instance.PlayerControls.Player.Reload.performed -= OnReload;
+        InputActions.Add(
+            new InputData(InputManager.Instance.pControls.Player.Reload, InputType.Performed, OnReload)
+        );
     }
 
     private void OnShoot(InputAction.CallbackContext obj)
@@ -194,7 +206,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
 
         // Play the equip sound
         SoundManager.Instance.PlaySfx(gun.GunInformation.PickupSound);
-        
+
         //get animator set isArmed to true
         animator.SetBool("isArmed", true);
 
@@ -367,6 +379,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
         {
             if (ReferenceEquals(this, other))
                 return 0;
+
             if (other is null)
                 return 1;
 

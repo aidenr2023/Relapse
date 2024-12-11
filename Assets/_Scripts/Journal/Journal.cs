@@ -32,8 +32,8 @@ public class Journal : MonoBehaviour
         // Set the instance to this object
         Instance = this;
 
-        // Don't destroy the Journal when changing scenes
-        DontDestroyOnLoad(gameObject);
+        // // Don't destroy the Journal when changing scenes
+        // DontDestroyOnLoad(gameObject);
     }
 
     private void Start()

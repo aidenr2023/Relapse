@@ -253,11 +253,15 @@ public class AsyncSceneManager : MonoBehaviour
     public void LoadSceneAsync(LevelSectionSceneInfo levelSectionSceneInfo)
     {
         // Load the section scene
-        if (levelSectionSceneInfo.SectionScene != null)
+        if (levelSectionSceneInfo.SectionScene != null &&
+            levelSectionSceneInfo.SectionScene.SceneName != ""
+           )
             LoadSceneAsync(levelSectionSceneInfo.SectionScene);
 
         // Load the section persistent data
-        if (levelSectionSceneInfo.SectionPersistentData != null)
+        if (levelSectionSceneInfo.SectionPersistentData != null &&
+            levelSectionSceneInfo.SectionPersistentData.SceneName != ""
+           )
             LoadSceneAsync(levelSectionSceneInfo.SectionPersistentData);
     }
 
