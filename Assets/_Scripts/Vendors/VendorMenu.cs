@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class VendorMenu : MonoBehaviour
+public class VendorMenu : GameMenu
 {
     public static VendorMenu Instance { get; private set; }
 
@@ -71,6 +71,14 @@ public class VendorMenu : MonoBehaviour
         Instance = this;
     }
 
+    protected override void CustomOnEnable()
+    {
+    }
+
+    protected override void CustomOnDisable()
+    {
+    }
+
     private void Start()
     {
         // Isolate the initial menu
@@ -103,8 +111,6 @@ public class VendorMenu : MonoBehaviour
         // Set the selected button
         if (menu == powerMenu)
         {
-            // SetSelectedGameObject(shopSelectedButton);
-
             // If, the first med button is enabled, select it
             if (medButtons[0].isActiveAndEnabled)
                 SetSelectedGameObject(medButtons[0].gameObject);
@@ -290,10 +296,8 @@ public class VendorMenu : MonoBehaviour
         // Set this menu to active
         gameObject.SetActive(true);
 
-        // Set the cursor to visible
-        // InputManager.Instance.SetCursorState(true);
-
         // Pause the game
+        // TODO: Time manager
         Time.timeScale = 0;
 
         // Populate the shop
@@ -307,9 +311,6 @@ public class VendorMenu : MonoBehaviour
     {
         // Set this menu to inactive
         gameObject.SetActive(false);
-
-        // Set the cursor to invisible
-        // InputManager.Instance.SetCursorState(false);
 
         // Unpause the game
         // TODO: Connect with timescale manager
