@@ -492,7 +492,7 @@ public class JournalUIManager : MonoBehaviour
             ? medsButton
             : drugsButton;
 
-        Debug.Log($"Setting Nav down to {subheaderButton.name}");
+        // Debug.Log($"Setting Nav down to {subheaderButton.name}");
 
         // Set the header navigation down based on the powertype
         SetHeaderNavDown(subheaderButton);

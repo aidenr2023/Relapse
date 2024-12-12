@@ -98,7 +98,7 @@ public class InputManager
             }
         }
 
-        Debug.Log($"Registered {(item as MonoBehaviour)!} to the InputManager!");
+        // Debug.Log($"Registered {(item as MonoBehaviour)!} to the InputManager!");
     }
 
     public void Unregister(IUsesInput item)

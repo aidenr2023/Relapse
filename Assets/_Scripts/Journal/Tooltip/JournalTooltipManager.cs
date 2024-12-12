@@ -6,7 +6,7 @@ using Object = UnityEngine.Object;
 [Serializable]
 public class JournalTooltipManager
 {
-    public static JournalTooltipManager Instance => Journal.Instance.JournalTooltipManager;
+    public static JournalTooltipManager Instance => Journal.Instance?.JournalTooltipManager;
 
     #region Serialized Fields
 

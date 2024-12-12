@@ -1,12 +1,24 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class AsyncSceneManager : MonoBehaviour
+public class AsyncSceneManager
 {
-    public static AsyncSceneManager Instance { get; private set; }
+    private static AsyncSceneManager _instance;
+
+    public static AsyncSceneManager Instance
+    {
+        get
+        {
+            if (_instance == null)
+                _instance = new AsyncSceneManager();
+
+            return _instance;
+        }
+    }
 
     #region Private Fields
 
@@ -16,16 +28,16 @@ public class AsyncSceneManager : MonoBehaviour
 
     #endregion
 
-    private void Awake()
+    private AsyncSceneManager()
     {
         // Set the instance
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
+        if (_instance == null)
+            _instance = this;
     }
 
-    private void LoadSceneAsync(SceneField scene)
+    #region Scene Methods
+
+    private AsyncOperation LoadSceneAsync(SceneField scene)
     {
         // If there is already a record for the scene
         if (_asyncSceneRecords.TryGetValue(scene, out var sceneRecord))
@@ -34,11 +46,11 @@ public class AsyncSceneManager : MonoBehaviour
             {
                 // If the scene is currently loading, return
                 case AsyncSceneState.Loading:
-                    return;
+                    return sceneRecord.Operation;
 
                 // If the scene is already loaded, return
                 case AsyncSceneState.Loaded:
-                    return;
+                    return sceneRecord.Operation;
 
                 // If the scene is canceled, set the async operation to finish loading
                 case AsyncSceneState.Canceled:
@@ -46,13 +58,13 @@ public class AsyncSceneManager : MonoBehaviour
 
                     if (sceneRecord.Operation != null)
                         sceneRecord.Operation.allowSceneActivation = true;
-                    return;
+                    return sceneRecord.Operation;
 
                 // If the scene is unloaded, remove it from the dictionary and call the function again
                 case AsyncSceneState.Unloaded:
                     _asyncSceneRecords.Remove(scene);
                     LoadSceneAsync(scene);
-                    return;
+                    return sceneRecord.Operation;
 
                 // If the scene is disabled, enable it
                 case AsyncSceneState.Disabled:
@@ -63,15 +75,16 @@ public class AsyncSceneManager : MonoBehaviour
                     // Set the scene state to loaded
                     sceneRecord.State = AsyncSceneState.Loaded;
 
-                    return;
+                    return sceneRecord.Operation;
 
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
+        // TODO: Delete this
         // Add a tooltip to the scene field
-        JournalTooltipManager.Instance.AddTooltip($"Loading {scene.SceneName}...");
+        JournalTooltipManager.Instance?.AddTooltip($"Loading {scene.SceneName}...");
 
         // If there is NOT a record already for the scene, make one
         var operation = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Additive);
@@ -94,6 +107,71 @@ public class AsyncSceneManager : MonoBehaviour
 
         // Add the record to the dictionary
         _asyncSceneRecords.Add(scene.SceneName, sceneRecord);
+
+        Debug.Log($"Currently managed scenes: {string.Join(", ", _asyncSceneRecords.Keys)}");
+
+        return operation;
+    }
+
+    public void LoadSceneAsync(SceneLoaderInformation sceneLoader)
+    {
+        // Unload all the scenes to unload
+        var scenesToUnload = sceneLoader.SectionsToUnload;
+
+        foreach (var scene in scenesToUnload)
+            UnloadSceneAsync(scene);
+
+        // Load all the scenes to load
+        var scenesToLoad = sceneLoader.SectionsToLoad;
+
+        foreach (var scene in scenesToLoad)
+            LoadSceneAsync(scene);
+    }
+
+    public void LoadSceneAsync(LevelSectionSceneInfo levelSectionSceneInfo)
+    {
+        // Load the section scene
+        if (levelSectionSceneInfo.SectionScene != null &&
+            levelSectionSceneInfo.SectionScene.SceneName != ""
+           )
+            LoadSceneAsync(levelSectionSceneInfo.SectionScene);
+
+        // Load the section persistent data
+        if (levelSectionSceneInfo.SectionPersistentData != null &&
+            levelSectionSceneInfo.SectionPersistentData.SceneName != ""
+           )
+            LoadSceneAsync(levelSectionSceneInfo.SectionPersistentData);
+    }
+
+    private void LoadSceneSynchronous(SceneField scene)
+    {
+        // If the scene is already loaded, return
+        if (_asyncSceneRecords.TryGetValue(scene, out var sceneRecord))
+            return;
+
+        // Load the scene
+        SceneManager.LoadScene(scene, LoadSceneMode.Additive);
+
+        // Get the scene that was just loaded
+        var sceneLoaded = SceneManager.GetSceneByName(scene);
+
+        // Create a record for the scene
+        var record = new AsyncSceneRecord(scene, null, AsyncSceneState.Loaded);
+        record.Scene = sceneLoaded;
+
+        // Add the record to the dictionary
+        _asyncSceneRecords.Add(scene.SceneName, record);
+    }
+
+    public void LoadSceneSynchronous(LevelSectionSceneInfo levelSectionSceneInfo)
+    {
+        // Load the section scene
+        if (levelSectionSceneInfo.SectionScene != null)
+            LoadSceneSynchronous(levelSectionSceneInfo.SectionScene);
+
+        // Load the section persistent data
+        if (levelSectionSceneInfo.SectionPersistentData != null)
+            LoadSceneSynchronous(levelSectionSceneInfo.SectionPersistentData);
     }
 
     private void UnloadSceneAsync(SceneUnloadField scene)
@@ -171,13 +249,39 @@ public class AsyncSceneManager : MonoBehaviour
         }
     }
 
+    public void UnloadSceneAsync(LevelSectionSceneInfo levelSectionSceneInfo)
+    {
+        // Unload the section scene
+        if (levelSectionSceneInfo.SectionScene != null)
+        {
+            // Create a scene unload field
+            var sceneUnloadField = SceneUnloadField.Create(levelSectionSceneInfo.SectionScene, false);
+
+            // Unload the scene
+            UnloadSceneAsync(sceneUnloadField);
+        }
+
+        // Unload the section persistent data
+        if (levelSectionSceneInfo.SectionPersistentData != null)
+        {
+            Debug.Log(
+                $"Unloading Persistent Data: {levelSectionSceneInfo.SectionPersistentData.SceneName} - {levelSectionSceneInfo}");
+
+            // Create a scene unload field that disables the scene instead of unloading it
+            var sceneUnloadField = SceneUnloadField.Create(levelSectionSceneInfo.SectionPersistentData, true);
+
+            // Unload the scene
+            UnloadSceneAsync(sceneUnloadField);
+        }
+    }
+
     private void DisableScene(Scene scene)
     {
         // Get all the root game objects in the scene
         var rootGameObjects = scene.GetRootGameObjects();
 
         var objectsToTrack = rootGameObjects
-            .Where(n => isActiveAndEnabled)
+            .Where(n => n.activeSelf)
             .ToArray();
 
         // Add the objects to the dictionary
@@ -235,92 +339,145 @@ public class AsyncSceneManager : MonoBehaviour
             ForceManageScene(sceneLoaderInformation.SectionPersistentData);
     }
 
-    public void LoadSceneAsync(SceneLoaderInformation sceneLoader)
+    public void LoadStartupScene(LevelStartupSceneInfo startupSceneInfo, MonoBehaviour coroutineRunner,
+        Action<float> percentageCallback = null)
     {
-        // Unload all the scenes to unload
-        var scenesToUnload = sceneLoader.SectionsToUnload;
-
-        foreach (var scene in scenesToUnload)
-            UnloadSceneAsync(scene);
-
-        // Load all the scenes to load
-        var scenesToLoad = sceneLoader.SectionsToLoad;
-
-        foreach (var scene in scenesToLoad)
-            LoadSceneAsync(scene);
-    }
-
-    public void LoadSceneAsync(LevelSectionSceneInfo levelSectionSceneInfo)
-    {
-        // Load the section scene
-        if (levelSectionSceneInfo.SectionScene != null &&
-            levelSectionSceneInfo.SectionScene.SceneName != ""
-           )
-            LoadSceneAsync(levelSectionSceneInfo.SectionScene);
-
-        // Load the section persistent data
-        if (levelSectionSceneInfo.SectionPersistentData != null &&
-            levelSectionSceneInfo.SectionPersistentData.SceneName != ""
-           )
-            LoadSceneAsync(levelSectionSceneInfo.SectionPersistentData);
-    }
-
-    public void UnloadSceneAsync(LevelSectionSceneInfo levelSectionSceneInfo)
-    {
-        // Unload the section scene
-        if (levelSectionSceneInfo.SectionScene != null)
+        // Return if the coroutine runner is null
+        if (coroutineRunner == null)
         {
-            // Create a scene unload field
-            var sceneUnloadField = SceneUnloadField.Create(levelSectionSceneInfo.SectionScene, false);
-
-            // Unload the scene
-            UnloadSceneAsync(sceneUnloadField);
-        }
-
-        // Unload the section persistent data
-        if (levelSectionSceneInfo.SectionPersistentData != null)
-        {
-            Debug.Log(
-                $"Unloading Persistent Data: {levelSectionSceneInfo.SectionPersistentData.SceneName} - {levelSectionSceneInfo}");
-
-            // Create a scene unload field that disables the scene instead of unloading it
-            var sceneUnloadField = SceneUnloadField.Create(levelSectionSceneInfo.SectionPersistentData, true);
-
-            // Unload the scene
-            UnloadSceneAsync(sceneUnloadField);
-        }
-    }
-
-    private void LoadSceneSynchronous(SceneField scene)
-    {
-        // If the scene is already loaded, return
-        if (_asyncSceneRecords.TryGetValue(scene, out var sceneRecord) && sceneRecord.State == AsyncSceneState.Loaded)
+            Debug.LogError("Coroutine runner is null!");
             return;
+        }
 
-        // Load the scene
-        SceneManager.LoadScene(scene, LoadSceneMode.Additive);
+        // Return if the startup scene info is null
+        if (startupSceneInfo == null)
+        {
+            Debug.LogError("Startup scene info is null!");
+            return;
+        }
 
-        // Get the scene that was just loaded
-        var sceneLoaded = SceneManager.GetSceneByName(scene);
-
-        // Create a record for the scene
-        var record = new AsyncSceneRecord(scene, null, AsyncSceneState.Loaded);
-        record.Scene = sceneLoaded;
-
-        // Add the record to the dictionary
-        _asyncSceneRecords.Add(scene.SceneName, record);
+        // Start the coroutine
+        coroutineRunner.StartCoroutine(LoadMultipleScenes(startupSceneInfo, coroutineRunner, percentageCallback));
     }
 
-    public void LoadSceneSynchronous(LevelSectionSceneInfo levelSectionSceneInfo)
+    private IEnumerator LoadMultipleScenes(LevelStartupSceneInfo startupSceneInfo, MonoBehaviour coroutineRunner,
+        Action<float> percentageCallback)
     {
-        // Load the section scene
-        if (levelSectionSceneInfo.SectionScene != null)
-            LoadSceneSynchronous(levelSectionSceneInfo.SectionScene);
+        List<Scene> scenesToUnload = new();
 
-        // Load the section persistent data
-        if (levelSectionSceneInfo.SectionPersistentData != null)
-            LoadSceneSynchronous(levelSectionSceneInfo.SectionPersistentData);
+        // Get all currently loaded scenes
+        for (var i = 0; i < SceneManager.sceneCount; i++)
+            scenesToUnload.Add(SceneManager.GetSceneAt(i));
+
+        // Clear the currently managed scenes
+        _asyncSceneRecords.Clear();
+
+        // Clear the currently disabled scene objects
+        _disabledSceneObjects.Clear();
+
+        // Create a hash set to store all the load operations
+        HashSet<AsyncOperation> loadOperations = new();
+
+        AsyncOperation activeSceneOp = null;
+
+        // Load the player data scene
+        if (startupSceneInfo.PlayerDataScene != null)
+        {
+            var operation = LoadSceneAsync(startupSceneInfo.PlayerDataScene);
+
+            // Set the scene to not be activated
+            operation.allowSceneActivation = false;
+
+            // Add the operation to the hash set
+            loadOperations.Add(operation);
+
+            // If this scene is the active scene, set the operation to set the active scene
+            if (startupSceneInfo.PlayerDataScene.SceneName == startupSceneInfo.ActiveScene.SceneName)
+                activeSceneOp = operation;
+        }
+
+        // Load all the startup sections
+        foreach (var section in startupSceneInfo.StartupSections)
+        {
+            // Load the section scene
+            if (section.SectionScene != null)
+            {
+                var operation = LoadSceneAsync(section.SectionScene);
+
+                // Set the scene to not be activated
+                operation.allowSceneActivation = false;
+
+                // Add the operation to the hash set
+                loadOperations.Add(operation);
+
+                // If this scene is the active scene, set the operation to set the active scene
+                if (section.SectionScene.SceneName == startupSceneInfo.ActiveScene.SceneName)
+                    activeSceneOp = operation;
+            }
+
+            // Load the section persistent data
+            if (section.SectionPersistentData != null)
+            {
+                var operation = LoadSceneAsync(section.SectionPersistentData);
+
+                // Set the scene to not be activated
+                operation.allowSceneActivation = false;
+
+                // Add the operation to the hash set
+                loadOperations.Add(operation);
+
+                // If this scene is the active scene, set the operation to set the active scene
+                if (section.SectionPersistentData.SceneName == startupSceneInfo.ActiveScene.SceneName)
+                    activeSceneOp = operation;
+            }
+        }
+
+        // Wait while the operations are not done
+        while (loadOperations.Any(n => n.progress < 0.9f))
+        {
+            // Calculate the total progress
+            var loadProgress = loadOperations.Sum(n => n.progress) / loadOperations.Count;
+
+            percentageCallback?.Invoke(loadProgress);
+            yield return null;
+        }
+
+        // Set all the load operations to allow scene activation
+        foreach (var operation in loadOperations)
+            operation.allowSceneActivation = true;
+
+        var emptyScene = SceneManager.CreateScene("Empty");
+
+        // Unload all the currently loaded scenes asynchronously,
+        // but don't remove them from the hierarchy yet
+        foreach (var scene in scenesToUnload)
+        {
+            var operation = SceneManager.UnloadSceneAsync(scene.name);
+
+            // Set the scene to be activated
+            operation.allowSceneActivation = true;
+        }
+
+        // if the active scene is not done, wait
+        if (activeSceneOp != null)
+        {
+            yield return new WaitUntil(() => activeSceneOp.isDone);
+
+            // Get the scene reference for the active scene
+            var activeScene = SceneManager.GetSceneByName(startupSceneInfo.ActiveScene);
+
+            // Set the active scene to the active scene
+            SceneManager.SetActiveScene(activeScene);
+        }
+
+        // Unload the empty scene
+        var emptySceneOp = SceneManager.UnloadSceneAsync(emptyScene);
+        emptySceneOp.allowSceneActivation = true;
+
+        Debug.Log($"All Operations Done! - {startupSceneInfo.ActiveScene.SceneName}");
     }
+
+    #endregion
 
     private enum AsyncSceneState
     {
