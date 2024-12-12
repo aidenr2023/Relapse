@@ -11,7 +11,6 @@ public class PauseManager : MonoBehaviour
 
     #endregion
 
-
     #region Private Fields
 
     private bool _isPaused;
@@ -29,10 +28,6 @@ public class PauseManager : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
-    {
-    }
-
     public void Pause()
     {
         // Set the pause state
@@ -40,9 +35,6 @@ public class PauseManager : MonoBehaviour
 
         // Pause the game
         Time.timeScale = 0;
-
-        // Show the cursor & disable the player controls
-        // InputManager.Instance.SetCursorState(true);
 
         // Show the pause menu
         pauseMenu?.SetActive(true);

@@ -64,10 +64,10 @@ public class GauntletInspectController : MonoBehaviour, IUsesInput
     {
         // Set up input actions
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.Player.Inspect, InputType.Performed, OnInspectPerformed)
+            new InputData(InputManager.Instance.PControls.Player.Inspect, InputType.Performed, OnInspectPerformed)
         );
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.Player.Inspect, InputType.Canceled, OnInspectCanceled)
+            new InputData(InputManager.Instance.PControls.Player.Inspect, InputType.Canceled, OnInspectCanceled)
         );
     }
 

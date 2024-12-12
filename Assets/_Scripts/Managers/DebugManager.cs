@@ -79,21 +79,21 @@ public class DebugManager : MonoBehaviour, IDebugged, IDamager, IUsesInput
     public void InitializeInput()
     {
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.Debug.ToggleDebug, InputType.Performed, ToggleDebugMode)
+            new InputData(InputManager.Instance.PControls.Debug.ToggleDebug, InputType.Performed, ToggleDebugMode)
         );
 
         InputActions.Add(new InputData(
-            InputManager.Instance.pControls.Debug.DebugHealth, InputType.Performed, OnDebugHealthPerformed)
+            InputManager.Instance.PControls.Debug.DebugHealth, InputType.Performed, OnDebugHealthPerformed)
         );
         InputActions.Add(new InputData(
-            InputManager.Instance.pControls.Debug.DebugHealth, InputType.Canceled, OnDebugHealthCanceled)
+            InputManager.Instance.PControls.Debug.DebugHealth, InputType.Canceled, OnDebugHealthCanceled)
         );
 
         InputActions.Add(new InputData(
-            InputManager.Instance.pControls.Debug.DebugTolerance, InputType.Performed, OnDebugTolerancePerformed)
+            InputManager.Instance.PControls.Debug.DebugTolerance, InputType.Performed, OnDebugTolerancePerformed)
         );
         InputActions.Add(new InputData(
-            InputManager.Instance.pControls.Debug.DebugTolerance, InputType.Canceled, OnDebugToleranceCanceled)
+            InputManager.Instance.PControls.Debug.DebugTolerance, InputType.Canceled, OnDebugToleranceCanceled)
         );
     }
 

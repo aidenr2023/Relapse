@@ -37,7 +37,7 @@ public class DebugFlashlight : MonoBehaviour, IUsesInput
     {
         // Add the input action to the input actions hashset
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.Debug.Flashlight, InputType.Performed,
+            new InputData(InputManager.Instance.PControls.Debug.Flashlight, InputType.Performed,
                 ToggleFlashlightOnInput)
         );
     }

@@ -1,14 +1,17 @@
-using System;
-using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class MainMenu : MonoBehaviour
+public class MainMenu : GameMenu
 {
+    #region Serialized Fields
+
     [SerializeField] private Slider loadingBar;
 
     [SerializeField] private LevelStartupSceneInfo levelStartupSceneInfo;
+
+    #endregion
+
+    #region Private Fields
 
     private AsyncOperation _loadSceneOperation;
 
@@ -16,11 +19,13 @@ public class MainMenu : MonoBehaviour
 
     private bool _clickedButton;
 
-    private void Awake()
+    #endregion
+
+    protected override void CustomOnEnable()
     {
     }
 
-    private void Start()
+    protected override void CustomOnDisable()
     {
     }
 
@@ -37,9 +42,6 @@ public class MainMenu : MonoBehaviour
 
     public void StartButton()
     {
-        // // Load the scene asynchronously
-        // StartCoroutine(LoadSceneAsync());
-
         // Load the scene asynchronously
         if (!_startedLoading)
         {
@@ -49,9 +51,6 @@ public class MainMenu : MonoBehaviour
             // Set the flag to true
             _startedLoading = true;
         }
-
-        // // Set the scene to active
-        // _loadSceneOperation.allowSceneActivation = true;
 
         // Set the flag to true
         _clickedButton = true;
@@ -68,33 +67,4 @@ public class MainMenu : MonoBehaviour
 #endif
     }
 
-    // private IEnumerator LoadSceneAsync()
-    // {
-    //     // Return if the scene is already loading
-    //     if (_startedLoading)
-    //         yield return null;
-    //
-    //     // Asynchronously load the scene
-    //     _loadSceneOperation = SceneManager.LoadSceneAsync(_sceneName, LoadSceneMode.Single);
-    //     _loadSceneOperation.allowSceneActivation = false;
-    //
-    //     // Set the flag to true
-    //     _startedLoading = true;
-    //
-    //     while (!_loadSceneOperation.isDone)
-    //     {
-    //         // Update the loading bar value
-    //         loadingBar.value = _loadSceneOperation.progress;
-    //
-    //         // Wait for the next frame
-    //         yield return null;
-    //     }
-    //
-    //     // Update the loading bar value
-    //     loadingBar.value = _loadSceneOperation.progress;
-    //
-    //     // If the button was clicked, allow the scene to activate
-    //     if (_clickedButton)
-    //         _loadSceneOperation.allowSceneActivation = true;
-    // }
 }

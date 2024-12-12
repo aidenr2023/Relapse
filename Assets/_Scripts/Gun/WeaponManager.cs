@@ -107,15 +107,15 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
     {
         // Shoot input
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.Player.Attack, InputType.Performed, OnShoot)
+            new InputData(InputManager.Instance.PControls.Player.Attack, InputType.Performed, OnShoot)
         );
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.Player.Attack, InputType.Canceled, OnShootCanceled)
+            new InputData(InputManager.Instance.PControls.Player.Attack, InputType.Canceled, OnShootCanceled)
         );
 
         // Reload
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.Player.Reload, InputType.Performed, OnReload)
+            new InputData(InputManager.Instance.PControls.Player.Reload, InputType.Performed, OnReload)
         );
     }
 

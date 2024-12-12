@@ -117,15 +117,15 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         // Connect the input actions to the corresponding functions
 
         // Initialize the movement input
-        InputManager.Instance.pControls.PlayerMovementBasic.Move.performed += OnMovePerformed;
-        InputManager.Instance.pControls.PlayerMovementBasic.Move.canceled += OnMoveCanceled;
+        InputManager.Instance.PControls.PlayerMovementBasic.Move.performed += OnMovePerformed;
+        InputManager.Instance.PControls.PlayerMovementBasic.Move.canceled += OnMoveCanceled;
 
         // Initialize the jump input
-        InputManager.Instance.pControls.PlayerMovementBasic.Jump.performed += OnJumpPerformed;
+        InputManager.Instance.PControls.PlayerMovementBasic.Jump.performed += OnJumpPerformed;
 
         // Initialize the sprint input
-        InputManager.Instance.pControls.PlayerMovementBasic.Sprint.performed += OnSprintPerformed;
-        InputManager.Instance.pControls.PlayerMovementBasic.Sprint.canceled += OnSprintCanceled;
+        InputManager.Instance.PControls.PlayerMovementBasic.Sprint.performed += OnSprintPerformed;
+        InputManager.Instance.PControls.PlayerMovementBasic.Sprint.canceled += OnSprintCanceled;
     }
 
     private void OnJumpPerformed(InputAction.CallbackContext obj)

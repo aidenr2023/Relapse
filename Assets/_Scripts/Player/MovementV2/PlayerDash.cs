@@ -63,7 +63,7 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
     {
         // Initialize the event that is called when the button is pressed
         InputActions.Add(new InputData(
-            InputManager.Instance.pControls.PlayerMovementBasic.Dash, InputType.Performed, OnDashPerformed)
+            InputManager.Instance.PControls.PlayerMovementBasic.Dash, InputType.Performed, OnDashPerformed)
         );
     }
 

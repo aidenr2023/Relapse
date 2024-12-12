@@ -65,7 +65,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     public HashSet<InputData> InputActions { get; } = new();
 
-    public override InputActionMap InputActionMap => InputManager.Instance.pControls.PlayerMovementWallRunning;
+    public override InputActionMap InputActionMap => InputManager.Instance.PControls.PlayerMovementWallRunning;
 
     public bool IsWallRunning => _isWallRunning;
 
@@ -124,17 +124,17 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     {
         // Add the input action to the input actions hashset
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.PlayerMovementWallRunning.Move, InputType.Performed,
+            new InputData(InputManager.Instance.PControls.PlayerMovementWallRunning.Move, InputType.Performed,
                 OnMovePerformed)
         );
 
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.PlayerMovementWallRunning.Move, InputType.Canceled,
+            new InputData(InputManager.Instance.PControls.PlayerMovementWallRunning.Move, InputType.Canceled,
                 OnMoveCanceled)
         );
 
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.PlayerMovementWallRunning.Jump, InputType.Performed,
+            new InputData(InputManager.Instance.PControls.PlayerMovementWallRunning.Jump, InputType.Performed,
                 OnJumpPerformed)
         );
     }

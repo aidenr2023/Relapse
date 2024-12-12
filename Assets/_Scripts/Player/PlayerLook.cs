@@ -53,18 +53,18 @@ public class PlayerLook : MonoBehaviour, IUsesInput
     {
         // Initialize the input
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.Player.LookMouse, InputType.Performed, OnLookMousePerformed)
+            new InputData(InputManager.Instance.PControls.Player.LookMouse, InputType.Performed, OnLookMousePerformed)
         );
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.Player.LookMouse, InputType.Canceled, OnLookCanceled)
+            new InputData(InputManager.Instance.PControls.Player.LookMouse, InputType.Canceled, OnLookCanceled)
         );
 
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.Player.LookController, InputType.Performed,
+            new InputData(InputManager.Instance.PControls.Player.LookController, InputType.Performed,
                 OnLookControllerPerformed)
         );
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.Player.LookController, InputType.Canceled, OnLookCanceled)
+            new InputData(InputManager.Instance.PControls.Player.LookController, InputType.Canceled, OnLookCanceled)
         );
     }
 

@@ -4,7 +4,11 @@ public class InputManagerHelper : MonoBehaviour
 {
     private void Update()
     {
-        SetCursorState(InputManager.Instance.CursorActive);
+        // Enable / disable the cursor based on the cursor state
+        SetCursorState(InputManager.Instance.IsCursorActive);
+
+        // Enable / disable the player controls based on the controls state
+        SetPlayerControlsState(!InputManager.Instance.IsControlsDisabled);
     }
 
     /// <summary>
@@ -22,5 +26,16 @@ public class InputManagerHelper : MonoBehaviour
 
         // Show / hide the cursor
         Cursor.visible = state;
+    }
+
+    private void SetPlayerControlsState(bool state)
+    {
+        // Enable the player controls
+        if (state)
+            InputManager.Instance.PControls.Enable();
+
+        // Disable the player controls
+        else
+            InputManager.Instance.PControls.Disable();
     }
 }

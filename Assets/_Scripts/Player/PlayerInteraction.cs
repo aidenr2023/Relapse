@@ -74,7 +74,7 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
     {
         // Subscribe to the interact event
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.Player.Interact, InputType.Performed, OnInteractPerformed)
+            new InputData(InputManager.Instance.PControls.Player.Interact, InputType.Performed, OnInteractPerformed)
         );
     }
 

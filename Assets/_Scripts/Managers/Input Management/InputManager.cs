@@ -6,6 +6,8 @@ using UnityEngine.InputSystem;
 
 public class InputManager
 {
+    #region Singleton Pattern
+
     private static InputManager _instance;
 
     public static InputManager Instance
@@ -19,6 +21,8 @@ public class InputManager
         }
     }
 
+    #endregion
+
     #region Private Fields
 
     private readonly HashSet<IUsesInput> _registeredItems = new();
@@ -27,12 +31,13 @@ public class InputManager
 
     #region Getters
 
-    public PlayerControls pControls { get; }
+    public PlayerControls PControls { get; }
 
-    public bool CursorActive =>
-        (PauseManager.Instance != null && PauseManager.Instance.IsPaused) ||
-        (VendorMenu.Instance != null && VendorMenu.Instance.IsVendorActive) ||
-        (PauseMenuManager.Instance != null && PauseMenuManager.Instance.IsPaused);
+    public DefaultInputActions DefaultInputActions { get; }
+
+    public bool IsCursorActive => MenuManager.Instance.IsCursorActiveInMenus;
+
+    public bool IsControlsDisabled => MenuManager.Instance.IsControlsDisabledInMenus;
 
     #endregion
 
@@ -44,10 +49,16 @@ public class InputManager
         _instance = this;
 
         // Create a new instance of the PlayerControls
-        pControls = new PlayerControls();
+        PControls = new PlayerControls();
 
         // Enable the PlayerControls
-        pControls.Enable();
+        PControls.Enable();
+
+        // Create a new instance of the DefaultInputActions
+        DefaultInputActions = new DefaultInputActions();
+
+        // Enable the DefaultInputActions
+        DefaultInputActions.Enable();
 
         // Initialize the registered items
         _registeredItems.Clear();
@@ -65,7 +76,6 @@ public class InputManager
     }
 
     #endregion
-
 
     #region Public Methods
 
@@ -132,5 +142,4 @@ public class InputManager
     }
 
     #endregion
-
 }

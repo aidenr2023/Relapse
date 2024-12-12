@@ -36,7 +36,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
 
     public HashSet<InputData> InputActions { get; } = new();
 
-    public override InputActionMap InputActionMap => InputManager.Instance.pControls.PlayerMovementBasic;
+    public override InputActionMap InputActionMap => InputManager.Instance.PControls.PlayerMovementBasic;
 
     public Vector2 MovementInput => _movementInput;
 
@@ -77,26 +77,26 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
     public void InitializeInput()
     {
         InputActions.Add(new InputData(
-            InputManager.Instance.pControls.PlayerMovementBasic.Move, InputType.Performed, OnMovePerformed)
+            InputManager.Instance.PControls.PlayerMovementBasic.Move, InputType.Performed, OnMovePerformed)
         );
         InputActions.Add(new InputData(
-            InputManager.Instance.pControls.PlayerMovementBasic.Move, InputType.Canceled, OnMoveCanceled)
-        );
-
-        InputActions.Add(new InputData(
-            InputManager.Instance.pControls.PlayerMovementBasic.Sprint, InputType.Performed, OnSprintPerformed)
-        );
-        InputActions.Add(new InputData(
-            InputManager.Instance.pControls.PlayerMovementBasic.Sprint, InputType.Canceled, OnSprintCanceled)
+            InputManager.Instance.PControls.PlayerMovementBasic.Move, InputType.Canceled, OnMoveCanceled)
         );
 
         InputActions.Add(new InputData(
-            InputManager.Instance.pControls.PlayerMovementBasic.SprintToggle, InputType.Performed,
+            InputManager.Instance.PControls.PlayerMovementBasic.Sprint, InputType.Performed, OnSprintPerformed)
+        );
+        InputActions.Add(new InputData(
+            InputManager.Instance.PControls.PlayerMovementBasic.Sprint, InputType.Canceled, OnSprintCanceled)
+        );
+
+        InputActions.Add(new InputData(
+            InputManager.Instance.PControls.PlayerMovementBasic.SprintToggle, InputType.Performed,
             OnSprintTogglePerformed)
         );
 
         InputActions.Add(new InputData(
-            InputManager.Instance.pControls.PlayerMovementBasic.Jump, InputType.Performed, OnJumpPerformed)
+            InputManager.Instance.PControls.PlayerMovementBasic.Jump, InputType.Performed, OnJumpPerformed)
         );
     }
 

@@ -107,14 +107,14 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
     public void InitializeInput()
     {
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.Player.Power, InputType.Performed, OnPowerPerformed)
+            new InputData(InputManager.Instance.PControls.Player.Power, InputType.Performed, OnPowerPerformed)
         );
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.Player.Power, InputType.Canceled, OnPowerCanceled)
+            new InputData(InputManager.Instance.PControls.Player.Power, InputType.Canceled, OnPowerCanceled)
         );
 
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.Player.ChangePower, InputType.Performed, OnPowerChanged)
+            new InputData(InputManager.Instance.PControls.Player.ChangePower, InputType.Performed, OnPowerChanged)
         );
     }
 

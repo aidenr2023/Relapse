@@ -8,10 +8,8 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
-public class PauseMenuManager : MonoBehaviour, IUsesInput
+public class PauseMenuManager : GameMenu, IUsesInput
 {
-    public static PauseMenuManager Instance { get; private set; }
-
     #region Serialized Fields
 
     [SerializeField] private GameObject pauseMenuParent;
@@ -41,6 +39,8 @@ public class PauseMenuManager : MonoBehaviour, IUsesInput
 
     private readonly Stack<GameObject> _menuStack = new();
 
+    private bool _isInputRegistered;
+
     #endregion
 
     #region Getters
@@ -57,18 +57,15 @@ public class PauseMenuManager : MonoBehaviour, IUsesInput
     /// </summary>
     private void Awake()
     {
-        // Set the instance to this object
-        Instance = this;
-
         // Initialize the input
         InitializeInput();
     }
 
     public void InitializeInput()
     {
-        // // Connect to input system
+        // Connect to input system
         InputActions.Add(
-            new InputData(InputManager.Instance.pControls.Player.Pause, InputType.Performed, OnPausePerformed)
+            new InputData(InputManager.Instance.DefaultInputActions.UI.Cancel, InputType.Performed, OnPausePerformed)
         );
     }
 
@@ -78,16 +75,28 @@ public class PauseMenuManager : MonoBehaviour, IUsesInput
         pauseMenuParent.SetActive(false);
     }
 
-    private void OnEnable()
+    protected override void CustomOnEnable()
     {
-        // Register the input user
-        InputManager.Instance.Register(this);
+        if (!_isInputRegistered)
+        {
+            // Register the input user
+            InputManager.Instance.Register(this);
+
+            // Set the input registered flag to true
+            _isInputRegistered = true;
+        }
 
         // Set the event system's selected object to the first button
         SetSelectedButton(firstSelectedButton);
+
+        Debug.Log($"Adding this to the input manager: {this}");
     }
 
-    private void OnDisable()
+    protected override void CustomOnDisable()
+    {
+    }
+
+    private void OnDestroy()
     {
         // Unregister the input user
         InputManager.Instance.Unregister(this);
@@ -158,14 +167,6 @@ public class PauseMenuManager : MonoBehaviour, IUsesInput
             tmpText.color = clickColor;
     }
 
-
-    private void FixPhysics()
-    {
-        return;
-
-        Time.fixedDeltaTime = _fixedDeltaTime * Time.timeScale;
-    }
-
     private void IsolateMenu(GameObject obj)
     {
         // Hide all the menus
@@ -197,8 +198,8 @@ public class PauseMenuManager : MonoBehaviour, IUsesInput
         // Add your Resume logic here
         Debug.Log("Resume game");
 
+        // TODO: Time manager
         Time.timeScale = _tempTimeScale;
-        FixPhysics();
 
         //Hide menu
         pauseMenuParent.SetActive(false);
@@ -215,11 +216,12 @@ public class PauseMenuManager : MonoBehaviour, IUsesInput
         pauseMenuParent.SetActive(true);
 
         // Save the current timescale
+        // TODO: Time manager
         _tempTimeScale = Time.timeScale;
 
-        //Pause the game
+        // Pause the game
+        // TODO: Time manager
         Time.timeScale = 0;
-        FixPhysics();
 
         // Set pause to true
         IsPaused = true;
@@ -281,8 +283,8 @@ public class PauseMenuManager : MonoBehaviour, IUsesInput
     public void Exit(GameObject textObject)
     {
         // Resume the game
+        // TODO: Time manager
         Time.timeScale = _tempTimeScale;
-        FixPhysics();
 
         ChangeClickColor(textObject);
 
