@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class RelapseScreen : MonoBehaviour
+public class RelapseScreen : GameMenu
 {
     public static RelapseScreen Instance { get; private set; }
 
@@ -21,16 +21,20 @@ public class RelapseScreen : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    private void OnEnable()
+    protected override void CustomOnEnable()
     {
         // Set the event system's current selected game object to the first selected game object
         EventSystem.current.SetSelectedGameObject(firstSelectedButton.gameObject);
     }
 
+    protected override void CustomOnDisable()
+    {
+    }
+
     public void LoadScene(string sceneName)
     {
         // Set the timescale to 1
-        Time.timeScale = 0;
+        Time.timeScale = 1;
 
         // Load the scene
         UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
