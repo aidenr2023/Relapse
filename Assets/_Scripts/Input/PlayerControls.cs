@@ -762,6 +762,24 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""FowardMove"",
+                    ""type"": ""Value"",
+                    ""id"": ""b860f8f0-60b5-453a-b3af-ae9e63e5c9f8"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""SidewaysMove"",
+                    ""type"": ""Value"",
+                    ""id"": ""525c3fab-1158-46bd-9de1-f75bc54e68be"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -896,6 +914,138 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Jump"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""WS"",
+                    ""id"": ""62cea702-1131-4e78-8061-ee2904c795d3"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FowardMove"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""8a8e8dbd-8658-4855-b6c4-c36c162afa7b"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FowardMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""f56400b7-ed0d-42f0-bc60-5310e0e29362"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FowardMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Left Stck"",
+                    ""id"": ""81d134c6-be37-414a-8062-2bf397ff51c1"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""FowardMove"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""fb428375-9df9-44e9-a8c5-49803c9d6c35"",
+                    ""path"": ""<Gamepad>/leftStick/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""FowardMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""37736d32-427e-4818-959e-598857a22176"",
+                    ""path"": ""<Gamepad>/leftStick/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""FowardMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""WS"",
+                    ""id"": ""67251139-7a9f-4c0e-9da8-5fd11067530d"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SidewaysMove"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""eb174db8-9f49-48a2-b054-5a785b67b990"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KB n M"",
+                    ""action"": ""SidewaysMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""d016ff59-ceb8-4986-bc17-63c05185d6c5"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KB n M"",
+                    ""action"": ""SidewaysMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Left Stck"",
+                    ""id"": ""70835b8c-8b2f-431b-a425-7f3cd7f670d6"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SidewaysMove"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""8cd9bb52-82f9-4246-987b-728fa7dfe012"",
+                    ""path"": ""<Gamepad>/leftStick/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SidewaysMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""36406d2b-f9cb-45e6-8252-d16bc5c33e85"",
+                    ""path"": ""<Gamepad>/leftStick/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SidewaysMove"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
@@ -962,6 +1112,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_PlayerMovementWallRunning = asset.FindActionMap("PlayerMovementWallRunning", throwIfNotFound: true);
         m_PlayerMovementWallRunning_Move = m_PlayerMovementWallRunning.FindAction("Move", throwIfNotFound: true);
         m_PlayerMovementWallRunning_Jump = m_PlayerMovementWallRunning.FindAction("Jump", throwIfNotFound: true);
+        m_PlayerMovementWallRunning_FowardMove = m_PlayerMovementWallRunning.FindAction("FowardMove", throwIfNotFound: true);
+        m_PlayerMovementWallRunning_SidewaysMove = m_PlayerMovementWallRunning.FindAction("SidewaysMove", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -1337,12 +1489,16 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private List<IPlayerMovementWallRunningActions> m_PlayerMovementWallRunningActionsCallbackInterfaces = new List<IPlayerMovementWallRunningActions>();
     private readonly InputAction m_PlayerMovementWallRunning_Move;
     private readonly InputAction m_PlayerMovementWallRunning_Jump;
+    private readonly InputAction m_PlayerMovementWallRunning_FowardMove;
+    private readonly InputAction m_PlayerMovementWallRunning_SidewaysMove;
     public struct PlayerMovementWallRunningActions
     {
         private @PlayerControls m_Wrapper;
         public PlayerMovementWallRunningActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_PlayerMovementWallRunning_Move;
         public InputAction @Jump => m_Wrapper.m_PlayerMovementWallRunning_Jump;
+        public InputAction @FowardMove => m_Wrapper.m_PlayerMovementWallRunning_FowardMove;
+        public InputAction @SidewaysMove => m_Wrapper.m_PlayerMovementWallRunning_SidewaysMove;
         public InputActionMap Get() { return m_Wrapper.m_PlayerMovementWallRunning; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1358,6 +1514,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Jump.started += instance.OnJump;
             @Jump.performed += instance.OnJump;
             @Jump.canceled += instance.OnJump;
+            @FowardMove.started += instance.OnFowardMove;
+            @FowardMove.performed += instance.OnFowardMove;
+            @FowardMove.canceled += instance.OnFowardMove;
+            @SidewaysMove.started += instance.OnSidewaysMove;
+            @SidewaysMove.performed += instance.OnSidewaysMove;
+            @SidewaysMove.canceled += instance.OnSidewaysMove;
         }
 
         private void UnregisterCallbacks(IPlayerMovementWallRunningActions instance)
@@ -1368,6 +1530,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Jump.started -= instance.OnJump;
             @Jump.performed -= instance.OnJump;
             @Jump.canceled -= instance.OnJump;
+            @FowardMove.started -= instance.OnFowardMove;
+            @FowardMove.performed -= instance.OnFowardMove;
+            @FowardMove.canceled -= instance.OnFowardMove;
+            @SidewaysMove.started -= instance.OnSidewaysMove;
+            @SidewaysMove.performed -= instance.OnSidewaysMove;
+            @SidewaysMove.canceled -= instance.OnSidewaysMove;
         }
 
         public void RemoveCallbacks(IPlayerMovementWallRunningActions instance)
@@ -1439,5 +1607,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     {
         void OnMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
+        void OnFowardMove(InputAction.CallbackContext context);
+        void OnSidewaysMove(InputAction.CallbackContext context);
     }
 }

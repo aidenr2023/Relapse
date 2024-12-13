@@ -49,12 +49,17 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     private Vector2 _movementInput;
 
+    private float _forwardInput;
+    private float _sidewaysInput;
+
     private bool _isJumpThisFrame;
 
     private bool _isCurrentlyJumping;
     private GameObject _jumpObject;
 
-    private CountdownTimer footstepTimer = new(0.5f, true, false);
+    private CountdownTimer _footstepTimer = new(0.5f, true, false);
+
+    private bool _isSprinting;
 
     #endregion
 
@@ -95,21 +100,20 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         InitializeFootsteps();
     }
 
-    private void OnEnable()
+    private void RegisterOnWallRunStart(PlayerMovementScript obj)
     {
-        // Register the input user
         InputManager.Instance.Register(this);
     }
 
-    private void OnDisable()
+    private void UnregisterOnWallRunEnd(PlayerWallRunning obj)
     {
-        // Unregister the input user
         InputManager.Instance.Unregister(this);
     }
 
     private void InitializeEvents()
     {
         // Add the on wall run start event
+        OnWallRunStart += RegisterOnWallRunStart;
         OnWallRunStart += PushControls;
         OnWallRunStart += KinematicOnWallRunStart;
 
@@ -117,32 +121,62 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         OnWallRunEnd += AutoWallJump;
         OnWallRunEnd += RemoveControls;
         OnWallRunEnd += KinematicOnWallRunEnd;
+        OnWallRunEnd += UnregisterOnWallRunEnd;
     }
 
 
     public void InitializeInput()
     {
         // Add the input action to the input actions hashset
-        InputActions.Add(
-            new InputData(InputManager.Instance.PControls.PlayerMovementWallRunning.Move, InputType.Performed,
-                OnMovePerformed)
-        );
-
-        InputActions.Add(
-            new InputData(InputManager.Instance.PControls.PlayerMovementWallRunning.Move, InputType.Canceled,
-                OnMoveCanceled)
-        );
+        // InputActions.Add(
+        //     new InputData(InputManager.Instance.PControls.PlayerMovementWallRunning.Move, InputType.Performed,
+        //         OnMovePerformed)
+        // );
+        // InputActions.Add(
+        //     new InputData(InputManager.Instance.PControls.PlayerMovementWallRunning.Move, InputType.Canceled,
+        //         OnMoveCanceled)
+        // );
 
         InputActions.Add(
             new InputData(InputManager.Instance.PControls.PlayerMovementWallRunning.Jump, InputType.Performed,
                 OnJumpPerformed)
         );
+
+        InputActions.Add(
+            new InputData(InputManager.Instance.PControls.PlayerMovementBasic.Sprint, InputType.Performed,
+                OnSprintPerformed)
+        );
+        InputActions.Add(
+            new InputData(InputManager.Instance.PControls.PlayerMovementBasic.Sprint, InputType.Canceled,
+                OnSprintCanceled)
+        );
+
+        // Forward movement
+        InputActions.Add(
+            new InputData(InputManager.Instance.PControls.PlayerMovementWallRunning.FowardMove, InputType.Performed,
+                OnForwardMove)
+        );
+        InputActions.Add(
+            new InputData(InputManager.Instance.PControls.PlayerMovementWallRunning.FowardMove, InputType.Canceled,
+                OnForwardMove)
+        );
+
+        // Sideways movement
+        InputActions.Add(
+            new InputData(InputManager.Instance.PControls.PlayerMovementWallRunning.SidewaysMove, InputType.Performed,
+                OnSidewaysMove)
+        );
+        InputActions.Add(
+            new InputData(InputManager.Instance.PControls.PlayerMovementWallRunning.SidewaysMove, InputType.Canceled,
+                OnSidewaysMove)
+        );
     }
+
 
     private void InitializeFootsteps()
     {
         // Set up the footstep timer
-        footstepTimer.OnTimerEnd += PlayFootstepSound;
+        _footstepTimer.OnTimerEnd += PlayFootstepSound;
     }
 
     private void PlayFootstepSound()
@@ -151,7 +185,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         SoundManager.Instance.PlaySfx(footstepSoundPool.GetRandomSound());
 
         // Reset the timer
-        footstepTimer.Reset();
+        _footstepTimer.Reset();
     }
 
     #endregion
@@ -176,6 +210,30 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         _isJumpThisFrame = true;
     }
 
+    private void OnSprintPerformed(InputAction.CallbackContext obj)
+    {
+        // Set the is sprinting flag to true
+        _isSprinting = true;
+    }
+
+    private void OnSprintCanceled(InputAction.CallbackContext obj)
+    {
+        // Set the is sprinting flag to false
+        _isSprinting = false;
+    }
+
+    private void OnSidewaysMove(InputAction.CallbackContext obj)
+    {
+        // Get the movement input
+        _sidewaysInput = obj.ReadValue<float>();
+    }
+
+    private void OnForwardMove(InputAction.CallbackContext obj)
+    {
+        // Get the movement input
+        _forwardInput = obj.ReadValue<float>();
+    }
+
     #endregion
 
     private void Update()
@@ -191,14 +249,14 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     private void UpdateFootsteps()
     {
         // Update the footstep timer
-        footstepTimer.Update(Time.deltaTime);
+        _footstepTimer.Update(Time.deltaTime);
 
         // Set the footstep timer's max time based on the player's walking/sprinting state
-        footstepTimer.SetMaxTime(walkingFootstepInterval);
+        _footstepTimer.SetMaxTime(walkingFootstepInterval);
 
         // If this is NOT the active movement script, disable the footstep timer
         if (ParentComponent.CurrentMovementScript != this)
-            footstepTimer.SetActive(false);
+            _footstepTimer.SetActive(false);
     }
 
     public override void FixedMovementUpdate()
@@ -279,7 +337,8 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
         // Get the velocity vector
         // var velocityVector = moveVector * ParentComponent.MovementSpeed;
-        var velocityVector = moveVector * (ParentComponent.MovementSpeed * _movementInput.y);
+        // var velocityVector = moveVector * (ParentComponent.MovementSpeed * _movementInput.y);
+        var velocityVector = moveVector * (ParentComponent.MovementSpeed * _forwardInput);
 
         var currentYVelocity = ParentComponent.Rigidbody.velocity.y;
         var updatedYVelocity = Mathf.Clamp(currentYVelocity - fallAcceleration, -maxFallSpeed, float.MaxValue);
@@ -299,7 +358,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         ApplyLateralSpeedLimit();
 
         // Activate the footstep timer
-        footstepTimer.SetActive(true);
+        _footstepTimer.SetActive(true);
     }
 
     private void OnCollisionStay(Collision other)
