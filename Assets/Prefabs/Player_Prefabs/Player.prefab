@@ -860,9 +860,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
-  m_Height: 2
+  m_Height: 1.5
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: -0.25, z: 0}
 --- !u!54 &9176414578477560652
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -872,7 +872,7 @@ Rigidbody:
   m_GameObject: {fileID: 3703685084401515452}
   serializedVersion: 4
   m_Mass: 1
-  m_Drag: 0.5
+  m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
@@ -1096,10 +1096,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraPivot: {fileID: 5244302159661097867}
   orientation: {fileID: 5224293575626551686}
-  groundChecker: {fileID: 142033525288301372}
-  groundCheckDistance: 0.25
-  groundCheckBoxAdjust: 0.25
-  movementSpeed: 10
+  desiredCapsuleHeight: 2
+  totalPlayerHeight: 2
+  rideHeightOffset: -1
+  rideHeight: 0.5
+  rideSpringStrength: 1000
+  rideSpringDamper: 0
+  maxSpeed: 10
+  acceleration: 200
+  accelerationFactorFromDot:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &-1310880380803664248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2252,7 +2262,7 @@ Transform:
   m_GameObject: {fileID: 8487313019000041310}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.8, z: 0}
+  m_LocalPosition: {x: 0, y: -0.99, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

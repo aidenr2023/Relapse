@@ -21,18 +21,21 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     // Reference to the player's orientation transform
     [SerializeField] private Transform orientation;
 
-    [Header("Ground Checking")]
-    // Reference to a transform used to check if the player is grounded
-    [SerializeField]
-    private Transform groundChecker;
+    [Header("Floating Controller")] [SerializeField]
+    private float desiredCapsuleHeight = 2;
 
-    // How far the ground checker should check for ground
-    [SerializeField] [Min(0)] private float groundCheckDistance = 0.2f;
+    [SerializeField] private float totalPlayerHeight = 2;
 
-    [SerializeField] [Min(0)] private float groundCheckBoxAdjust = .25f;
+    [SerializeField] private float rideHeightOffset = -1f;
+    [SerializeField] [Min(0)] private float rideHeight = .5f;
+    [SerializeField] private float rideSpringStrength;
+    [SerializeField] private float rideSpringDamper;
 
-    [Header("Stats")] [SerializeField] [Min(0)]
-    private float movementSpeed = 10f;
+    [Header("Locomotion")] [SerializeField]
+    private float maxSpeed = 10;
+
+    [SerializeField] private float acceleration = 200;
+    [SerializeField] private AnimationCurve accelerationFactorFromDot;
 
     #endregion
 
@@ -46,7 +49,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private bool _groundCollide;
 
-    private RaycastHit _groundCollideHitInfo;
+    private RaycastHit _floatingControllerHit;
+
+    private CapsuleCollider _capsuleCollider;
 
     #endregion
 
@@ -62,19 +67,25 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public bool IsGrounded { get; private set; }
 
+    public RaycastHit GroundHit => _floatingControllerHit;
+
+    public AnimationCurve AccelerationFactorFromDot => accelerationFactorFromDot;
+
+    public float Acceleration => acceleration;
+
     public bool IsSprinting { get; }
 
-    public float MovementSpeed => movementSpeed;
+    public float MovementSpeed => maxSpeed;
 
     public PlayerMovementScript CurrentMovementScript => _movementScripts.Peek();
 
     public PlayerWallRunning WallRunning { get; private set; }
 
     public Vector3 GroundCollisionForward =>
-        Vector3.Cross(_groundCollideHitInfo.normal, -CameraPivot.transform.right).normalized;
+        Vector3.Cross(_floatingControllerHit.normal, -CameraPivot.transform.right).normalized;
 
     public Vector3 GroundCollisionRight =>
-        Vector3.Cross(_groundCollideHitInfo.normal, CameraPivot.transform.forward).normalized;
+        Vector3.Cross(_floatingControllerHit.normal, CameraPivot.transform.forward).normalized;
 
     public BasicPlayerMovement BasicPlayerMovement { get; private set; }
 
@@ -88,6 +99,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private void GetComponents()
     {
+        // Get the capsule collider
+        _capsuleCollider = GetComponent<CapsuleCollider>();
+
         // Get the rigid body
         _rigidbody = GetComponent<Rigidbody>();
 
@@ -117,74 +131,127 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private void FixedUpdate()
     {
-        // Update the on ground
-        UpdateOnGround();
+        // Update the ground check
+        UpdateGroundCheck();
+
+        // Update the spring force
+        UpdateSpringForce();
+
+        // Update the capsule collider height
+        UpdateCapsuleColliderHeight();
 
         // Update the current movement script
         CurrentMovementScript?.FixedMovementUpdate();
     }
 
-    private void UpdateOnGround()
+    private void UpdateGroundCheck()
     {
-        // Create a mask that includes everything but the 'Actor' and 'Wall' layers
-        // var mask = ~LayerMask.GetMask("Actor", "Wall");
-        var mask = ~LayerMask.GetMask("Actor");
-
-        // // Check if there is a collider below the player
+        // // Create a mask that includes everything but the 'Actor' layer
+        // var mask = ~LayerMask.GetMask("Actor");
+        //
+        // // Perform a ray cast using the ride height
         // _groundCollide = Physics.Raycast(
         //     groundChecker.position,
         //     Vector3.down,
         //     out _groundCollideHitInfo,
-        //     groundCheckDistance,
+        //     rideHeight,
         //     mask
         // );
+        //
 
-        // Check if there is a collider below the player using a box cast
-        _groundCollide = Physics.BoxCast(
-            groundChecker.position + new Vector3(0, groundCheckBoxAdjust / 2, 0),
-            new Vector3(0.5f, groundCheckBoxAdjust / 2, 0.5f),
+        // Create a layer mask that includes everything but the actor layer and NonPhysical
+        var layerMask = ~LayerMask.GetMask("Actor", "NonPhysical");
+
+        // Perform a raycast to check if the player is grounded
+        var hit = Physics.Raycast(
+            transform.position,
             Vector3.down,
-            out _groundCollideHitInfo,
-            Quaternion.identity,
-            groundCheckDistance,
-            mask
+            out _floatingControllerHit,
+            rideHeight,
+            layerMask
         );
 
-        // var groundCollisions = new List<RaycastHit>();
-        //
-        // var collides = false;
-        //
-        //
-        // _groundCollide = collides;
-        //
-        // // Set the ground hit info to the item w/ the highest y value
-        // if (groundCollisions.Count > 0)
-        // {
-        //     _groundCollideHitInfo = groundCollisions[0];
-        //
-        //     foreach (var hitInfo in groundCollisions)
-        //     {
-        //         if (hitInfo.point.y > _groundCollideHitInfo.point.y)
-        //             _groundCollideHitInfo = hitInfo;
-        //     }
-        // }
+        // Reset the capsule collider height if the player is not grounded
+        if (!hit)
+            _floatingControllerHit = new RaycastHit();
 
-        // if (_groundCollide)
-        //     Debug.Log($"Collided with {hitInfo.collider.name}");
+        // Set the grounded state to the hit state
+        IsGrounded = hit;
+    }
 
-        // Check if the player's vertical velocity is less than the threshold
-        var verticalVelocityCheck = Mathf.Abs(_rigidbody.velocity.y) < GROUND_VELOCITY_THRESHOLD;
 
-        // TODO: Delete this maybe?
-        verticalVelocityCheck = true;
+    private void UpdateSpringForce()
+    {
+        // Return if the floating controller hit is not set
+        if (!_floatingControllerHit.collider)
+            return;
 
-        // Set the on ground to true if the player is on the ground
-        // IsGrounded = _groundCollide && verticalVelocityCheck;
-        IsGrounded = _groundCollide;
+        // Get the current velocity of the player
+        var currentVelocity = _rigidbody.velocity;
+
+        // Get the direction of the ray
+        var rayDirection = transform.TransformDirection(Vector3.down);
+
+        // Get the velocity of the other object
+        var otherVelocity = Vector3.zero;
+
+        // Get the other rigidbody
+        var otherRigidbody = _floatingControllerHit.rigidbody;
+
+        // If there is no other rigidbody, set the other velocity to zero
+        if (otherRigidbody)
+            otherVelocity = otherRigidbody.velocity;
+
+        // Get the relative velocity
+        var rayDirectionVelocity = Vector3.Dot(rayDirection, currentVelocity);
+        var otherDirectionVelocity = Vector3.Dot(rayDirection, otherVelocity);
+
+        // Get the relative velocity
+        var relativeVelocity = rayDirectionVelocity - otherDirectionVelocity;
+
+        // Distance of the ray hit vs the ride height
+        var x = _floatingControllerHit.distance - rideHeight;
+
+        // Get the spring force
+        var springForce = (x * rideSpringStrength) - (relativeVelocity * rideSpringDamper);
+
+        // Add force to the player
+        _rigidbody.AddForce(rayDirection * springForce);
+
+        // Add force to the other object
+        if (otherRigidbody)
+            otherRigidbody.AddForceAtPosition(-rayDirection * springForce, _floatingControllerHit.point);
+    }
+
+    private void UpdateCapsuleColliderHeight()
+    {
+        // Return if the floating controller hit is not set
+        if (!_floatingControllerHit.collider)
+        {
+            // Reset the capsule collider height
+            _capsuleCollider.height = desiredCapsuleHeight;
+
+            // Reset the capsule collider center
+            _capsuleCollider.center = Vector3.zero;
+
+            return;
+        }
+
+        // Get the distance from the player to the floating controller hit
+        var distance = _floatingControllerHit.distance;
+
+        var heightAdjust = desiredCapsuleHeight - ((desiredCapsuleHeight / 2) - distance);
+
+        // Set the capsule collider height based on the distance
+        var newCapsuleHeight = Mathf.Min(desiredCapsuleHeight, heightAdjust);
+        _capsuleCollider.height = newCapsuleHeight;
+
+        // Set the capsule collider y position based on the distance
+        var newYPosition = (totalPlayerHeight - newCapsuleHeight) / 2;
+        _capsuleCollider.center = new Vector3(0, newYPosition, 0);
     }
 
     #endregion
-
 
     #region Movement Script Management
 
@@ -246,7 +313,6 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     #endregion
 
-
     #region Debugging
 
     public string GetDebugText()
@@ -264,33 +330,6 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         sb.AppendLine($"\tAll Movement Scripts: {string.Join(", ", _movementScripts.Select(n => n.GetType().Name))}");
 
         return sb.ToString();
-
-        // Add the current movement script's debug text
-        var movementScriptDebugText = CurrentMovementScript?.GetDebugText();
-        if (movementScriptDebugText != null)
-        {
-            sb.AppendLine($"\n");
-            sb.AppendLine($"\tCurrent Movement Script: {CurrentMovementScript.GetType().Name}");
-
-            // Split the debug text by new lines
-            var splitDebugText = movementScriptDebugText.Split('\n');
-
-            // Append an extra tab to each line
-            foreach (var text in splitDebugText)
-                sb.AppendLine($"\t{text}");
-        }
-
-        sb.AppendLine($"Movement input maps:");
-        foreach (var movementScript in GetComponents<PlayerMovementScript>())
-        {
-            string inputString = "NONE";
-            if (movementScript.InputActionMap != null)
-                inputString = movementScript.InputActionMap.enabled ? "ENABLED" : "DISABLED";
-
-            sb.AppendLine($"\t{movementScript.GetType().Name}: {inputString}");
-        }
-
-        return sb.ToString();
     }
 
     private void OnDrawGizmos()
@@ -299,25 +338,27 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         Gizmos.color = Color.red;
         Gizmos.DrawRay(orientation.position, orientation.forward * 3);
 
-        // // Draw the ground check vector
-        // Gizmos.color = Color.green;
-        // Gizmos.DrawRay(groundChecker.position, Vector3.down * groundCheckDistance);
-
-        // Draw the ground check box
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireCube(
-            groundChecker.position + new Vector3(0, groundCheckBoxAdjust / 2 - groundCheckDistance, 0),
-            new Vector3(1, groundCheckBoxAdjust, 1)
-        );
-
         // Draw the ground collision normal's forward direction
         if (_groundCollide)
         {
             var groundColor = new Color(1, .4f, 0, 1);
 
             Gizmos.color = groundColor;
-            Gizmos.DrawRay(_groundCollideHitInfo.point, GroundCollisionForward * 10);
-            Gizmos.DrawRay(_groundCollideHitInfo.point, GroundCollisionRight * 10);
+            Gizmos.DrawRay(_floatingControllerHit.point, GroundCollisionForward * 10);
+            Gizmos.DrawRay(_floatingControllerHit.point, GroundCollisionRight * 10);
+        }
+
+        // Draw the floating controller ray
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(
+            transform.position + new Vector3(0, rideHeightOffset, 0),
+            Vector3.down * rideHeight
+        );
+
+        if (_floatingControllerHit.collider)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawSphere(_floatingControllerHit.point, .125f);
         }
     }
 

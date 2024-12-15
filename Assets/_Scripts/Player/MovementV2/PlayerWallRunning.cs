@@ -355,7 +355,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         //     ParentComponent.Rigidbody.linearVelocity.z
         // );
         // ParentComponent.Rigidbody.CustomAddForce(velocityVector, ForceMode.VelocityChange);
-        ApplyLateralSpeedLimit();
+        // ApplyLateralSpeedLimit();
 
         // Activate the footstep timer
         _footstepTimer.SetActive(true);
@@ -494,7 +494,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         _isWallRunningRight = false;
 
         // Add a force to the rigid body
-        ParentComponent.Rigidbody.CustomAddForce(wallJumpForceVector, ForceMode.VelocityChange);
+        // ParentComponent.Rigidbody.CustomAddForce(wallJumpForceVector, ForceMode.VelocityChange);
         // ApplyLateralSpeedLimit();
 
         _isCurrentlyJumping = true;
@@ -573,7 +573,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
         var wallJumpForceVector = wallJumpDirection * autoWallJumpForce;
 
-        ParentComponent.Rigidbody.CustomAddForce(wallJumpForceVector, ForceMode.VelocityChange);
+        // ParentComponent.Rigidbody.CustomAddForce(wallJumpForceVector, ForceMode.VelocityChange);
     }
 
     #endregion

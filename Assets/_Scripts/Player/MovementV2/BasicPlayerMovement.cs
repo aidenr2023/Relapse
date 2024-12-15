@@ -204,17 +204,10 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
     public override void FixedMovementUpdate()
     {
         // Update the movement
-        if (ParentComponent.IsGrounded)
-            UpdateGroundedLateralMovement();
-        else
-            UpdateAirborneLateralMovement();
+        UpdateGroundedLateralMovement();
 
         // Update the jump
         UpdateJump();
-
-        // Apply the lateral speed
-        var sprintMod = IsSprinting ? sprintMultiplier : 1;
-        ApplyLateralSpeedLimit(ParentComponent.MovementSpeed * sprintMod);
     }
 
     private void UpdateGroundedLateralMovement()
@@ -222,17 +215,9 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
         // Return if the movement input is zero
         if (_movementInput == Vector2.zero)
         {
-            // Kill the velocity
-            ParentComponent.Rigidbody.velocity = new Vector3(0, 0, 0);
-
             // Stop the footstep timer to prevent footstep sounds
             _footstepTimer.SetActive(false);
-
-            return;
         }
-
-        // Get the camera's transform
-        // var cameraTransform = ParentComponent.ParentComponent.PlayerCameraController.CurrentCamera.transform;
 
         var cameraTransform = ParentComponent.Orientation;
 
@@ -242,73 +227,66 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
         // Get the camera's right without the y component
         var cameraRight = new Vector3(cameraTransform.right.x, 0, cameraTransform.right.z).normalized;
 
-        cameraForward = ParentComponent.GroundCollisionForward.normalized;
-        cameraRight = ParentComponent.GroundCollisionRight.normalized;
+        // Get the current move multiplier
+        var currentMoveMult = _isSprinting ? sprintMultiplier : 1;
 
-        // Calculate the movement direction relative to the player's transform
-        var movementDirection =
-            cameraRight * _movementInput.x +
-            cameraForward * _movementInput.y;
+        // Calculate the movement vector
+        var forwardMovement = (cameraForward * _movementInput.y);
+        var rightMovement = (cameraRight * _movementInput.x);
 
+        if (ParentComponent.IsGrounded)
+        {
+            // Get the normal of the current surface
+            var surfaceNormal = ParentComponent.GroundHit.normal;
 
-        var sprintMult = IsSprinting ? sprintMultiplier : 1;
+            // Get the forward and right vectors based on the surface normal
+            forwardMovement = Vector3.ProjectOnPlane(forwardMovement, surfaceNormal);
+            rightMovement = Vector3.ProjectOnPlane(rightMovement, surfaceNormal);
+        }
 
-        // Calculate the move vector
-        var move = movementDirection * (ParentComponent.MovementSpeed * sprintMult);
+        // Calculate the current movement
+        var currentMovement = forwardMovement + rightMovement;
 
-        // Set the velocity of the rigid body
-        // ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, 0, move.z), ForceMode.VelocityChange);
+        // Normalize the current movement if the magnitude is greater than 1
+        if (currentMovement.magnitude > 1)
+            currentMovement.Normalize();
 
-        // if (move.y >= 0)
-        //     ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, 0, move.z), ForceMode.VelocityChange);
-        // else
-        //     ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, move.y, move.z), ForceMode.VelocityChange);
+        // Calculate how fast the player should be moving
+        var currentTargetVelocityMagnitude = ParentComponent.MovementSpeed * currentMoveMult;
 
-        if (move.y >= 0)
-            ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, 0, move.z), ForceMode.VelocityChange);
-        else
-            ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, move.y, move.z), ForceMode.VelocityChange);
+        // Calculate the velocity the rigidbody should be moving at
+        var targetVelocity = currentMovement * currentTargetVelocityMagnitude +
+                             new Vector3(0, ParentComponent.Rigidbody.velocity.y, 0);
 
+        // Get the dot product between the target velocity and the current velocity
+        var directionChangeDot = Vector3.Dot(ParentComponent.Rigidbody.velocity.normalized, targetVelocity.normalized);
+
+        // Evaluate the direction change dot to get the acceleration factor
+        var evaluation = ParentComponent.AccelerationFactorFromDot.Evaluate(directionChangeDot);
+
+        // This is the force required to reach the target velocity in EXACTLY one frame
+        var targetForce = (targetVelocity - ParentComponent.Rigidbody.velocity) / Time.fixedDeltaTime;
+
+        // Calculate the force that is going to be applied to the rigidbody THIS frame
+        var force = targetForce.normalized * (ParentComponent.Acceleration * evaluation);
+
+        // If the player only needs to move a little bit, just set the force to the target force
+        if (targetForce.magnitude < ParentComponent.Acceleration)
+            force = targetForce;
+
+        // If the force is greater than the target force, clamp it
+        if (force.magnitude > targetForce.magnitude)
+            force = targetForce;
+
+        // Ensure the player stays on the ground when moving downward along a slope
+        if (currentMovement.y < 0)
+            force += Vector3.down * (20f * ParentComponent.Rigidbody.velocity.magnitude);
+
+        // Apply the force to the rigidbody
+        ParentComponent.Rigidbody.AddForce(force, ForceMode.Acceleration);
 
         // Set the footstep timer to active
         _footstepTimer.SetActive(true);
-    }
-
-    private void UpdateAirborneLateralMovement()
-    {
-        // Disable the footstep timer
-        _footstepTimer.SetActive(false);
-
-        // Return if the movement input is zero
-        if (_movementInput == Vector2.zero)
-            return;
-
-        // Get the camera's transform
-        // var cameraTransform = ParentComponent.ParentComponent.PlayerCameraController.CurrentCamera.transform;
-        var cameraTransform = ParentComponent.Orientation;
-
-        // Get the camera's forward without the y component
-        var cameraForward = new Vector3(cameraTransform.forward.x, 0, cameraTransform.forward.z).normalized;
-
-        // Get the camera's right without the y component
-        var cameraRight = new Vector3(cameraTransform.right.x, 0, cameraTransform.right.z).normalized;
-
-        // Calculate the movement direction relative to the player's transform
-        var movementDirection =
-            cameraRight * _movementInput.x +
-            cameraForward * _movementInput.y;
-
-        var sprintMult = _isSprinting ? sprintMultiplier : 1;
-
-        // Calculate the move vector
-        var move = movementDirection * (ParentComponent.MovementSpeed * sprintMult);
-
-        // Set the velocity of the rigid body
-        ParentComponent.Rigidbody.CustomAddForce(
-            new Vector3(move.x, 0, move.z), ForceMode.Impulse
-        );
-
-        // ParentComponent.Rigidbody.velocity = new Vector3(ParentComponent.Rigidbody.velocity.x, 0, ParentComponent.Rigidbody.velocity.z);
     }
 
     private void UpdateJump()
@@ -333,14 +311,9 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
         // Normalize the movement input
         movementInput = movementInput.normalized;
 
-        // Get the direction of the jump relative to the transform
-        var jumpDirection =
-            (ParentComponent.Orientation.forward * movementInput.y +
-             ParentComponent.Orientation.right * movementInput.x +
-             ParentComponent.transform.up).normalized;
+        var jumpDirection = ParentComponent.transform.up.normalized;
 
-        // Add a force to the rigid body
-        ParentComponent.Rigidbody.CustomAddForce(jumpDirection * jumpForce, ForceMode.VelocityChange);
+        ParentComponent.Rigidbody.AddForce(jumpDirection * jumpForce, ForceMode.VelocityChange);
 
         // Play the jump sound
         SoundManager.Instance.PlaySfx(jumpSound);
