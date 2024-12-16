@@ -65,7 +65,11 @@ public class PauseMenuManager : GameMenu, IUsesInput
     {
         // Connect to input system
         InputActions.Add(
-            new InputData(InputManager.Instance.DefaultInputActions.UI.Cancel, InputType.Performed, OnPausePerformed)
+            new InputData(InputManager.Instance.PControls.Player.Pause, InputType.Performed, OnPausePerformedInGame)
+        );
+        // Connect to input system
+        InputActions.Add(
+            new InputData(InputManager.Instance.DefaultInputActions.UI.Cancel, InputType.Performed, OnPausePerformedInMenu)
         );
     }
 
@@ -102,8 +106,21 @@ public class PauseMenuManager : GameMenu, IUsesInput
         InputManager.Instance.Unregister(this);
     }
 
-    private void OnPausePerformed(InputAction.CallbackContext context)
+    private void OnPausePerformedInGame(InputAction.CallbackContext context)
     {
+        if (IsPaused)
+            return;
+
+        TogglePause();
+
+        Debug.Log("Pause");
+    }
+
+    private void OnPausePerformedInMenu(InputAction.CallbackContext context)
+    {
+        if (!IsPaused)
+            return;
+
         TogglePause();
 
         Debug.Log("Pause");
