@@ -124,8 +124,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerController
         InputManager.Instance.PControls.PlayerMovementBasic.Jump.performed += OnJumpPerformed;
 
         // Initialize the sprint input
-        InputManager.Instance.PControls.PlayerMovementBasic.Sprint.performed += OnSprintPerformed;
-        InputManager.Instance.PControls.PlayerMovementBasic.Sprint.canceled += OnSprintCanceled;
+        InputManager.Instance.PControls.Player.Sprint.performed += OnSprintPerformed;
+        InputManager.Instance.PControls.Player.Sprint.canceled += OnSprintCanceled;
     }
 
     private void OnJumpPerformed(InputAction.CallbackContext obj)

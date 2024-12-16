@@ -1197,10 +1197,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   wallRunningSensitivity: 0.25
-  maxFallSpeed: 3
-  fallAcceleration: 0.3
-  wallJumpForce: 10
-  wallJumpAngle: 20
+  maxFallSpeed: 0.0625
+  fallAcceleration: 0.0046875
+  wallRunSpeedThreshold: 1
+  wallJumpForce: 15
+  wallJumpAngle: 35
   autoWallJumpForce: 0.5
   footstepSoundPool:
     sounds:
@@ -1233,11 +1234,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isEnabled: 1
   dashSpeed: 100
-  dashExitVelocity: 0
   dashDuration:
-    maxTime: 0.25
+    maxTime: 0.125
   dashCooldown:
-    maxTime: 0.5
+    maxTime: 0.25
   maxDashesInAir: 2
   dashSound:
     clip: {fileID: 8300000, guid: 5aa5e09256a042147921c24a52b741ae, type: 3}

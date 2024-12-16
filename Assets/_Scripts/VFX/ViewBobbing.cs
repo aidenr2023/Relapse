@@ -35,14 +35,27 @@ public class ViewBobbing : MonoBehaviour
 
     private BasicPlayerMovement _playerMovement;
 
+    private PlayerWallRunning _playerWallRunning;
+
     #endregion
 
     #region Getters
 
-    private bool IsViewBobbingActive =>
-        _playerMovement.ParentComponent.CurrentMovementScript == _playerMovement &&
-        _playerMovement.ParentComponent.IsGrounded &&
-        _playerMovement.MovementInput != Vector2.zero;
+    private bool IsViewBobbingActive
+    {
+        get
+        {
+            var playerMovementGrounded =
+                _playerMovement.ParentComponent.CurrentMovementScript == _playerMovement &&
+                _playerMovement.ParentComponent.IsGrounded;
+
+            var wallRunningActive =
+                _playerMovement.ParentComponent.CurrentMovementScript == _playerWallRunning &&
+                _playerWallRunning.IsWallRunning;
+
+            return (playerMovementGrounded || wallRunningActive) && _playerMovement.MovementInput != Vector2.zero;
+        }
+    }
 
     #endregion
 
@@ -50,6 +63,9 @@ public class ViewBobbing : MonoBehaviour
     {
         // Get the player movement script
         _playerMovement = GetComponent<BasicPlayerMovement>();
+
+        // Get the player wall running script
+        _playerWallRunning = GetComponent<PlayerWallRunning>();
     }
 
     private void Update()

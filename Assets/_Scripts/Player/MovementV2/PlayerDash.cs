@@ -148,7 +148,6 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
         _dashDirection.y = 0;
         _dashDirection = _dashDirection.normalized;
 
-        Time.fixedDeltaTime = DEFAULT_FIXED_DELTA_TIME / 8F;
 
         // If the player is not grounded, decrement the remaining dashes in air
         if (!ParentComponent.IsGrounded)
@@ -171,7 +170,6 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
         // ParentComponent.Rigidbody.velocity = _dashDirection * dashExitVelocity;
         ParentComponent.Rigidbody.velocity = _dashDirection * _previousVelocity.magnitude;
 
-        Time.fixedDeltaTime = DEFAULT_FIXED_DELTA_TIME;
     }
 
     #endregion
@@ -185,6 +183,14 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
         // Update the timers
         dashDuration.Update(Time.deltaTime);
         dashCooldown.Update(Time.deltaTime);
+
+        // Make the physics more accurate when dashing to prevent clipping
+        if (IsDashing)
+            Time.fixedDeltaTime = DEFAULT_FIXED_DELTA_TIME / 8F;
+        else
+            Time.fixedDeltaTime = DEFAULT_FIXED_DELTA_TIME;
+
+        Debug.Log($"Fixed Delta Time: {Time.fixedDeltaTime}");
     }
 
     public override void FixedMovementUpdate()

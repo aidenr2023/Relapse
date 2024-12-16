@@ -27,12 +27,9 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
 
     private Vector2 _movementInput;
 
-    private bool _isSprinting;
     private bool _isJumpThisFrame;
 
     private CountdownTimer _footstepTimer = new(0.5f, true, false);
-
-    private bool _isSprintToggled;
 
     #region Getters
 
@@ -42,9 +39,10 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
 
     public Vector2 MovementInput => _movementInput;
 
-    private bool CanSprint => canSprintWithoutPower && ParentComponent.IsGrounded;
+    // public bool CanSprint => canSprintWithoutPower && ParentComponent.IsGrounded;
+    public bool CanSprint => canSprintWithoutPower;
 
-    public bool IsSprinting => _isSprinting || _isSprintToggled;
+    public bool IsSprinting => ParentComponent.IsSprinting;
 
     public float SprintMultiplier => sprintMultiplier;
 
@@ -86,18 +84,6 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
         );
 
         InputActions.Add(new InputData(
-            InputManager.Instance.PControls.PlayerMovementBasic.Sprint, InputType.Performed, OnSprintPerformed)
-        );
-        InputActions.Add(new InputData(
-            InputManager.Instance.PControls.PlayerMovementBasic.Sprint, InputType.Canceled, OnSprintCanceled)
-        );
-
-        InputActions.Add(new InputData(
-            InputManager.Instance.PControls.PlayerMovementBasic.SprintToggle, InputType.Performed,
-            OnSprintTogglePerformed)
-        );
-
-        InputActions.Add(new InputData(
             InputManager.Instance.PControls.PlayerMovementBasic.Jump, InputType.Performed, OnJumpPerformed)
         );
     }
@@ -133,21 +119,6 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
         _movementInput = Vector2.zero;
     }
 
-    private void OnSprintPerformed(InputAction.CallbackContext obj)
-    {
-        // Return if the player cannot sprint
-        if (!CanSprint)
-            return;
-
-        // Set the sprinting flag to true
-        _isSprinting = true;
-    }
-
-    private void OnSprintCanceled(InputAction.CallbackContext obj)
-    {
-        // Set the sprinting flag to false
-        _isSprinting = false;
-    }
 
     private void OnJumpPerformed(InputAction.CallbackContext obj)
     {
@@ -166,16 +137,6 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
         _isJumpThisFrame = true;
     }
 
-    private void OnSprintTogglePerformed(InputAction.CallbackContext obj)
-    {
-        // Return if the player cannot sprint
-        if (!CanSprint)
-            return;
-
-        // Set the sprinting flag to true
-        _isSprintToggled = !_isSprintToggled;
-    }
-
     #endregion
 
     #region Update Functions
@@ -184,10 +145,6 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
     {
         // Update the footstep sounds
         UpdateFootsteps();
-
-        // Update the sprinting state for toggled sprinting
-        if (ParentComponent.MovementInput == Vector2.zero)
-            _isSprintToggled = false;
     }
 
     private void UpdateFootsteps()
@@ -230,7 +187,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
         var cameraRight = new Vector3(cameraTransform.right.x, 0, cameraTransform.right.z).normalized;
 
         // Get the current move multiplier
-        var currentMoveMult = _isSprinting ? sprintMultiplier : 1;
+        var currentMoveMult = IsSprinting ? sprintMultiplier : 1;
 
         // Calculate the movement vector
         var forwardMovement = (cameraForward * _movementInput.y);
@@ -296,7 +253,6 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
         {
             // Debug.Log($"FORCE: {force.normalized} - MOVEMENT {currentMovement.normalized}");
             // force += new Vector3(0, currentMovement.normalized.y, 0) * (currentTargetVelocityMagnitude * 16);
-
         }
 
         // Set the footstep timer to active
@@ -371,5 +327,4 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
     }
 
     #endregion
-
 }

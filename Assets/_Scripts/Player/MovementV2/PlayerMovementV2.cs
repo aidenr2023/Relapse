@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
-public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDebugged
+public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDebugged, IUsesInput
 {
     private const float GROUND_VELOCITY_THRESHOLD = 0.05f;
 
@@ -53,6 +53,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private CapsuleCollider _capsuleCollider;
 
+    private bool _isSprinting;
+    private bool _isSprintToggled;
+
     #endregion
 
     #region Getters
@@ -73,7 +76,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public float Acceleration => acceleration;
 
-    public bool IsSprinting { get; }
+    public bool IsSprinting => _isSprinting || _isSprintToggled;
 
     public float MovementSpeed => maxSpeed;
 
@@ -89,13 +92,31 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public BasicPlayerMovement BasicPlayerMovement { get; private set; }
 
+    public HashSet<InputData> InputActions { get; } = new();
+
     #endregion
 
     protected override void CustomAwake()
     {
         // Get the components
         GetComponents();
+
+        // Initialize the input
+        InitializeInput();
     }
+
+    private void OnEnable()
+    {
+        // Register this to the input manager
+        InputManager.Instance.Register(this);
+    }
+
+    private void OnDisable()
+    {
+        // Unregister this from the input manager
+        InputManager.Instance.Unregister(this);
+    }
+
 
     private void GetComponents()
     {
@@ -127,7 +148,29 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         EnableTopMostInputMap();
     }
 
+
+    public void InitializeInput()
+    {
+        InputActions.Add(new InputData(
+            InputManager.Instance.PControls.Player.Sprint, InputType.Performed, OnSprintPerformed)
+        );
+        InputActions.Add(new InputData(
+            InputManager.Instance.PControls.Player.Sprint, InputType.Canceled, OnSprintCanceled)
+        );
+        InputActions.Add(new InputData(
+            InputManager.Instance.PControls.Player.SprintToggle, InputType.Performed,
+            OnSprintTogglePerformed)
+        );
+    }
+
     #region Update Functions
+
+    private void Update()
+    {
+        // Update the sprinting state for toggled sprinting
+        if (MovementInput == Vector2.zero)
+            _isSprintToggled = false;
+    }
 
     private void FixedUpdate()
     {
@@ -380,6 +423,39 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             Gizmos.color = Color.green;
             Gizmos.DrawSphere(_floatingControllerHit.point, .125f);
         }
+    }
+
+    #endregion
+
+    #region Input Functions
+
+    private void OnSprintPerformed(InputAction.CallbackContext obj)
+    {
+        // Return if the player cannot sprint
+        if (!BasicPlayerMovement.CanSprint)
+            return;
+
+        // Set the sprinting flag to true
+        _isSprinting = true;
+
+        Debug.Log($"Is Sprinting? {_isSprinting}");
+    }
+
+    private void OnSprintCanceled(InputAction.CallbackContext obj)
+    {
+        // Set the sprinting flag to false
+        _isSprinting = false;
+    }
+
+
+    private void OnSprintTogglePerformed(InputAction.CallbackContext obj)
+    {
+        // Return if the player cannot sprint
+        if (!BasicPlayerMovement.CanSprint)
+            return;
+
+        // Set the sprinting flag to true
+        _isSprintToggled = !_isSprintToggled;
     }
 
     #endregion

@@ -19,6 +19,8 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     [SerializeField] [Min(0)] private float maxFallSpeed;
     [SerializeField] [Min(0)] private float fallAcceleration;
 
+    [SerializeField] [Min(0)] private float wallRunSpeedThreshold = 1f;
+
     [Header("Wall Jump")] [SerializeField] [Min(0)]
     private float wallJumpForce = 10f;
 
@@ -57,9 +59,11 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     private bool _isCurrentlyJumping;
     private GameObject _jumpObject;
 
-    private CountdownTimer _footstepTimer = new(0.5f, true, false);
+    private readonly CountdownTimer _footstepTimer = new(0.5f, true, false);
 
     private bool _isSprinting;
+
+    private readonly CountdownTimer _reattachTimer = new(0.125f, true, false);
 
     #endregion
 
@@ -115,40 +119,31 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         // Add the on wall run start event
         OnWallRunStart += RegisterOnWallRunStart;
         OnWallRunStart += PushControls;
-        OnWallRunStart += KinematicOnWallRunStart;
+        OnWallRunStart += GravityOnWallRunStart;
+        OnWallRunStart += TransferVelocityOnWallRunStart;
 
         // Add the on wall run end event
         OnWallRunEnd += AutoWallJump;
         OnWallRunEnd += RemoveControls;
-        OnWallRunEnd += KinematicOnWallRunEnd;
+        OnWallRunEnd += GravityOnWallRunEnd;
         OnWallRunEnd += UnregisterOnWallRunEnd;
+        OnWallRunEnd += RestartReattachTimer;
     }
 
+    private void RestartReattachTimer(PlayerWallRunning obj)
+    {
+        _reattachTimer.Reset();
+        _reattachTimer.SetActive(true);
+    }
 
     public void InitializeInput()
     {
         // Add the input action to the input actions hashset
-        // InputActions.Add(
-        //     new InputData(InputManager.Instance.PControls.PlayerMovementWallRunning.Move, InputType.Performed,
-        //         OnMovePerformed)
-        // );
-        // InputActions.Add(
-        //     new InputData(InputManager.Instance.PControls.PlayerMovementWallRunning.Move, InputType.Canceled,
-        //         OnMoveCanceled)
-        // );
 
+        // Jumping
         InputActions.Add(
             new InputData(InputManager.Instance.PControls.PlayerMovementWallRunning.Jump, InputType.Performed,
                 OnJumpPerformed)
-        );
-
-        InputActions.Add(
-            new InputData(InputManager.Instance.PControls.PlayerMovementBasic.Sprint, InputType.Performed,
-                OnSprintPerformed)
-        );
-        InputActions.Add(
-            new InputData(InputManager.Instance.PControls.PlayerMovementBasic.Sprint, InputType.Canceled,
-                OnSprintCanceled)
         );
 
         // Forward movement
@@ -222,6 +217,12 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         _isSprinting = false;
     }
 
+    private void OnSprintTogglePerformed(InputAction.CallbackContext obj)
+    {
+        // Toggle the is sprinting flag
+        _isSprinting = !_isSprinting;
+    }
+
     private void OnSidewaysMove(InputAction.CallbackContext obj)
     {
         // Get the movement input
@@ -244,6 +245,8 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
         // Update the footstep sounds
         UpdateFootsteps();
+
+        _reattachTimer.Update(Time.deltaTime);
     }
 
     private void UpdateFootsteps()
@@ -306,6 +309,11 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         if (_contactPointIndex < 0 || _contactPointIndex >= _contactPoints.Length)
             return;
 
+        // Get the current move multiplier
+        var currentMoveMult = ParentComponent.BasicPlayerMovement.IsSprinting
+            ? ParentComponent.BasicPlayerMovement.SprintMultiplier
+            : 1;
+
         // Get the current contact point
         var contactPoint = _contactPoints[_contactPointIndex];
 
@@ -319,43 +327,54 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             ? Vector3.Cross(forwardDirection, _contactPoints[_contactPointIndex].normal)
             : Vector3.Cross(_contactPoints[_contactPointIndex].normal, forwardDirection);
 
-        // var upwardMovement = upwardDirection * _movementInput.y;
         // var upwardMovement = upwardDirection * -1;
         var upwardMovement = upwardDirection * 0;
+
+        // Get the forward movement based on the input
+        var forwardMovement = forwardDirection * _forwardInput;
 
         // Move the player in the direction of the wall a little bit to prevent them from falling off
         // forwardDirection -= contactPoint.normal * 0.025f;
 
-        // Remove the y component of the forward direction
-        forwardDirection = new Vector3(forwardDirection.x, 0, forwardDirection.z);
-
-        // Get the move vector
-        var moveVector = (forwardDirection + upwardMovement).normalized;
-
-        // Set the player's rotation forward direction
-        // ParentComponent.transform.forward = forwardDirection;
-
         // Get the velocity vector
-        // var velocityVector = moveVector * ParentComponent.MovementSpeed;
-        // var velocityVector = moveVector * (ParentComponent.MovementSpeed * _movementInput.y);
-        var velocityVector = moveVector * (ParentComponent.MovementSpeed * _forwardInput);
-
         var currentYVelocity = ParentComponent.Rigidbody.velocity.y;
         var updatedYVelocity = Mathf.Clamp(currentYVelocity - fallAcceleration, -maxFallSpeed, float.MaxValue);
 
-        var fallVector = upwardDirection * updatedYVelocity;
+        // Get the move vector
+        // var moveVector = (forwardDirection + upwardMovement).normalized;
+        var moveVector = forwardMovement + upwardMovement + (Vector3.up * updatedYVelocity);
 
-        // Move the player in the forward direction
-        ParentComponent.Rigidbody.velocity = velocityVector + fallVector;
+        // Normalize the move vector
+        if (moveVector.magnitude > 1)
+            moveVector.Normalize();
 
-        // // Set the velocity of the rigid body
-        // ParentComponent.Rigidbody.linearVelocity = new Vector3(
-        //     ParentComponent.Rigidbody.linearVelocity.x,
-        //     0,
-        //     ParentComponent.Rigidbody.linearVelocity.z
-        // );
-        // ParentComponent.Rigidbody.CustomAddForce(velocityVector, ForceMode.VelocityChange);
-        // ApplyLateralSpeedLimit();
+        // Create a target velocity vector
+        var targetVelocity = moveVector * (ParentComponent.MovementSpeed * currentMoveMult);
+
+        // This is the force required to reach the target velocity in EXACTLY one frame
+        var targetForce = (targetVelocity - ParentComponent.Rigidbody.velocity) / Time.fixedDeltaTime;
+
+        // Calculate the force that is going to be applied to the player THIS frame
+        var force = targetForce.normalized * ParentComponent.Acceleration;
+
+        // If the player only needs to move a little bit, just set the force to the target force
+        if (targetForce.magnitude < ParentComponent.Acceleration)
+            force = targetForce;
+
+        // If the force is greater than the target force, clamp it
+        if (force.magnitude > targetForce.magnitude)
+            force = targetForce;
+
+        // Apply the force to the rigidbody
+        ParentComponent.Rigidbody.AddForce(force, ForceMode.Acceleration);
+
+        // var fallVector = upwardDirection * updatedYVelocity;
+        //
+        // // Move the player in the forward direction
+        // ParentComponent.Rigidbody.velocity = velocityVector + fallVector;
+        //
+        // // Add a force to the rigid body
+        // ParentComponent.Rigidbody.AddForce(velocityVector, ForceMode.Acceleration);
 
         // Activate the footstep timer
         _footstepTimer.SetActive(true);
@@ -422,16 +441,34 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
                 ? smallestLeftDotIndex
                 : smallestRightDotIndex;
 
+            // Get the current contact point
+            var contactPoint = _contactPoints[_contactPointIndex];
+
+            // Get the player's orientation forward (ignoring the y) projected onto the wall
+            var forwardVector = _isWallRunningLeft
+                ? Vector3.Cross(contactPoint.normal, Vector3.up)
+                : Vector3.Cross(Vector3.up, contactPoint.normal);
+
+            // Normalize the forward vector
+            forwardVector.Normalize();
+
+            // Get the dot product of the player's velocity and the forward vector
+            // This will be used to test the player's velocity along the wall
+            var dotProduct = Vector3.Dot(ParentComponent.Rigidbody.velocity, forwardVector);
+
+            // Skip if the current speed is less than the wall run speed threshold
             // Add the current object to the wall running objects
-            AddWallRunningObject(other.gameObject);
+            if (dotProduct >= wallRunSpeedThreshold)
+                AddWallRunningObject(other.gameObject);
+
+            // Remove the object from the wall running objects if the player's velocity is less than the threshold
+            else
+                RemoveWallRunningObject(other.gameObject);
         }
 
         // Otherwise, remove the current object from the wall running objects
         else if (_wallRunningObjects.Contains(other.gameObject))
-        {
-            // Debug.Log("Pop from the wall!");
             RemoveWallRunningObject(other.gameObject);
-        }
     }
 
     private void OnCollisionExit(Collision other)
@@ -495,7 +532,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
         // Add a force to the rigid body
         // ParentComponent.Rigidbody.CustomAddForce(wallJumpForceVector, ForceMode.VelocityChange);
-        // ApplyLateralSpeedLimit();
+        ParentComponent.Rigidbody.AddForce(wallJumpForceVector, ForceMode.VelocityChange);
 
         _isCurrentlyJumping = true;
 
@@ -511,7 +548,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         _wallRunningObjects.Add(wallRunningObject);
 
         // If the wall running objects were empty, invoke the on wall run start event
-        if (objectsEmpty)
+        if (objectsEmpty && _reattachTimer.Percentage >= 1)
             OnWallRunStart?.Invoke(this);
     }
 
@@ -527,20 +564,14 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     #region Event Functions
 
-    private void KinematicOnWallRunStart(PlayerWallRunning playerWallRunning)
+    private void GravityOnWallRunStart(PlayerWallRunning playerWallRunning)
     {
-        // // Set the rigid body to kinematic
-        // ParentComponent.Rigidbody.isKinematic = true;
-
         // Disable the player's gravity
         ParentComponent.Rigidbody.useGravity = false;
     }
 
-    private void KinematicOnWallRunEnd(PlayerWallRunning playerWallRunning)
+    private void GravityOnWallRunEnd(PlayerWallRunning playerWallRunning)
     {
-        // // Set the rigid body to non-kinematic
-        // ParentComponent.Rigidbody.isKinematic = false;
-
         // Enable the player's gravity
         ParentComponent.Rigidbody.useGravity = true;
     }
@@ -574,6 +605,32 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         var wallJumpForceVector = wallJumpDirection * autoWallJumpForce;
 
         // ParentComponent.Rigidbody.CustomAddForce(wallJumpForceVector, ForceMode.VelocityChange);
+        ParentComponent.Rigidbody.AddForce(wallJumpForceVector, ForceMode.VelocityChange);
+    }
+
+
+    private void TransferVelocityOnWallRunStart(PlayerWallRunning obj)
+    {
+        // Store the player's velocity
+        var previousVelocity = ParentComponent.Rigidbody.velocity;
+
+        // Get the forward vector along the wall
+        var forwardVector = _isWallRunningLeft
+            ? Vector3.Cross(_contactPoints[_contactPointIndex].normal, Vector3.up)
+            : Vector3.Cross(Vector3.up, _contactPoints[_contactPointIndex].normal);
+
+        // Normalize the forward vector
+        forwardVector.Normalize();
+
+        // Get the dot product of the player's velocity and the forward vector
+        // This will be the player's speed as they start wall running
+        var dotProduct = Vector3.Dot(previousVelocity, forwardVector);
+
+        // Kill the player's velocity
+        ParentComponent.Rigidbody.velocity = Vector3.zero;
+
+        // Add the player's speed along the wall
+        ParentComponent.Rigidbody.AddForce(forwardVector * dotProduct, ForceMode.VelocityChange);
     }
 
     #endregion

@@ -47,7 +47,7 @@ public class InventoryPickup : MonoBehaviour, IInteractable
         if (inventoryEntry.Quantity > 1)
             sb.Append($"{inventoryEntry.Quantity}x ");
 
-        sb.Append(inventoryEntry.InventoryObject.Name);
+        sb.Append(inventoryEntry.InventoryObject.ItemName);
 
         return sb.ToString();
     }

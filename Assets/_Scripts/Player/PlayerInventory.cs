@@ -111,7 +111,7 @@ public class PlayerInventory : MonoBehaviour
 
         inventoryEntry.RemoveQuantity(quantity);
 
-        Debug.Log($"Removed {quantity} {inventoryObject.Name} from the inventory!");
+        Debug.Log($"Removed {quantity} {inventoryObject.ItemName} from the inventory!");
 
         // If the quantity is 0, remove the inventory entry from the list
         if (inventoryEntry.Quantity <= 0)
@@ -129,9 +129,9 @@ public class PlayerInventory : MonoBehaviour
 
         string message;
         if (quantity > 1)
-            message = $"Picked up {quantity}x {inventoryObject.Name}!";
+            message = $"Picked up {quantity}x {inventoryObject.ItemName}!";
         else
-            message = $"Picked up a {inventoryObject.Name}!";
+            message = $"Picked up a {inventoryObject.ItemName}!";
 
         // Show the tooltip
         JournalTooltipManager.Instance.AddTooltip(message);

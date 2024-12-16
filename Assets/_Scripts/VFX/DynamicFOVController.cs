@@ -99,8 +99,7 @@ public class DynamicFOVController : MonoBehaviour
 
     private void Update()
     {
-        // // Handle Sprinting
-        // HandleSprint();
+        return;
 
         var setFov = normalFOV;
 
@@ -119,23 +118,6 @@ public class DynamicFOVController : MonoBehaviour
         // Debug.Log($"Set FOV: {setFov} - {normalFOV} - {setSprintFov} - {setDashFov}");
 
         cinemachineCamera.m_Lens.FieldOfView = setFov;
-    }
-
-    private void HandleSprint()
-    {
-        // Get the current FOV of the camera
-        var currentFOV = cinemachineCamera.m_Lens.FieldOfView;
-
-        // Only adjust sprint FOV if not currently dashing
-        if (!_isDashing)
-        {
-            // Determine the target FOV based on whether the player is sprinting
-            var targetFOV = IsSprinting ? sprintFOV : normalFOV;
-
-            // Smoothly transition the FOV
-            cinemachineCamera.m_Lens.FieldOfView =
-                Mathf.Lerp(currentFOV, targetFOV, Time.deltaTime * fovTransitionSpeed);
-        }
     }
 
     // Coroutine to handle the Dash FOV effect

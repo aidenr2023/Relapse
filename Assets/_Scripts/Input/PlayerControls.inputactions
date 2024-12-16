@@ -265,6 +265,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "SprintToggle",
+                    "type": "Button",
+                    "id": "8c5bc08a-9ee6-4596-99f7-5bbfcfdff3e1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Sprint",
+                    "type": "Button",
+                    "id": "20ff1ee6-d891-4c72-a9dd-57221785b766",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -487,6 +505,28 @@
                     "action": "Inspect",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8c1b180d-989a-485a-8339-d01a1ee2d47e",
+                    "path": "<Gamepad>/leftStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "SprintToggle",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "eda3af54-fed9-4013-b56e-58c81c918f3d",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KB n M",
+                    "action": "Sprint",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -516,24 +556,6 @@
                     "name": "Dash",
                     "type": "Button",
                     "id": "1ecce11a-f668-4cdd-915e-61c361559818",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Sprint",
-                    "type": "Button",
-                    "id": "3b3c0d9a-d6f4-493a-8c18-4bf81ea7811c",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "SprintToggle",
-                    "type": "Button",
-                    "id": "4ed6b462-7998-4d32-817e-79449796ae01",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -582,17 +604,6 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "Dash",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "eef66a0f-08de-4d05-bf22-9e86092ea360",
-                    "path": "<Keyboard>/shift",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "KB n M",
-                    "action": "Sprint",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -705,17 +716,6 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
-                },
-                {
-                    "name": "",
-                    "id": "d137e0da-54f3-4306-8625-8d04db73b618",
-                    "path": "<Gamepad>/leftStickPress",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Gamepad",
-                    "action": "SprintToggle",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 }
             ]
         },

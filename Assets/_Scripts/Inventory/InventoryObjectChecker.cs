@@ -60,7 +60,7 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable
             if (playerInteraction.Player.PlayerInventory.HasItem(requiredItem.InventoryObject, requiredItem.Quantity))
                 continue;
 
-            Debug.Log($"Player does not have {requiredItem.Quantity}x {requiredItem.InventoryObject.Name}!");
+            Debug.Log($"Player does not have {requiredItem.Quantity}x {requiredItem.InventoryObject.ItemName}!");
 
             hasAllItems = false;
         }
