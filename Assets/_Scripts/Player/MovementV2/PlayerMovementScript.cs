@@ -31,41 +31,5 @@ public abstract class PlayerMovementScript : ComponentScript<PlayerMovementV2>, 
         ParentComponent.RemoveMovementScript(obj);
     }
 
-    protected void ApplyLateralSpeedLimit(float speed)
-    {
-        // Create a vector2 with the x and z components of the velocity
-        var velocity2D = new Vector2(
-            ParentComponent.Rigidbody.velocity.x,
-            ParentComponent.Rigidbody.velocity.z
-        );
-
-        // Get the magnitude of the velocity
-        var velocityMagnitude = velocity2D.magnitude;
-
-        // Return if the magnitude is less than the speed limit
-        if (velocityMagnitude <= speed)
-            return;
-
-        // Get the velocity vector
-        var velocityVector = velocity2D.normalized * speed;
-
-        // Set the velocity of the rigid body
-        ParentComponent.Rigidbody.velocity = new Vector3(
-            velocityVector.x,
-            ParentComponent.Rigidbody.velocity.y,
-            velocityVector.y
-        );
-
-        // var postVelocity2D = new Vector2(
-        //     ParentComponent.Rigidbody.velocity.x,
-        //     ParentComponent.Rigidbody.velocity.z
-        // );
-    }
-
-    protected void ApplyLateralSpeedLimit()
-    {
-        ApplyLateralSpeedLimit(ParentComponent.MovementSpeed);
-    }
-
     #endregion
 }

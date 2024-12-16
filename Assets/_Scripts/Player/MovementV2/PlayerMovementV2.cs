@@ -26,7 +26,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     [SerializeField] private float totalPlayerHeight = 2;
 
-    [SerializeField] private float rideHeightOffset = -1f;
+    [SerializeField] private float rideHeightOffset = 1f;
     [SerializeField] [Min(0)] private float rideHeight = .5f;
     [SerializeField] private float rideSpringStrength;
     [SerializeField] private float rideSpringDamper;
@@ -190,7 +190,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         var currentVelocity = _rigidbody.velocity;
 
         // Get the direction of the ray
-        var rayDirection = transform.TransformDirection(Vector3.down);
+        // var downDirection = transform.TransformDirection(Vector3.down);
+        var downDirection = Vector3.down;
 
         // Get the velocity of the other object
         var otherVelocity = Vector3.zero;
@@ -203,24 +204,43 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             otherVelocity = otherRigidbody.velocity;
 
         // Get the relative velocity
-        var rayDirectionVelocity = Vector3.Dot(rayDirection, currentVelocity);
-        var otherDirectionVelocity = Vector3.Dot(rayDirection, otherVelocity);
+        var rayDirectionVelocity = Vector3.Dot(downDirection, currentVelocity);
+        var otherDirectionVelocity = Vector3.Dot(downDirection, otherVelocity);
 
         // Get the relative velocity
         var relativeVelocity = rayDirectionVelocity - otherDirectionVelocity;
 
         // Distance of the ray hit vs the ride height
-        var x = _floatingControllerHit.distance - rideHeight;
+        var rideHeightPenetration = _floatingControllerHit.distance - rideHeight;
+
+        var remainingHeight = totalPlayerHeight - _capsuleCollider.height;
+        var capsuleHeightOffset = rideHeight - remainingHeight;
+        var hitOffset = _floatingControllerHit.distance - capsuleHeightOffset;
+        var actualPenetration = remainingHeight - hitOffset;
+
+
+        // Create a target velocity with the same x and z,
+        // but enough velocity to go up by the actual penetration
+        var targetVelocity = new Vector3(
+            currentVelocity.x,
+            actualPenetration,
+            currentVelocity.z
+        );
+
+        // This is the force required to reach the target velocity in EXACTLY one frame
+        var targetForce = (targetVelocity - _rigidbody.velocity) / Time.fixedDeltaTime;
 
         // Get the spring force
-        var springForce = (x * rideSpringStrength) - (relativeVelocity * rideSpringDamper);
+        var springForce = (rideHeightPenetration * rideSpringStrength) - (relativeVelocity * rideSpringDamper);
+
+        // Debug.Log($"RHP: [{hitOffset:0.000}] [{actualPenetration:0.000}] [{targetForce.y:0.000}]");
 
         // Add force to the player
-        _rigidbody.AddForce(rayDirection * springForce);
+        _rigidbody.AddForce(downDirection * springForce, ForceMode.Acceleration);
 
         // Add force to the other object
         if (otherRigidbody)
-            otherRigidbody.AddForceAtPosition(-rayDirection * springForce, _floatingControllerHit.point);
+            otherRigidbody.AddForceAtPosition(-downDirection * springForce, _floatingControllerHit.point);
     }
 
     private void UpdateCapsuleColliderHeight()
@@ -244,7 +264,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         // Set the capsule collider height based on the distance
         var newCapsuleHeight = Mathf.Min(desiredCapsuleHeight, heightAdjust);
-        _capsuleCollider.height = newCapsuleHeight;
+        _capsuleCollider.height = Mathf.Max(newCapsuleHeight, 1);
 
         // Set the capsule collider y position based on the distance
         var newYPosition = (totalPlayerHeight - newCapsuleHeight) / 2;
@@ -351,7 +371,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Draw the floating controller ray
         Gizmos.color = Color.red;
         Gizmos.DrawRay(
-            transform.position + new Vector3(0, rideHeightOffset, 0),
+            transform.position,
             Vector3.down * rideHeight
         );
 

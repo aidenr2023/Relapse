@@ -1096,17 +1096,53 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraPivot: {fileID: 5244302159661097867}
   orientation: {fileID: 5224293575626551686}
-  desiredCapsuleHeight: 2
+  desiredCapsuleHeight: 1.75
   totalPlayerHeight: 2
-  rideHeightOffset: -1
-  rideHeight: 0.5
-  rideSpringStrength: 1000
-  rideSpringDamper: 0
+  rideHeightOffset: 1
+  rideHeight: 1
+  rideSpringStrength: 512
+  rideSpringDamper: 32
   maxSpeed: 10
-  acceleration: 200
+  acceleration: 40
   accelerationFactorFromDot:
     serializedVersion: 2
-    m_Curve: []
+    m_Curve:
+    - serializedVersion: 3
+      time: -1
+      value: 8
+      inSlope: -2
+      outSlope: -2
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0
+      value: 6
+      inSlope: -1.6666667
+      outSlope: -1.6666667
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.75
+      value: 5
+      inSlope: -4.1253147
+      outSlope: -4.228547
+      tangentMode: 1
+      weightedMode: 0
+      inWeight: 0.14772725
+      outWeight: 0.36363626
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: -16
+      outSlope: -16
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
@@ -1124,8 +1160,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canSprintWithoutPower: 1
   canJumpWithoutPower: 1
-  sprintMultiplier: 1.4
-  jumpForce: 16
+  sprintMultiplier: 1.5
+  jumpForce: 12
+  airMovementMultiplier: 0.125
   footstepSoundPool:
     sounds:
     - clip: {fileID: 8300000, guid: 81def98cd06884940b95459db1a841f7, type: 3}
@@ -1196,8 +1233,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isEnabled: 1
   dashSpeed: 100
+  dashExitVelocity: 0
   dashDuration:
-    maxTime: 0.125
+    maxTime: 0.25
   dashCooldown:
     maxTime: 0.5
   maxDashesInAir: 2

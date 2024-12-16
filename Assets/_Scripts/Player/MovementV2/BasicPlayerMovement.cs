@@ -14,6 +14,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
 
     [SerializeField] [Min(0)] private float jumpForce = 10f;
 
+    [SerializeField] [Range(0, 1)] private float airMovementMultiplier = 0.5f;
+
     [Header("Sounds")] [SerializeField] private SoundPool footstepSoundPool;
 
     [SerializeField] private float walkingFootstepInterval = 0.35f;
@@ -204,13 +206,13 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
     public override void FixedMovementUpdate()
     {
         // Update the movement
-        UpdateGroundedLateralMovement();
+        UpdateLateralMovement();
 
         // Update the jump
         UpdateJump();
     }
 
-    private void UpdateGroundedLateralMovement()
+    private void UpdateLateralMovement()
     {
         // Return if the movement input is zero
         if (_movementInput == Vector2.zero)
@@ -251,11 +253,13 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
         if (currentMovement.magnitude > 1)
             currentMovement.Normalize();
 
+        _tmpCurrentMovement = currentMovement.normalized;
+
         // Calculate how fast the player should be moving
         var currentTargetVelocityMagnitude = ParentComponent.MovementSpeed * currentMoveMult;
 
         // Calculate the velocity the rigidbody should be moving at
-        var targetVelocity = currentMovement * currentTargetVelocityMagnitude +
+        var targetVelocity = (currentMovement * currentTargetVelocityMagnitude) +
                              new Vector3(0, ParentComponent.Rigidbody.velocity.y, 0);
 
         // Get the dot product between the target velocity and the current velocity
@@ -270,6 +274,10 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
         // Calculate the force that is going to be applied to the rigidbody THIS frame
         var force = targetForce.normalized * (ParentComponent.Acceleration * evaluation);
 
+        // If the player is midair, apply the air movement multiplier
+        if (!ParentComponent.IsGrounded)
+            force *= airMovementMultiplier;
+
         // If the player only needs to move a little bit, just set the force to the target force
         if (targetForce.magnitude < ParentComponent.Acceleration)
             force = targetForce;
@@ -278,16 +286,24 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
         if (force.magnitude > targetForce.magnitude)
             force = targetForce;
 
-        // Ensure the player stays on the ground when moving downward along a slope
-        if (currentMovement.y < 0)
-            force += Vector3.down * (20f * ParentComponent.Rigidbody.velocity.magnitude);
-
         // Apply the force to the rigidbody
         ParentComponent.Rigidbody.AddForce(force, ForceMode.Acceleration);
+
+        // Ensure the player stays on the ground when moving downward along a slope
+        // if (currentMovement.y < 0)
+        //     force += Vector3.down * (20f * ParentComponent.Rigidbody.velocity.magnitude);
+        if (force.y < 0)
+        {
+            // Debug.Log($"FORCE: {force.normalized} - MOVEMENT {currentMovement.normalized}");
+            // force += new Vector3(0, currentMovement.normalized.y, 0) * (currentTargetVelocityMagnitude * 16);
+
+        }
 
         // Set the footstep timer to active
         _footstepTimer.SetActive(true);
     }
+
+    private Vector3 _tmpCurrentMovement;
 
     private void UpdateJump()
     {
@@ -335,4 +351,25 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
     {
         return $"\tInput   : {_movementInput}\n";
     }
+
+    #region Debug
+
+    private void OnDrawGizmos()
+    {
+        const float interval = 0.125f;
+
+        if (ParentComponent == null)
+            return;
+
+        var surfaceNormal = ParentComponent.GroundHit.normal;
+
+        var surfaceForward = Vector3.ProjectOnPlane(ParentComponent.Orientation.forward, surfaceNormal).normalized;
+
+        Gizmos.color = Color.red;
+        for (var i = 0; i < 20 / interval; i++)
+            Gizmos.DrawSphere(ParentComponent.GroundHit.point + surfaceForward * (i * interval), 0.125f / 8);
+    }
+
+    #endregion
+
 }
