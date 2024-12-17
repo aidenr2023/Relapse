@@ -372,8 +372,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190335
+  m_fontColor: {r: 1, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -564,14 +564,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6db7d14cf168478bacea0720a538d891, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  detectionOrigin: {fileID: 2181066746826332068}
   visionDistance: 30
+  autoDetectionDistance: 5
   visionAngle: 150
   patrolDetectionTimer:
-    maxTime: 0.0625
+    maxTime: 0.25
   searchDetectionTimer:
     maxTime: 0.5
   pursuitDetectionTimer:
-    maxTime: 0.25
+    maxTime: 3
+  losingSightTimer:
+    maxTime: 0
   debugCanvas: {fileID: 8307219171016231559}
   pursuitDetectionSlider: {fileID: 8588873680922162116}
   pursuitDetectionText: {fileID: 1105104387778251481}

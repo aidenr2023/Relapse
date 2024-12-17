@@ -585,7 +585,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6db7d14cf168478bacea0720a538d891, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  detectionOrigin: {fileID: 4035413799650271227}
   visionDistance: 30
+  autoDetectionDistance: 5
   visionAngle: 50
   patrolDetectionTimer:
     maxTime: 0.25
@@ -3111,6 +3113,12 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!4 &4035413799650271227 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 309828020610003086, guid: db6e6372cdff8b147bb69cbf2c06927e,
+    type: 3}
+  m_PrefabInstance: {fileID: 4344867020953022325}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4307315861339474078 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: db6e6372cdff8b147bb69cbf2c06927e,

@@ -148,7 +148,11 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
             case EnemyDetectionState.Aware:
 
                 // Set the destination to the player's current position
-                NavMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.Target.GameObject.transform.position);
+                if (Enemy.EnemyDetectionBehavior.IsTargetDetected)
+                    NavMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.Target.GameObject.transform.position);
+                else
+                    NavMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.LastKnownTargetPosition);
+
                 break;
 
             default:

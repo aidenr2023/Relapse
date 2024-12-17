@@ -7,8 +7,9 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
 {
     #region Serialized Fields
 
-    [Header("Detection")] [SerializeField] [Min(0)]
-    private float visionDistance = 10f;
+    [Header("Detection")] [SerializeField] private Transform detectionOrigin;
+
+    [SerializeField] [Min(0)] private float visionDistance = 10f;
 
     [SerializeField] [Min(0)] private float autoDetectionDistance = 5f;
 
@@ -18,15 +19,10 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
     [SerializeField] private CountdownTimer searchDetectionTimer;
     [SerializeField] private CountdownTimer pursuitDetectionTimer;
 
-
     [Header("Debugging")] [SerializeField] private Canvas debugCanvas;
     [SerializeField] private Slider pursuitDetectionSlider;
     [SerializeField] private TMP_Text pursuitDetectionText;
     [SerializeField] private Image pursuitDetectionColorImage;
-
-    // [SerializeField] private Color patrolDetectionColor = Color.green;
-    // [SerializeField] private Color searchDetectionColor = Color.yellow;
-    // [SerializeField] private Color pursuitDetectionColor = Color.red;
 
     #endregion
 
@@ -51,7 +47,7 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
 
     public EnemyDetectionState CurrentDetectionState { get; private set; }
 
-    public bool IsTargetDetected => CurrentDetectionState == EnemyDetectionState.Aware && Target != null;
+    public bool IsTargetDetected => Target != null && _isTargetInSight;
 
     public IActor Target { get; private set; }
 
@@ -177,13 +173,6 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         switch (CurrentDetectionState)
         {
             case EnemyDetectionState.Unaware:
-
-                // // if tagged as "stationary" then disable movement
-                // if (gameObject.CompareTag("Stationary") && !npcMovement.canMove)
-                //     npcMovement.DisableMovement();
-                // else
-                //     npcMovement.EnableMovement();
-
                 // Update the player detection timer
                 if (_isTargetInSight)
                     patrolDetectionTimer.Update(Time.deltaTime);
@@ -301,7 +290,7 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
             return false;
 
         // Get the line between the enemy and the player
-        var line = player.transform.position - transform.position;
+        var line = player.transform.position - detectionOrigin.position;
 
         // Return false if the player is not within the vision distance
         if (line.magnitude > visionDistance)
@@ -321,7 +310,7 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         var layerMask = ~(1 << LayerMask.NameToLayer("NonPhysical"));
 
         var raycastHit = Physics.Raycast(
-            transform.position,
+            detectionOrigin.position,
             line,
             out var hit,
             visionDistance,
@@ -335,8 +324,6 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         // Return false if the raycast does not hit the player
         if (hit.collider.gameObject != player.gameObject)
             return false;
-
-        // Debug.Log($"Player detected! Distance: {line.magnitude}, Angle: {Vector3.Angle(transform.forward, line)}");
 
         return true;
     }
@@ -352,12 +339,12 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         if (Player.Instance != null)
         {
             // Get the line between the enemy and the player
-            var line = Player.Instance.transform.position - transform.position;
+            var line = Player.Instance.transform.position - detectionOrigin.position;
 
-            var endPosition = transform.position + line.normalized * visionDistance;
+            var endPosition = detectionOrigin.position + line.normalized * visionDistance;
 
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, endPosition);
+            Gizmos.DrawLine(detectionOrigin.position, endPosition);
         }
 
         // Draw the vision angle
@@ -368,12 +355,12 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         var right = Quaternion.Euler(0, halfAngle, 0) * forward;
 
         Gizmos.color = _isTargetInSight ? detectedColor : undetectedColor;
-        Gizmos.DrawLine(transform.position, transform.position + left * visionDistance);
-        Gizmos.DrawLine(transform.position, transform.position + right * visionDistance);
+        Gizmos.DrawLine(detectionOrigin.position, detectionOrigin.position + left * visionDistance);
+        Gizmos.DrawLine(detectionOrigin.position, detectionOrigin.position + right * visionDistance);
 
         // Draw the auto-detection distance
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, autoDetectionDistance);
+        Gizmos.DrawWireSphere(detectionOrigin.position, autoDetectionDistance);
     }
 
     #endregion
