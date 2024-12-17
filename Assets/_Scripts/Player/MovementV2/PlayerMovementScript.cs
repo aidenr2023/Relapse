@@ -15,7 +15,7 @@ public abstract class PlayerMovementScript : ComponentScript<PlayerMovementV2>, 
 
     #region Implemented Methods
 
-    protected void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
     }
 

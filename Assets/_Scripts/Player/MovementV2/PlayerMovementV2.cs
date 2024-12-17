@@ -54,7 +54,6 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     private CapsuleCollider _capsuleCollider;
 
     private bool _isSprinting;
-    private bool _isSprintToggled;
 
     #endregion
 
@@ -76,7 +75,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public float Acceleration => acceleration;
 
-    public bool IsSprinting => _isSprinting || _isSprintToggled;
+    public bool IsSprintToggled { get; set; }
+
+    public bool IsSprinting => _isSprinting || IsSprintToggled;
 
     public float MovementSpeed => maxSpeed;
 
@@ -167,9 +168,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private void Update()
     {
-        // Update the sprinting state for toggled sprinting
-        if (MovementInput == Vector2.zero)
-            _isSprintToggled = false;
+        Debug.Log($"Sprint Toggled!: {IsSprintToggled} -> ({IsSprinting})");
     }
 
     private void FixedUpdate()
@@ -452,10 +451,13 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     {
         // Return if the player cannot sprint
         if (!BasicPlayerMovement.CanSprint)
+        {
+            IsSprintToggled = false;
             return;
+        }
 
         // Set the sprinting flag to true
-        _isSprintToggled = !_isSprintToggled;
+        IsSprintToggled = !IsSprintToggled;
     }
 
     #endregion

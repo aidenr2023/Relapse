@@ -162,6 +162,10 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
 
     public override void FixedMovementUpdate()
     {
+        // Update the sprinting state for toggled sprinting
+        if (MovementInput == Vector2.zero)
+            ParentComponent.IsSprintToggled = false;
+
         // Update the movement
         UpdateLateralMovement();
 
