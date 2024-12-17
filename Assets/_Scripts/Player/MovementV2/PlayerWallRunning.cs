@@ -19,6 +19,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     [SerializeField] [Min(0)] private float maxFallSpeed;
     [SerializeField] [Min(0)] private float fallAcceleration;
+    [SerializeField] [Min(0)] private float stationaryFallSpeedMultiplier = 4f;
 
     [SerializeField] [Min(0)] private float wallRunSpeedThreshold = 1f;
 
@@ -258,8 +259,14 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         _isWallRunningLeft = false;
         _isWallRunningRight = false;
 
+        // SET BOTH OF THE VELOCITY THRESHOLDS TO TRUE
+        leftVelocityAboveThreshold = rightVelocityAboveThreshold = true;
+
+
         if (leftHit && rightHit && !ParentComponent.IsGrounded && leftAngleWithinTolerance &&
-            rightAngleWithinTolerance && leftVelocityAboveThreshold && rightVelocityAboveThreshold)
+            rightAngleWithinTolerance
+            // && leftVelocityAboveThreshold && rightVelocityAboveThreshold
+           )
         {
             currentHitInfo =
                 leftHitInfo.distance < rightHitInfo.distance
@@ -269,13 +276,17 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             _isWallRunningLeft = leftHitInfo.distance < rightHitInfo.distance;
             _isWallRunningRight = !_isWallRunningLeft;
         }
-        else if (leftHit && !ParentComponent.IsGrounded && leftAngleWithinTolerance && leftVelocityAboveThreshold)
+        else if (leftHit && !ParentComponent.IsGrounded && leftAngleWithinTolerance
+                 // && leftVelocityAboveThreshold
+                )
         {
             currentHitInfo = leftHitInfo;
 
             _isWallRunningLeft = true;
         }
-        else if (rightHit && !ParentComponent.IsGrounded && rightAngleWithinTolerance && rightVelocityAboveThreshold)
+        else if (rightHit && !ParentComponent.IsGrounded && rightAngleWithinTolerance
+                 // && rightVelocityAboveThreshold
+                )
         {
             currentHitInfo = rightHitInfo;
 
@@ -350,10 +361,14 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     {
         // return if the player is not wall running
         if (!_isWallRunning)
-        {
-            Debug.Log($"Returning because the player is not wall running!");
             return;
-        }
+
+        // Get the player's current dot product in relation to the wall's forward vector
+        var forwardVector = _isWallRunningLeft
+            ? Vector3.Cross(_contactInfo.normal, Vector3.up)
+            : Vector3.Cross(Vector3.up, _contactInfo.normal);
+
+        var forwardVelocityDot = Vector3.Dot(ParentComponent.Rigidbody.velocity, forwardVector);
 
         // Get the current move multiplier
         var currentMoveMult = ParentComponent.IsSprinting
@@ -376,20 +391,46 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         // Get the forward movement based on the input
         var forwardMovement = forwardDirection * ForwardInput;
 
+        // TODO: Replace
         // Get the velocity vector
         var currentYVelocity = ParentComponent.Rigidbody.velocity.y;
         var updatedYVelocity = Mathf.Clamp(currentYVelocity - fallAcceleration, -maxFallSpeed, float.MaxValue);
 
+        var currentMaxFallSpeed = maxFallSpeed;
+
+        // // If the player is not moving fast enough, their max fall speed increases
+        if (forwardVelocityDot < wallRunSpeedThreshold)
+        {
+            // Reverse interpolate the max fall speed based on the player's forward velocity in relation to the threshold
+            var lerpAmount = 1 - Mathf.InverseLerp(0, wallRunSpeedThreshold, forwardVelocityDot);
+
+            // Set the max fall speed to the stationary fall speed multiplier
+            currentMaxFallSpeed = Mathf.Lerp(maxFallSpeed, maxFallSpeed * stationaryFallSpeedMultiplier, lerpAmount);
+        }
+
         // Get the move vector
         // var moveVector = (forwardDirection + upwardMovement).normalized;
-        var moveVector = forwardMovement + upwardMovement + (Vector3.up * updatedYVelocity);
+        // var moveVector = forwardMovement + upwardMovement + (Vector3.up * updatedYVelocity);
+        var moveVector = forwardMovement + upwardMovement;
 
         // Normalize the move vector
         if (moveVector.magnitude > 1)
             moveVector.Normalize();
 
+        // Create a target velocity vector before fall
+        var targetVelocityBeforeFall = moveVector * (ParentComponent.MovementSpeed * currentMoveMult) +
+                                       new Vector3(0, ParentComponent.Rigidbody.velocity.y, 0);
+
+        // Create the target velocity after fall
+        var targetVelocityAfterFall =
+            new Vector3(targetVelocityBeforeFall.x, -currentMaxFallSpeed, targetVelocityBeforeFall.z);
+
         // Create a target velocity vector
-        var targetVelocity = moveVector * (ParentComponent.MovementSpeed * currentMoveMult);
+        var targetVelocity = Vector3.MoveTowards(
+            targetVelocityBeforeFall,
+            targetVelocityAfterFall,
+            fallAcceleration
+        );
 
         // This is the force required to reach the target velocity in EXACTLY one frame
         var targetForce = (targetVelocity - ParentComponent.Rigidbody.velocity) / Time.fixedDeltaTime;

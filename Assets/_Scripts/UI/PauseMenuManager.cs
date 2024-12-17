@@ -92,8 +92,6 @@ public class PauseMenuManager : GameMenu, IUsesInput
 
         // Set the event system's selected object to the first button
         SetSelectedButton(firstSelectedButton);
-
-        Debug.Log($"Adding this to the input manager: {this}");
     }
 
     protected override void CustomOnDisable()

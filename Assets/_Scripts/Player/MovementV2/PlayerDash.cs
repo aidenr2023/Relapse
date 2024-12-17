@@ -190,7 +190,7 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
         else
             Time.fixedDeltaTime = DEFAULT_FIXED_DELTA_TIME;
 
-        Debug.Log($"Fixed Delta Time: {Time.fixedDeltaTime}");
+        // Debug.Log($"Fixed Delta Time: {Time.fixedDeltaTime}");
     }
 
     public override void FixedMovementUpdate()

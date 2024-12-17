@@ -168,7 +168,6 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private void Update()
     {
-        Debug.Log($"Sprint Toggled!: {IsSprintToggled} -> ({IsSprinting})");
     }
 
     private void FixedUpdate()
@@ -436,8 +435,6 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         // Set the sprinting flag to true
         _isSprinting = true;
-
-        Debug.Log($"Is Sprinting? {_isSprinting}");
     }
 
     private void OnSprintCanceled(InputAction.CallbackContext obj)
