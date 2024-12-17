@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
+public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 {
     #region Serialized Fields
 
@@ -60,6 +60,9 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
     {
         // Initialize the footstep sounds
         InitializeFootsteps();
+
+        // Add this script to the debug manager
+        DebugManager.Instance.AddDebuggedObject(this);
     }
 
     private void OnEnable()
@@ -111,6 +114,10 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
     {
         // Get the movement input
         _movementInput = obj.ReadValue<Vector2>();
+
+        // Reset the parent component's isSprintToggled flag if there is no forward input
+        if (_movementInput == Vector2.zero)
+            ParentComponent.IsSprintToggled = false;
     }
 
     private void OnMoveCanceled(InputAction.CallbackContext obj)
@@ -214,8 +221,6 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
         if (currentMovement.magnitude > 1)
             currentMovement.Normalize();
 
-        _tmpCurrentMovement = currentMovement.normalized;
-
         // Calculate how fast the player should be moving
         var currentTargetVelocityMagnitude = ParentComponent.MovementSpeed * currentMoveMult;
 
@@ -262,8 +267,6 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput
         // Set the footstep timer to active
         _footstepTimer.SetActive(true);
     }
-
-    private Vector3 _tmpCurrentMovement;
 
     private void UpdateJump()
     {
