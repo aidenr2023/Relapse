@@ -566,7 +566,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   detectionOrigin: {fileID: 2181066746826332068}
   visionDistance: 30
-  autoDetectionDistance: 5
+  autoDetectionDistance: 7
   visionAngle: 150
   patrolDetectionTimer:
     maxTime: 0.25
@@ -593,9 +593,6 @@ MonoBehaviour:
   patrolCheckpoints: []
   checkpointProximityThreshold: 0.5
   animator: {fileID: 5835691382165057910}
-  idleAnimationName: New State
-  walkAnimationName: Lesion_Walking
-  runAnimationName: Lesion_Walking
   walkAnimationThreshold: 1
   runAnimationThreshold: 6
 --- !u!114 &8865007077112191545
