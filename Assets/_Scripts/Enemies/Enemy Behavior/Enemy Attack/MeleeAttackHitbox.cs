@@ -48,4 +48,14 @@ public class MeleeAttackHitbox : MonoBehaviour
     {
         _isEnabled = on;
     }
+
+    private void OnDrawGizmos()
+    {
+        // Return if not enabled
+        if (!_isEnabled)
+            return;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(transform.position, 1f);
+    }
 }

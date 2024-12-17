@@ -25,7 +25,7 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     private CountdownTimer _attackCooldownTimer;
 
-    private CountdownTimer _movementDisableTimer;
+    // private CountdownTimer _movementDisableTimer;
 
     private bool _canAttack = true;
 
@@ -55,21 +55,21 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         // Subscribe to the attack cooldown timer's OnTimerEnd event
         _attackCooldownTimer.OnTimerEnd += () => _canAttack = true;
 
-        // Initialize the movement disable timer
-        _movementDisableTimer = new CountdownTimer(0, false, false);
-
-        // Subscribe to the movement disable timer's OnTimerEnd event
-        _movementDisableTimer.OnTimerEnd += () =>
-        {
-            // Re-enable movement
-            Enemy.EnemyMovementBehavior.SetMovementEnabled(true);
-
-            // Stop the timer
-            _movementDisableTimer.Stop();
-
-            // Turn off all the hit boxes
-            SetAllHitBoxes(false);
-        };
+        // // Initialize the movement disable timer
+        // _movementDisableTimer = new CountdownTimer(0, false, false);
+        //
+        // // Subscribe to the movement disable timer's OnTimerEnd event
+        // _movementDisableTimer.OnTimerEnd += () =>
+        // {
+        //     // Re-enable movement
+        //     Enemy.EnemyMovementBehavior.SetMovementEnabled(true);
+        //
+        //     // Stop the timer
+        //     _movementDisableTimer.Stop();
+        //
+        //     // Turn off all the hit boxes
+        //     SetAllHitBoxes(false);
+        // };
         
     }
 
@@ -100,8 +100,8 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         // Update the attack cooldown timer
         _attackCooldownTimer.Update(Time.deltaTime);
 
-        // Update the movement disable timer
-        _movementDisableTimer?.Update(Time.deltaTime);
+        // // Update the movement disable timer
+        // _movementDisableTimer?.Update(Time.deltaTime);
 
         // Check if the player is in range
         var isTargetInRange = IsTargetInRange();
@@ -129,23 +129,6 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
         // Play the melee attack animation
         animator.SetTrigger(animatiorAttackProperty);
-
-        var animationInfo = animator.GetCurrentAnimatorStateInfo(0);
-
-        // Get the length of the attack animation
-        var animationLength = animationInfo.length;
-
-        var animationSpeed = animationInfo.speed;
-
-        // Reset the movement disable timer
-        _movementDisableTimer.SetMaxTimeAndReset(animationLength / animationSpeed);
-        _movementDisableTimer.Start();
-
-        // Disable movement
-        Enemy.EnemyMovementBehavior.SetMovementEnabled(false);
-
-        // Turn on all the hit boxes
-        SetAllHitBoxes(true);
     }
 
     private bool IsTargetInRange()
@@ -165,23 +148,29 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         return distance <= meleeAttackRange;
     }
 
-    private void SetAllHitBoxes(bool on)
-    {
-        Debug.Log($"Setting HitBox colliders to {on}");
-
-        // Return if there are no hit boxes
-        if (meleeAttackHitboxes == null)
-            return;
-
-        foreach (var hitBox in meleeAttackHitboxes)
-            hitBox?.SetEnabled(on);
-    }
-
     #endregion
 
     public void SetAttackEnabled(bool on)
     {
         _isExternallyEnabled = on;
+    }
+
+    public void ActivateHitBox(int index)
+    {
+        if (meleeAttackHitboxes == null || index < 0 || index >= meleeAttackHitboxes.Length)
+            return;
+
+        // Debug.Log($"Activating Hit Box {index}");
+
+        meleeAttackHitboxes[index]?.SetEnabled(true);
+    }
+
+    public void DeactivateHitBox(int index)
+    {
+        if (meleeAttackHitboxes == null || index < 0 || index >= meleeAttackHitboxes.Length)
+            return;
+
+        meleeAttackHitboxes[index]?.SetEnabled(false);
     }
 
     #region Debugging

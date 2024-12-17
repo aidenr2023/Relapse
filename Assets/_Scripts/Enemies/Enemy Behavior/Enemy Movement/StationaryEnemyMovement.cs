@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class StationaryEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
@@ -6,7 +7,7 @@ public class StationaryEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
     public Enemy Enemy { get; private set; }
     public GameObject GameObject => gameObject;
 
-    public bool IsMovementEnabled => true;
+    public HashSet<object> MovementDisableTokens { get; } = new();
 
 
     private void Awake()
@@ -15,8 +16,4 @@ public class StationaryEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
         Enemy = GetComponent<Enemy>();
     }
 
-
-    public void SetMovementEnabled(bool on)
-    {
-    }
 }

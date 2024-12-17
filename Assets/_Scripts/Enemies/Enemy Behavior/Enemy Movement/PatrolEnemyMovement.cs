@@ -9,8 +9,6 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     private static readonly int animatorSpeedProperty = Animator.StringToHash("Speed");
 
     private static readonly int animatorIsRunningProperty = Animator.StringToHash("IsRunning");
-    //Adding this ref here dont fight me
-    //public NPCmovement npcMovement;
 
     #region Serialized Fields
 
@@ -23,10 +21,6 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     [Header("Animations")] [SerializeField]
     private Animator animator;
 
-    [SerializeField] private string idleAnimationName = "Idle";
-    [SerializeField] private string walkAnimationName = "Walk";
-    [SerializeField] private string runAnimationName = "Run";
-
     [SerializeField] [Min(0)] private float walkAnimationThreshold;
     [SerializeField] [Min(0)] private float runAnimationThreshold;
 
@@ -36,8 +30,6 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
 
     private int _currentCheckpointIndex;
 
-    private bool _isExternallyEnabled = true;
-
     #endregion
 
     #region Getters
@@ -45,6 +37,8 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     public Enemy Enemy { get; private set; }
 
     public GameObject GameObject => gameObject;
+
+    public HashSet<object> MovementDisableTokens { get; } = new();
 
     public NavMeshAgent NavMeshAgent { get; private set; }
 
@@ -61,7 +55,7 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         }
     }
 
-    public bool IsMovementEnabled => _isExternallyEnabled;
+    public bool IsMovementEnabled => this.IsMovementEnabled();
 
     #endregion
 
@@ -104,6 +98,8 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     {
         // Set the NavMeshAgent enabled state
         NavMeshAgent.enabled = IsMovementEnabled;
+
+        Debug.Log($"Movement enabled: {IsMovementEnabled} - {string.Join(", ", MovementDisableTokens)}");
 
         // Return if disabled
         if (!IsMovementEnabled)
@@ -167,23 +163,8 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         if (animator == null)
             return;
 
-        // // If the NavMeshAgent is not enabled, play the idle animation
-        // if (!NavMeshAgent.enabled)
-        // {
-        //     animator.Play(idleAnimationName);
-        //     return;
-        // }
-
         // Get the velocity of the NavMeshAgent
         var velocity = NavMeshAgent.velocity.magnitude;
-
-        // // Determine the animation to play based on the velocity
-        // if (velocity < walkAnimationThreshold)
-        //     animator.Play(idleAnimationName);
-        // else if (velocity < runAnimationThreshold)
-        //     animator.Play(walkAnimationName);
-        // else
-        //     animator.Play(runAnimationName);
 
         var isMoving = velocity > walkAnimationThreshold;
         var isRunning = velocity >= runAnimationThreshold;
@@ -243,11 +224,6 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         return closestCheckpointIndex;
     }
 
-    public void SetMovementEnabled(bool on)
-    {
-        _isExternallyEnabled = on;
-    }
-
     #region Debugging
 
     private void OnDrawGizmos()
@@ -267,10 +243,16 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
             if (patrolCheckpoints[nextIndex] == null)
                 continue;
 
+            // Draw a line between the current node and the next node
             Gizmos.color = Color.red;
             Gizmos.DrawLine(patrolCheckpoints[i].position, patrolCheckpoints[nextIndex].position);
 
+            // Draw a sphere at the current node
             Gizmos.color = Color.green;
+
+            if (i == _currentCheckpointIndex)
+                Gizmos.color = Color.blue;
+
             Gizmos.DrawSphere(patrolCheckpoints[i].position, 0.1f);
         }
     }

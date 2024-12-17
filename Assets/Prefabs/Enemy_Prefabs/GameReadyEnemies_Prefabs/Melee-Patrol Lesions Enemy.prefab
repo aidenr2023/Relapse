@@ -513,7 +513,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: -1372625422
   m_Radius: 1
-  m_Speed: 6
+  m_Speed: 9
   m_Acceleration: 1000
   avoidancePriority: 50
   m_AngularSpeed: 1500
@@ -574,8 +574,6 @@ MonoBehaviour:
     maxTime: 0.5
   pursuitDetectionTimer:
     maxTime: 3
-  losingSightTimer:
-    maxTime: 0
   debugCanvas: {fileID: 8307219171016231559}
   pursuitDetectionSlider: {fileID: 8588873680922162116}
   pursuitDetectionText: {fileID: 1105104387778251481}
@@ -614,7 +612,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 35
   meleeAttackRange: 5
-  attackCooldown: 1
+  attackCooldown: 2
   animator: {fileID: 5835691382165057910}
   meleeAttackHitboxes:
   - {fileID: 6364708773960495632}
@@ -936,6 +934,11 @@ PrefabInstance:
       propertyPath: m_Data.m_ConstrainedObject
       value: 
       objectReference: {fileID: 6962139077799899763}
+    - target: {fileID: 3070531334620842133, guid: d5ec369d78f59024f80f42e0d141d0f8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3817638210576189762, guid: d5ec369d78f59024f80f42e0d141d0f8,
         type: 3}
       propertyPath: m_Name
@@ -950,6 +953,10 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3817638210576189762, guid: d5ec369d78f59024f80f42e0d141d0f8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 863402849349229355}
     - targetCorrespondingSourceObject: {fileID: 2591545798953596120, guid: d5ec369d78f59024f80f42e0d141d0f8,
         type: 3}
       insertIndex: -1
@@ -1226,7 +1233,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -1585,7 +1592,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -1807,7 +1814,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -1904,6 +1911,25 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 610759312793068290}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &4360368318399441472 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3817638210576189762, guid: d5ec369d78f59024f80f42e0d141d0f8,
+    type: 3}
+  m_PrefabInstance: {fileID: 610759312793068290}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &863402849349229355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4360368318399441472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 604ceef8f69b4d3eb05a69fc2d0498a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  meleeEnemyAttack: {fileID: 8865007077112191545}
 --- !u!4 &4474264646996426603 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3922104925513161833, guid: d5ec369d78f59024f80f42e0d141d0f8,
@@ -2352,7 +2378,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
