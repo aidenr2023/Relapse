@@ -8,7 +8,7 @@ public class StationaryEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
     public GameObject GameObject => gameObject;
 
     public HashSet<object> MovementDisableTokens { get; } = new();
-
+    public TokenManager<float> MovementSpeedTokens { get; } = new(false, null, 1);
 
     private void Awake()
     {
@@ -16,4 +16,9 @@ public class StationaryEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
         Enemy = GetComponent<Enemy>();
     }
 
+    private void Update()
+    {
+        // Update the movement speed tokens
+        MovementSpeedTokens.Update(Time.deltaTime);
+    }
 }

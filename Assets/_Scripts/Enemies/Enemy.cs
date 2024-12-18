@@ -11,6 +11,7 @@ public class Enemy : MonoBehaviour
     private IEnemyDetectionBehavior _enemyDetectionBehavior;
     private IEnemyMovementBehavior _enemyMovementBehavior;
     private IEnemyAttackBehavior _enemyAttackBehavior;
+    private IEnemyAbilityBehavior _enemyAbilityBehavior;
 
     #endregion
 
@@ -30,14 +31,14 @@ public class Enemy : MonoBehaviour
     private void Awake()
     {
         // Get the components
-        GetComponents();
+        InitializeComponents();
     }
 
     private void Start()
     {
     }
 
-    private void GetComponents()
+    private void InitializeComponents()
     {
         // Get the EnemyInfo component
         _enemyInfo = GetComponent<EnemyInfo>();
@@ -50,6 +51,9 @@ public class Enemy : MonoBehaviour
 
         // Get the IEnemyAttackBehavior component
         _enemyAttackBehavior = GetComponent<IEnemyAttackBehavior>();
+
+        // Get the enemy ability behavior component
+        _enemyAbilityBehavior = GetComponent<IEnemyAbilityBehavior>();
 
         // Assert that the IEnemyDetectionBehavior component is not null
         Debug.Assert(_enemyDetectionBehavior != null, "The IEnemyDetectionBehavior component is null.");

@@ -12,6 +12,8 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
 
     #region Serialized Fields
 
+    [SerializeField] [Min(0)] private float movementSpeed;
+
     [Header("Checkpoint Traversal")] [SerializeField] [Tooltip("The checkpoints that the enemy will traverse.")]
     private Transform[] patrolCheckpoints;
 
@@ -39,6 +41,8 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     public GameObject GameObject => gameObject;
 
     public HashSet<object> MovementDisableTokens { get; } = new();
+
+    public TokenManager<float> MovementSpeedTokens { get; } = new(false, null, 1);
 
     public NavMeshAgent NavMeshAgent { get; private set; }
 
@@ -99,6 +103,9 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         // Set the NavMeshAgent enabled state
         NavMeshAgent.enabled = IsMovementEnabled;
 
+        // Set the movement speed of the navmesh agent
+        NavMeshAgent.speed = movementSpeed * this.GetMovementSpeedTokenMultiplier();
+
         // Return if disabled
         if (!IsMovementEnabled)
             return;
@@ -108,6 +115,9 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
 
         // Update the movement animation
         UpdateMovementAnimation();
+
+        // Update the movement speed tokens
+        MovementSpeedTokens.Update(Time.deltaTime);
     }
 
     private void UpdateDestination()
