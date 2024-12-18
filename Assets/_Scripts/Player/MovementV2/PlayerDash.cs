@@ -111,7 +111,7 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
 
         // Return if the player is in air and has no remaining dashes
         if (
-            !(ParentComponent.IsGrounded || ParentComponent.WallRunning.IsWallRunning)
+            !(ParentComponent.IsGrounded)
             && _remainingDashesInAir <= 0
         )
             return;
@@ -176,8 +176,8 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
 
     private void Update()
     {
-        // Check if the player is on the ground to refill the dashes
-        if (ParentComponent.IsGrounded || ParentComponent.WallRunning.IsWallRunning)
+        // Check if the player is on the ground / wall running to refill the dashes
+        if (ParentComponent.IsGrounded || ParentComponent.WallRunning.IsWallRunning || ParentComponent.WallRunning.IsWallSliding)
             _remainingDashesInAir = maxDashesInAir;
 
         // Update the timers

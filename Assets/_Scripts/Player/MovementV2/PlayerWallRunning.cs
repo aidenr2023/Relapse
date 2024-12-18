@@ -20,10 +20,13 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     [SerializeField] [Min(0)] private float maxFallSpeed;
     [SerializeField] [Min(0)] private float fallAcceleration;
     [SerializeField] [Min(0)] private float stationaryFallSpeedMultiplier = 4f;
+    [SerializeField] [Min(0)] private float stationaryFallAccelerationMultiplier = 2f;
 
     [SerializeField] [Min(0)] private float wallRunSpeedThreshold = 1f;
 
     [SerializeField] [Min(0)] private float wallRunningDetectionDistance = 0.75f;
+
+    [SerializeField] [Min(8)] private int rayCount = 8;
 
     [Header("Wall Jump")] [SerializeField] [Min(0)]
     private float wallJumpForce = 10f;
@@ -43,6 +46,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     #region Private Fields
 
+    private bool _isWallSliding;
     private bool _isWallRunning;
     private bool _isWallRunningLeft;
     private bool _isWallRunningRight;
@@ -50,26 +54,35 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     private bool _isJumpThisFrame;
 
     private bool _isCurrentlyJumping;
-    private GameObject _jumpObject;
 
     private readonly CountdownTimer _footstepTimer = new(0.5f, true, false);
 
     private readonly CountdownTimer _reattachTimer = new(0.125f, true, false);
 
     // Code for the new wall running system
-    private GameObject _currentWall;
+    private GameObject _currentWall, _previousWall;
     private RaycastHit _contactInfo;
+
+    // Arrays of rays
+    private Ray[] _rays;
+    private Ray _leftRay, _rightRay;
+
+    private readonly Dictionary<Ray, WallRunHitInfo> _wallRunHitInfos = new();
 
     #endregion
 
     public event Action<PlayerWallRunning> OnWallRunStart;
     public event Action<PlayerWallRunning> OnWallRunEnd;
 
+    public event Action<PlayerWallRunning> OnWallSlideStart;
+
     #region Getters
 
     public HashSet<InputData> InputActions { get; } = new();
 
     public override InputActionMap InputActionMap => InputManager.Instance.PControls.PlayerMovementWallRunning;
+
+    public bool IsWallSliding => _isWallSliding;
 
     public bool IsWallRunning => _isWallRunning;
 
@@ -99,6 +112,12 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
         // Initialize the footstep sounds
         InitializeFootsteps();
+
+        // Update the rays
+        UpdateRays();
+
+        // Add this to the debug manager
+        DebugManager.Instance.AddDebuggedObject(this);
     }
 
     private void RegisterOnWallRunStart(PlayerMovementScript obj)
@@ -113,11 +132,11 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     private void InitializeEvents()
     {
-        // Add the on wall run start event
-        OnWallRunStart += RegisterOnWallRunStart;
-        OnWallRunStart += PushControls;
-        OnWallRunStart += GravityOnWallRunStart;
-        OnWallRunStart += TransferVelocityOnWallRunStart;
+        // Add the on wall slide start event
+        OnWallSlideStart += RegisterOnWallRunStart;
+        OnWallSlideStart += PushControls;
+        OnWallSlideStart += GravityOnWallRunStart;
+        OnWallSlideStart += TransferVelocityOnWallRunStart;
 
         // Add the on wall run end event
         OnWallRunEnd += AutoWallJump;
@@ -195,8 +214,48 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     {
         base.FixedUpdate();
 
+        // Update the rays
+        UpdateRays();
+
+        // Update the hit info dictionary
+        UpdateHitInfoDictionary();
+
+        // Detect if the player is currently wall sliding
+        UpdateDetectWallSliding();
+
         // Detect if the player is currently wall running
         UpdateDetectWallRunning();
+    }
+
+    private void UpdateRays()
+    {
+        // Create an array of rays that go around the player
+        _rays = new Ray[rayCount];
+
+        // Populate the array of rays
+        for (var i = 0; i < rayCount; i++)
+        {
+            // Calculate the angle of the ray
+            var angle = i * (360f / rayCount);
+
+            var camPivotForward = ParentComponent.CameraPivot.transform.forward;
+            var forwardVector = new Vector3(camPivotForward.x, 0, camPivotForward.z).normalized;
+
+            // Rotate the forward vector by the angle to get the direction of the ray
+            var direction = Quaternion.Euler(0, angle, 0) * forwardVector;
+
+            _rays[i] = new Ray(transform.position, direction);
+        }
+
+        // Get the left ray from the array of rays
+        _leftRay = _rays
+            .OrderByDescending(ray => Vector3.Dot(ray.direction, -ParentComponent.CameraPivot.transform.right))
+            .First();
+
+        // Get the right ray from the array of rays
+        _rightRay = _rays
+            .OrderByDescending(ray => Vector3.Dot(ray.direction, ParentComponent.CameraPivot.transform.right))
+            .First();
     }
 
     public override void FixedMovementUpdate()
@@ -205,52 +264,130 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         UpdateMovement();
     }
 
+    private void UpdateHitInfoDictionary()
+    {
+        // Clear the dictionary of wall run hit infos
+        _wallRunHitInfos.Clear();
+
+        foreach (var cRay in _rays)
+        {
+            // Get the hit information for the current ray
+            var hit = Physics.Raycast(
+                cRay,
+                out var hitInfo, wallRunningDetectionDistance,
+                wallLayer
+            );
+
+            // If the ray did not hit anything, continue
+            if (!hit)
+            {
+                // Add the ray to the dictionary
+                _wallRunHitInfos.Add(cRay, new WallRunHitInfo(hitInfo, false, default, default, default));
+
+                continue;
+            }
+
+            // Get the angle between the normal of the wall and the left ray
+            var leftAngle = Vector3.Angle(_leftRay.direction, -hitInfo.normal);
+
+            // Get the angle between the normal of the wall and the right ray
+            var rightAngle = Vector3.Angle(_rightRay.direction, -hitInfo.normal);
+
+            // Get the forward vector
+            var forwardVector = Vector3.Cross(hitInfo.normal, Vector3.up).normalized;
+
+            // Get the dot product of the player's velocity and the forward vector
+            // This will be the player's speed as they start wall running
+            var wallVelocity = Vector3.Dot(ParentComponent.Rigidbody.velocity, forwardVector);
+
+            // Add the hit info to the dictionary
+            _wallRunHitInfos.Add(cRay, new WallRunHitInfo(hitInfo, true, leftAngle, rightAngle, wallVelocity));
+        }
+    }
+
+    private void UpdateDetectWallSliding()
+    {
+        // Reset the wall sliding flag
+        _isWallSliding = false;
+
+        // Store the previous wall
+        _previousWall = _currentWall;
+
+        // Reset the current wall
+        _currentWall = null;
+
+        // Reset the contact info before checking
+        _contactInfo = new RaycastHit();
+
+        var closestHitInfo = new RaycastHit();
+        var closestHitDistance = float.MaxValue;
+
+        // Check each ray in the dictionary
+        foreach (var keyPair in _wallRunHitInfos)
+        {
+            var cRay = keyPair.Key;
+            var hitInfo = keyPair.Value;
+
+            // Skip the ray if it did not hit anything
+            if (!hitInfo.IsHit)
+                continue;
+
+            // Skip if the player is grounded
+            if (ParentComponent.IsGrounded)
+                continue;
+
+            // If the current hit distance is less than the closest hit distance, update the closest hit info
+            if (hitInfo.HitInfo.distance >= closestHitDistance)
+                continue;
+
+            // Set the wall sliding flag to true
+            _isWallSliding = true;
+
+            closestHitDistance = hitInfo.HitInfo.distance;
+            closestHitInfo = hitInfo.HitInfo;
+        }
+
+        // If the player is still not wall sliding, return
+        if (!_isWallSliding)
+        {
+            _contactInfo = default;
+            _currentWall = null;
+
+            // If the previous wall is not null, invoke the on wall run end event
+            if (_previousWall != null)
+                OnWallRunEnd?.Invoke(this);
+
+            return;
+        }
+
+        // Set the closet hit info as the contact info
+        _contactInfo = closestHitInfo;
+
+        // Set the current wall
+        _currentWall = closestHitInfo.collider.gameObject;
+
+        // If the previous wall is null, invoke the on wall slide start event
+        if (_previousWall == null)
+            OnWallSlideStart?.Invoke(this);
+    }
+
     private void UpdateDetectWallRunning()
     {
-        // Store the previous wall
-        var previousWall = _currentWall;
+        var leftVelocityAboveThreshold =
+            _wallRunHitInfos[_leftRay]?.IsAboveWallRunSpeedThreshold(wallRunSpeedThreshold) ?? false;
+        var rightVelocityAboveThreshold =
+            _wallRunHitInfos[_rightRay]?.IsAboveWallRunSpeedThreshold(wallRunSpeedThreshold) ?? false;
 
-        // Get the hit information for the left and right sides
-        var leftHit = Physics.Raycast(
-            transform.position, -ParentComponent.CameraPivot.transform.right,
-            out var leftHitInfo, wallRunningDetectionDistance,
-            wallLayer
-        );
+        var leftAngleWithinTolerance =
+            _wallRunHitInfos[_leftRay]?.IsWithinLeftAngleTolerance(wallAngleTolerance) ?? false;
+        var rightAngleWithinTolerance =
+            _wallRunHitInfos[_rightRay]?.IsWithinRightAngleTolerance(wallAngleTolerance) ?? false;
 
-        // Get the angle between the player's left ray and the wall's normal
-        var leftHitAngle = Vector3.Angle(-ParentComponent.CameraPivot.transform.right, -leftHitInfo.normal);
+        var leftHit = _wallRunHitInfos[_leftRay]?.IsHit ?? false;
+        var rightHit = _wallRunHitInfos[_rightRay]?.IsHit ?? false;
 
-        // Check if the angle is within the tolerance
-        var leftAngleWithinTolerance = leftHitAngle < wallAngleTolerance;
-
-        // Get forward vector
-        var leftForwardVector = Vector3.Cross(leftHitInfo.normal, Vector3.up).normalized;
-
-        // Get the dot product of the player's velocity and the forward vector
-        // This will be the player's speed as they start wall running
-        var leftWallVelocity = Vector3.Dot(ParentComponent.Rigidbody.velocity, leftForwardVector);
-
-        var leftVelocityAboveThreshold = leftWallVelocity >= wallRunSpeedThreshold;
-
-        var rightHit = Physics.Raycast(
-            transform.position, ParentComponent.CameraPivot.transform.right,
-            out var rightHitInfo, wallRunningDetectionDistance,
-            wallLayer
-        );
-
-        // Get the angle between the player's right ray and the wall's normal
-        var rightHitAngle = Vector3.Angle(ParentComponent.CameraPivot.transform.right, -rightHitInfo.normal);
-
-        var rightAngleWithinTolerance = rightHitAngle < wallAngleTolerance;
-
-        // get the forward vector
-        var rightForwardVector = Vector3.Cross(Vector3.up, rightHitInfo.normal).normalized;
-
-        // Get the dot product of the player's velocity and the forward vector
-        // This will be the player's speed as they start wall running
-        var rightWallVelocity = Vector3.Dot(ParentComponent.Rigidbody.velocity, rightForwardVector);
-
-        var rightVelocityAboveThreshold = rightWallVelocity >= wallRunSpeedThreshold;
+        var leftHitInfo = _wallRunHitInfos[_leftRay]?.HitInfo ?? default;
+        var rightHitInfo = _wallRunHitInfos[_rightRay]?.HitInfo ?? default;
 
         // Get the current hit info
         RaycastHit currentHitInfo;
@@ -259,12 +396,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         _isWallRunningLeft = false;
         _isWallRunningRight = false;
 
-        // SET BOTH OF THE VELOCITY THRESHOLDS TO TRUE
-        leftVelocityAboveThreshold = rightVelocityAboveThreshold = true;
-
-
-        if (leftHit && rightHit && !ParentComponent.IsGrounded && leftAngleWithinTolerance &&
-            rightAngleWithinTolerance
+        if (leftHit && rightHit && !ParentComponent.IsGrounded && leftAngleWithinTolerance && rightAngleWithinTolerance
             // && leftVelocityAboveThreshold && rightVelocityAboveThreshold
            )
         {
@@ -298,16 +430,6 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             // Not wall running
             _isWallRunning = false;
 
-            // Reset the contact info
-            _contactInfo = new RaycastHit();
-
-            // Reset the current wall
-            _currentWall = null;
-
-            // If the previous wall is not null, invoke the on wall run end event
-            if (previousWall != null)
-                OnWallRunEnd?.Invoke(this);
-
             return;
         }
 
@@ -321,7 +443,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         _currentWall = currentHitInfo.collider.gameObject;
 
         // If the previous wall is null, invoke the on wall run start event
-        if (previousWall == null)
+        if (_previousWall == null)
             OnWallRunStart?.Invoke(this);
 
         // var currentAngle = _isWallRunningLeft
@@ -359,8 +481,8 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     private void UpdateWallRunningMovement()
     {
-        // return if the player is not wall running
-        if (!_isWallRunning)
+        // return if the player is not wall running or wall sliding
+        if (!_isWallRunning && !_isWallSliding)
             return;
 
         // Get the player's current dot product in relation to the wall's forward vector
@@ -391,14 +513,15 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         // Get the forward movement based on the input
         var forwardMovement = forwardDirection * ForwardInput;
 
-        // TODO: Replace
-        // Get the velocity vector
-        var currentYVelocity = ParentComponent.Rigidbody.velocity.y;
-        var updatedYVelocity = Mathf.Clamp(currentYVelocity - fallAcceleration, -maxFallSpeed, float.MaxValue);
+        // If the player is wall sliding, but not wall running, reset the forward movement
+        if (_isWallSliding && !_isWallRunning)
+            forwardMovement = Vector3.zero;
 
         var currentMaxFallSpeed = maxFallSpeed;
+        var currentFallAcceleration = fallAcceleration;
 
-        // // If the player is not moving fast enough, their max fall speed increases
+        // If the player is not moving fast enough, their max fall speed increases
+        // If the player is not moving fast enough, their fall acceleration increases
         if (forwardVelocityDot < wallRunSpeedThreshold)
         {
             // Reverse interpolate the max fall speed based on the player's forward velocity in relation to the threshold
@@ -406,6 +529,9 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
             // Set the max fall speed to the stationary fall speed multiplier
             currentMaxFallSpeed = Mathf.Lerp(maxFallSpeed, maxFallSpeed * stationaryFallSpeedMultiplier, lerpAmount);
+
+            // Set the fall acceleration to the stationary fall acceleration multiplier
+            currentFallAcceleration = Mathf.Lerp(fallAcceleration, fallAcceleration * stationaryFallAccelerationMultiplier, lerpAmount);
         }
 
         // Get the move vector
@@ -429,7 +555,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         var targetVelocity = Vector3.MoveTowards(
             targetVelocityBeforeFall,
             targetVelocityAfterFall,
-            fallAcceleration
+            currentFallAcceleration
         );
 
         // This is the force required to reach the target velocity in EXACTLY one frame
@@ -458,8 +584,8 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         // Set the is jump this frame flag to true
         _isJumpThisFrame = false;
 
-        // Return if the player is not wall running
-        if (!_isWallRunning)
+        // Return if the player is not wall running or wall sliding
+        if (!_isWallRunning && !_isWallSliding)
             return;
 
         // Get the normal of the contact point
@@ -482,7 +608,6 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         var wallJumpForceVector = wallJumpDirection * wallJumpForce;
 
         // Get the wall running object that corresponds to the current contact point
-        _jumpObject = _currentWall;
 
         // Force all the booleans to false
         _isWallRunning = false;
@@ -570,35 +695,53 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
         sb.AppendLine($"Wall Running: {_isWallRunning}");
 
-        if (_isWallRunning)
-        {
-            var wallRunningDirection = _isWallRunningLeft
-                ? "Left"
-                : "Right";
-            sb.AppendLine($"\tWall Running Direction: {wallRunningDirection}");
+        if (!_isWallRunning)
+            return sb.ToString();
 
-            sb.AppendLine($"\tContact Point: {_contactInfo.point}");
-        }
+        var wallRunningDirection = _isWallRunningLeft
+            ? "Left"
+            : "Right";
+        sb.AppendLine($"\tWall Running Direction: {wallRunningDirection}");
 
-        sb.AppendLine($"Jump this frame: {_isJumpThisFrame}");
+        sb.AppendLine($"\tContact Point: {_contactInfo.point}");
 
         return sb.ToString();
     }
 
     private void OnDrawGizmos()
     {
-        // Draw the rays that extend from the player's sides
-        Gizmos.color = Color.yellow;
+        // Return if the rays are null
+        if (_rays == null)
+            return;
 
-        // Draw the left and right rays
-        if (ParentComponent != null)
+        const float rayLength = 10f;
+
+        for (var i = 0; i < rayCount; i++)
         {
-            Gizmos.DrawRay(transform.position,
-                -ParentComponent.CameraPivot.transform.right * wallRunningDetectionDistance);
-            Gizmos.DrawRay(transform.position,
-                ParentComponent.CameraPivot.transform.right * wallRunningDetectionDistance);
+            // Draw the rays
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawRay(transform.position, _rays[i].direction * rayLength);
         }
 
+        // Draw the left and right rays
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawRay(transform.position, _leftRay.direction * rayLength);
+        Gizmos.DrawRay(transform.position, _rightRay.direction * rayLength);
+
+        // NEW GIZMOS
+        // // Draw the rays that extend from the player's sides
+        // Gizmos.color = Color.yellow;
+        //
+        // // Draw the left and right rays
+        // if (ParentComponent != null)
+        // {
+        //     Gizmos.DrawRay(transform.position,
+        //         -ParentComponent.CameraPivot.transform.right * wallRunningDetectionDistance);
+        //     Gizmos.DrawRay(transform.position,
+        //         ParentComponent.CameraPivot.transform.right * wallRunningDetectionDistance);
+        // }
+
+        // OLD GIZMOS
         // // Return if the player is not wall running
         // if (!_isWallRunning)
         //     return;
@@ -652,4 +795,33 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     }
 
     #endregion
+
+    private class WallRunHitInfo
+    {
+        public RaycastHit HitInfo { get; }
+        public bool IsHit { get; }
+        public float LeftAngle { get; }
+        public float RightAngle { get; }
+
+        public float VelocityAlongWall { get; }
+
+        public WallRunHitInfo(RaycastHit hitInfo, bool isHit, float leftAngle, float rightAngle,
+            float velocityAlongWall)
+        {
+            HitInfo = hitInfo;
+            IsHit = isHit;
+            LeftAngle = leftAngle;
+            RightAngle = rightAngle;
+            VelocityAlongWall = velocityAlongWall;
+        }
+
+        public bool IsWithinLeftAngleTolerance(float wallAngleTolerance) =>
+            LeftAngle < wallAngleTolerance;
+
+        public bool IsWithinRightAngleTolerance(float wallAngleTolerance) =>
+            RightAngle < wallAngleTolerance;
+
+        public bool IsAboveWallRunSpeedThreshold(float wallRunSpeedThreshold) =>
+            VelocityAlongWall >= wallRunSpeedThreshold;
+    }
 }

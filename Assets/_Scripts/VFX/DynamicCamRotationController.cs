@@ -36,12 +36,9 @@ public class DynamicCamRotationController : MonoBehaviour, IDebugged
 
     private void InitializeEvents()
     {
-        _playerWallRunning.OnWallRunStart += OnWallRunStart;
-
-        _playerWallRunning.OnWallRunEnd += OnWallRunEnd;
     }
 
-    private void OnWallRunStart(PlayerWallRunning obj)
+    private void UpdateWallRunDirection()
     {
         // Determine which direction the player is wall running
         if (_playerWallRunning.IsWallRunningRight)
@@ -49,23 +46,12 @@ public class DynamicCamRotationController : MonoBehaviour, IDebugged
 
         else if (_playerWallRunning.IsWallRunningLeft)
             _wallRunningDirection = -1;
-
-        // // Reset all timers
-        // ResetAllTimers();
-    }
-
-    private void OnWallRunEnd(PlayerWallRunning obj)
-    {
-    }
-
-    private void ResetAllTimers()
-    {
-        // Reset the tilt on timer
-        tiltTimer.Reset();
     }
 
     private void Update()
     {
+        UpdateWallRunDirection();
+
         // Update the timers
         var deltaMultiplier = _playerWallRunning.IsWallRunning ? 1 : -1;
 

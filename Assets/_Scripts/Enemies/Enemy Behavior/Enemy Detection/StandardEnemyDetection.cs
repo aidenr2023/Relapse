@@ -86,9 +86,9 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         // Set the target to null
         Target = null;
 
-        // Subscribe to the enemy's death event
-        OnDetectionStateChanged += (behavior, oldState, newState) =>
-            Debug.Log($"{behavior.GameObject.name} changed detection state from {oldState} to {newState}");
+        // // Subscribe to the enemy's death event
+        // OnDetectionStateChanged += (behavior, oldState, newState) =>
+        //     Debug.Log($"{behavior.GameObject.name} changed detection state from {oldState} to {newState}");
 
         OnDetectionStateChanged += ResetTimersOnStateChange;
     }

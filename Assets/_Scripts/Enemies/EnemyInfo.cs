@@ -35,14 +35,27 @@ public class EnemyInfo : MonoBehaviour, IActor
 
     private void Start()
     {
-        OnHealed += (_, args) =>
+        // OnHealed += LogOnHealed;
+        // OnDamaged += LogOnDamaged;
+        // OnDeath += LogOnDeath;
+        return;
+
+        void LogOnHealed(object _, HealthChangedEventArgs args)
+        {
             Debug.Log(
                 $"{gameObject.name} healed: {args.Amount:0.00} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
-        OnDamaged += (_, args) =>
+        }
+
+        void LogOnDamaged(object _, HealthChangedEventArgs args)
+        {
             Debug.Log(
                 $"{gameObject.name} damaged: {args.Amount:0.00} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
-        OnDeath += (_, args) =>
+        }
+
+        void LogOnDeath(object _, HealthChangedEventArgs args)
+        {
             Debug.Log($"{gameObject.name} died: {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
+        }
     }
 
     public void ChangeHealth(float amount, IActor changer, IDamager damager)

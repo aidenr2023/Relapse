@@ -83,8 +83,6 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     {
         Enemy.EnemyInfo.OnDamaged += (_, args) =>
         {
-            //debug log to check if hit trigger is activated
-            Debug.Log("Hit Trigger Activated");
             // Activate the animator's hit trigger
             animator.SetTrigger("Hit");
             

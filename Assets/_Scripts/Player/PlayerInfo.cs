@@ -126,6 +126,7 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
         // OnDamaged += (sender, args) =>
         //     Debug.Log(
         //         $"{gameObject.name} damaged: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
+
         OnDeath += (sender, args) =>
             Debug.Log($"{gameObject.name} died: {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
 

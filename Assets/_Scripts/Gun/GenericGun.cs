@@ -309,7 +309,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         animator.SetTrigger("Reload");
 
         // Play the reload sound
-        Debug.Log($"Sound Settings: {gunInformation.ReloadSound.Clip.name}");
+        // Debug.Log($"Sound Settings: {gunInformation.ReloadSound.Clip.name}");
         SoundManager.Instance.PlaySfx(gunInformation.ReloadSound);
     }
 

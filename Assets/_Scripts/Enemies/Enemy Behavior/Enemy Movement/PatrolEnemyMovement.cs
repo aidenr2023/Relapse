@@ -99,8 +99,6 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         // Set the NavMeshAgent enabled state
         NavMeshAgent.enabled = IsMovementEnabled;
 
-        Debug.Log($"Movement enabled: {IsMovementEnabled} - {string.Join(", ", MovementDisableTokens)}");
-
         // Return if disabled
         if (!IsMovementEnabled)
             return;
