@@ -35,8 +35,6 @@ public class MeleeAttackHitbox : MonoBehaviour
         if (actor is EnemyInfo enemyInfo)
             return;
 
-        Debug.Log($"Hit an actor! {actor.GameObject.name}");
-
         // Deal damage to the actor
         actor.ChangeHealth(-meleeEnemyAttack.Damage, meleeEnemyAttack.Enemy.EnemyInfo, meleeEnemyAttack);
 
