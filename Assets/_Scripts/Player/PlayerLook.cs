@@ -15,15 +15,11 @@ public class PlayerLook : MonoBehaviour, IUsesInput
 
     [SerializeField] [Range(0, 90)] private float upDownAngleLimit = 5;
 
-    [Header("References")]
-
-    // Reference to the player's orientation transform
-    [SerializeField]
-    private Transform orientation;
-
     #endregion
 
     #region Private Fields
+
+    private Player _player;
 
     // Current rotation around the X axis
     private float _xRotation;
@@ -41,6 +37,8 @@ public class PlayerLook : MonoBehaviour, IUsesInput
 
     private void Awake()
     {
+        _player = GetComponent<Player>();
+
         // Initialize the input actions
         InitializeInput();
     }
@@ -133,7 +131,12 @@ public class PlayerLook : MonoBehaviour, IUsesInput
         // Clamp the X rotation to prevent over-rotation
         _xRotation = Mathf.Clamp(_xRotation, -90f + upDownAngleLimit, 90f - upDownAngleLimit);
 
-        // Rotate the camera
-        orientation.transform.rotation = Quaternion.Euler(_xRotation, _yRotation, 0f);
+
+        // Rotate the player's orientation first
+        _player.PlayerController.Orientation.rotation = Quaternion.Euler(0f, _yRotation, 0f);
+
+        // Then rotate the camera pivot (which is a child of the orientation)
+        _player.PlayerController.CameraPivot.transform.localRotation = Quaternion.Euler(_xRotation, 0f, 0f);
+
     }
 }

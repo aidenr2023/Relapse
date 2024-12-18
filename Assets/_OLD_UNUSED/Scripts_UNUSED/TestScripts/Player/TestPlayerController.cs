@@ -28,6 +28,9 @@ public class TestPlayerController : MonoBehaviour, IPlayerController
 
     public Vector2 MovementInput => _movementInput;
     public GameObject CameraPivot => cameraPivot;
+
+    public Transform Orientation => gameObject.transform;
+
     public bool IsGrounded => _characterController.isGrounded;
     public bool IsSprinting => false;
 
