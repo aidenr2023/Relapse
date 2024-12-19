@@ -7,11 +7,12 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
 {
     #region Serializable Fields
 
-    [SerializeField] private NoiseTokenValue defaultNoise = default;
+    [SerializeField] private NoiseTokenValue defaultNoise;
 
+    [Header("Ground Shake"), SerializeField] private NoiseTokenValue groundShakeNoise;
     [SerializeField, Range(0, 1)] private float groundCheckLerpAmount = 0.2f;
-
     [SerializeField, Min(0)] private float groundShakeTime;
+    [SerializeField, Min(0)] private float groundShakeVelocityThreshold = 10f;
 
     #endregion
 
@@ -57,6 +58,22 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
     {
         // Get the noise component
         _noise = playerVCamController.VirtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+
+        // Subscribe to the OnLand event in the player movement script
+        if (playerVCamController.ParentComponent.PlayerController is PlayerMovementV2 movementV2)
+            movementV2.OnLand += ShakeOnLand;
+    }
+
+    private void ShakeOnLand(float obj)
+    {
+        // Check if the velocity is less than the threshold
+        if (obj < groundShakeVelocityThreshold)
+            return;
+
+        _groundShakeTimer.SetMaxTimeAndReset(groundShakeTime);
+        _groundShakeTimer.Start();
+
+        _groundCheckToken.Value = groundShakeNoise;
     }
 
     public override void Update()
@@ -106,6 +123,14 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
 
     private void UpdateGroundCheckToken()
     {
+        if (_groundShakeTimer.Percentage < 1)
+            return;
+
+        const float defaultFrameTime = 1 / 60f;
+        var frameAmount = Time.deltaTime / defaultFrameTime;
+
+        _groundCheckToken.Value =
+            NoiseTokenValue.Lerp(_groundCheckToken.Value, default, groundCheckLerpAmount * frameAmount);
     }
 
     public void SetRecoilShake(NoiseTokenValue noiseToken, float lerpAmount, float time)

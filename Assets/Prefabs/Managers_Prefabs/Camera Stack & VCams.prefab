@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5808006832929318470}
   - component: {fileID: 7065384412726524469}
-  - component: {fileID: 8918591431093048207}
   - component: {fileID: 7740657045594537240}
   - component: {fileID: 7548923499046123473}
   m_Layer: 16
@@ -75,18 +74,6 @@ MonoBehaviour:
         m_Calls: []
   m_LegacyBlendHint: 0
   m_ComponentOwner: {fileID: 2612777186123204839}
---- !u!114 &8918591431093048207
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2069380172021127115}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40005ba5e5043224daedd618c12f5475, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &7740657045594537240
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -423,7 +410,6 @@ GameObject:
   - component: {fileID: 8757992249853971522}
   - component: {fileID: 8490647624003111634}
   - component: {fileID: 8755583895748075460}
-  - component: {fileID: 5804678443831882323}
   m_Layer: 9
   m_Name: 'MAIN CAMERA '
   m_TagString: MainCamera
@@ -584,27 +570,6 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
---- !u!135 &5804678443831882323
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7408826022718508480}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Radius: 0.25
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8470495535782639255
 GameObject:
   m_ObjectHideFlags: 0

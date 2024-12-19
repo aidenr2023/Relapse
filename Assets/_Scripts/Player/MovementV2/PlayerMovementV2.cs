@@ -55,6 +55,10 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private bool _wasPreviouslySprinting;
 
+    private bool _wasPreviouslyGrounded;
+
+    private float _landYVelocity;
+
     #endregion
 
     #region Getters
@@ -101,6 +105,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public event Action OnSprintStart;
     public event Action OnSprintEnd;
+
+    public event Action<float> OnLand;
 
     protected override void CustomAwake()
     {
@@ -222,6 +228,19 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         // Set the grounded state to the hit state
         IsGrounded = hit;
+
+        // Handle the code for when the player lands
+        if (IsGrounded && !_wasPreviouslyGrounded)
+        {
+            // Get the y velocity of the player
+            _landYVelocity = _rigidbody.velocity.y;
+
+            // Invoke the on land event
+            OnLand?.Invoke(Mathf.Abs(_landYVelocity));
+        }
+
+        // Set the was previously grounded state
+        _wasPreviouslyGrounded = IsGrounded;
     }
 
 
