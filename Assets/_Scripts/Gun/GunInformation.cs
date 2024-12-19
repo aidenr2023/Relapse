@@ -53,6 +53,12 @@ public class GunInformation : ScriptableObject
     [SerializeField, Range(0, 1)] private float recoilLerpAmount = 0.1f;
     [SerializeField, Range(0, 1)] private float recoveryLerpAmount = 0.1f;
 
+    [SerializeField]
+    private DynamicNoiseModule.NoiseTokenValue recoilNoise;
+
+    [SerializeField, Min(0)] private float recoilNoiseTime = 0.25f;
+    [SerializeField, Range(0, 1)] private float recoilNoiseLerpAmount = 0.2f;
+
 
     #region Getters
 
@@ -97,6 +103,12 @@ public class GunInformation : ScriptableObject
     public float MinHorizontalRecoilPercent => minHorizontalRecoilPercent;
 
     public float MinVerticalRecoilPercent => minVerticalRecoilPercent;
+
+    public DynamicNoiseModule.NoiseTokenValue RecoilNoise => recoilNoise;
+
+    public float RecoilNoiseTime => recoilNoiseTime;
+
+    public float RecoilNoiseLerpAmount => recoilNoiseLerpAmount;
 
     #endregion
 

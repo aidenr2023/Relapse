@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [Serializable]
-public class DynamicRotationModule : DynamicVCamModule
+public sealed class DynamicRotationModule : DynamicVCamModule
 {
     #region Serializable Fields
 

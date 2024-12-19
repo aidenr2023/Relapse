@@ -385,6 +385,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Set the layer of the muzzle flash to the same layer as the gun
         muzzleFlashInstance.gameObject.layer = gameObject.layer;
 
+        // Set the layer of all the children of the muzzle flash to the same layer as the gun
+        foreach (Transform child in muzzleFlashInstance.transform)
+            child.gameObject.layer = gameObject.layer;
+
         // Get the max lifetime of the muzzle flash
         var maxLifetime = muzzleFlashInstance.GetFloat("MaxLifetime");
 

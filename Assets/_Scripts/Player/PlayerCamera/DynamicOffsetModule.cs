@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [Serializable]
-public class DynamicOffsetModule : DynamicVCamModule
+public sealed class DynamicOffsetModule : DynamicVCamModule
 {
     #region Serialized Fields
 

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 [Serializable]
-public class DynamicFOVModule : DynamicVCamModule
+public sealed class DynamicFOVModule : DynamicVCamModule
 {
     #region Serialized Fields
 

@@ -1243,13 +1243,13 @@ MonoBehaviour:
     normalFOV: 70
     maxFov: 150
     sprintFOVMultiplier: 1.125
-    sprintLerpAmount: 0.1
+    sprintLerpAmount: 0.2
     dashFOVMultiplier: 1.25
     dashRunLerpAmount: 0.25
   dynamicRotationModule:
     defaultRotation: {x: 0, y: 0, z: 0}
     wallRunRotation: {x: 0, y: 0, z: 15}
-    wallRunLerpAmount: 0.1
+    wallRunLerpAmount: 0.2
   dynamicOffsetModule:
     defaultOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &1575649681136444178
@@ -1284,12 +1284,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraPivotParent: {fileID: 7937874040449340260}
-  horizontalRecoil: 4
-  verticalRecoil: 12
-  horizontalRecoilBias: 0.25
-  recoilLerpAmount: 0.2
-  recoveryLerpAmount: 0.1
   recoveryThreshold: 1
+  maxXRecoil: 90
+  maxYRecoil: 90
 --- !u!114 &3055577667437289887
 MonoBehaviour:
   m_ObjectHideFlags: 0

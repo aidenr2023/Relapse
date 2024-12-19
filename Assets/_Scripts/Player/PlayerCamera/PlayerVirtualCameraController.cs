@@ -14,6 +14,8 @@ public class PlayerVirtualCameraController : ComponentScript<Player>
 
     [SerializeField] private DynamicOffsetModule dynamicOffsetModule;
 
+    [SerializeField] private DynamicNoiseModule dynamicNoiseModule;
+
     #endregion
 
     #region Private Fields
@@ -31,6 +33,8 @@ public class PlayerVirtualCameraController : ComponentScript<Player>
     public DynamicFOVModule DynamicFOVModule => dynamicFOVModule;
     public DynamicRotationModule DynamicRotationModule => dynamicRotationModule;
     public DynamicOffsetModule DynamicOffsetModule => dynamicOffsetModule;
+
+    public DynamicNoiseModule DynamicNoiseModule => dynamicNoiseModule;
 
     #endregion
 
@@ -55,6 +59,9 @@ public class PlayerVirtualCameraController : ComponentScript<Player>
 
         // Create the dynamic offset module
         dynamicOffsetModule.Initialize(this);
+
+        // Create the dynamic noise module
+        dynamicNoiseModule.Initialize(this);
     }
 
     private void Start()

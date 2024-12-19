@@ -70,10 +70,7 @@ public class PlayerRecoil : ComponentScript<PlayerVirtualCameraController>
         const float defaultFrameTime = 1 / 60f;
         var frameAmount = Time.deltaTime / defaultFrameTime;
 
-        // Lerp the recoil back to zero
-        if (_isRecovering)
-            _recoilToken.Value = Vector3.Lerp(_recoilToken.Value, Vector3.zero, RecoveryLerpAmount * frameAmount);
-        else
+        if (!_isRecovering)
         {
             // Lerp the recoil to the desired recoil
             _recoilToken.Value = Vector3.Lerp(_recoilToken.Value, _desiredRecoil, RecoilLerpAmount * frameAmount);
@@ -83,6 +80,9 @@ public class PlayerRecoil : ComponentScript<PlayerVirtualCameraController>
             if (Vector3.Distance(_recoilToken.Value, _desiredRecoil) < recoveryThreshold)
                 _isRecovering = true;
         }
+        // Lerp the recoil back to zero
+        else
+            _recoilToken.Value = Vector3.Lerp(_recoilToken.Value, Vector3.zero, RecoveryLerpAmount * frameAmount);
     }
 
     private void AddRecoil(Vector3 recoil)
@@ -117,6 +117,13 @@ public class PlayerRecoil : ComponentScript<PlayerVirtualCameraController>
 
         // Set the recovery flag to false
         _isRecovering = false;
+
+        // Set the noise in the dynamic noise module
+        ParentComponent.DynamicNoiseModule.SetRecoilShake(
+            _gunInformation.RecoilNoise,
+            _gunInformation.RecoilLerpAmount,
+            _gunInformation.RecoilNoiseTime
+        );
     }
 
     public void AddRecoil(GunInformation gunInformation)
