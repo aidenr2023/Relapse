@@ -28,6 +28,12 @@ public class DynamicRotationModule : DynamicVCamModule
 
     #endregion
 
+    #region Getters
+
+    public TokenManager<Vector3> RotationTokens => _rotationTokens;
+
+    #endregion
+
     protected override void CustomInitialize(PlayerVirtualCameraController controller)
     {
         // Initialize the token manager
@@ -73,6 +79,9 @@ public class DynamicRotationModule : DynamicVCamModule
         // Update the wall run rotation
         UpdateWallRunToken();
 
+        // Update the token manager
+        _rotationTokens.Update(Time.deltaTime);
+
         // Get the new rotation
         var newRotation = defaultRotation + CurrentTokenValue();
 
@@ -84,34 +93,27 @@ public class DynamicRotationModule : DynamicVCamModule
 
     private void UpdateWallRunToken()
     {
-        // Determine the wall run token value
-        var newValue = Vector3.zero;
-
+        // Get the target value
         var targetValue = _wallRunToken.Value;
 
-        if (_wallRunStart)
+        // Determine the wall running direction
+        var wallRunning = (playerVCamController.ParentComponent.PlayerController as PlayerMovementV2)?.WallRunning;
+        if (wallRunning != null)
         {
-            var wallRunning = (playerVCamController.ParentComponent.PlayerController as PlayerMovementV2)?.WallRunning;
-
-            if (wallRunning != null)
-            {
-                if (wallRunning.IsWallRunningLeft)
-                    _wallRunningDirection = -1;
-                else if (wallRunning.IsWallRunningRight)
-                    _wallRunningDirection = 1;
-            }
-
-            // Set the target value
-            targetValue = wallRunRotation * _wallRunningDirection;
+            if (wallRunning.IsWallRunningLeft)
+                _wallRunningDirection = -1;
+            else if (wallRunning.IsWallRunningRight)
+                _wallRunningDirection = 1;
         }
 
+        // Set the target value
+        if (_wallRunStart)
+            targetValue = wallRunRotation * _wallRunningDirection;
         else if (_wallRunEnd)
             targetValue = Vector3.zero;
 
-        newValue = Vector3.Lerp(_wallRunToken.Value, targetValue, wallRunLerpAmount);
-
         // Set the wall run token value
-        _wallRunToken.Value = newValue;
+        _wallRunToken.Value = Vector3.Lerp(_wallRunToken.Value, targetValue, wallRunLerpAmount);
     }
 
     private Vector3 CurrentTokenValue()

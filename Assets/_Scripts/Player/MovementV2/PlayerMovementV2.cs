@@ -47,8 +47,6 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private InputActionMap _currentActionMap;
 
-    private bool _groundCollide;
-
     private RaycastHit _floatingControllerHit;
 
     private CapsuleCollider _capsuleCollider;
@@ -79,7 +77,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public bool IsSprintToggled { get; set; }
 
-    public bool IsSprinting => _isSprinting || IsSprintToggled;
+    public bool IsSprinting => (_isSprinting || IsSprintToggled) && MovementInput.magnitude > 0.25f;
 
     public float MovementSpeed => maxSpeed;
 
@@ -206,19 +204,6 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private void UpdateGroundCheck()
     {
-        // // Create a mask that includes everything but the 'Actor' layer
-        // var mask = ~LayerMask.GetMask("Actor");
-        //
-        // // Perform a ray cast using the ride height
-        // _groundCollide = Physics.Raycast(
-        //     groundChecker.position,
-        //     Vector3.down,
-        //     out _groundCollideHitInfo,
-        //     rideHeight,
-        //     mask
-        // );
-        //
-
         // Create a layer mask that includes everything but the actor layer and NonPhysical
         var layerMask = ~LayerMask.GetMask("Actor", "NonPhysical");
 
@@ -405,7 +390,6 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         sb.AppendLine($"\tPosition: {transform.position}");
         sb.AppendLine($"\tVelocity: {_rigidbody.velocity} ({lateralVelocity.magnitude:0.0000})");
         sb.AppendLine($"\tGrounded: {IsGrounded}");
-        sb.AppendLine($"\tGCollide: {_groundCollide}");
 
         sb.AppendLine($"\tAll Movement Scripts: {string.Join(", ", _movementScripts.Select(n => n.GetType().Name))}");
 
@@ -417,16 +401,6 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Draw the forward vector of the orientation
         Gizmos.color = Color.red;
         Gizmos.DrawRay(orientation.position, orientation.forward * 3);
-
-        // Draw the ground collision normal's forward direction
-        if (_groundCollide)
-        {
-            var groundColor = new Color(1, .4f, 0, 1);
-
-            Gizmos.color = groundColor;
-            Gizmos.DrawRay(_floatingControllerHit.point, GroundCollisionForward * 10);
-            Gizmos.DrawRay(_floatingControllerHit.point, GroundCollisionRight * 10);
-        }
 
         // Draw the floating controller ray
         Gizmos.color = Color.red;

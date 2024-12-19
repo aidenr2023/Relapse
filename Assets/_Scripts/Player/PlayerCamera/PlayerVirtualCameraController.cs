@@ -12,6 +12,8 @@ public class PlayerVirtualCameraController : ComponentScript<Player>
 
     [SerializeField] private DynamicRotationModule dynamicRotationModule;
 
+    [SerializeField] private DynamicOffsetModule dynamicOffsetModule;
+
     #endregion
 
     #region Private Fields
@@ -25,6 +27,10 @@ public class PlayerVirtualCameraController : ComponentScript<Player>
     #region Getters
 
     public CinemachineVirtualCamera VirtualCamera => _virtualCamera;
+
+    public DynamicFOVModule DynamicFOVModule => dynamicFOVModule;
+    public DynamicRotationModule DynamicRotationModule => dynamicRotationModule;
+    public DynamicOffsetModule DynamicOffsetModule => dynamicOffsetModule;
 
     #endregion
 
@@ -46,6 +52,9 @@ public class PlayerVirtualCameraController : ComponentScript<Player>
 
         // Create the dynamic rotation module
         dynamicRotationModule.Initialize(this);
+
+        // Create the dynamic offset module
+        dynamicOffsetModule.Initialize(this);
     }
 
     private void Start()

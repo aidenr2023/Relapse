@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,9 +11,19 @@ public class PowerScroll : MonoBehaviour
     [SerializeField] private Slider cooldownSlider; // Cooldown bar UI element
     [SerializeField] private Text powerNameText; // Power name UI text
 
-    // Update the UI elements based on the current power
-    public void UpdatePowerUI(PowerScriptableObject currentPower, PowerToken powerToken)
+    private void Update()
     {
+        // Update the power UI
+        UpdatePowerUI();
+    }
+
+    // Update the UI elements based on the current power
+    private void UpdatePowerUI()
+    {
+        // Get the current power & power token
+        var currentPower = Player.Instance.PlayerPowerManager.CurrentPower;
+        var powerToken = Player.Instance.PlayerPowerManager.GetPowerToken(currentPower);
+
         // If the current power is null, hide the UI elements
         if (currentPower == null)
         {
@@ -33,8 +44,6 @@ public class PowerScroll : MonoBehaviour
 
         // Update the charge and cooldown sliders
         UpdateSlider(currentPower, powerToken);
-
-        // Debug.Log("Updating Power UI for: " + currentPower.name);
     }
 
     private void UpdateSlider(PowerScriptableObject currentPower, PowerToken powerToken)

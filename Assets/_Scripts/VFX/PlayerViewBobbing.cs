@@ -1,34 +1,28 @@
-using Cinemachine;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
-using UnityEngine.UIElements;
 
-public class ViewBobbing : MonoBehaviour
+public class PlayerViewBobbing : ComponentScript<PlayerVirtualCameraController>
 {
     #region Serialized Fields
 
-    // reference to the virtual cam
-    [SerializeField] private CinemachineCameraOffset virtualCam;
-
-    // How long (in seconds) it takes the camera to go from bob to rest.
-    [SerializeField] [Min(0)] private float transitionSpeed = .5f;
-
     // how quickly the player's head bobs.
-    [SerializeField] [Min(0)] private float bobSpeed = 4.8f;
-
-    // how dramatic the bob is.
-    [SerializeField] [Min(0)] private float bobAmount = 0.05f;
+    [Space, SerializeField, Min(0)] private float bobSpeed = 4.8f;
+    [SerializeField, Min(0)] private float sprintStrengthMultiplier = 1.5f;
 
     // How smooth the lerping on the bob is.
-    [SerializeField] [Range(0, 1)] private float bobSmoothness = 0.95f;
+    [Space, SerializeField, Range(0, 1)] private float bobSmoothness = 0.95f;
+    [SerializeField, Range(0, 1)] private float stopMovingSmoothness = 0.95f;
 
-    [SerializeField] [Min(0)] private float sprintStrengthMultiplier = 1.5f;
+
+    // how dramatic the bob is.
+    [Space, SerializeField, Min(0)] private float bobAmount = 0.05f;
+    [SerializeField] private float xStrength = 1f;
+    [SerializeField] private float yStrength = 1f;
 
     #endregion
 
     #region Private Fields
+
+    private TokenManager<Vector3>.ManagedToken _viewBobbingToken;
 
     // When sin is 1
     private float _timer = Mathf.PI / 2;
@@ -59,13 +53,21 @@ public class ViewBobbing : MonoBehaviour
 
     #endregion
 
-    private void Awake()
+    protected override void CustomAwake()
     {
+        base.CustomAwake();
+
         // Get the player movement script
         _playerMovement = GetComponent<BasicPlayerMovement>();
 
         // Get the player wall running script
         _playerWallRunning = GetComponent<PlayerWallRunning>();
+    }
+
+    private void Start()
+    {
+        // Create the token
+        _viewBobbingToken = ParentComponent.DynamicOffsetModule.OffsetTokens.AddToken(Vector3.zero, -1, true);
     }
 
     private void Update()
@@ -76,28 +78,35 @@ public class ViewBobbing : MonoBehaviour
             var sprintSpeedMult = _playerMovement.IsSprinting ? _playerMovement.SprintMultiplier : 1;
             var currentBobSpeed = bobSpeed * sprintSpeedMult;
 
+            // If the player is sprinting, make the bob stronger
             var sprintStrengthMult = _playerMovement.IsSprinting ? sprintStrengthMultiplier : 1;
-            var currentBobAmount = bobAmount * sprintStrengthMult;
+
+            // Make the bob stronger based on the magnitude of the input
+            var moveMagnitudeMult = _playerMovement.MovementInput.magnitude;
+
+            var currentBobAmount = bobAmount * sprintStrengthMult * moveMagnitudeMult;
 
             // Make a timer for the bob speed
             _timer += currentBobSpeed * Time.deltaTime;
 
+            var xValue = Mathf.Cos(_timer) * currentBobAmount;
+
             // absolute value of y for a parabolic path
-            var yValue = Vector3.zero.y + Mathf.Abs((Mathf.Sin(_timer) * currentBobAmount));
+            var yValue = Mathf.Abs((Mathf.Sin(_timer) * currentBobAmount));
 
             // Where the camera should be
             var desiredOffset = new Vector3(
-                Mathf.Cos(_timer) * currentBobAmount,
-                yValue,
-                Vector3.zero.z
+                xValue * xStrength,
+                yValue * yStrength,
+                0
             );
 
             // Lerp the current offset with the previous offset.
             // This is so we have a smooth transition from  stopping to walking.
-            var currentOffset = Vector3.Lerp(virtualCam.m_Offset, desiredOffset, bobSmoothness);
+            var currentOffset = Vector3.Lerp(_viewBobbingToken.Value, desiredOffset, bobSmoothness);
 
             // Set the virtual cam offset
-            virtualCam.m_Offset = currentOffset;
+            _viewBobbingToken.Value = currentOffset;
         }
         else
         {
@@ -105,7 +114,7 @@ public class ViewBobbing : MonoBehaviour
             _timer = Mathf.PI / 2;
 
             // transition smoothly from walking to stopping.
-            virtualCam.m_Offset = Vector3.Lerp(virtualCam.m_Offset, Vector3.zero, bobSmoothness);
+            _viewBobbingToken.Value = Vector3.Lerp(_viewBobbingToken.Value, Vector3.zero, stopMovingSmoothness);
         }
 
         // Avoid timer bloat

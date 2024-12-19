@@ -33,6 +33,12 @@ public class DynamicFOVModule : DynamicVCamModule
 
     #endregion
 
+    #region Getters
+
+    public TokenManager<float> FOVTokens => _fovTokens;
+
+    #endregion
+
     protected override void CustomInitialize(PlayerVirtualCameraController controller)
     {
         // Initialize the token manager
@@ -95,6 +101,9 @@ public class DynamicFOVModule : DynamicVCamModule
         UpdateSprintToken();
         UpdateDashToken();
 
+        // Update the token manager
+        _fovTokens.Update(Time.deltaTime);
+
         // Multiply the normal FOV by the current token value
         var newFOV = normalFOV * CurrentTokenValue();
 
@@ -107,22 +116,24 @@ public class DynamicFOVModule : DynamicVCamModule
 
     private void UpdateSprintToken()
     {
-        if (_sprintStart)
-            _sprintToken.Value = Mathf.Lerp(_sprintToken.Value, sprintFOVMultiplier, sprintLerpAmount);
-        else if (_sprintEnd)
-            _sprintToken.Value = Mathf.Lerp(_sprintToken.Value, 1, sprintLerpAmount);
-        else
-            _sprintToken.Value = 1f;
+        var moveMagnitude = playerVCamController.ParentComponent.PlayerController.MovementInput.magnitude;
+
+        var targetValue = 1f;
+
+        if (_sprintStart && moveMagnitude >= .75f)
+            targetValue = sprintFOVMultiplier;
+
+        _sprintToken.Value = Mathf.Lerp(_sprintToken.Value, targetValue, sprintLerpAmount);
     }
 
     private void UpdateDashToken()
     {
+        var targetValue = 1f;
+
         if (_dashStart)
-            _dashToken.Value = Mathf.Lerp(_dashToken.Value, dashFOVMultiplier, dashRunLerpAmount);
-        else if (_dashEnd)
-            _dashToken.Value = Mathf.Lerp(_dashToken.Value, 1f, dashRunLerpAmount);
-        else
-            _dashToken.Value = 1f;
+            targetValue = dashFOVMultiplier;
+
+        _dashToken.Value = Mathf.Lerp(_dashToken.Value, targetValue, dashRunLerpAmount);
     }
 
     private float CurrentTokenValue()

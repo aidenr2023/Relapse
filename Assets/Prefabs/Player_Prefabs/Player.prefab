@@ -762,9 +762,9 @@ GameObject:
   - component: {fileID: 7032570368268033865}
   - component: {fileID: 9038693709593017749}
   - component: {fileID: 1509308928883412678}
+  - component: {fileID: 4146044329642554987}
   - component: {fileID: 1575649681136444178}
   - component: {fileID: 3055577667437289887}
-  - component: {fileID: 4146044329642554987}
   - component: {fileID: 5810650263794967371}
   m_Layer: 9
   m_Name: Player
@@ -1227,43 +1227,6 @@ MonoBehaviour:
   healthForMaxFlashing: 75
   healthForMinFlashing: 20
   maxOpacity: 0.75
---- !u!114 &1575649681136444178
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3703685084401515452}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 027cd40e0a4af9146a67af463ec9d8d2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  virtualCam: {fileID: 0}
-  transitionSpeed: 0.25
-  bobSpeed: 8
-  bobAmount: 0.05
-  bobSmoothness: 0.05
-  sprintStrengthMultiplier: 2
---- !u!114 &3055577667437289887
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3703685084401515452}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1de2cb95a1cf494dadfc580a6cb879c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cameraShakeIntensity: 2
-  cameraShakeDuration: 0.1
-  fallSound:
-    clip: {fileID: 8300000, guid: 81def98cd06884940b95459db1a841f7, type: 3}
-    settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
-    volume: 0.25
-    isPersistent: 0
 --- !u!114 &4146044329642554987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1287,6 +1250,48 @@ MonoBehaviour:
     defaultRotation: {x: 0, y: 0, z: 0}
     wallRunRotation: {x: 0, y: 0, z: 15}
     wallRunLerpAmount: 0.1
+  dynamicOffsetModule:
+    defaultOffset: {x: 0, y: 0, z: 0}
+--- !u!114 &1575649681136444178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3703685084401515452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 027cd40e0a4af9146a67af463ec9d8d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraController: {fileID: 0}
+  transitionSpeed: 0.25
+  bobSpeed: 8
+  bobSmoothness: 0.05
+  stopMovingSmoothness: 0.2
+  sprintStrengthMultiplier: 2
+  bobAmount: 0.05
+  xStrength: 0.5
+  yStrength: 2
+--- !u!114 &3055577667437289887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3703685084401515452}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1de2cb95a1cf494dadfc580a6cb879c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraShakeIntensity: 2
+  cameraShakeDuration: 0.1
+  fallSound:
+    clip: {fileID: 8300000, guid: 81def98cd06884940b95459db1a841f7, type: 3}
+    settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
+    volume: 0.25
+    isPersistent: 0
 --- !u!114 &5810650263794967371
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -14,7 +14,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
 
     #region Serialized Fields
 
-    [SerializeField] private PowerScroll powerScroll;
     [SerializeField] private PowerScriptableObject[] powers;
 
     #endregion
@@ -227,9 +226,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
 
         // Update the cooldowns
         UpdateCooldowns();
-
-        // Update the power UI
-        UpdatePowerUI();
     }
 
     private void UpdateCharge()
@@ -247,12 +243,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
 
         // Call the current power's charge method
         CurrentPower.PowerLogic.Charge(this, CurrentPowerToken);
-    }
-
-    private void UpdatePowerUI()
-    {
-        if (powerScroll != null)
-            powerScroll.UpdatePowerUI(CurrentPower, CurrentPowerToken);
     }
 
     private void UpdateActivePowers()
@@ -345,8 +335,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
                 // Play the power ready sound
                 SoundManager.Instance.PlaySfx(power.PowerReadySound);
             }
-
-            powerScroll.UpdatePowerUI(CurrentPower, cToken); // Update the UI here
         }
     }
 
@@ -632,6 +620,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
 
     public PowerToken GetPowerToken(PowerScriptableObject powerScriptableObject)
     {
+        if (powerScriptableObject == null)
+            return null;
+
         return _powerTokens.GetValueOrDefault(powerScriptableObject);
     }
 
