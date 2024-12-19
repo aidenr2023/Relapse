@@ -40,7 +40,7 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
 
     public override InputActionMap InputActionMap => null;
 
-    private bool IsDashing => dashDuration.IsTicking;
+    public bool IsDashing => dashDuration.IsNotComplete;
 
     public float DashDuration => dashDuration.MaxTime;
 
@@ -106,7 +106,7 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
         // If the cooldown is ticking,
         // Or the dash duration is ticking,
         // return
-        if (dashCooldown.IsTicking || dashDuration.IsTicking)
+        if (dashCooldown.IsNotComplete || dashDuration.IsNotComplete)
             return;
 
         // Return if the player is in air and has no remaining dashes

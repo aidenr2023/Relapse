@@ -756,17 +756,16 @@ GameObject:
   - component: {fileID: -3493750139394126392}
   - component: {fileID: 27674651915690864}
   - component: {fileID: -7043807009064224948}
-  - component: {fileID: -566658149493879977}
-  - component: {fileID: 2871384595286350010}
-  - component: {fileID: 3055577667437289887}
   - component: {fileID: -6734510740079581843}
   - component: {fileID: -1310880380803664248}
   - component: {fileID: -2300652163101954379}
   - component: {fileID: 7032570368268033865}
   - component: {fileID: 9038693709593017749}
-  - component: {fileID: 5810650263794967371}
-  - component: {fileID: 1575649681136444178}
   - component: {fileID: 1509308928883412678}
+  - component: {fileID: 1575649681136444178}
+  - component: {fileID: 3055577667437289887}
+  - component: {fileID: 4146044329642554987}
+  - component: {fileID: 5810650263794967371}
   m_Layer: 9
   m_Name: Player
   m_TagString: Player
@@ -1029,59 +1028,6 @@ MonoBehaviour:
   animator: {fileID: 7900118521712679377}
   initialGunPrefab: {fileID: 0}
   reloadText: {fileID: 0}
---- !u!114 &-566658149493879977
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3703685084401515452}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d87bcdcfa71bd1443926998fd09e7b74, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cinemachineCamera: {fileID: 0}
-  normalFOV: 70
-  sprintFOV: 80
-  dashFOV: 90
-  fovTransitionSpeed: 10
-  dashFOVDuration: 0.125
---- !u!114 &2871384595286350010
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3703685084401515452}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9b05864522e4421ad262192de205cf8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  virtualCamera: {fileID: 0}
-  wallRunningTileAngle: 15
-  tiltTimer:
-    maxTime: 0.125
---- !u!114 &3055577667437289887
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3703685084401515452}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1de2cb95a1cf494dadfc580a6cb879c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cameraShakeIntensity: 2
-  cameraShakeDuration: 0.1
-  fallSound:
-    clip: {fileID: 8300000, guid: 81def98cd06884940b95459db1a841f7, type: 3}
-    settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
-    volume: 0.25
-    isPersistent: 0
 --- !u!114 &-6734510740079581843
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1262,38 +1208,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moneyObject: {fileID: 11400000, guid: 7bd43e1ae76d24f428376e9e9b37133a, type: 2}
   inventoryEntries: []
---- !u!114 &5810650263794967371
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3703685084401515452}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fdb633059094f2cbfd8add6efd77f83, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  debugFlashlight: {fileID: 4801983020748179433}
-  canBeEnabled: 1
---- !u!114 &1575649681136444178
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3703685084401515452}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 027cd40e0a4af9146a67af463ec9d8d2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  virtualCam: {fileID: 0}
-  transitionSpeed: 0.25
-  bobSpeed: 8
-  bobAmount: 0.05
-  bobSmoothness: 0.05
-  sprintStrengthMultiplier: 2
 --- !u!114 &1509308928883412678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1313,6 +1227,80 @@ MonoBehaviour:
   healthForMaxFlashing: 75
   healthForMinFlashing: 20
   maxOpacity: 0.75
+--- !u!114 &1575649681136444178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3703685084401515452}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 027cd40e0a4af9146a67af463ec9d8d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  virtualCam: {fileID: 0}
+  transitionSpeed: 0.25
+  bobSpeed: 8
+  bobAmount: 0.05
+  bobSmoothness: 0.05
+  sprintStrengthMultiplier: 2
+--- !u!114 &3055577667437289887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3703685084401515452}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1de2cb95a1cf494dadfc580a6cb879c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraShakeIntensity: 2
+  cameraShakeDuration: 0.1
+  fallSound:
+    clip: {fileID: 8300000, guid: 81def98cd06884940b95459db1a841f7, type: 3}
+    settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
+    volume: 0.25
+    isPersistent: 0
+--- !u!114 &4146044329642554987
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3703685084401515452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b12d418b5cc24222a2658502e095e0b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dynamicFOVModule:
+    normalFOV: 70
+    maxFov: 150
+    sprintFOVMultiplier: 1.125
+    sprintLerpAmount: 0.1
+    dashFOVMultiplier: 1.25
+    dashRunLerpAmount: 0.25
+  dynamicRotationModule:
+    defaultRotation: {x: 0, y: 0, z: 0}
+    wallRunRotation: {x: 0, y: 0, z: 15}
+    wallRunLerpAmount: 0.1
+--- !u!114 &5810650263794967371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3703685084401515452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fdb633059094f2cbfd8add6efd77f83, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugFlashlight: {fileID: 4801983020748179433}
+  canBeEnabled: 1
 --- !u!1 &3974296981908917931
 GameObject:
   m_ObjectHideFlags: 0

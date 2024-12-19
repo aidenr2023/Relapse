@@ -43,7 +43,7 @@ public static class EnemyMovementBehaviorExtensions
         var multiplier = 1f;
 
         foreach (var speedToken in movementBehavior.MovementSpeedTokens.Tokens)
-            multiplier *= speedToken.value;
+            multiplier *= speedToken.Value;
 
         return multiplier;
     }

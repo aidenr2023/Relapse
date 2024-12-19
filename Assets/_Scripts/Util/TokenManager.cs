@@ -104,13 +104,13 @@ public class TokenManager<TTokenType>
 
     public class ManagedToken
     {
-        public readonly TTokenType value;
+        public TTokenType Value { get; set; }
         public readonly CountdownTimer timer;
         public readonly bool isInfinite;
 
         public ManagedToken(TTokenType value, float duration, bool isInfinite)
         {
-            this.value = value;
+            this.Value = value;
             this.timer = new CountdownTimer(duration, isActive: true);
             this.isInfinite = isInfinite;
         }

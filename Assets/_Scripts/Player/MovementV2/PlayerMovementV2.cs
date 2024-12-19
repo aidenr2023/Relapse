@@ -55,6 +55,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private bool _isSprinting;
 
+    private bool _wasPreviouslySprinting;
+
     #endregion
 
     #region Getters
@@ -83,7 +85,11 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public PlayerMovementScript CurrentMovementScript => _movementScripts.Peek();
 
+    public BasicPlayerMovement BasicPlayerMovement { get; private set; }
+
     public PlayerWallRunning WallRunning { get; private set; }
+
+    public PlayerDash Dash { get; private set; }
 
     public Vector3 GroundCollisionForward =>
         Vector3.Cross(_floatingControllerHit.normal, -CameraPivot.transform.right).normalized;
@@ -91,16 +97,17 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     public Vector3 GroundCollisionRight =>
         Vector3.Cross(_floatingControllerHit.normal, CameraPivot.transform.forward).normalized;
 
-    public BasicPlayerMovement BasicPlayerMovement { get; private set; }
-
     public HashSet<InputData> InputActions { get; } = new();
 
     #endregion
 
+    public event Action OnSprintStart;
+    public event Action OnSprintEnd;
+
     protected override void CustomAwake()
     {
         // Get the components
-        GetComponents();
+        InitializeComponents();
 
         // Initialize the input
         InitializeInput();
@@ -118,8 +125,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         InputManager.Instance.Unregister(this);
     }
 
-
-    private void GetComponents()
+    private void InitializeComponents()
     {
         // Get the capsule collider
         _capsuleCollider = GetComponent<CapsuleCollider>();
@@ -132,6 +138,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         // Get the wall running component
         WallRunning = GetComponent<PlayerWallRunning>();
+
+        // Get the dash component
+        Dash = GetComponent<PlayerDash>();
     }
 
     private void Start()
@@ -148,7 +157,6 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Enable the top most input map
         EnableTopMostInputMap();
     }
-
 
     public void InitializeInput()
     {
@@ -168,6 +176,17 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private void Update()
     {
+        // Sprint events
+        if (IsSprinting && !_wasPreviouslySprinting)
+            OnSprintStart?.Invoke();
+        else if (!IsSprinting && _wasPreviouslySprinting)
+            OnSprintEnd?.Invoke();
+    }
+
+    private void LateUpdate()
+    {
+        // Update the previous sprinting flag
+        _wasPreviouslySprinting = IsSprinting;
     }
 
     private void FixedUpdate()
