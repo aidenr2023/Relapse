@@ -151,6 +151,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
 
     #endregion
 
+    public Action<WeaponManager, IGun> OnGunEquipped;
+    public Action<WeaponManager, IGun> OnGunRemoved;
+
     private void Update()
     {
         // TODO: Remove this and replace it with a bar or something
@@ -233,6 +236,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
         // Set all the renderers to the hand holder layer
         foreach (var cTransform in gunTransforms)
             cTransform.gameObject.layer = LayerMask.NameToLayer("GunHandHolder");
+
+        // Invoke the OnGunEquipped event
+        OnGunEquipped?.Invoke(this, gun);
     }
 
     public void RemoveGun()
@@ -268,6 +274,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
         // Set all the renderers to the hand holder layer
         foreach (var cTransform in gunTransforms)
             cTransform.gameObject.layer = LayerMask.NameToLayer("Gun");
+
+        // Invoke the OnGunRemoved event
+        OnGunRemoved?.Invoke(this, _equippedGun);
 
         _equippedGun = null;
     }

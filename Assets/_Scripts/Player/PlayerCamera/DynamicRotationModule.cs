@@ -112,8 +112,11 @@ public class DynamicRotationModule : DynamicVCamModule
         else if (_wallRunEnd)
             targetValue = Vector3.zero;
 
+        const float defaultFrameTime = 1 / 60f;
+        var frameAmount = Time.deltaTime / defaultFrameTime;
+
         // Set the wall run token value
-        _wallRunToken.Value = Vector3.Lerp(_wallRunToken.Value, targetValue, wallRunLerpAmount);
+        _wallRunToken.Value = Vector3.Lerp(_wallRunToken.Value, targetValue, wallRunLerpAmount * frameAmount);
     }
 
     private Vector3 CurrentTokenValue()

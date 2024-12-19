@@ -98,7 +98,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Get the collider component
         Collider = GetComponent<Collider>();
 
-        // Get the animator component from pistol4
+        // Get the animator component from pistol
         //animator = GetComponent<Animator>();
     }
 
@@ -224,6 +224,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Play the muzzle flash VFX
         PlayMuzzleFlash();
 
+        // Recoil the gun
+        Recoil();
+
         // Fire the gun
         for (var i = 0; i < timesToFire; i++)
         {
@@ -282,6 +285,16 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
                 actor.ChangeHealth(-damage, weaponManager.Player.PlayerInfo, this);
             }
         }
+    }
+
+    private void Recoil()
+    {
+        var playerRecoil = _weaponManager.Player.GetComponent<PlayerRecoil>();
+
+        if (playerRecoil == null)
+            return;
+
+        playerRecoil.AddRecoil(GunInformation);
     }
 
     public void Reload()

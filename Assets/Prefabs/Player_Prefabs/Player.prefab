@@ -473,13 +473,13 @@ Transform:
   m_GameObject: {fileID: 1884413719589100495}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.7, z: 0}
+  m_LocalPosition: {x: 0, y: 0.70000005, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1481313708076204363}
   - {fileID: 8405096224451655534}
-  m_Father: {fileID: 5224293575626551686}
+  m_Father: {fileID: 7937874040449340260}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1980829456252424961
 GameObject:
@@ -764,6 +764,7 @@ GameObject:
   - component: {fileID: 1509308928883412678}
   - component: {fileID: 4146044329642554987}
   - component: {fileID: 1575649681136444178}
+  - component: {fileID: 3925261621140247122}
   - component: {fileID: 3055577667437289887}
   - component: {fileID: 5810650263794967371}
   m_Layer: 9
@@ -1005,7 +1006,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa03a7b8477941a4bf8821e2f2eb5bee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  powerScroll: {fileID: 0}
   powers:
   - {fileID: 0}
   - {fileID: 0}
@@ -1264,15 +1264,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 027cd40e0a4af9146a67af463ec9d8d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraController: {fileID: 0}
-  transitionSpeed: 0.25
   bobSpeed: 8
+  sprintStrengthMultiplier: 2
   bobSmoothness: 0.05
   stopMovingSmoothness: 0.2
-  sprintStrengthMultiplier: 2
   bobAmount: 0.05
   xStrength: 0.5
   yStrength: 2
+--- !u!114 &3925261621140247122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3703685084401515452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fe2d7618f004076a52833e3040efd2e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraPivotParent: {fileID: 7937874040449340260}
+  horizontalRecoil: 4
+  verticalRecoil: 12
+  horizontalRecoilBias: 0.25
+  recoilLerpAmount: 0.2
+  recoveryLerpAmount: 0.1
+  recoveryThreshold: 1
 --- !u!114 &3055577667437289887
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1680,6 +1697,38 @@ MonoBehaviour:
   regenPower: {fileID: 11400000, guid: 29fa51786e262b04b8571ce53c2d4575, type: 2}
   damageMultPower: {fileID: 11400000, guid: 144b7df19accdd542aa5c22f83309e61, type: 2}
   relapseCounter: {fileID: 1737318205692990906}
+--- !u!1 &6233083995261281346
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7937874040449340260}
+  m_Layer: 9
+  m_Name: Pivot Parent (For Recoil)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7937874040449340260
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6233083995261281346}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5244302159661097867}
+  m_Father: {fileID: 5224293575626551686}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6411885995686777461
 GameObject:
   m_ObjectHideFlags: 0
@@ -2155,7 +2204,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5244302159661097867}
+  - {fileID: 7937874040449340260}
   m_Father: {fileID: 2934908222980646511}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8179662396225229913

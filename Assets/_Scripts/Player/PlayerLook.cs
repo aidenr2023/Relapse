@@ -21,15 +21,18 @@ public class PlayerLook : MonoBehaviour, IUsesInput
 
     private Player _player;
 
-    // Current rotation around the X axis
-    private float _xRotation;
-
-    // Current rotation around the Y axis
-    private float _yRotation;
+    // // Current rotation around the X axis
+    // private float _xRotation;
+    //
+    // // Current rotation around the Y axis
+    // private float _yRotation;
 
     private Vector2 _lookInput;
 
     private Vector2 _currentSens;
+
+    // // Current rotation around the X and Y axis
+    private Vector2 _lookRotation;
 
     #endregion
 
@@ -41,10 +44,6 @@ public class PlayerLook : MonoBehaviour, IUsesInput
 
         // Initialize the input actions
         InitializeInput();
-    }
-
-    private void Start()
-    {
     }
 
     public void InitializeInput()
@@ -125,18 +124,25 @@ public class PlayerLook : MonoBehaviour, IUsesInput
         var constantSense = sensitivityMultiplier * Time.deltaTime;
 
         // Adjust rotation based on mouse input
-        _yRotation += _lookInput.x * _currentSens.x * constantSense;
-        _xRotation -= _lookInput.y * _currentSens.y * constantSense;
+        // _yRotation += _lookInput.x * _currentSens.x * constantSense;
+        // _xRotation -= _lookInput.y * _currentSens.y * constantSense;
+        _lookRotation += new Vector2(
+            -_lookInput.y * _currentSens.y * constantSense,
+            _lookInput.x * _currentSens.x * constantSense
+        );
 
         // Clamp the X rotation to prevent over-rotation
-        _xRotation = Mathf.Clamp(_xRotation, -90f + upDownAngleLimit, 90f - upDownAngleLimit);
+        // _xRotation = Mathf.Clamp(_xRotation, -90f + upDownAngleLimit, 90f - upDownAngleLimit);
 
+        _lookRotation = new Vector2(
+            Mathf.Clamp(_lookRotation.x, -90f + upDownAngleLimit, 90f - upDownAngleLimit),
+            _lookRotation.y
+        );
 
         // Rotate the player's orientation first
-        _player.PlayerController.Orientation.rotation = Quaternion.Euler(0f, _yRotation, 0f);
+        _player.PlayerController.Orientation.eulerAngles = new(0f, _lookRotation.y, 0f);
 
         // Then rotate the camera pivot (which is a child of the orientation)
-        _player.PlayerController.CameraPivot.transform.localRotation = Quaternion.Euler(_xRotation, 0f, 0f);
-
+        _player.PlayerController.CameraPivot.transform.localEulerAngles = new(_lookRotation.x, 0f, 0f);
     }
 }

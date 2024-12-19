@@ -39,6 +39,21 @@ public class GunInformation : ScriptableObject
 
     [SerializeField] private Sound reloadSound;
 
+    [Header("Recoil Settings")] [SerializeField] [Min(0)]
+    private float horizontalRecoil;
+
+    [Tooltip("Which direction the recoil will bias towards.")] [SerializeField, Range(-1, 1)]
+    private float horizontalRecoilBias;
+
+    [SerializeField] [Min(0)] private float verticalRecoil;
+
+    [SerializeField, Range(0, 1)] private float minHorizontalRecoilPercent = 0.75f;
+    [SerializeField, Range(0, 1)] private float minVerticalRecoilPercent = 0.75f;
+
+    [SerializeField, Range(0, 1)] private float recoilLerpAmount = 0.1f;
+    [SerializeField, Range(0, 1)] private float recoveryLerpAmount = 0.1f;
+
+
     #region Getters
 
     public string GunName => gunName;
@@ -57,11 +72,33 @@ public class GunInformation : ScriptableObject
 
     public float ReloadTime => reloadTime;
 
+    #region Sounds
+
     public Sound PickupSound => pickupSound;
 
     public SoundPool FireSounds => fireSounds;
 
     public Sound ReloadSound => reloadSound;
+
+    #endregion
+
+    #region Recoil
+
+    public float HorizontalRecoil => horizontalRecoil;
+
+    public float VerticalRecoil => verticalRecoil;
+
+    public float HorizontalRecoilBias => horizontalRecoilBias;
+
+    public float RecoilLerpAmount => recoilLerpAmount;
+
+    public float RecoveryLerpAmount => recoveryLerpAmount;
+
+    public float MinHorizontalRecoilPercent => minHorizontalRecoilPercent;
+
+    public float MinVerticalRecoilPercent => minVerticalRecoilPercent;
+
+    #endregion
 
     #endregion
 
