@@ -11,6 +11,8 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
 
     [SerializeField] private bool isEnabled = true;
 
+    [SerializeField] private bool canDashWithoutPower;
+
     [SerializeField] [Min(0)] private float dashSpeed = 10f;
 
     // [SerializeField] [Min(0)] private float dashExitVelocity;
@@ -78,10 +80,10 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
 
     public void InitializeInput()
     {
-        // // Initialize the event that is called when the button is pressed
-        // InputActions.Add(new InputData(
-        //     InputManager.Instance.PControls.PlayerMovementBasic.Dash, InputType.Performed, OnDashPerformed)
-        // );
+        // Initialize the event that is called when the button is pressed
+        InputActions.Add(new InputData(
+            InputManager.Instance.PControls.PlayerMovementBasic.Dash, InputType.Performed, OnDashPerformed)
+        );
     }
 
     private void InitializeEvents()
@@ -101,6 +103,9 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
 
     private void OnDashPerformed(InputAction.CallbackContext obj)
     {
+        if (!canDashWithoutPower)
+            return;
+
         // Perform the dash
         PerformDash();
     }

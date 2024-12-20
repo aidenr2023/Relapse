@@ -144,6 +144,13 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         OnWallRunEnd += GravityOnWallRunEnd;
         OnWallRunEnd += UnregisterOnWallRunEnd;
         OnWallRunEnd += RestartReattachTimer;
+        OnWallRunEnd += ResetJumpOnWallRunEnd;
+    }
+
+    private void ResetJumpOnWallRunEnd(PlayerWallRunning obj)
+    {
+        _isJumpThisFrame = false;
+        _isCurrentlyJumping = false;
     }
 
     private void RestartReattachTimer(PlayerWallRunning obj)
