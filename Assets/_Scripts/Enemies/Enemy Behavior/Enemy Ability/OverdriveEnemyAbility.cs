@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class EnemyOverdriveAbility : MonoBehaviour, IEnemyAbilityBehavior
+public class OverdriveEnemyAbility : ComponentScript<Enemy>, IEnemyAbilityBehavior
 {
     #region Serialized Fields
 
@@ -38,7 +38,7 @@ public class EnemyOverdriveAbility : MonoBehaviour, IEnemyAbilityBehavior
 
     #region Getters
 
-    public Enemy Enemy { get; private set; }
+    public Enemy Enemy => ParentComponent;
     public GameObject GameObject => gameObject;
 
     private bool IsOverdriveActive => _overdriveTimer != null && _overdriveTimer.Percentage < 1;
@@ -47,17 +47,16 @@ public class EnemyOverdriveAbility : MonoBehaviour, IEnemyAbilityBehavior
 
     #endregion
 
-    private void Awake()
+    protected override void CustomAwake()
     {
+        base.CustomAwake();
+
         // Initialize the components
         InitializeComponents();
     }
 
     private void InitializeComponents()
     {
-        // Get the Enemy component
-        Enemy = GetComponent<Enemy>();
-
         // Set up the overdrive check timer
         _overdriveCheckTimer = new CountdownTimer(UnityEngine.Random.Range(minRandomCheckTime, maxRandomCheckTime));
 
