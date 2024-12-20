@@ -66,13 +66,15 @@ public class PlayerVirtualCameraController : ComponentScript<Player>
 
     private void Start()
     {
-        var mainCam = Camera.main;
+        // var mainCam = Camera.main;
+        //
+        // // Set the virtual camera
+        // if (mainCam != null)
+        //     _virtualCamera = mainCam.GetComponent<CinemachineBrain>().ActiveVirtualCamera as CinemachineVirtualCamera;
+        // else
+        //     Debug.LogError("Main camera not found!");
 
-        // Set the virtual camera
-        if (mainCam != null)
-            _virtualCamera = mainCam.GetComponent<CinemachineBrain>().ActiveVirtualCamera as CinemachineVirtualCamera;
-        else
-            Debug.LogError("Main camera not found!");
+        _virtualCamera = ParentComponent.PlayerInfo.VirtualCamera;
 
         // Start the camera modules
         foreach (var module in _cameraModules)

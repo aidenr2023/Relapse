@@ -80,6 +80,8 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
     public bool IsInvincible => _invincibilityTimer.IsActive;
 
+    public CinemachineVirtualCamera VirtualCamera => vCam;
+
     #endregion
 
     #region Events
