@@ -20,6 +20,8 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     [SerializeField] [Min(0)] [Tooltip("How close the enemy needs to be to the checkpoint to consider it reached.")]
     private float checkpointProximityThreshold = 0.5f;
 
+    [SerializeField, Min(0)] private float stoppingDistance = 1.5f;
+
     [Header("Animations")] [SerializeField]
     private Animator animator;
 
@@ -31,6 +33,8 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     #region Private Fields
 
     private int _currentCheckpointIndex;
+
+    private TokenManager<float>.ManagedToken _withinStoppingDistanceToken;
 
     #endregion
 
@@ -61,6 +65,10 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
 
     public bool IsMovementEnabled => this.IsMovementEnabled();
 
+    private bool IsWithinStoppingDistance =>
+        NavMeshAgent.remainingDistance <= stoppingDistance &&
+        Enemy.EnemyDetectionBehavior.CurrentDetectionState == EnemyDetectionState.Aware;
+
     #endregion
 
     #region Initialization Functions
@@ -69,6 +77,9 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     {
         // Initialize the components
         InitializeComponents();
+
+        // Create the within stopping distance token
+        _withinStoppingDistanceToken = MovementSpeedTokens.AddToken(1, -1, true);
     }
 
     private void InitializeComponents()
@@ -102,6 +113,16 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     {
         // Set the NavMeshAgent enabled state
         NavMeshAgent.enabled = IsMovementEnabled;
+
+        // If the navmesh agent is enabled, check if the enemy is within stopping distance
+        if (!NavMeshAgent.enabled || IsWithinStoppingDistance)
+        {
+            _withinStoppingDistanceToken.Value = 0;
+
+            Debug.Log($"STOPPING DISTANCE REACHED: {gameObject.name}");
+        }
+        else
+            _withinStoppingDistanceToken.Value = 1;
 
         // Set the movement speed of the navmesh agent
         NavMeshAgent.speed = movementSpeed * this.GetMovementSpeedTokenMultiplier();

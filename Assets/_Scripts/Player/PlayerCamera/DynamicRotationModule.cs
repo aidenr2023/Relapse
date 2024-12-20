@@ -8,8 +8,15 @@ public sealed class DynamicRotationModule : DynamicVCamModule
 
     [SerializeField] private Vector3 defaultRotation = Vector3.zero;
 
-    [Space, SerializeField] private Vector3 wallRunRotation = new(0, 0, 10);
-    [SerializeField, Range(0, 1)] private float wallRunLerpAmount = 0.05f;
+    [Header("Wall Running"), SerializeField]
+    private Vector3 wallRunRotation = new(0, 0, 10);
+
+    [SerializeField, Range(0, 1)] private float wallRunLerpAmount = 0.2f;
+
+    [Header("Flinching"), SerializeField] private Vector3 flinchRotation = new(0, 0, 10);
+    [SerializeField, Range(0, 1)] private float flinchLerpAmount = 0.2f;
+    [SerializeField, Min(0)] private float flinchRecoveryThreshold = 1f;
+    [SerializeField, Min(0)] private float maxFlinchDamageThreshold = 40;
 
     #endregion
 
@@ -18,6 +25,7 @@ public sealed class DynamicRotationModule : DynamicVCamModule
     private TokenManager<Vector3> _rotationTokens;
 
     private TokenManager<Vector3>.ManagedToken _wallRunToken;
+    private TokenManager<Vector3>.ManagedToken _flinchToken;
 
     private bool _wallRunStart;
     private bool _wallRunEnd = true;
@@ -25,6 +33,8 @@ public sealed class DynamicRotationModule : DynamicVCamModule
     private CinemachineRecomposer _recomposer;
 
     private float _wallRunningDirection;
+
+    private Vector3 _desiredFlinchValue;
 
     #endregion
 
@@ -41,6 +51,7 @@ public sealed class DynamicRotationModule : DynamicVCamModule
 
         // Create the tokens
         _wallRunToken = _rotationTokens.AddToken(Vector3.zero, -1, true);
+        _flinchToken = _rotationTokens.AddToken(Vector3.zero, -1, true);
     }
 
     public override void Start()
@@ -54,6 +65,27 @@ public sealed class DynamicRotationModule : DynamicVCamModule
             movementV2.WallRunning.OnWallSlideStart += OnWallRunStart;
             movementV2.WallRunning.OnWallRunEnd += OnWallRunEnd;
         }
+
+        // Add the flinch event
+        playerVCamController.ParentComponent.PlayerInfo.OnDamaged += FlinchOnDamaged;
+    }
+
+    private void FlinchOnDamaged(object sender, HealthChangedEventArgs e)
+    {
+        var xDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
+        var yDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
+        var zDirection = UnityEngine.Random.Range(0, 2) == 0 ? -1 : 1;
+
+        var randomDirection = new Vector3(xDirection, yDirection, zDirection);
+
+        var flinchAmount = Mathf.Clamp01(Mathf.Abs(e.Amount / maxFlinchDamageThreshold));
+
+        // Set the desired flinch value
+        _desiredFlinchValue = new Vector3(
+            flinchRotation.x * randomDirection.x,
+            flinchRotation.y * randomDirection.y,
+            flinchRotation.z * randomDirection.z
+        ) * flinchAmount;
     }
 
     #region Event Functions
@@ -78,6 +110,9 @@ public sealed class DynamicRotationModule : DynamicVCamModule
     {
         // Update the wall run rotation
         UpdateWallRunToken();
+
+        // Update the flinch rotation
+        UpdateFlinchToken();
 
         // Update the token manager
         _rotationTokens.Update(Time.deltaTime);
@@ -117,6 +152,14 @@ public sealed class DynamicRotationModule : DynamicVCamModule
 
         // Set the wall run token value
         _wallRunToken.Value = Vector3.Lerp(_wallRunToken.Value, targetValue, wallRunLerpAmount * frameAmount);
+    }
+
+    private void UpdateFlinchToken()
+    {
+        if (Vector3.Distance(_flinchToken.Value, _desiredFlinchValue) < flinchRecoveryThreshold)
+            _desiredFlinchValue = Vector3.zero;
+
+        _flinchToken.Value = Vector3.Lerp(_flinchToken.Value, _desiredFlinchValue, flinchLerpAmount);
     }
 
     private Vector3 CurrentTokenValue()

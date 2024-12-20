@@ -593,6 +593,7 @@ MonoBehaviour:
   movementSpeed: 9
   patrolCheckpoints: []
   checkpointProximityThreshold: 0.5
+  stoppingDistance: 2.5
   animator: {fileID: 5835691382165057910}
   walkAnimationThreshold: 1
   runAnimationThreshold: 6
@@ -609,8 +610,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damage: 35
-  meleeAttackRange: 5
-  attackCooldown: 2
+  meleeAttackRange: 4
+  attackCooldown: 1
   animator: {fileID: 5835691382165057910}
   meleeAttackHitboxes:
   - {fileID: 6364708773960495632}

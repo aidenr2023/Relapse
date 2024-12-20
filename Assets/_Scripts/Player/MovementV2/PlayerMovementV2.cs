@@ -206,6 +206,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         // Update the current movement script
         CurrentMovementScript?.FixedMovementUpdate();
+
+        // Get the y velocity of the player
+        _landYVelocity = _rigidbody.velocity.y;
     }
 
     private void UpdateGroundCheck()
@@ -232,8 +235,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Handle the code for when the player lands
         if (IsGrounded && !_wasPreviouslyGrounded)
         {
-            // Get the y velocity of the player
-            _landYVelocity = _rigidbody.velocity.y;
+            // // Get the y velocity of the player
+            // _landYVelocity = _rigidbody.velocity.y;
 
             // Invoke the on land event
             OnLand?.Invoke(Mathf.Abs(_landYVelocity));
