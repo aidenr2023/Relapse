@@ -233,14 +233,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         IsGrounded = hit;
 
         // Handle the code for when the player lands
+        // Invoke the on land event
         if (IsGrounded && !_wasPreviouslyGrounded)
-        {
-            // // Get the y velocity of the player
-            // _landYVelocity = _rigidbody.velocity.y;
-
-            // Invoke the on land event
             OnLand?.Invoke(Mathf.Abs(_landYVelocity));
-        }
 
         // Set the was previously grounded state
         _wasPreviouslyGrounded = IsGrounded;
@@ -251,6 +246,10 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     {
         // Return if the floating controller hit is not set
         if (!_floatingControllerHit.collider)
+            return;
+
+        // Return if the player is trying to jump
+        if (BasicPlayerMovement.IsTryingToJump)
             return;
 
         // Get the current velocity of the player
@@ -285,7 +284,6 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         var hitOffset = _floatingControllerHit.distance - capsuleHeightOffset;
         var actualPenetration = remainingHeight - hitOffset;
 
-
         // Create a target velocity with the same x and z,
         // but enough velocity to go up by the actual penetration
         var targetVelocity = new Vector3(
@@ -304,6 +302,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         // Add force to the player
         _rigidbody.AddForce(downDirection * springForce, ForceMode.Acceleration);
+
+        // Debug.Log($"FORCE: {downDirection * springForce}");
 
         // Add force to the other object
         if (otherRigidbody)

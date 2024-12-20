@@ -46,6 +46,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
     public float SprintMultiplier => sprintMultiplier;
 
+    public bool IsTryingToJump { get; set; }
+
     #endregion
 
     #region Initialization Functions
@@ -150,6 +152,10 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
     private void Update()
     {
+        // Set the is trying to jump flag to false if the player is falling
+        if (ParentComponent.Rigidbody.velocity.y < 0)
+            IsTryingToJump = false;
+
         // Update the footstep sounds
         UpdateFootsteps();
     }
@@ -292,10 +298,16 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
         var jumpDirection = ParentComponent.transform.up.normalized;
 
+        // Kill the vertical velocity
+        ParentComponent.Rigidbody.velocity = new Vector3(ParentComponent.Rigidbody.velocity.x, 0, ParentComponent.Rigidbody.velocity.z);
+
         ParentComponent.Rigidbody.AddForce(jumpDirection * jumpForce, ForceMode.VelocityChange);
 
         // Play the jump sound
         SoundManager.Instance.PlaySfx(jumpSound);
+
+        // Set the is trying to jump flag to true
+        IsTryingToJump = true;
     }
 
     #endregion
