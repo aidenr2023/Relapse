@@ -34,6 +34,8 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
 
     public HashSet<InputData> InputActions { get; } = new();
 
+    private Vector3 _tmpDashVelocity;
+
     #endregion
 
     #region Getters
@@ -76,10 +78,10 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
 
     public void InitializeInput()
     {
-        // Initialize the event that is called when the button is pressed
-        InputActions.Add(new InputData(
-            InputManager.Instance.PControls.PlayerMovementBasic.Dash, InputType.Performed, OnDashPerformed)
-        );
+        // // Initialize the event that is called when the button is pressed
+        // InputActions.Add(new InputData(
+        //     InputManager.Instance.PControls.PlayerMovementBasic.Dash, InputType.Performed, OnDashPerformed)
+        // );
     }
 
     private void InitializeEvents()
@@ -99,24 +101,8 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
 
     private void OnDashPerformed(InputAction.CallbackContext obj)
     {
-        // Return if the dash is not enabled
-        if (!isEnabled)
-            return;
-
-        // If the cooldown is ticking,
-        // Or the dash duration is ticking,
-        // return
-        if (dashCooldown.IsNotComplete || dashDuration.IsNotComplete)
-            return;
-
-        // Return if the player is in air and has no remaining dashes
-        if (
-            !(ParentComponent.IsGrounded)
-            && _remainingDashesInAir <= 0
-        )
-            return;
-
-        OnDashStart?.Invoke(this);
+        // Perform the dash
+        PerformDash();
     }
 
     private void StartDash(IDashScript obj)
@@ -169,7 +155,6 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
 
         // ParentComponent.Rigidbody.velocity = _dashDirection * dashExitVelocity;
         ParentComponent.Rigidbody.velocity = _dashDirection * _previousVelocity.magnitude;
-
     }
 
     #endregion
@@ -177,7 +162,8 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
     private void Update()
     {
         // Check if the player is on the ground / wall running to refill the dashes
-        if (ParentComponent.IsGrounded || ParentComponent.WallRunning.IsWallRunning || ParentComponent.WallRunning.IsWallSliding)
+        if (ParentComponent.IsGrounded || ParentComponent.WallRunning.IsWallRunning ||
+            ParentComponent.WallRunning.IsWallSliding)
             _remainingDashesInAir = maxDashesInAir;
 
         // Update the timers
@@ -224,7 +210,28 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
         ParentComponent.Rigidbody.AddForce(targetForce, ForceMode.Acceleration);
     }
 
-    private Vector3 _tmpDashVelocity;
+    public void PerformDash()
+    {
+        // Return if the dash is not enabled
+        if (!isEnabled)
+            return;
+
+        // // If the cooldown is ticking,
+        // // Or the dash duration is ticking,
+        // // return
+        // if (dashCooldown.IsNotComplete || dashDuration.IsNotComplete)
+        //     return;
+
+        // Return if the dash duration is not complete
+        if (dashDuration.IsNotComplete)
+            return;
+
+        // Return if the player is in air and has no remaining dashes
+        if (!ParentComponent.IsGrounded && _remainingDashesInAir <= 0)
+            return;
+
+        OnDashStart?.Invoke(this);
+    }
 
     public override string GetDebugText()
     {
