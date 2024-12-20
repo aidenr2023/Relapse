@@ -916,7 +916,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   health: 100
-  invincibilityDuration: 0.5
+  invincibilityDuration: 1
   maxTolerance: 100
   currentTolerance: 0
   toleranceMeter: {fileID: 0}
@@ -1182,6 +1182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isEnabled: 1
+  canDashWithoutPower: 0
   dashSpeed: 100
   dashDuration:
     maxTime: 0.125
@@ -1225,7 +1226,7 @@ MonoBehaviour:
   maxFlashTime: 1
   healthForMaxFlashing: 75
   healthForMinFlashing: 20
-  maxOpacity: 0.75
+  maxOpacity: 0.25
 --- !u!114 &4146044329642554987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1252,6 +1253,7 @@ MonoBehaviour:
     flinchRotation: {x: 0, y: 10, z: 15}
     flinchLerpAmount: 0.2
     flinchRecoveryThreshold: 1
+    maxFlinchDamageThreshold: 40
   dynamicOffsetModule:
     defaultOffset: {x: 0, y: 0, z: 0}
   dynamicNoiseModule:

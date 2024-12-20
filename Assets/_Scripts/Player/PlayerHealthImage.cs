@@ -86,7 +86,7 @@ public class PlayerHealthImage : MonoBehaviour, IDebugged
 
         // Determine the opacity based on the player's health
         var diff = healthForMaxFlashing - healthForMinFlashing;
-        var healthPercentage = 1 - (player.PlayerInfo.CurrentHealth / diff);
+        var healthPercentage = Mathf.Clamp01(1 - ((player.PlayerInfo.CurrentHealth - healthForMinFlashing) / diff));
 
         var opacity = (sinAmount * maxOpacity * healthPercentage);
 
