@@ -300,8 +300,14 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         // Debug.Log($"RHP: [{hitOffset:0.000}] [{actualPenetration:0.000}] [{targetForce.y:0.000}]");
 
+        var downwardSlopeForceAdjust = 1f;
+
+        // If the player is on a slope and they are going down, reduce the force
+        if (GroundCollisionForward.y < 0)
+            downwardSlopeForceAdjust = .25f;
+
         // Add force to the player
-        _rigidbody.AddForce(downDirection * springForce, ForceMode.Acceleration);
+        _rigidbody.AddForce(downDirection * (springForce * downwardSlopeForceAdjust), ForceMode.Acceleration);
 
         // Debug.Log($"FORCE: {downDirection * springForce}");
 
