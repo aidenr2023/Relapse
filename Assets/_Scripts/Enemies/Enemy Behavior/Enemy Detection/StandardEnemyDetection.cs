@@ -91,6 +91,27 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         //     Debug.Log($"{behavior.GameObject.name} changed detection state from {oldState} to {newState}");
 
         OnDetectionStateChanged += ResetTimersOnStateChange;
+
+        Enemy.EnemyInfo.OnDamaged += DetectPlayerWhenDamaged;
+    }
+
+    private void DetectPlayerWhenDamaged(object sender, HealthChangedEventArgs e)
+    {
+        // If the enemy is already aware of the player, return
+        if (CurrentDetectionState == EnemyDetectionState.Aware)
+            return;
+
+        // Set the detection state to aware
+        CurrentDetectionState = EnemyDetectionState.Aware;
+
+        // Set the target to the player
+        Target = Player.Instance.PlayerInfo;
+
+        // Set the last known player position to the player's current position
+        LastKnownTargetPosition = Player.Instance.transform.position;
+
+        // Invoke the detection state changed event
+        OnDetectionStateChanged?.Invoke(this, EnemyDetectionState.Unaware, CurrentDetectionState);
     }
 
     private void ResetTimersOnStateChange(
@@ -293,7 +314,8 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         var line = player.transform.position - detectionOrigin.position;
 
         // Return false if the player is not within the vision distance
-        if (line.magnitude > visionDistance)
+        // and the current state is not aware
+        if (line.magnitude > visionDistance && CurrentDetectionState != EnemyDetectionState.Aware)
             return false;
 
         // If the player is within the auto-detection distance, return true
@@ -309,11 +331,17 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         // Create a layerMask to ignore the NonPhysical layer
         var layerMask = ~(1 << LayerMask.NameToLayer("NonPhysical"));
 
+        var currentVisionDistance = visionDistance;
+
+        // If the current state is aware, increase the vision distance
+        if (CurrentDetectionState == EnemyDetectionState.Aware)
+            currentVisionDistance *= 4;
+
         var raycastHit = Physics.Raycast(
             detectionOrigin.position,
             line,
             out var hit,
-            visionDistance,
+            currentVisionDistance,
             layerMask
         );
 
