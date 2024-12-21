@@ -31,6 +31,11 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     [SerializeField] private float rideSpringStrength;
     [SerializeField] private float rideSpringDamper;
 
+    [Space, SerializeField, Min(0.0001f)] private float downwardInterpolation = 1;
+    [SerializeField, Min(0.0001f)] private float maxForceAdjust = .25f;
+    [SerializeField, Min(0.0001f)] private float maxDownwardAngle = 35;
+    [SerializeField, Min(0.0001f)] private float velocityInterpolation = 1;
+
     [Header("Locomotion")] [SerializeField]
     private float maxSpeed = 10;
 
@@ -279,21 +284,21 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Distance of the ray hit vs the ride height
         var rideHeightPenetration = _floatingControllerHit.distance - rideHeight;
 
-        var remainingHeight = totalPlayerHeight - _capsuleCollider.height;
-        var capsuleHeightOffset = rideHeight - remainingHeight;
-        var hitOffset = _floatingControllerHit.distance - capsuleHeightOffset;
-        var actualPenetration = remainingHeight - hitOffset;
+        // var remainingHeight = totalPlayerHeight - _capsuleCollider.height;
+        // var capsuleHeightOffset = rideHeight - remainingHeight;
+        // var hitOffset = _floatingControllerHit.distance - capsuleHeightOffset;
+        // var actualPenetration = remainingHeight - hitOffset;
 
-        // Create a target velocity with the same x and z,
-        // but enough velocity to go up by the actual penetration
-        var targetVelocity = new Vector3(
-            currentVelocity.x,
-            actualPenetration,
-            currentVelocity.z
-        );
+        // // Create a target velocity with the same x and z,
+        // // but enough velocity to go up by the actual penetration
+        // var targetVelocity = new Vector3(
+        //     currentVelocity.x,
+        //     actualPenetration,
+        //     currentVelocity.z
+        // );
 
-        // This is the force required to reach the target velocity in EXACTLY one frame
-        var targetForce = (targetVelocity - _rigidbody.velocity) / Time.fixedDeltaTime;
+        // // This is the force required to reach the target velocity in EXACTLY one frame
+        // var targetForce = (targetVelocity - _rigidbody.velocity) / Time.fixedDeltaTime;
 
         // Get the spring force
         var springForce = (rideHeightPenetration * rideSpringStrength) - (relativeVelocity * rideSpringDamper);
@@ -302,9 +307,50 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         var downwardSlopeForceAdjust = 1f;
 
-        // If the player is on a slope and they are going down, reduce the force
-        if (GroundCollisionForward.y < 0)
-            downwardSlopeForceAdjust = .25f;
+        var groundVelocityForward = GroundCollisionForward;
+
+        if (Vector3.Dot(currentVelocity, groundVelocityForward) < 0)
+            groundVelocityForward *= -1;
+
+        // If the player is on a slope, and they are going down, reduce the force
+        if (groundVelocityForward.y < 0)
+        {
+            // Get the downward angle of the slope
+            // var downwardAngle = Vector3.Angle(
+            //     new Vector3(groundVelocityForward.x, 0, groundVelocityForward.z),
+            //     groundVelocityForward
+            // );
+
+            // var downwardAngle = 90 - Vector3.Angle(
+            //     new Vector3(GroundHit.normal.x, 0, GroundHit.normal.z).normalized,
+            //     new Vector3(GroundHit.normal.x, -GroundHit.normal.y, GroundHit.normal.z).normalized
+            // );
+
+            var downwardAngle = 90 - Quaternion.LookRotation(
+                new Vector3(GroundHit.normal.x, -GroundHit.normal.y, GroundHit.normal.z)
+            ).eulerAngles.x;
+
+            // Get the player's velocity in relation to the slope
+            var playerSlopeVelocity = Vector3.Dot(currentVelocity, groundVelocityForward.normalized);
+
+            const float maxVelocity = 8;
+
+            var velocityFactor = playerSlopeVelocity / maxVelocity;
+
+            var interpolation = LogarithmicInterpolation(downwardAngle / maxDownwardAngle, downwardInterpolation);
+
+            velocityFactor = LogarithmicInterpolation(velocityFactor, velocityInterpolation);
+
+            downwardSlopeForceAdjust = Mathf.Lerp(1, maxForceAdjust, interpolation * velocityFactor);
+
+            Debug.Log(
+                $"DOWNWARD ANGLE: " +
+                $"{downwardAngle:0.00} => " +
+                $"{interpolation:0.00} => " +
+                $"{velocityFactor:0.00} => " +
+                $"{downwardSlopeForceAdjust:0.00}"
+            );
+        }
 
         // Add force to the player
         _rigidbody.AddForce(downDirection * (springForce * downwardSlopeForceAdjust), ForceMode.Acceleration);
@@ -314,6 +360,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Add force to the other object
         if (otherRigidbody)
             otherRigidbody.AddForceAtPosition(-downDirection * springForce, _floatingControllerHit.point);
+        return;
+
+        float LogarithmicInterpolation(float x, float constA) => Mathf.Log(constA * Mathf.Clamp01(x) + 1, constA + 1);
     }
 
     private void UpdateCapsuleColliderHeight()

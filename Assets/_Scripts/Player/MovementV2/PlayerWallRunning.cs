@@ -690,6 +690,9 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
         // Add the player's speed along the wall
         ParentComponent.Rigidbody.AddForce(forwardVector * dotProduct, ForceMode.VelocityChange);
+
+        // Set the y velocity to 0
+        ParentComponent.Rigidbody.velocity = new Vector3(ParentComponent.Rigidbody.velocity.x, 0, ParentComponent.Rigidbody.velocity.z);
     }
 
     #endregion
