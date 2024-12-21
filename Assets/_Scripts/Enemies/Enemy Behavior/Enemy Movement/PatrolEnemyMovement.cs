@@ -6,9 +6,7 @@ using UnityEngine.Serialization;
 public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebugged
 {
     private static readonly int animatorIsMovingProperty = Animator.StringToHash("IsMoving");
-
     private static readonly int animatorSpeedProperty = Animator.StringToHash("Speed");
-
     private static readonly int animatorIsRunningProperty = Animator.StringToHash("IsRunning");
 
     #region Serialized Fields
@@ -32,6 +30,8 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
 
     [SerializeField] [Min(0)] private float walkAnimationThreshold;
     [SerializeField] [Min(0)] private float runAnimationThreshold;
+
+    [SerializeField, Min(0)] private float animationSpeedCoefficient = 1;
 
     #endregion
 
@@ -222,7 +222,7 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         var isRunning = velocity >= runAnimationThreshold;
 
         animator.SetBool(animatorIsMovingProperty, isMoving);
-        animator.SetFloat(animatorSpeedProperty, velocity);
+        animator.SetFloat(animatorSpeedProperty, velocity * animationSpeedCoefficient);
         animator.SetBool(animatorIsRunningProperty, isRunning);
     }
 
