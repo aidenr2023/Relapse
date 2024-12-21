@@ -761,10 +761,11 @@ GameObject:
   - component: {fileID: -2300652163101954379}
   - component: {fileID: 7032570368268033865}
   - component: {fileID: 9038693709593017749}
-  - component: {fileID: 1509308928883412678}
   - component: {fileID: 4146044329642554987}
   - component: {fileID: 1575649681136444178}
   - component: {fileID: 3925261621140247122}
+  - component: {fileID: 1509308928883412678}
+  - component: {fileID: 764185980036498148}
   - component: {fileID: 5810650263794967371}
   m_Layer: 9
   m_Name: Player
@@ -1212,25 +1213,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moneyObject: {fileID: 11400000, guid: 7bd43e1ae76d24f428376e9e9b37133a, type: 2}
   inventoryEntries: []
---- !u!114 &1509308928883412678
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3703685084401515452}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7be623d5c9b64fdc8f5e3216399b8c01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 3845154698197607556}
-  healthImage: {fileID: 0}
-  minFlashTime: 0.25
-  maxFlashTime: 1
-  healthForMaxFlashing: 75
-  healthForMinFlashing: 20
-  maxOpacity: 0.25
 --- !u!114 &4146044329642554987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1307,6 +1289,38 @@ MonoBehaviour:
   recoveryThreshold: 1
   maxXRecoil: 90
   maxYRecoil: 90
+--- !u!114 &1509308928883412678
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3703685084401515452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7be623d5c9b64fdc8f5e3216399b8c01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 3845154698197607556}
+  healthImage: {fileID: 0}
+  minFlashTime: 0.25
+  maxFlashTime: 1
+  healthForMaxFlashing: 75
+  healthForMinFlashing: 20
+  maxOpacity: 0.5
+--- !u!114 &764185980036498148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3703685084401515452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: baed0bb278d745f9b643a1d5ff9e014d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flashCycleDuration: 0.1
 --- !u!114 &5810650263794967371
 MonoBehaviour:
   m_ObjectHideFlags: 0

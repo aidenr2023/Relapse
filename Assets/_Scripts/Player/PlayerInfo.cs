@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public class PlayerInfo : MonoBehaviour, IActor, IDamager
 {
-    #region Fields
+    #region Serialized Fields
 
     [Header("Health Settings")] [SerializeField]
     private float maxHealth = 3f;
@@ -17,8 +17,6 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
     [SerializeField] private float health;
 
     [SerializeField] [Min(0)] private float invincibilityDuration = 1f;
-
-    private CountdownTimer _invincibilityTimer;
 
     // TODO: Eventually, I might move this code to another script.
     // For now though, I'm keeping this here to make things easier
@@ -35,11 +33,6 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
     [SerializeField] [Min(0.00001f)] private float relapseOpacityDuration = 1f;
     [SerializeField] private CountdownTimer relapseOpacityTimer = new(1);
 
-    /// <summary>
-    /// The number of times the player has relapsed during this level.
-    /// </summary>
-    private int _relapseCount;
-
     [Tooltip("The number of relapses the player can have before losing the level.")] [SerializeField]
     private int relapsesToLose = 3;
 
@@ -49,16 +42,27 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
     [Header("Relapsing Settings")] [SerializeField] [Min(0)]
     private float relapseDuration = 3;
 
-    private float _currentRelapseDuration;
-
-    private bool _isRelapsing;
-
     [SerializeField] private TMP_Text relapseText;
 
     // TODO: Find a better way to do this
     [SerializeField] private CinemachineVirtualCamera vCam;
 
-    #endregion Fields
+    #endregion
+
+    #region Private Fields
+
+    private CountdownTimer _invincibilityTimer;
+
+    /// <summary>
+    /// The number of times the player has relapsed during this level.
+    /// </summary>
+    private int _relapseCount;
+
+    private float _currentRelapseDuration;
+
+    private bool _isRelapsing;
+
+    #endregion
 
     #region Getters
 
@@ -81,6 +85,8 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
     public bool IsInvincible => _invincibilityTimer.IsActive;
 
     public CinemachineVirtualCamera VirtualCamera => vCam;
+
+    public bool IsInvincibleBecauseDamaged => _invincibilityTimer.IsActive && _invincibilityTimer.Percentage < 1;
 
     #endregion
 
