@@ -408,7 +408,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
         var targetValue = 0f;
 
         // If the player's power is currently fully charged, set the target value to the charged vignette strength
-        if (CurrentPowerToken.ChargePercentage >= 1)
+        if (CurrentPowerToken != null && CurrentPowerToken.ChargePercentage >= 1)
             targetValue = chargedVignetteStrength;
 
         const float defaultFrameTime = 1 / 60f;
