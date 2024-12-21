@@ -7,7 +7,7 @@ public abstract class DynamicVCamModule
 
     public void Initialize(PlayerVirtualCameraController controller)
     {
-        this.playerVCamController = controller;
+        playerVCamController = controller;
 
         // Add the module to the player virtual camera controller
         controller.AddCameraModule(this);

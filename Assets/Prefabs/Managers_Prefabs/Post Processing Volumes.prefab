@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1306071847552186175}
   - component: {fileID: 6102431351981507991}
+  - component: {fileID: 1084170978078358869}
   m_Layer: 16
   m_Name: Global Volume (CAMERA / SCREEN)
   m_TagString: Untagged
@@ -49,6 +50,20 @@ MonoBehaviour:
   blendDistance: 0
   weight: 1
   sharedProfile: {fileID: 11400000, guid: 89f42c3483fbf354189538aae075723c, type: 2}
+--- !u!114 &1084170978078358869
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 19991757385892408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e2ff383c6624e338b94d916d97e1003, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  volume: {fileID: 6102431351981507991}
+  profile: {fileID: 11400000, guid: 89f42c3483fbf354189538aae075723c, type: 2}
 --- !u!1 &1975117196189454205
 GameObject:
   m_ObjectHideFlags: 0
@@ -59,6 +74,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4702201091820915576}
   - component: {fileID: 2269752985584772197}
+  - component: {fileID: 4067685358093115547}
   m_Layer: 0
   m_Name: Global Volume (WORLD)
   m_TagString: Untagged
@@ -98,6 +114,20 @@ MonoBehaviour:
   blendDistance: 0
   weight: 1
   sharedProfile: {fileID: 11400000, guid: c844869c4749b4e4799aff62b97c2a6f, type: 2}
+--- !u!114 &4067685358093115547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1975117196189454205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e2ff383c6624e338b94d916d97e1003, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  volume: {fileID: 2269752985584772197}
+  profile: {fileID: 11400000, guid: c844869c4749b4e4799aff62b97c2a6f, type: 2}
 --- !u!1 &2709872129352186455
 GameObject:
   m_ObjectHideFlags: 0
@@ -107,6 +137,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5881665477978101321}
+  - component: {fileID: 2880562139668727557}
   m_Layer: 0
   m_Name: Post Processing Volumes
   m_TagString: Untagged
@@ -131,3 +162,17 @@ Transform:
   - {fileID: 4702201091820915576}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2880562139668727557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2709872129352186455}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c7dfa5e0e1e4e7ca173352b1d9b1d3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  screenVolume: {fileID: 1084170978078358869}
+  worldVolume: {fileID: 4067685358093115547}

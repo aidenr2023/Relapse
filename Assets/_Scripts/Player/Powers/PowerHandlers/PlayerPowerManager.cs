@@ -5,6 +5,7 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Player))]
@@ -15,6 +16,13 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
     #region Serialized Fields
 
     [SerializeField] private PowerScriptableObject[] powers;
+
+
+    [Header("Power Charged Vignette"), SerializeField, Range(0, 1)]
+    private float chargedVignetteStrength = .25f;
+
+    [SerializeField, Range(0, 1)] private float chargedVignetteLerpAmount = .25f;
+    [SerializeField, Min(0)] private float chargedVignetteFlashesPerSecond = 1f;
 
     #endregion
 
@@ -30,6 +38,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
 
     private int _currentPowerIndex;
     private bool _isChargingPower;
+
+    private TokenManager<float>.ManagedToken _powerChargeVignetteToken;
 
     #endregion
 
@@ -74,6 +84,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
 
         // // Add this to the debug managed objects
         // DebugManager.Instance.AddDebuggedObject(this);
+
+        // Initialize the vignette token
+        _powerChargeVignetteToken = PostProcessingVolumeController.Instance.VignetteModule.Tokens.AddToken(0, -1, true);
     }
 
     private void OnEnable()
@@ -226,6 +239,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
 
         // Update the cooldowns
         UpdateCooldowns();
+
+        // Update the vignette token
+        UpdateVignetteToken();
     }
 
     private void UpdateCharge()
@@ -385,6 +401,28 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
 
         // Set the current power to the first power in the array
         _currentPowerIndex = 0;
+    }
+
+    private void UpdateVignetteToken()
+    {
+        var targetValue = 0f;
+
+        // If the player's power is currently fully charged, set the target value to the charged vignette strength
+        if (CurrentPowerToken.ChargePercentage >= 1)
+            targetValue = chargedVignetteStrength;
+
+        const float defaultFrameTime = 1 / 60f;
+        var frameAmount = Time.deltaTime / defaultFrameTime;
+
+        // Sine wave with a y from 0 to 1
+        var sineWave = Mathf.Sin(chargedVignetteFlashesPerSecond * Time.time * Mathf.PI * 2 + Mathf.PI / 2) / 2 + 0.5f;
+
+        // Lerp the vignette value to the target value
+        _powerChargeVignetteToken.Value = Mathf.Lerp(
+            _powerChargeVignetteToken.Value * sineWave,
+            targetValue,
+            chargedVignetteLerpAmount * frameAmount
+        );
     }
 
     #endregion
