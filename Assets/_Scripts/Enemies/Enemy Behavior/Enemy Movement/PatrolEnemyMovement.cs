@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Serialization;
 
 public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebugged
 {
@@ -12,7 +13,11 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
 
     #region Serialized Fields
 
-    [SerializeField] [Min(0)] private float movementSpeed;
+    [SerializeField, Min(0)] private float movementSpeed = 8;
+    [SerializeField, Min(0)] private float angularSpeed = 1500f;
+
+    [SerializeField, Range(0, 1)] private float unawareMovementMultiplier = .5f;
+    [SerializeField, Range(0, 1)] private float curiousMovementMultiplier = .75f;
 
     [Header("Checkpoint Traversal")] [SerializeField] [Tooltip("The checkpoints that the enemy will traverse.")]
     private Transform[] patrolCheckpoints;
@@ -35,6 +40,7 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     private int _currentCheckpointIndex;
 
     private TokenManager<float>.ManagedToken _withinStoppingDistanceToken;
+    private TokenManager<float>.ManagedToken _detectionStateToken;
 
     #endregion
 
@@ -80,6 +86,9 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
 
         // Create the within stopping distance token
         _withinStoppingDistanceToken = MovementSpeedTokens.AddToken(1, -1, true);
+
+        // Create the detection state token
+        _detectionStateToken = MovementSpeedTokens.AddToken(1, -1, true);
     }
 
     private void InitializeComponents()
@@ -124,8 +133,22 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         else
             _withinStoppingDistanceToken.Value = 1;
 
+        // Update the detection state token
+        _detectionStateToken.Value = Enemy.EnemyDetectionBehavior.CurrentDetectionState switch
+        {
+            EnemyDetectionState.Unaware => unawareMovementMultiplier,
+            EnemyDetectionState.Curious => curiousMovementMultiplier,
+            EnemyDetectionState.Aware => 1,
+            _ => 1
+        };
+
+        var movementSpeedTokenMultiplier = this.GetMovementSpeedTokenMultiplier();
+
         // Set the movement speed of the navmesh agent
-        NavMeshAgent.speed = movementSpeed * this.GetMovementSpeedTokenMultiplier();
+        NavMeshAgent.speed = movementSpeed * movementSpeedTokenMultiplier;
+
+        // Set the angular speed of the navmesh agent
+        NavMeshAgent.angularSpeed = angularSpeed * movementSpeedTokenMultiplier;
 
         // Return if disabled
         if (!IsMovementEnabled)
