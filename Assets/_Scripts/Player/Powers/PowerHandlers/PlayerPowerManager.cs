@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using UnityEngine.VFX;
 
 [RequireComponent(typeof(Player))]
 public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
@@ -23,6 +24,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
 
     [SerializeField, Range(0, 1)] private float chargedVignetteLerpAmount = .25f;
     [SerializeField, Min(0)] private float chargedVignetteFlashesPerSecond = 1f;
+
+    [Header("Visual Effects")] [SerializeField]
+    private VisualEffect gauntletChargeVfx;
 
     #endregion
 
@@ -242,6 +246,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
 
         // Update the vignette token
         UpdateVignetteToken();
+
+        // Update the gauntlet charge VFX
+        UpdateGauntletChargeVFX();
     }
 
     private void UpdateCharge()
@@ -423,6 +430,25 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
             targetValue,
             chargedVignetteLerpAmount * frameAmount
         );
+    }
+
+    private void UpdateGauntletChargeVFX()
+    {
+        uint chargeState = 0;
+
+        if (_isChargingPower && CurrentPower != null)
+        {
+            // If the player is currently charging power, but it is not fully complete, set the charge state to 1
+            if (CurrentPowerToken.ChargePercentage < 1)
+                chargeState = 1;
+
+            // If the player's power is currently fully charged, set the charge state to 2
+            else
+                chargeState = 2;
+        }
+
+        // Set the "ChargeState" uint property of the VFX graph
+        gauntletChargeVfx.SetUInt("ChargeState", chargeState);
     }
 
     #endregion

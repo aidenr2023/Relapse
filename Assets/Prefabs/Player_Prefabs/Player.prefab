@@ -1014,6 +1014,7 @@ MonoBehaviour:
   chargedVignetteStrength: 0.25
   chargedVignetteLerpAmount: 0.125
   chargedVignetteFlashesPerSecond: 2
+  gauntletChargeVfx: {fileID: 2081168318970503794}
 --- !u!114 &-7043807009064224948
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3006,6 +3007,86 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: a2ccae9069b124a43b449e6d9ee9199c,
     type: 3}
   m_PrefabInstance: {fileID: 5681847892169919392}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &7917977080662228693
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2172896088652093723}
+    m_Modifications:
+    - target: {fileID: 1094965585152745659, guid: 8681dc7de7425b84b9f2c2abae12a004,
+        type: 3}
+      propertyPath: m_Name
+      value: Power VFX Prefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 6917729392294401151, guid: 8681dc7de7425b84b9f2c2abae12a004,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.13
+      objectReference: {fileID: 0}
+    - target: {fileID: 6917729392294401151, guid: 8681dc7de7425b84b9f2c2abae12a004,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.638
+      objectReference: {fileID: 0}
+    - target: {fileID: 6917729392294401151, guid: 8681dc7de7425b84b9f2c2abae12a004,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.285
+      objectReference: {fileID: 0}
+    - target: {fileID: 6917729392294401151, guid: 8681dc7de7425b84b9f2c2abae12a004,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6917729392294401151, guid: 8681dc7de7425b84b9f2c2abae12a004,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6917729392294401151, guid: 8681dc7de7425b84b9f2c2abae12a004,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6917729392294401151, guid: 8681dc7de7425b84b9f2c2abae12a004,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6917729392294401151, guid: 8681dc7de7425b84b9f2c2abae12a004,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6917729392294401151, guid: 8681dc7de7425b84b9f2c2abae12a004,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6917729392294401151, guid: 8681dc7de7425b84b9f2c2abae12a004,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 8681dc7de7425b84b9f2c2abae12a004, type: 3}
+--- !u!4 &1000634811199711914 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6917729392294401151, guid: 8681dc7de7425b84b9f2c2abae12a004,
+    type: 3}
+  m_PrefabInstance: {fileID: 7917977080662228693}
+  m_PrefabAsset: {fileID: 0}
+--- !u!2083052967 &2081168318970503794 stripped
+VisualEffect:
+  m_CorrespondingSourceObject: {fileID: 8143499591074372775, guid: 8681dc7de7425b84b9f2c2abae12a004,
+    type: 3}
+  m_PrefabInstance: {fileID: 7917977080662228693}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8400998426604210578
 PrefabInstance:
@@ -6594,6 +6675,10 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 4434334442243153243, guid: 043e3ec98abea57459696b3c3c798eee, type: 3}
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 7688201972992544905, guid: 043e3ec98abea57459696b3c3c798eee,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1000634811199711914}
     - targetCorrespondingSourceObject: {fileID: 143132856106025324, guid: 043e3ec98abea57459696b3c3c798eee,
         type: 3}
       insertIndex: 3

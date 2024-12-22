@@ -396,6 +396,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // // Set the particles to be a child of the gun
         // muzzleFlash.transform.SetParent(muzzleLocation);
+
+        Debug.Log($"Playing muzzle flash");
     }
 
     public void Interact(PlayerInteraction playerInteraction)
