@@ -69,6 +69,18 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
     private void Start()
     {
         DebugManager.Instance.AddDebuggedObject(this);
+
+        // Spawn the initial gun
+        if (initialGunPrefab != null && !_spawnedInitialGun)
+        {
+            var gun = Instantiate(initialGunPrefab).GetComponent<IGun>();
+
+            // Get the interactable materials of the gun
+            gun.GetOutlineMaterials(Player.PlayerInteraction.OutlineMaterial.shader);
+
+            EquipGun(gun);
+            _spawnedInitialGun = true;
+        }
     }
 
     private void OnEnable()
@@ -151,14 +163,6 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
 
     private void Update()
     {
-        // Spawn the initial gun
-        if (initialGunPrefab != null && !_spawnedInitialGun)
-        {
-            var gun = Instantiate(initialGunPrefab).GetComponent<IGun>();
-            EquipGun(gun);
-            _spawnedInitialGun = true;
-        }
-
         // TODO: Remove this and replace it with a bar or something
         UpdateReloadText();
 

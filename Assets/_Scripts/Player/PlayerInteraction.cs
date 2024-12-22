@@ -36,6 +36,8 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
 
     public IInteractable SelectedInteractable => _selectedInteractable;
 
+    public Material OutlineMaterial => outlineMaterial;
+
     public float OutlineScale => outlineScale;
 
     #endregion
