@@ -9,6 +9,8 @@ public class RelapseScreen : GameMenu
 
     [SerializeField] private Button firstSelectedButton;
 
+    private TokenManager<float>.ManagedToken _pauseToken;
+
     private void Awake()
     {
         // Set the instance to this
@@ -34,7 +36,7 @@ public class RelapseScreen : GameMenu
     public void LoadScene(string sceneName)
     {
         // Set the timescale to 1
-        Time.timeScale = 1;
+        TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(_pauseToken);
 
         // Load the scene
         UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
@@ -43,7 +45,7 @@ public class RelapseScreen : GameMenu
     public void Activate()
     {
         // Set the timescale to 0
-        Time.timeScale = 0;
+        _pauseToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(0, -1, true);
 
         // Enable the game object
         gameObject.SetActive(true);

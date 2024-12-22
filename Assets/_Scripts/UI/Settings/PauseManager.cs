@@ -15,6 +15,8 @@ public class PauseManager : MonoBehaviour
 
     private bool _isPaused;
 
+    private TokenManager<float>.ManagedToken _pauseToken;
+
     #endregion
 
     #region Getters
@@ -34,7 +36,7 @@ public class PauseManager : MonoBehaviour
         _isPaused = true;
 
         // Pause the game
-        Time.timeScale = 0;
+        _pauseToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(0, -1, true);
 
         // Show the pause menu
         pauseMenu?.SetActive(true);
@@ -46,7 +48,7 @@ public class PauseManager : MonoBehaviour
         _isPaused = false;
 
         // Resume the game
-        Time.timeScale = 1;
+        TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(_pauseToken);
 
         // Hide the cursor & enable the player controls
         // InputManager.Instance.SetCursorState(false);

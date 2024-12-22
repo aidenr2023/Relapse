@@ -41,6 +41,8 @@ public class PauseMenuManager : GameMenu, IUsesInput
 
     private bool _isInputRegistered;
 
+    private TokenManager<float>.ManagedToken _pauseToken;
+
     #endregion
 
     #region Getters
@@ -64,12 +66,12 @@ public class PauseMenuManager : GameMenu, IUsesInput
     public void InitializeInput()
     {
         // Connect to input system
+        // InputActions.Add(
+        //     new InputData(InputManager.Instance.PControls.Player.Pause, InputType.Performed, OnPausePerformedInGame)
+        // );
+
         InputActions.Add(
-            new InputData(InputManager.Instance.PControls.Player.Pause, InputType.Performed, OnPausePerformedInGame)
-        );
-        // Connect to input system
-        InputActions.Add(
-            new InputData(InputManager.Instance.DefaultInputActions.UI.Cancel, InputType.Performed, OnPausePerformedInMenu)
+            new InputData(InputManager.Instance.DefaultInputActions.UI.Cancel, InputType.Performed, OnPausePerformed)
         );
     }
 
@@ -104,24 +106,9 @@ public class PauseMenuManager : GameMenu, IUsesInput
         InputManager.Instance.Unregister(this);
     }
 
-    private void OnPausePerformedInGame(InputAction.CallbackContext context)
+    private void OnPausePerformed(InputAction.CallbackContext context)
     {
-        if (IsPaused)
-            return;
-
         TogglePause();
-
-        Debug.Log("Pause");
-    }
-
-    private void OnPausePerformedInMenu(InputAction.CallbackContext context)
-    {
-        if (!IsPaused)
-            return;
-
-        TogglePause();
-
-        Debug.Log("Pause");
     }
 
     private void TogglePause()
@@ -214,7 +201,7 @@ public class PauseMenuManager : GameMenu, IUsesInput
         Debug.Log("Resume game");
 
         // TODO: Time manager
-        Time.timeScale = _tempTimeScale;
+        TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(_pauseToken);
 
         //Hide menu
         pauseMenuParent.SetActive(false);
@@ -230,13 +217,8 @@ public class PauseMenuManager : GameMenu, IUsesInput
         // Un-hide the pause menu
         pauseMenuParent.SetActive(true);
 
-        // Save the current timescale
-        // TODO: Time manager
-        _tempTimeScale = Time.timeScale;
-
         // Pause the game
-        // TODO: Time manager
-        Time.timeScale = 0;
+        _pauseToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(0, -1, true);
 
         // Set pause to true
         IsPaused = true;
@@ -298,12 +280,12 @@ public class PauseMenuManager : GameMenu, IUsesInput
     public void Exit(GameObject textObject)
     {
         // Resume the game
-        // TODO: Time manager
-        Time.timeScale = _tempTimeScale;
+        TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(_pauseToken);
 
         ChangeClickColor(textObject);
 
         // Go back to main menu
+        // TODO: Use a scene field
         SceneManager.LoadScene("MainMenu");
     }
 
@@ -327,5 +309,14 @@ public class PauseMenuManager : GameMenu, IUsesInput
     public void SetSelectedButton(GameObject button)
     {
         EventSystem.current.SetSelectedGameObject(button);
+    }
+
+    private void ReRegisterInput()
+    {
+        // Unregister the input user
+        InputManager.Instance.Unregister(this);
+
+        // Register the input user
+        InputManager.Instance.Register(this);
     }
 }

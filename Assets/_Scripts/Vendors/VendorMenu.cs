@@ -44,6 +44,8 @@ public class VendorMenu : GameMenu
     private PowerScriptableObject[] _medPowers;
     private PowerScriptableObject[] _drugPowers;
 
+    private TokenManager<float>.ManagedToken _pauseToken;
+
     #endregion
 
     #region Getters
@@ -297,8 +299,7 @@ public class VendorMenu : GameMenu
         gameObject.SetActive(true);
 
         // Pause the game
-        // TODO: Time manager
-        Time.timeScale = 0;
+        _pauseToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(0, -1, true);
 
         // Populate the shop
         PopulateShop();
@@ -313,8 +314,7 @@ public class VendorMenu : GameMenu
         gameObject.SetActive(false);
 
         // Unpause the game
-        // TODO: Connect with timescale manager
-        Time.timeScale = 1;
+        TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(_pauseToken);
     }
 
     public void SetSelectedGameObject(GameObject element)
