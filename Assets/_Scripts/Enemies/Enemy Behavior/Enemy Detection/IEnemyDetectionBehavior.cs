@@ -3,6 +3,9 @@ using UnityEngine;
 
 public interface IEnemyDetectionBehavior : IEnemyBehavior
 {
+    /// <summary>
+    /// sender, previous state, new state
+    /// </summary>
     public event Action<IEnemyDetectionBehavior, EnemyDetectionState, EnemyDetectionState> OnDetectionStateChanged;
 
     public bool IsDetectionEnabled { get; }

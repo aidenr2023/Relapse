@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 {
-    private static readonly int animatiorAttackProperty = Animator.StringToHash("Attack");
+    private static readonly int AnimatorAttackProperty = Animator.StringToHash("Attack");
 
     #region Serialized Fields
 
@@ -70,7 +70,6 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         //     // Turn off all the hit boxes
         //     SetAllHitBoxes(false);
         // };
-        
     }
 
     private void InitializeComponents()
@@ -81,12 +80,8 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     private void Start()
     {
-        Enemy.EnemyInfo.OnDamaged += (_, args) =>
-        {
-            // Activate the animator's hit trigger
-            animator.SetTrigger("Hit");
-            
-        };
+        // Activate the animator's hit trigger
+        Enemy.EnemyInfo.OnDamaged += (_, args) => animator.SetTrigger("Hit");
     }
 
     #endregion
@@ -126,7 +121,7 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
             return;
 
         // Play the melee attack animation
-        animator.SetTrigger(animatiorAttackProperty);
+        animator.SetTrigger(AnimatorAttackProperty);
     }
 
     private bool IsTargetInRange()

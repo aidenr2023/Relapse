@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,28 +8,64 @@ public class ShootingEnemyProjectile : MonoBehaviour
     [SerializeField] private float damage = 100f;
 
     private ShootingEnemyAttack _shootingEnemyAttack;
-    private IDamager _damager;
-    // Start is called before the first frame update
-    void Start()
+
+    private bool _isMarkedForDestruction;
+
+    private Rigidbody _rigidbody;
+    private float _velocity;
+    private Vector3 _direction;
+
+    private void Awake()
     {
+        // Get the rigidbody component
+        _rigidbody = GetComponent<Rigidbody>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void LateUpdate()
     {
-        
+        if (_isMarkedForDestruction)
+            Destroy(gameObject);
     }
+
+    private void FixedUpdate()
+    {
+        // Set the forward direction of the projectile to the direction of the projectile
+        transform.forward = _direction.normalized;
+
+        // Set the velocity of the rigidbody to the direction of the projectile
+        _rigidbody.velocity = _direction.normalized * _velocity;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
-        if(!other.TryGetComponent(out IActor actor))
-        {
+        // Return if this is marked for destruction
+        if(_isMarkedForDestruction)
             return;
-        }
-        actor.ChangeHealth(-damage, actor, _damager);
+
+        // Return if the other collider is not an actor
+        if(!other.TryGetComponent(out IActor actor))
+            return;
+
+        // Damage the player
+        actor.ChangeHealth(-damage, actor, _shootingEnemyAttack);
+
+        // Mark this for destruction
+        _isMarkedForDestruction = true;
     }
-    public void Shoot(IDamager damager, ShootingEnemyAttack shootingEnemyAttack)
+
+    public void Shoot(ShootingEnemyAttack shootingEnemyAttack, Vector3 direction, float velocity, float lifetime)
     {
-        _damager = damager;
         _shootingEnemyAttack = shootingEnemyAttack;
+        _direction = direction;
+        _velocity = velocity;
+
+        // Set the forward direction of the projectile to the direction of the projectile
+        transform.forward = _direction.normalized;
+
+        // Set the velocity of the rigidbody to the direction of the projectile
+        _rigidbody.velocity = direction.normalized * velocity;
+
+        // Set the lifetime of the projectile
+        Destroy(gameObject, lifetime);
     }
 }
