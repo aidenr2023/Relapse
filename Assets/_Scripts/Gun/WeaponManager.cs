@@ -68,13 +68,6 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
 
     private void Start()
     {
-        // Spawn the initial gun
-        if (initialGunPrefab != null)
-        {
-            var gun = Instantiate(initialGunPrefab).GetComponent<IGun>();
-            EquipGun(gun);
-        }
-
         DebugManager.Instance.AddDebuggedObject(this);
     }
 
@@ -154,8 +147,18 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
     public Action<WeaponManager, IGun> OnGunEquipped;
     public Action<WeaponManager, IGun> OnGunRemoved;
 
+    private bool _spawnedInitialGun = false;
+
     private void Update()
     {
+        // Spawn the initial gun
+        if (initialGunPrefab != null && !_spawnedInitialGun)
+        {
+            var gun = Instantiate(initialGunPrefab).GetComponent<IGun>();
+            EquipGun(gun);
+            _spawnedInitialGun = true;
+        }
+
         // TODO: Remove this and replace it with a bar or something
         UpdateReloadText();
 
@@ -213,19 +216,19 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
         //get animator set isArmed to true
         animator.SetBool("isArmed", true);
 
-        // TODO: DELETE THIS EVENTUALLY
-        // Get all the renderers in the gun
-        var renderers = gun.GameObject.GetComponentsInChildren<Renderer>();
-
-        // Deactivate the renderers
-        foreach (var cRenderer in renderers)
-        {
-            // Skip the cRenderer if the object has a particle system
-            if (cRenderer.TryGetComponent(out ParticleSystem ps))
-                continue;
-
-            cRenderer.enabled = false;
-        }
+        // // TODO: DELETE THIS EVENTUALLY
+        // // Get all the renderers in the gun
+        // var renderers = gun.GameObject.GetComponentsInChildren<Renderer>();
+        //
+        // // Deactivate the renderers
+        // foreach (var cRenderer in renderers)
+        // {
+        //     // Skip the cRenderer if the object has a particle system
+        //     if (cRenderer.TryGetComponent(out ParticleSystem ps))
+        //         continue;
+        //
+        //     cRenderer.enabled = false;
+        // }
 
         // Get the gun's game object and child objects
         var gunTransforms = gun.GameObject.GetComponentsInChildren<Transform>().ToList();

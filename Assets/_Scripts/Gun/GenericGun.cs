@@ -14,11 +14,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     [Header("Muzzle Particles")] [SerializeField]
     private Transform muzzleLocation;
-
-    [SerializeField] private ParticleSystem muzzleParticles;
-    [SerializeField] [Range(0, 500)] private int muzzleParticlesCount = 200;
-
-    [SerializeField] private VisualEffect muzzleFlashPrefab;
+    [SerializeField] private VisualEffect muzzleFlash;
 
     [Header("Impact Particles")] [SerializeField]
     private ParticleSystem impactParticles;
@@ -379,27 +375,27 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     private void PlayMuzzleFlash()
     {
-        // Instantiate the muzzle flash VFX
-        var muzzleFlashInstance = Instantiate(muzzleFlashPrefab, muzzleLocation.position, muzzleLocation.rotation);
+        // // Instantiate the muzzle flash VFX
+        // var muzzleFlashInstance = Instantiate(muzzleFlash, muzzleLocation.position, muzzleLocation.rotation);
 
         // Set the layer of the muzzle flash to the same layer as the gun
-        muzzleFlashInstance.gameObject.layer = gameObject.layer;
+        muzzleFlash.gameObject.layer = gameObject.layer;
 
         // Set the layer of all the children of the muzzle flash to the same layer as the gun
-        foreach (Transform child in muzzleFlashInstance.transform)
+        foreach (Transform child in muzzleFlash.transform)
             child.gameObject.layer = gameObject.layer;
 
-        // Get the max lifetime of the muzzle flash
-        var maxLifetime = muzzleFlashInstance.GetFloat("MaxLifetime");
+        // // Get the max lifetime of the muzzle flash
+        // var maxLifetime = 5;
 
-        // Destroy the muzzle flash after the max lifetime
-        Destroy(muzzleFlashInstance.gameObject, maxLifetime);
+        // // Destroy the muzzle flash after the max lifetime
+        // Destroy(muzzleFlash.gameObject, maxLifetime);
 
         // Play the muzzle flash
-        muzzleFlashInstance.Play();
+        muzzleFlash.Play();
 
-        // Set the particles to be a child of the gun
-        muzzleFlashInstance.transform.SetParent(muzzleLocation);
+        // // Set the particles to be a child of the gun
+        // muzzleFlash.transform.SetParent(muzzleLocation);
     }
 
     public void Interact(PlayerInteraction playerInteraction)
@@ -410,7 +406,6 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)
     {
-        Debug.Log($"Looking at {gunInformation.GunName}");
     }
 
     public string InteractText(PlayerInteraction playerInteraction)
