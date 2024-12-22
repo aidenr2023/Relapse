@@ -91,6 +91,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
 
         // Initialize the vignette token
         _powerChargeVignetteToken = PostProcessingVolumeController.Instance.VignetteModule.Tokens.AddToken(0, -1, true);
+
+        // Add this to the debug manager
+        DebugManager.Instance.AddDebuggedObject(this);
     }
 
     private void OnEnable()
@@ -103,6 +106,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
     {
         // Unregister this with the input manager
         InputManager.Instance.Unregister(this);
+
+        // Remove this from the debug manager
+        DebugManager.Instance.RemoveDebuggedObject(this);
     }
 
     private void InitializeComponents()
@@ -186,6 +192,10 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
         if (CurrentPower == null)
             return;
 
+        // Return if the current power token is null
+        if (CurrentPowerToken == null)
+            return;
+
         // Return if the power is currently cooling down
         if (CurrentPowerToken.IsCoolingDown)
             return;
@@ -255,6 +265,10 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
     {
         // Skip if the current power is null
         if (CurrentPower == null)
+            return;
+
+        // Return if the current power token is null
+        if (CurrentPowerToken == null)
             return;
 
         // Skip if the power is not charging
@@ -436,7 +450,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
     {
         uint chargeState = 0;
 
-        if (_isChargingPower && CurrentPower != null)
+        if (_isChargingPower && CurrentPower != null && CurrentPowerToken != null)
         {
             // If the player is currently charging power, but it is not fully complete, set the charge state to 1
             if (CurrentPowerToken.ChargePercentage < 1)
@@ -457,6 +471,10 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
     {
         // Set the is charging power flag to false
         _isChargingPower = false;
+
+        // Return if the current power token is null
+        if (CurrentPowerToken == null)
+            return false;
 
         // Call the current power's release method
         var isChargeComplete = CurrentPowerToken.ChargePercentage >= 1;
@@ -515,8 +533,12 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
 
     public void ResetPlayer()
     {
-        // Clear the power tokens
-        _powerTokens.Clear();
+        // Reset each power token
+        foreach (var powerToken in _powerTokens.Values)
+            powerToken.Reset();
+
+        // Set the is charging power flag to false
+        _isChargingPower = false;
     }
 
     #region Event Functions
@@ -720,7 +742,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
             $"Tolerance: {_player.PlayerInfo.CurrentTolerance:0.00} / {_player.PlayerInfo.MaxTolerance:0.00} ({tolerancePercentage:0.00}%)\n\n");
 
         debugString.Append($"Current Power: {CurrentPower.name}\n");
-        debugString.Append($"\tPurity (Level): {CurrentPowerToken.CurrentLevel}\n");
+        // debugString.Append($"\tPurity (Level): {CurrentPowerToken.CurrentLevel}\n");
         debugString.Append($"\tTolerance Impact: {CurrentPowerToken.ToleranceMeterImpact}\n");
 
         // Charging Logic
