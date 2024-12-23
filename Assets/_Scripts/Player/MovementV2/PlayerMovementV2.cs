@@ -558,4 +558,10 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     }
 
     #endregion
+
+    public void ForceResetSprinting()
+    {
+        _isSprinting = false;
+        IsSprintToggled = false;
+    }
 }

@@ -74,6 +74,19 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
         InputActions.Add(new InputData(
             InputManager.Instance.PControls.PlayerMovementBasic.Jump, InputType.Performed, OnJumpPerformed)
         );
+        InputActions.Add(new InputData(
+            InputManager.Instance.PControls.Player.Sprint, InputType.Performed, OnSprintPerformed)
+        );
+        InputActions.Add(new InputData(
+            InputManager.Instance.PControls.Player.SprintToggle, InputType.Performed, OnSprintPerformed)
+        );
+
+    }
+
+    private void OnSprintPerformed(InputAction.CallbackContext obj)
+    {
+        // Force the slide to end
+        EndSlide();
     }
 
     #region Input Functions
@@ -158,11 +171,18 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
         OnSlideStart += PushControls;
         OnSlideStart += AddVelocityOnSlideStart;
         OnSlideStart += ChangeHeightOnSlide;
+        OnSlideStart += ForceStopSprintingOnSlide;
 
         // Add the slide end events
         OnSlideEnd += _ => _isSliding = false;
         OnSlideEnd += RemoveControls;
         OnSlideEnd += ChangeHeightOnSlide;
+    }
+
+    private void ForceStopSprintingOnSlide(PlayerSlide obj)
+    {
+        // Force the player to stop sprinting
+        ParentComponent.ForceResetSprinting();
     }
 
     private void ChangeHeightOnSlide(PlayerSlide obj)
