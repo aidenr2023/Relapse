@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using TMPro;
 using UnityEngine.EventSystems;
@@ -113,6 +114,10 @@ public class PauseMenuManager : GameMenu, IUsesInput
 
     private void TogglePause()
     {
+        // If there are any other active menus, don't toggle the pause menu
+        if (MenuManager.Instance.ActiveMenus.Any(n => n != this))
+            return;
+
         if (!IsPaused)
             Pause();
 

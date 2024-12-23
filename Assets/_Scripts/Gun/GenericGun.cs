@@ -105,6 +105,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Set the fire delta to the time between shots
         _fireDelta = TimeBetweenShots;
+
+        // // Reinitialize the visual effect
+        // muzzleFlash.Stop();
+        // muzzleFlash.Reinit();
     }
 
     #region Update Functions
@@ -391,13 +395,17 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // // Destroy the muzzle flash after the max lifetime
         // Destroy(muzzleFlash.gameObject, maxLifetime);
 
+        // Disable and re-enable the muzzle flash to reset the particles
+        muzzleFlash.gameObject.SetActive(false);
+        muzzleFlash.gameObject.SetActive(true);
+
         // Play the muzzle flash
         muzzleFlash.Play();
 
         // // Set the particles to be a child of the gun
         // muzzleFlash.transform.SetParent(muzzleLocation);
 
-        Debug.Log($"Playing muzzle flash");
+        // Debug.Log($"MUZZLE FLASH: {muzzleFlash.culled}, {muzzleFlash.gameObject.activeInHierarchy}, {muzzleFlash.playRate}, {muzzleFlash.HasAnySystemAwake()}");;
     }
 
     public void Interact(PlayerInteraction playerInteraction)

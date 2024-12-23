@@ -42,6 +42,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     [SerializeField] private float acceleration = 200;
     [SerializeField] private AnimationCurve accelerationFactorFromDot;
 
+    [SerializeField] private LayerMask layersToIgnore;
+
     #endregion
 
     #region Private Fields
@@ -219,7 +221,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     private void UpdateGroundCheck()
     {
         // Create a layer mask that includes everything but the actor layer and NonPhysical
-        var layerMask = ~LayerMask.GetMask("Actor", "NonPhysical");
+        // var layerMask = ~LayerMask.GetMask("Actor", "NonPhysical");
+        var layerMask = ~layersToIgnore;
 
         // Perform a raycast to check if the player is grounded
         var hit = Physics.Raycast(
