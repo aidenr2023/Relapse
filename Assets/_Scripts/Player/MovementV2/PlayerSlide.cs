@@ -51,6 +51,8 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
 
     #endregion
 
+    #region Initialization Functions
+
     protected override void CustomAwake()
     {
         // Initialize the input
@@ -80,7 +82,6 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
         InputActions.Add(new InputData(
             InputManager.Instance.PControls.Player.SprintToggle, InputType.Performed, OnSprintTogglePerformed)
         );
-
     }
 
     #region Input Functions
@@ -90,7 +91,7 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
         // Return if not currently sliding
         if (!_isSliding)
             return;
-        
+
         // Force sprinting to be true
         ParentComponent.ForceSetSprinting(true);
 
@@ -131,6 +132,9 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
 
         // Set the flag to true
         _slideInputThisFrame = true;
+
+        // In the basic player movement, reset the jump pre fire
+        ParentComponent.BasicPlayerMovement.ResetJumpPreFire();
     }
 
     private void OnSlidePerformedStop(InputAction.CallbackContext obj)
@@ -158,7 +162,6 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
     }
 
     #endregion
-
 
     private void OnEnable()
     {
@@ -198,6 +201,8 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
         OnSlideEnd += RemoveControls;
         OnSlideEnd += ChangeHeightOnSlide;
     }
+
+    #region Slide Events
 
     private void ForceStopSprintingOnSlide(PlayerSlide obj)
     {
@@ -252,6 +257,19 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
         _useLandVelocity = true;
     }
 
+    #endregion
+
+    #endregion
+
+    #region Update Functions
+
+    private void Update()
+    {
+        // Update the midAir grace timer
+        _midAirGraceTimer.SetMaxTime(midAirGraceTime);
+        _midAirGraceTimer.Update(Time.deltaTime);
+    }
+
     private void LateUpdate()
     {
         // Reset the slide input flag
@@ -278,12 +296,8 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
         if (!isEnabled)
             return;
 
-        // Return if the midAir grace timer is not active
-        if (!_midAirGraceTimer.IsActive)
-            return;
-
-        // Return if the midAir grace timer is complete
-        if (!_midAirGraceTimer.IsNotComplete)
+        // Return if the midAir grace timer is not active or is complete
+        if (!_midAirGraceTimer.IsActive || !_midAirGraceTimer.IsNotComplete)
             return;
 
         // If the player is not grounded, return
@@ -296,22 +310,6 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
 
         // Start the slide
         StartSlide();
-    }
-
-    private void StartSlide()
-    {
-        // If this script is not enabled, return
-        if (!isEnabled)
-            return;
-
-        // Slide the player
-        // Debug.Log($"Slide Starting! Use Land Velocity?: {_useLandVelocity}");
-
-        // Reset the midAir grace timer
-        _midAirGraceTimer.Stop();
-
-        // Invoke the slide event
-        OnSlideStart?.Invoke(this);
     }
 
     private void DetectSlideEnd()
@@ -328,12 +326,6 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
 
         // End the slide
         EndSlide();
-    }
-
-    private void EndSlide()
-    {
-        // Invoke the slide end event
-        OnSlideEnd?.Invoke(this);
     }
 
     public override void FixedMovementUpdate()
@@ -415,16 +407,43 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
         ParentComponent.Rigidbody.AddForce(force, ForceMode.Acceleration);
     }
 
-    private void Update()
+    #endregion
+
+    private void StartSlide()
     {
-        // Update the midAir grace timer
-        _midAirGraceTimer.SetMaxTime(midAirGraceTime);
-        _midAirGraceTimer.Update(Time.deltaTime);
+        // If this script is not enabled, return
+        if (!isEnabled)
+            return;
+
+        // Slide the player
+        // Debug.Log($"Slide Starting! Use Land Velocity?: {_useLandVelocity}");
+
+        // Reset the midAir grace timer
+        _midAirGraceTimer.Stop();
+
+        // Invoke the slide event
+        OnSlideStart?.Invoke(this);
     }
 
+    private void EndSlide()
+    {
+        // Invoke the slide end event
+        OnSlideEnd?.Invoke(this);
+    }
+
+    public void ResetSlidePreFire()
+    {
+        // Reset the midAir grace timer
+        _midAirGraceTimer.SetMaxTimeAndReset(midAirGraceTime);
+        _midAirGraceTimer.Stop();
+    }
+
+    #region Debugging
 
     public override string GetDebugText()
     {
         return "";
     }
+
+    #endregion
 }

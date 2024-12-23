@@ -18,6 +18,8 @@ public class CountdownTimer
 
     public bool IsNotComplete => TimeLeft > 0;
 
+    public bool IsComplete => TimeLeft <= 0;
+
     public event Action OnTimerEnd;
 
     public float Percentage => 1 - (TimeLeft / MaxTime);

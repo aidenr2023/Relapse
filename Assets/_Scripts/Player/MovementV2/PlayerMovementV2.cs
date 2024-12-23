@@ -279,6 +279,10 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         if (BasicPlayerMovement.IsTryingToJump)
             return;
 
+        // Return if the player is set to jump
+        if (BasicPlayerMovement.IsSetToJump)
+            return;
+
         // Get the current velocity of the player
         var currentVelocity = _rigidbody.velocity;
 

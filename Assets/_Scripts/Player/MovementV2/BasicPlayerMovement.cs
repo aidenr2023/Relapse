@@ -12,9 +12,9 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
     [SerializeField] [Min(1)] private float sprintMultiplier = 1.5f;
 
-    [SerializeField] [Min(0)] private float jumpForce = 10f;
-
-    [SerializeField] [Range(0, 1)] private float airMovementMultiplier = 0.5f;
+    [SerializeField, Min(0)] private float jumpForce = 10f;
+    [SerializeField, Min(0)] private float jumpGraceTime = 0.5f;
+    [SerializeField, Range(0, 1)] private float airMovementMultiplier = 0.5f;
 
     [Header("Sounds")] [SerializeField] private SoundPool footstepSoundPool;
 
@@ -25,11 +25,15 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
     #endregion
 
+    #region Private Fields
+
     private Vector2 _movementInput;
 
-    private bool _isJumpThisFrame;
-
     private readonly CountdownTimer _footstepTimer = new(0.5f, true, false);
+
+    private CountdownTimer _jumpGraceTimer;
+
+    #endregion
 
     #region Getters
 
@@ -48,6 +52,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
     public bool IsTryingToJump { get; set; }
 
+    public bool IsSetToJump => _jumpGraceTimer.IsActive && !_jumpGraceTimer.IsComplete;
+
     #endregion
 
     #region Initialization Functions
@@ -56,6 +62,11 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     {
         // Initialize the controls
         InitializeInput();
+
+        // Initialize the jump grace timer
+        _jumpGraceTimer = new CountdownTimer(jumpGraceTime, false, true);
+        _jumpGraceTimer.OnTimerEnd += () => _jumpGraceTimer.Stop();
+        _jumpGraceTimer.Stop();
     }
 
     private void Start()
@@ -135,15 +146,18 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         if (!canJumpWithoutPower)
             return;
 
-        // If the player is not grounded, return
-        if (!ParentComponent.IsGrounded)
-        {
-            _isJumpThisFrame = false;
+        // Return if this is not the active movement script
+        if (ParentComponent.CurrentMovementScript != this)
             return;
-        }
 
-        // Set the jump flag to true
-        _isJumpThisFrame = true;
+        // Restart the jump grace timer
+        _jumpGraceTimer.SetMaxTimeAndReset(jumpGraceTime);
+        _jumpGraceTimer.Start();
+
+        // Reset the slide pre fire of the slide script
+        ParentComponent.PlayerSlide.ResetSlidePreFire();
+
+        Debug.Log($"Jump Input");
     }
 
     #endregion
@@ -152,6 +166,10 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
     private void Update()
     {
+        // Update the jump grace timer
+        _jumpGraceTimer.SetMaxTime(jumpGraceTime);
+        _jumpGraceTimer.Update(Time.deltaTime);
+
         // Set the is trying to jump flag to false if the player is falling
         if (ParentComponent.Rigidbody.velocity.y < 0)
             IsTryingToJump = false;
@@ -309,15 +327,15 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
     private void UpdateJump()
     {
-        // Return if the jump this frame flag is false
-        if (!_isJumpThisFrame)
+        if (!canJumpWithoutPower)
             return;
-
-        // Set the jump this frame flag to false
-        _isJumpThisFrame = false;
 
         // Return if the player is not grounded
         if (!ParentComponent.IsGrounded)
+            return;
+
+        // Return if the jump grace timer is not active or is complete
+        if (!_jumpGraceTimer.IsActive || _jumpGraceTimer.IsComplete)
             return;
 
         // Jump in the direction of the movement input
@@ -342,6 +360,12 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
         // Set the is trying to jump flag to true
         IsTryingToJump = true;
+
+        // Reset the jump grace timer
+        _jumpGraceTimer.SetMaxTimeAndReset(jumpGraceTime);
+        _jumpGraceTimer.Stop();
+
+        Debug.Log($"Jump Performed!");
     }
 
     #endregion
@@ -356,11 +380,21 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         canJumpWithoutPower = canJump;
     }
 
+    public void ResetJumpPreFire()
+    {
+        // Reset the jump grace timer
+        _jumpGraceTimer.SetMaxTimeAndReset(jumpGraceTime);
+        _jumpGraceTimer.Stop();
+    }
+
     #region Debug
 
     public override string GetDebugText()
     {
-        return $"\tInput   : {_movementInput}\n";
+        return
+            $"\tInput   : {_movementInput}\n" +
+            $"\tJump Timer: {_jumpGraceTimer.Percentage:0.00}\n" +
+            $"\tTrying to Jump: {IsTryingToJump}";
     }
 
     private void OnDrawGizmos()
