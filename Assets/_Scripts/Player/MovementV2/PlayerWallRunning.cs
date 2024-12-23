@@ -724,11 +724,11 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         if (_rays == null)
             return;
 
-        const float rayLength = 10f;
+        var rayLength = wallRunningDetectionDistance;
 
+        // Draw the rays
         for (var i = 0; i < rayCount; i++)
         {
-            // Draw the rays
             Gizmos.color = Color.yellow;
             Gizmos.DrawRay(transform.position, _rays[i].direction * rayLength);
         }

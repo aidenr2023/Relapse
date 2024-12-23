@@ -11,6 +11,8 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
 
     [SerializeField] private float slideStrength = 10f;
 
+    [SerializeField, Min(1.25f)] private float slideHeight = 1.25f;
+
     [Tooltip("How long before landing the player can still slide")] [SerializeField, Min(0)]
     private float midAirGraceTime = 0.5f;
 
@@ -155,10 +157,19 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
         OnSlideStart += _ => _isSliding = true;
         OnSlideStart += PushControls;
         OnSlideStart += AddVelocityOnSlideStart;
+        OnSlideStart += ChangeHeightOnSlide;
 
         // Add the slide end events
-        OnSlideEnd += RemoveControls;
         OnSlideEnd += _ => _isSliding = false;
+        OnSlideEnd += RemoveControls;
+        OnSlideEnd += ChangeHeightOnSlide;
+    }
+
+    private void ChangeHeightOnSlide(PlayerSlide obj)
+    {
+        ParentComponent.TargetPlayerHeight = _isSliding
+            ? slideHeight
+            : ParentComponent.DefaultPlayerHeight;
     }
 
     private void AddVelocityOnSlideStart(PlayerSlide obj)

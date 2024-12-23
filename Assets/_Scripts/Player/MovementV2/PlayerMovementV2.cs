@@ -21,13 +21,11 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     // Reference to the player's orientation transform
     [SerializeField] private Transform orientation;
 
-    [Header("Floating Controller")] [SerializeField]
-    private float desiredCapsuleHeight = 2;
+    [Header("Floating Controller")] [SerializeField, Min(0)]
+    private float desiredCapsuleHeightOffset = .25f;
 
-    [SerializeField] private float totalPlayerHeight = 2;
+    [SerializeField, Min(1), Delayed] private float defaultPlayerHeight = 2;
 
-    [SerializeField] private float rideHeightOffset = 1f;
-    [SerializeField] [Min(0)] private float rideHeight = .5f;
     [SerializeField] private float rideSpringStrength;
     [SerializeField] private float rideSpringDamper;
 
@@ -66,6 +64,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private Vector3 _landVelocity;
 
+    private float _currentPlayerHeight;
+    private float _rideHeight = .5f;
+
     #endregion
 
     #region Getters
@@ -91,6 +92,10 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     public bool IsSprinting => (_isSprinting || IsSprintToggled) && MovementInput.magnitude > 0.25f;
 
     public float MovementSpeed => maxSpeed;
+
+    public float DefaultPlayerHeight => defaultPlayerHeight;
+
+    public float TargetPlayerHeight { get; set; }
 
     public PlayerMovementScript CurrentMovementScript => _movementScripts.Peek();
 
@@ -124,6 +129,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         // Initialize the input
         InitializeInput();
+
+        TargetPlayerHeight = defaultPlayerHeight;
+        _currentPlayerHeight = defaultPlayerHeight;
     }
 
     private void OnEnable()
@@ -235,7 +243,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             transform.position,
             Vector3.down,
             out _floatingControllerHit,
-            rideHeight,
+            _rideHeight,
             layerMask
         );
 
@@ -291,7 +299,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         var relativeVelocity = rayDirectionVelocity - otherDirectionVelocity;
 
         // Distance of the ray hit vs the ride height
-        var rideHeightPenetration = _floatingControllerHit.distance - rideHeight;
+        var rideHeightPenetration = _floatingControllerHit.distance - _rideHeight;
 
         // var remainingHeight = totalPlayerHeight - _capsuleCollider.height;
         // var capsuleHeightOffset = rideHeight - remainingHeight;
@@ -376,6 +384,19 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private void UpdateCapsuleColliderHeight()
     {
+        const float defaultFrameTime = 1 / 60f;
+        var frameAmount = Time.deltaTime / defaultFrameTime;
+
+        _currentPlayerHeight = Mathf.Lerp(_currentPlayerHeight, TargetPlayerHeight, frameAmount * .25f);
+
+        if (Mathf.Abs(_currentPlayerHeight - TargetPlayerHeight) < .001f)
+            _currentPlayerHeight = TargetPlayerHeight;
+
+        _rideHeight = _currentPlayerHeight / 2;
+        var desiredCapsuleHeight = _currentPlayerHeight - desiredCapsuleHeightOffset;
+
+        Debug.Log($"_currentPlayerHeight: {_currentPlayerHeight:0.00} => {TargetPlayerHeight:0.00}");
+
         // Return if the floating controller hit is not set
         if (!_floatingControllerHit.collider)
         {
@@ -398,7 +419,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         _capsuleCollider.height = Mathf.Max(newCapsuleHeight, 1);
 
         // Set the capsule collider y position based on the distance
-        var newYPosition = (totalPlayerHeight - newCapsuleHeight) / 2;
+        var newYPosition = (defaultPlayerHeight - newCapsuleHeight) / 2;
         _capsuleCollider.center = new Vector3(0, newYPosition, 0);
     }
 
@@ -492,7 +513,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         Gizmos.color = Color.red;
         Gizmos.DrawRay(
             transform.position,
-            Vector3.down * rideHeight
+            Vector3.down * _rideHeight
         );
 
         if (_floatingControllerHit.collider)
