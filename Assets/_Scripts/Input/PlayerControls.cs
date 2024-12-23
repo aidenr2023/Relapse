@@ -582,6 +582,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Slide"",
+                    ""type"": ""Button"",
+                    ""id"": ""818cbf01-522f-4cb2-b09a-3862ff9be2e7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -694,6 +703,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Move"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""422e6a6c-cca0-4aa2-aaf0-842165d6d8e1"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KB n M"",
+                    ""action"": ""Slide"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""94359dc2-cd56-47ce-a59b-5ef3c7850981"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Slide"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -795,6 +826,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_PlayerMovementBasic_Move = m_PlayerMovementBasic.FindAction("Move", throwIfNotFound: true);
         m_PlayerMovementBasic_Jump = m_PlayerMovementBasic.FindAction("Jump", throwIfNotFound: true);
         m_PlayerMovementBasic_Dash = m_PlayerMovementBasic.FindAction("Dash", throwIfNotFound: true);
+        m_PlayerMovementBasic_Slide = m_PlayerMovementBasic.FindAction("Slide", throwIfNotFound: true);
         // PlayerMovementWallRunning
         m_PlayerMovementWallRunning = asset.FindActionMap("PlayerMovementWallRunning", throwIfNotFound: true);
         m_PlayerMovementWallRunning_Jump = m_PlayerMovementWallRunning.FindAction("Jump", throwIfNotFound: true);
@@ -1112,6 +1144,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerMovementBasic_Move;
     private readonly InputAction m_PlayerMovementBasic_Jump;
     private readonly InputAction m_PlayerMovementBasic_Dash;
+    private readonly InputAction m_PlayerMovementBasic_Slide;
     public struct PlayerMovementBasicActions
     {
         private @PlayerControls m_Wrapper;
@@ -1119,6 +1152,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_PlayerMovementBasic_Move;
         public InputAction @Jump => m_Wrapper.m_PlayerMovementBasic_Jump;
         public InputAction @Dash => m_Wrapper.m_PlayerMovementBasic_Dash;
+        public InputAction @Slide => m_Wrapper.m_PlayerMovementBasic_Slide;
         public InputActionMap Get() { return m_Wrapper.m_PlayerMovementBasic; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1137,6 +1171,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Dash.started += instance.OnDash;
             @Dash.performed += instance.OnDash;
             @Dash.canceled += instance.OnDash;
+            @Slide.started += instance.OnSlide;
+            @Slide.performed += instance.OnSlide;
+            @Slide.canceled += instance.OnSlide;
         }
 
         private void UnregisterCallbacks(IPlayerMovementBasicActions instance)
@@ -1150,6 +1187,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Dash.started -= instance.OnDash;
             @Dash.performed -= instance.OnDash;
             @Dash.canceled -= instance.OnDash;
+            @Slide.started -= instance.OnSlide;
+            @Slide.performed -= instance.OnSlide;
+            @Slide.canceled -= instance.OnSlide;
         }
 
         public void RemoveCallbacks(IPlayerMovementBasicActions instance)
@@ -1262,6 +1302,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
+        void OnSlide(InputAction.CallbackContext context);
     }
     public interface IPlayerMovementWallRunningActions
     {

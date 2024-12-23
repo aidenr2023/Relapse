@@ -129,7 +129,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     }
 
 
-    private void OnJumpPerformed(InputAction.CallbackContext obj)
+    public void OnJumpPerformed(InputAction.CallbackContext obj)
     {
         // Return if the player cannot jump
         if (!canJumpWithoutPower)

@@ -760,6 +760,7 @@ GameObject:
   - component: {fileID: -1310880380803664248}
   - component: {fileID: -2300652163101954379}
   - component: {fileID: 7032570368268033865}
+  - component: {fileID: 936152737596805865}
   - component: {fileID: 9038693709593017749}
   - component: {fileID: 4146044329642554987}
   - component: {fileID: 1575649681136444178}
@@ -1046,9 +1047,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraPivot: {fileID: 5244302159661097867}
   orientation: {fileID: 5224293575626551686}
-  layersToIgnore:
-    serializedVersion: 2
-    m_Bits: 33536
   desiredCapsuleHeight: 1.75
   totalPlayerHeight: 2
   rideHeightOffset: 1
@@ -1103,6 +1101,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  layersToIgnore:
+    serializedVersion: 2
+    m_Bits: 33536
 --- !u!114 &-1310880380803664248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1206,6 +1207,24 @@ MonoBehaviour:
     settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
     volume: 0.5
     isPersistent: 1
+--- !u!114 &936152737596805865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3703685084401515452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 641ce49655a1404aaf1759e9b2105a9e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slideStrength: 4
+  midAirGraceTime: 0.5
+  slideDeceleration: 4
+  slideStopVelocityThreshold: 6
+  landVelocityTransferMultiplier: 0.65
+  landVelocityTransferMax: 30
 --- !u!114 &9038693709593017749
 MonoBehaviour:
   m_ObjectHideFlags: 0

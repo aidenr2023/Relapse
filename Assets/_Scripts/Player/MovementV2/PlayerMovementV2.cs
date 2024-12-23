@@ -64,7 +64,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private bool _wasPreviouslyGrounded;
 
-    private float _landYVelocity;
+    private Vector3 _landVelocity;
 
     #endregion
 
@@ -100,6 +100,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public PlayerDash Dash { get; private set; }
 
+    public PlayerSlide PlayerSlide { get; private set; }
+
     public Vector3 GroundCollisionForward =>
         Vector3.Cross(_floatingControllerHit.normal, -CameraPivot.transform.right).normalized;
 
@@ -113,7 +115,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     public event Action OnSprintStart;
     public event Action OnSprintEnd;
 
-    public event Action<float> OnLand;
+    public event Action<Vector3> OnLand;
 
     protected override void CustomAwake()
     {
@@ -152,6 +154,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         // Get the dash component
         Dash = GetComponent<PlayerDash>();
+
+        // Get the slide component
+        PlayerSlide = GetComponent<PlayerSlide>();
     }
 
     private void Start()
@@ -215,7 +220,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         CurrentMovementScript?.FixedMovementUpdate();
 
         // Get the y velocity of the player
-        _landYVelocity = _rigidbody.velocity.y;
+        _landVelocity = _rigidbody.velocity;
+        // _landYVelocity = _rigidbody.velocity.y;
     }
 
     private void UpdateGroundCheck()
@@ -243,7 +249,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Handle the code for when the player lands
         // Invoke the on land event
         if (IsGrounded && !_wasPreviouslyGrounded)
-            OnLand?.Invoke(Mathf.Abs(_landYVelocity));
+            OnLand?.Invoke(_landVelocity);
 
         // Set the was previously grounded state
         _wasPreviouslyGrounded = IsGrounded;

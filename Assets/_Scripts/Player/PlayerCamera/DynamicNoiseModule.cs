@@ -64,10 +64,12 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
             movementV2.OnLand += ShakeOnLand;
     }
 
-    private void ShakeOnLand(float obj)
+    private void ShakeOnLand(Vector3 landVelocity)
     {
+        var landYVelocity = Mathf.Abs(landVelocity.y);
+
         // Check if the velocity is less than the threshold
-        if (obj < groundShakeVelocityThreshold)
+        if (landYVelocity < groundShakeVelocityThreshold)
             return;
 
         _groundShakeTimer.SetMaxTimeAndReset(groundShakeTime);
