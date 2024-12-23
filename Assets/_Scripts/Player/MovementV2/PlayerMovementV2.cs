@@ -8,8 +8,6 @@ using UnityEngine.Serialization;
 
 public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDebugged, IUsesInput
 {
-    private const float GROUND_VELOCITY_THRESHOLD = 0.05f;
-
     #region Serialized Fields
 
     [Header("Important Transforms")]
@@ -39,6 +37,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     [SerializeField] private float acceleration = 200;
     [SerializeField] private AnimationCurve accelerationFactorFromDot;
+
+    [SerializeField, Min(0)] private float hardSpeedLimit = 30;
+    [SerializeField, Range(0, 1)] private float hardSpeedLimitLerpAmount = .1f;
 
     [SerializeField] private LayerMask layersToIgnore;
 
@@ -92,6 +93,10 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     public bool IsSprinting => (_isSprinting || IsSprintToggled) && MovementInput.magnitude > 0.25f;
 
     public float MovementSpeed => maxSpeed;
+
+    public float HardSpeedLimit => hardSpeedLimit;
+
+    public float HardSpeedLimitLerpAmount => hardSpeedLimitLerpAmount;
 
     public float DefaultPlayerHeight => defaultPlayerHeight;
 
@@ -384,8 +389,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private void UpdateCapsuleColliderHeight()
     {
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.deltaTime / defaultFrameTime;
+        const float fixedFrameTime = 1 / 50f;
+        var frameAmount = Time.fixedDeltaTime / fixedFrameTime;
 
         _currentPlayerHeight = Mathf.Lerp(_currentPlayerHeight, TargetPlayerHeight, frameAmount * .25f);
 

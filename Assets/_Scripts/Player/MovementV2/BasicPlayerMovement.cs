@@ -29,7 +29,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
     private bool _isJumpThisFrame;
 
-    private CountdownTimer _footstepTimer = new(0.5f, true, false);
+    private readonly CountdownTimer _footstepTimer = new(0.5f, true, false);
 
     #region Getters
 
@@ -182,6 +182,9 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         // Update the movement
         UpdateLateralMovement();
 
+        // Apply the lateral speed limit
+        ApplyLateralSpeedLimit();
+
         // Update the jump
         UpdateJump();
     }
@@ -274,6 +277,36 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         _footstepTimer.SetActive(true);
     }
 
+    private void ApplyLateralSpeedLimit()
+    {
+        var vel = ParentComponent.Rigidbody.velocity;
+
+        // Get the lateral velocity of the player
+        var lateralVelocity = new Vector3(vel.x, 0, vel.z);
+
+        // Get the speed limit
+        var speedLimit = ParentComponent.HardSpeedLimit;
+
+        // If the lateral velocity is less than the speed limit, return
+        if (lateralVelocity.magnitude <= speedLimit)
+            return;
+
+        // Get the normalized lateral velocity
+        var normalizedLateralVelocity = lateralVelocity.normalized;
+
+        const float fixedFrameTime = 1 / 50f;
+        var frameAmount = Time.fixedDeltaTime / fixedFrameTime;
+
+        var lerpAmount = ParentComponent.HardSpeedLimitLerpAmount;
+
+        // Calculate the new velocity
+        var newVelocity =
+            Vector3.Lerp(lateralVelocity, normalizedLateralVelocity * speedLimit, lerpAmount * frameAmount);
+
+        // Apply the new velocity
+        ParentComponent.Rigidbody.velocity = new Vector3(newVelocity.x, vel.y, newVelocity.z);
+    }
+
     private void UpdateJump()
     {
         // Return if the jump this frame flag is false
@@ -299,7 +332,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         var jumpDirection = ParentComponent.transform.up.normalized;
 
         // Kill the vertical velocity
-        ParentComponent.Rigidbody.velocity = new Vector3(ParentComponent.Rigidbody.velocity.x, 0, ParentComponent.Rigidbody.velocity.z);
+        ParentComponent.Rigidbody.velocity =
+            new Vector3(ParentComponent.Rigidbody.velocity.x, 0, ParentComponent.Rigidbody.velocity.z);
 
         ParentComponent.Rigidbody.AddForce(jumpDirection * jumpForce, ForceMode.VelocityChange);
 
@@ -322,12 +356,12 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         canJumpWithoutPower = canJump;
     }
 
+    #region Debug
+
     public override string GetDebugText()
     {
         return $"\tInput   : {_movementInput}\n";
     }
-
-    #region Debug
 
     private void OnDrawGizmos()
     {
