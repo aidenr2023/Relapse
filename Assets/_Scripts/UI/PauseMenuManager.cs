@@ -35,14 +35,13 @@ public class PauseMenuManager : GameMenu, IUsesInput
 
     #region Private Fields
 
-    private float _tempTimeScale;
-    private float _fixedDeltaTime;
-
     private readonly Stack<GameObject> _menuStack = new();
 
     private bool _isInputRegistered;
 
     private TokenManager<float>.ManagedToken _pauseToken;
+
+    private bool _inputtedThisFrame;
 
     #endregion
 
@@ -67,14 +66,15 @@ public class PauseMenuManager : GameMenu, IUsesInput
     public void InitializeInput()
     {
         // Connect to input system
-        // InputActions.Add(
-        //     new InputData(InputManager.Instance.PControls.Player.Pause, InputType.Performed, OnPausePerformedInGame)
-        // );
+        InputActions.Add(
+            new InputData(InputManager.Instance.DefaultInputActions.UI.Cancel, InputType.Performed, OnBackPerformed)
+        );
 
         InputActions.Add(
-            new InputData(InputManager.Instance.DefaultInputActions.UI.Cancel, InputType.Performed, OnPausePerformed)
+            new InputData(InputManager.Instance.PControls.Player.Pause, InputType.Performed, OnPausePerformed)
         );
     }
+
 
     private void Start()
     {
@@ -109,7 +109,34 @@ public class PauseMenuManager : GameMenu, IUsesInput
 
     private void OnPausePerformed(InputAction.CallbackContext context)
     {
+        // Return if inputted this frame
+        if (_inputtedThisFrame)
+            return;
+
+        Debug.Log($"Pause Button Pressed!");
+
         TogglePause();
+    }
+
+
+    private void OnBackPerformed(InputAction.CallbackContext obj)
+    {
+        // Return if inputted this frame
+        if (_inputtedThisFrame)
+            return;
+
+        // If the game is not paused, return
+        if (!IsPaused)
+            return;
+
+        // Check if the menu stack has more than one item
+        // If it does, go back to the previous menu
+        if (_menuStack.Count > 1)
+            Back();
+
+        // Resume the game
+        else
+            Resume(pauseMenuPanel.transform.GetChild(0).gameObject);
     }
 
     private void TogglePause()
@@ -121,17 +148,9 @@ public class PauseMenuManager : GameMenu, IUsesInput
         if (!IsPaused)
             Pause();
 
+        // Resume the game
         else
-        {
-            // Check if the menu stack has more than one item
-            // If it does, go back to the previous menu
-            if (_menuStack.Count > 1)
-                Back();
-
-            // Resume the game
-            else
-                Resume(pauseMenuPanel.transform.GetChild(0).gameObject);
-        }
+            Resume(pauseMenuPanel.transform.GetChild(0).gameObject);
     }
 
 
@@ -205,7 +224,6 @@ public class PauseMenuManager : GameMenu, IUsesInput
         // Add your Resume logic here
         Debug.Log("Resume game");
 
-        // TODO: Time manager
         TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(_pauseToken);
 
         //Hide menu
@@ -213,11 +231,14 @@ public class PauseMenuManager : GameMenu, IUsesInput
 
         //Set pause to false
         IsPaused = false;
+
+        // Clear the menu stack
+        _menuStack.Clear();
     }
 
     public void Pause()
     {
-        _fixedDeltaTime = Time.fixedDeltaTime;
+        Debug.Log($"Pause!");
 
         // Un-hide the pause menu
         pauseMenuParent.SetActive(true);

@@ -78,18 +78,38 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
             InputManager.Instance.PControls.Player.Sprint, InputType.Performed, OnSprintPerformed)
         );
         InputActions.Add(new InputData(
-            InputManager.Instance.PControls.Player.SprintToggle, InputType.Performed, OnSprintPerformed)
+            InputManager.Instance.PControls.Player.SprintToggle, InputType.Performed, OnSprintTogglePerformed)
         );
 
     }
 
+    #region Input Functions
+
     private void OnSprintPerformed(InputAction.CallbackContext obj)
     {
+        // Return if not currently sliding
+        if (!_isSliding)
+            return;
+        
+        // Force sprinting to be true
+        ParentComponent.ForceSetSprinting(true);
+
         // Force the slide to end
         EndSlide();
     }
 
-    #region Input Functions
+    private void OnSprintTogglePerformed(InputAction.CallbackContext obj)
+    {
+        // Return if not currently sliding
+        if (!_isSliding)
+            return;
+
+        // Force sprinting to be true
+        ParentComponent.IsSprintToggled = true;
+
+        // Force the slide to end
+        EndSlide();
+    }
 
     private void OnSlidePerformedStart(InputAction.CallbackContext obj)
     {
@@ -171,7 +191,7 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
         OnSlideStart += PushControls;
         OnSlideStart += AddVelocityOnSlideStart;
         OnSlideStart += ChangeHeightOnSlide;
-        OnSlideStart += ForceStopSprintingOnSlide;
+        // OnSlideStart += ForceStopSprintingOnSlide;
 
         // Add the slide end events
         OnSlideEnd += _ => _isSliding = false;
@@ -182,7 +202,7 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
     private void ForceStopSprintingOnSlide(PlayerSlide obj)
     {
         // Force the player to stop sprinting
-        ParentComponent.ForceResetSprinting();
+        ParentComponent.ForceSetSprinting(false);
     }
 
     private void ChangeHeightOnSlide(PlayerSlide obj)

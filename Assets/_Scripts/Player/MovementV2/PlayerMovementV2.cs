@@ -395,7 +395,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         _rideHeight = _currentPlayerHeight / 2;
         var desiredCapsuleHeight = _currentPlayerHeight - desiredCapsuleHeightOffset;
 
-        Debug.Log($"_currentPlayerHeight: {_currentPlayerHeight:0.00} => {TargetPlayerHeight:0.00}");
+        // Debug.Log($"_currentPlayerHeight: {_currentPlayerHeight:0.00} => {TargetPlayerHeight:0.00}");
 
         // Return if the floating controller hit is not set
         if (!_floatingControllerHit.collider)
@@ -555,13 +555,14 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         // Set the sprinting flag to true
         IsSprintToggled = !IsSprintToggled;
+
+        Debug.Log($"Sprint Toggle Performed: {IsSprintToggled}");
     }
 
     #endregion
 
-    public void ForceResetSprinting()
+    public void ForceSetSprinting(bool sprinting)
     {
-        _isSprinting = false;
-        IsSprintToggled = false;
+        _isSprinting = sprinting;
     }
 }
