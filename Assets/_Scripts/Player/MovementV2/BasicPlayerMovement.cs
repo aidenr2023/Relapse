@@ -156,8 +156,6 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
         // Reset the slide pre fire of the slide script
         ParentComponent.PlayerSlide.ResetSlidePreFire();
-
-        Debug.Log($"Jump Input");
     }
 
     #endregion
@@ -239,7 +237,28 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
             // Get the forward and right vectors based on the surface normal
             forwardMovement = Vector3.ProjectOnPlane(forwardMovement, surfaceNormal);
             rightMovement = Vector3.ProjectOnPlane(rightMovement, surfaceNormal);
+
+            // var rightNormal = Vector3.Cross(surfaceNormal, cameraForward);
+            // var forwardNormal = Vector3.Cross(surfaceNormal, cameraRight);
+            //
+            // forwardMovement = forwardNormal.normalized * forwardMovement.magnitude;
+            // rightMovement = rightNormal.normalized * rightMovement.magnitude;
+            //
+            // if (_movementInput.y > 0)
+            //     forwardMovement = -forwardMovement;
+            // if (_movementInput.x < 0)
+            //     rightMovement = -rightMovement;
+
+            // Debug.Log(
+            //     $"DOT: " +
+            //     $"{Vector3.Dot(rightNormal.normalized, rightMovement.normalized):0.00000000} - " +
+            //     $"{rightNormal.normalized} " +
+            //     $"{rightMovement.normalized}");
         }
+
+        // Get the angle of the forward movement
+        var angle = Vector3.Angle(Vector3.up, forwardMovement);
+
 
         // Calculate the current movement
         var currentMovement = forwardMovement + rightMovement;
@@ -364,8 +383,6 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         // Reset the jump grace timer
         _jumpGraceTimer.SetMaxTimeAndReset(jumpGraceTime);
         _jumpGraceTimer.Stop();
-
-        Debug.Log($"Jump Performed!");
     }
 
     #endregion

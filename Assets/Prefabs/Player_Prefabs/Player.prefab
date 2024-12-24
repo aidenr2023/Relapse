@@ -1047,10 +1047,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraPivot: {fileID: 5244302159661097867}
   orientation: {fileID: 5224293575626551686}
-  desiredCapsuleHeight: 1.75
-  totalPlayerHeight: 2
-  rideHeightOffset: 1
-  rideHeight: 1
+  desiredCapsuleHeightOffset: 0.5
+  defaultPlayerHeight: 2
   rideSpringStrength: 512
   rideSpringDamper: 32
   downwardInterpolation: 100
@@ -1101,6 +1099,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  hardSpeedLimit: 30
+  hardSpeedLimitLerpAmount: 0.1
   layersToIgnore:
     serializedVersion: 2
     m_Bits: 33536
@@ -1120,6 +1120,7 @@ MonoBehaviour:
   canJumpWithoutPower: 1
   sprintMultiplier: 1.5
   jumpForce: 12
+  jumpGraceTime: 0.5
   airMovementMultiplier: 0.125
   footstepSoundPool:
     sounds:
@@ -1219,12 +1220,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 641ce49655a1404aaf1759e9b2105a9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isEnabled: 1
   slideStrength: 4
+  slideHeight: 1
   midAirGraceTime: 0.5
   slideDeceleration: 4
   slideStopVelocityThreshold: 6
   landVelocityTransferMultiplier: 0.65
   landVelocityTransferMax: 30
+  maxSlopeSpeedMultiplier: 2
+  slopeAcceleration: 16
+  minSlopeAccelerationAngle: 10
+  maxSlopeAccelerationAngle: 45
 --- !u!114 &9038693709593017749
 MonoBehaviour:
   m_ObjectHideFlags: 0

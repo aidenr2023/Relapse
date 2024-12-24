@@ -310,10 +310,10 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Distance of the ray hit vs the ride height
         var rideHeightPenetration = _floatingControllerHit.distance - _rideHeight;
 
-        // var remainingHeight = totalPlayerHeight - _capsuleCollider.height;
-        // var capsuleHeightOffset = rideHeight - remainingHeight;
-        // var hitOffset = _floatingControllerHit.distance - capsuleHeightOffset;
-        // var actualPenetration = remainingHeight - hitOffset;
+        var remainingHeight = _currentPlayerHeight - _capsuleCollider.height;
+        var capsuleHeightOffset = _rideHeight - remainingHeight;
+        var hitOffset = _floatingControllerHit.distance - capsuleHeightOffset;
+        var actualPenetration = remainingHeight - hitOffset;
 
         // // Create a target velocity with the same x and z,
         // // but enough velocity to go up by the actual penetration
@@ -333,7 +333,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         var downwardSlopeForceAdjust = 1f;
 
-        var groundVelocityForward = GroundCollisionForward;
+        // var groundVelocityForward = GroundCollisionForward;
+        var groundVelocityForward = (GroundCollisionForward + GroundCollisionRight).normalized;
 
         if (Vector3.Dot(currentVelocity, groundVelocityForward) < 0)
             groundVelocityForward *= -1;
@@ -378,8 +379,15 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             // );
         }
 
+        // The amount of force applied to the player this frame
+        var force = springForce * downwardSlopeForceAdjust;
+
+        // // Ensure the force + the upward velocity is not more than ground hit's penetration
+        // if (force + currentVelocity.y > actualPenetration)
+        //     force = actualPenetration - currentVelocity.y;
+
         // Add force to the player
-        _rigidbody.AddForce(downDirection * (springForce * downwardSlopeForceAdjust), ForceMode.Acceleration);
+        _rigidbody.AddForce(downDirection * force, ForceMode.Acceleration);
 
         // Debug.Log($"FORCE: {downDirection * springForce}");
 
@@ -396,7 +404,10 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         const float fixedFrameTime = 1 / 50f;
         var frameAmount = Time.fixedDeltaTime / fixedFrameTime;
 
-        _currentPlayerHeight = Mathf.Lerp(_currentPlayerHeight, TargetPlayerHeight, frameAmount * .25f);
+        var oldPlayerHeight = _currentPlayerHeight;
+
+        // _currentPlayerHeight = Mathf.Lerp(_currentPlayerHeight, TargetPlayerHeight, frameAmount * .25f);
+        _currentPlayerHeight = Mathf.Lerp(_currentPlayerHeight, TargetPlayerHeight, frameAmount * .15f);
 
         if (Mathf.Abs(_currentPlayerHeight - TargetPlayerHeight) < .001f)
             _currentPlayerHeight = TargetPlayerHeight;
@@ -409,14 +420,24 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Return if the floating controller hit is not set
         if (!_floatingControllerHit.collider)
         {
-            // Reset the capsule collider height
-            _capsuleCollider.height = desiredCapsuleHeight;
-
-            // Reset the capsule collider center
-            _capsuleCollider.center = Vector3.zero;
-
             return;
+
+            // // Reset the capsule collider height
+            // _capsuleCollider.height = desiredCapsuleHeight;
+            //
+            // // Reset the capsule collider center
+            // _capsuleCollider.center = Vector3.zero;
+            //
+            // return;
         }
+
+        // Change the y of the transform based on the difference between the old and new player height
+        var yDifference = _currentPlayerHeight - oldPlayerHeight;
+
+        if (yDifference > 0)
+            yDifference = 0;
+
+        Rigidbody.MovePosition(Rigidbody.position + new Vector3(0, yDifference, 0));
 
         // Get the distance from the player to the floating controller hit
         var distance = _floatingControllerHit.distance;
@@ -428,7 +449,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         _capsuleCollider.height = Mathf.Max(newCapsuleHeight, 1);
 
         // Set the capsule collider y position based on the distance
-        var newYPosition = (defaultPlayerHeight - newCapsuleHeight) / 2;
+        var newYPosition = (_currentPlayerHeight - newCapsuleHeight) / 2;
         _capsuleCollider.center = new Vector3(0, newYPosition, 0);
     }
 

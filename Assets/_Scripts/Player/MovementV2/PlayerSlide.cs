@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
 {
@@ -11,7 +12,7 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
 
     [SerializeField] private float slideStrength = 10f;
 
-    [SerializeField, Min(1.25f)] private float slideHeight = 1.25f;
+    [SerializeField, Min(1f)] private float slideHeight = 1f;
 
     [Tooltip("How long before landing the player can still slide")] [SerializeField, Min(0)]
     private float midAirGraceTime = 0.5f;
@@ -23,6 +24,13 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
     private float landVelocityTransferMultiplier = 1f;
 
     [SerializeField, Min(0)] private float landVelocityTransferMax = 20f;
+
+    [Header("Sliding on a Slope")] [SerializeField, Min(0)]
+    private float maxSlopeSpeedMultiplier = 2f;
+
+    [SerializeField, Min(0)] private float slopeAcceleration = 16f;
+    [SerializeField, Range(0, 90)] private float minSlopeAccelerationAngle = 10f;
+    [SerializeField, Range(0, 90)] private float maxSlopeAccelerationAngle = 90f;
 
     #endregion
 
@@ -344,11 +352,15 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
         // // Get the camera's right without the y component
         // var cameraRight = new Vector3(cameraTransform.right.x, 0, cameraTransform.right.z).normalized;
 
-        var velocityForward = ParentComponent.Rigidbody.velocity.normalized;
+        // Get the lateral velocity
+        var lateralVelocity = new Vector3(
+            ParentComponent.Rigidbody.velocity.x,
+            0,
+            ParentComponent.Rigidbody.velocity.z
+        );
 
-        // Get the current move multiplier
-        // var currentMoveMult = IsSprinting ? sprintMultiplier : 1;
-        var currentMoveMult = 0;
+        // var velocityForward = ParentComponent.Rigidbody.velocity.normalized;
+        var velocityForward = lateralVelocity.normalized;
 
         // Calculate the movement vector
         // var forwardMovement = (cameraForward * _movementInput.y);
@@ -373,11 +385,59 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
             currentMovement.Normalize();
 
         // Calculate how fast the player should be moving
-        var currentTargetVelocityMagnitude = ParentComponent.MovementSpeed * currentMoveMult;
+        var currentTargetVelocityMagnitude = ParentComponent.MovementSpeed * 0;
 
         // Calculate the velocity the rigidbody should be moving at
         var targetVelocity = (currentMovement * currentTargetVelocityMagnitude) +
                              new Vector3(0, ParentComponent.Rigidbody.velocity.y, 0);
+
+        // Use the ground hit normal to determine if the player is sliding down a slope
+        var slopeDirection = Vector3.Cross(
+            ParentComponent.GroundHit.normal,
+            Vector3.Cross(Vector3.down, ParentComponent.GroundHit.normal)
+        ).normalized;
+
+        _tmpSlopeDownDirection = slopeDirection;
+
+        var currentAcceleration = 1f;
+
+        // If the cross product is pointing downward, the player is sliding on a slope
+        if (slopeDirection.y < 0)
+        {
+            // Get the angle of the slope
+            var slopeAngle = Vector3.Angle(Vector3.up, ParentComponent.GroundHit.normal);
+
+            Debug.Log($"Sliding On A Slope: {slopeAngle:0.00}!");
+
+            float slopeInverseLerp;
+            float slopeSpeedMult;
+
+            // Determine how the slope affects the player's speed based on the angle
+            if (slopeAngle < minSlopeAccelerationAngle)
+            {
+                slopeInverseLerp = Mathf.InverseLerp(0, minSlopeAccelerationAngle, slopeAngle);
+                slopeSpeedMult = Mathf.Lerp(0, 1, slopeInverseLerp);
+            }
+            else
+            {
+                slopeInverseLerp = Mathf.InverseLerp(minSlopeAccelerationAngle, maxSlopeAccelerationAngle, slopeAngle);
+                slopeSpeedMult = Mathf.Lerp(1, maxSlopeSpeedMultiplier, slopeInverseLerp);
+            }
+
+            var targetSlopeSpeed = ParentComponent.MovementSpeed * slopeSpeedMult;
+
+            Debug.Log($"Target Slope Speed: {targetSlopeSpeed:0.0000}");
+
+            // Recalculate the target velocity
+            targetVelocity = slopeDirection * (targetSlopeSpeed) +
+                             new Vector3(0, ParentComponent.Rigidbody.velocity.y, 0);
+
+            currentAcceleration = slopeAcceleration;
+        }
+
+        // Determine if the new velocity is a slowdown
+        if (Vector3.Dot(targetVelocity - ParentComponent.Rigidbody.velocity, ParentComponent.Rigidbody.velocity) < 0)
+            currentAcceleration = slideDeceleration;
 
         // Get the dot product between the target velocity and the current velocity
         var directionChangeDot = Vector3.Dot(ParentComponent.Rigidbody.velocity.normalized, targetVelocity.normalized);
@@ -385,15 +445,15 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
         // Evaluate the direction change dot to get the acceleration factor
         var evaluation = ParentComponent.AccelerationFactorFromDot.Evaluate(directionChangeDot);
 
+        // Debug.Log($"DOT: {directionChangeDot:0.00} | EVAL: {evaluation:0.00}");
+
         // This is the force required to reach the target velocity in EXACTLY one frame
         var targetForce = (targetVelocity - ParentComponent.Rigidbody.velocity) / Time.fixedDeltaTime;
 
         // Calculate the force that is going to be applied to the rigidbody THIS frame
-        var force = targetForce.normalized * (slideDeceleration * evaluation);
-
-        // // If the player is midair, apply the air movement multiplier
-        // if (!ParentComponent.IsGrounded)
-        //     force *= airMovementMultiplier;
+        // var force = targetForce.normalized * (slideDeceleration * evaluation);
+        var force = targetForce.normalized * (currentAcceleration * evaluation);
+        // var force = targetForce.normalized * (1 * evaluation);
 
         // If the player only needs to move a little bit, just set the force to the target force
         if (targetForce.magnitude < slideDeceleration)
@@ -403,9 +463,18 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
         if (force.magnitude > targetForce.magnitude)
             force = targetForce;
 
+        // Debug.Log(
+        //     $"Target Vel: {targetVelocity:0.00} | " +
+        //     $"Target Force: {targetForce:0.00} | " +
+        //     $"Force: {force:0.00} | " +
+        //     $"Direction Dot: {directionChangeDot:0.00} |" +
+        //     $"Eval: {evaluation:0.00}");
+
         // Apply the force to the rigidbody
         ParentComponent.Rigidbody.AddForce(force, ForceMode.Acceleration);
     }
+
+    private Vector3 _tmpSlopeDownDirection;
 
     #endregion
 
@@ -443,6 +512,13 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
     public override string GetDebugText()
     {
         return "";
+    }
+
+    private void OnDrawGizmos()
+    {
+        // Draw the slope down direction
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawRay(ParentComponent.Rigidbody.position, _tmpSlopeDownDirection * 100);
     }
 
     #endregion
