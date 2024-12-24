@@ -250,9 +250,19 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
                 break;
 
             // Determine the bloom of the gun
-            var xBloom = UnityEngine.Random.Range(-gunInformation.BloomAngle / 2, gunInformation.BloomAngle / 2);
-            var yBloom = UnityEngine.Random.Range(-gunInformation.BloomAngle / 2, gunInformation.BloomAngle / 2);
-            var spreadDirection = Quaternion.Euler(xBloom, yBloom, 0) * direction;
+            var xBloom = UnityEngine.Random.Range(
+                -gunInformation.BloomAngle / 2 * 100,
+                gunInformation.BloomAngle / 2 * 100
+            ) / 100;
+            var yBloom = UnityEngine.Random.Range(
+                -gunInformation.BloomAngle / 2 * 100,
+                gunInformation.BloomAngle / 2 * 100
+            ) / 100;
+            // var spreadDirection = Quaternion.Euler(yBloom, xBloom, 0) * direction;
+            var spreadDirection =
+                Quaternion.AngleAxis(xBloom, weaponManager.Player.PlayerController.CameraPivot.transform.up) *
+                Quaternion.AngleAxis(yBloom, weaponManager.Player.PlayerController.CameraPivot.transform.right) *
+                direction;
 
             // Create a layerMask to ignore the NonPhysical layer
             var layerMask = ~layersToIgnore;

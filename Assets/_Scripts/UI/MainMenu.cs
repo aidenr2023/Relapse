@@ -21,6 +21,10 @@ public class MainMenu : GameMenu
 
     #endregion
 
+    protected override void CustomAwake()
+    {
+    }
+
     protected override void CustomOnEnable()
     {
     }
@@ -66,5 +70,4 @@ public class MainMenu : GameMenu
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
     }
-
 }

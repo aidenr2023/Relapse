@@ -67,7 +67,7 @@ public class VendorMenu : GameMenu
 
     #endregion
 
-    private void Awake()
+    protected override void CustomAwake()
     {
         // Set the instance
         Instance = this;
@@ -131,7 +131,6 @@ public class VendorMenu : GameMenu
 
     private void PopulateShop()
     {
-
         // Reset all the power buttons
         foreach (var button in medButtons)
             button.Reset();
@@ -154,7 +153,6 @@ public class VendorMenu : GameMenu
 
             // Enable the button
             button.Enable();
-
         }
 
         for (var i = 0; i < _drugPowers.Length; i++)
@@ -170,7 +168,6 @@ public class VendorMenu : GameMenu
 
             // Enable the button
             button.Enable();
-
         }
 
         var backButton = shopSelectedButton.GetComponent<Button>();

@@ -24,6 +24,8 @@ public class MenuManager
 
     private readonly HashSet<GameMenu> _activeMenus = new();
 
+    private readonly HashSet<GameMenu> _managedMenus = new();
+
     #endregion
 
     #region Getters
@@ -49,5 +51,22 @@ public class MenuManager
     public void RemoveMenu(GameMenu menu)
     {
         _activeMenus.Remove(menu);
+    }
+
+    public void ManageMenu(GameMenu menu)
+    {
+        _managedMenus.Add(menu);
+    }
+
+    public void UnManageMenu(GameMenu menu)
+    {
+        _managedMenus.Remove(menu);
+    }
+
+    public void Update()
+    {
+        var managedMenus = _managedMenus.ToArray();
+        foreach (var menu in managedMenus)
+            menu.MenuManagerUpdate();
     }
 }

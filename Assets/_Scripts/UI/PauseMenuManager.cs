@@ -57,7 +57,7 @@ public class PauseMenuManager : GameMenu, IUsesInput
     /// Changes the text color of the TextMeshPro to the hover color.
     /// Attach this to the PointerEnter event.
     /// </summary>
-    private void Awake()
+    protected override void CustomAwake()
     {
         // Initialize the input
         InitializeInput();
@@ -113,6 +113,8 @@ public class PauseMenuManager : GameMenu, IUsesInput
         if (_inputtedThisFrame)
             return;
 
+        _inputtedThisFrame = true;
+
         Debug.Log($"Pause Button Pressed!");
 
         TogglePause();
@@ -128,6 +130,8 @@ public class PauseMenuManager : GameMenu, IUsesInput
         // If the game is not paused, return
         if (!IsPaused)
             return;
+
+        _inputtedThisFrame = true;
 
         // Check if the menu stack has more than one item
         // If it does, go back to the previous menu
@@ -178,6 +182,15 @@ public class PauseMenuManager : GameMenu, IUsesInput
             tmpText.color = normalColor;
     }
 
+    public override void MenuManagerUpdate()
+    {
+        base.MenuManagerUpdate();
+
+        // Reset the inputted this frame flag
+        _inputtedThisFrame = false;
+
+        Debug.Log("Menu Manager Update");
+    }
 
     /// <summary>
     /// Changes the color of the TextMeshPro text to the click color.

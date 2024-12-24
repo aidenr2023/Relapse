@@ -254,6 +254,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
         if (_equippedGun == null)
             return;
 
+        // Fire the IGun
+        EquippedGun.OnFireReleased();
+
         // Set the equipped gun's parent to null
         _equippedGun.GameObject.transform.SetParent(null);
 

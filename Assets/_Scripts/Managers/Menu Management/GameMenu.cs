@@ -23,6 +23,17 @@ public abstract class GameMenu : MonoBehaviour
 
     #endregion
 
+    protected void Awake()
+    {
+        // Manage this menu
+        MenuManager.Instance.ManageMenu(this);
+
+        // Custom Awake
+        CustomAwake();
+    }
+
+    protected abstract void CustomAwake();
+
     protected void OnEnable()
     {
         // Add this to the active menus
@@ -39,6 +50,16 @@ public abstract class GameMenu : MonoBehaviour
         CustomOnDisable();
     }
 
+    private void OnDestroy()
+    {
+        // Un manage this menu
+        MenuManager.Instance.UnManageMenu(this);
+    }
+
     protected abstract void CustomOnEnable();
     protected abstract void CustomOnDisable();
+
+    public virtual void MenuManagerUpdate()
+    {
+    }
 }

@@ -11,7 +11,7 @@ public class RelapseScreen : GameMenu
 
     private TokenManager<float>.ManagedToken _pauseToken;
 
-    private void Awake()
+    protected override void CustomAwake()
     {
         // Set the instance to this
         Instance = this;
