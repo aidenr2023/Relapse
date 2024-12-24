@@ -53,7 +53,9 @@ public class JournalTooltipManager
         AddTooltip(text, tooltipDuration);
     }
 
-    public void AddTooltip(Func<string> text, float duration)
+    public void AddTooltip(
+        Func<string> text, float duration, bool isIndefinite = false,
+        Func<bool> completionCondition = null)
     {
         // Instantiate a new tooltip
         var tooltip = Object.Instantiate(tooltipPrefab, tooltipParent);
@@ -69,9 +71,8 @@ public class JournalTooltipManager
             _tooltipYAdjustments.Remove(tooltip);
         };
 
-
         // Initialize the tooltip
-        tooltip.Initialize(text, duration);
+        tooltip.Initialize(text, duration, isIndefinite, completionCondition);
     }
 
     public void AddTooltip(Func<string> text)

@@ -557,13 +557,15 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
         if (powerToken.PowerScriptableObject.ActiveEffectDuration > 0)
         {
             // The function to display the tooltip
-            string Func()
+            string TextFunction()
             {
                 var activeDurationRemaining =
                     powerToken.PowerScriptableObject.ActiveEffectDuration - powerToken.CurrentActiveDuration;
 
                 return $"{powerName}'s Active Effect: {activeDurationRemaining:0.00}s Remaining!";
             }
+
+            bool CompletionFunction() => powerToken.ActivePercentage >= 1;
 
             // Calculate how long the tooltip should be displayed
             var duration =
@@ -572,20 +574,22 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
                 - JournalTooltipManager.Instance.OutroDuration;
 
             // Add the tooltip
-            JournalTooltipManager.Instance.AddTooltip(Func, duration);
+            JournalTooltipManager.Instance.AddTooltip(TextFunction, duration, true, CompletionFunction);
         }
 
         // Display a tooltip for the passive effect (if applicable)
         if (powerToken.PowerScriptableObject.PassiveEffectDuration > 0)
         {
             // The function to display the tooltip
-            string Func()
+            string TextFunction()
             {
                 var passiveDurationRemaining =
                     powerToken.PowerScriptableObject.PassiveEffectDuration - powerToken.CurrentPassiveDuration;
 
                 return $"{powerName}'s Passive Effect: {passiveDurationRemaining:0.00}s Remaining!";
             }
+
+            bool CompletionFunction() => powerToken.PassivePercentage >= 1;
 
             // Calculate how long the tooltip should be displayed
             var duration =
@@ -594,7 +598,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
                 - JournalTooltipManager.Instance.OutroDuration;
 
             // Add the tooltip
-            JournalTooltipManager.Instance.AddTooltip(Func, duration);
+            JournalTooltipManager.Instance.AddTooltip(TextFunction, duration, true, CompletionFunction);
         }
     }
 

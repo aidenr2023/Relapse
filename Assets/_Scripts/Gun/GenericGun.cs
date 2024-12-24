@@ -24,6 +24,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     [SerializeField] [Range(0, 500)] protected int impactParticlesCount = 200;
 
+    [SerializeField] protected LayerMask layersToIgnore;
+
     #endregion
 
     #region Private Fields
@@ -253,7 +255,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             var spreadDirection = Quaternion.Euler(xBloom, yBloom, 0) * direction;
 
             // Create a layerMask to ignore the NonPhysical layer
-            var layerMask = ~(1 << LayerMask.NameToLayer("NonPhysical"));
+            var layerMask = ~layersToIgnore;
 
             // Perform the raycast
             var hit = Physics.Raycast(
@@ -275,21 +277,21 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             PlayParticles(impactParticles, hitInfo.point, impactParticlesCount);
 
             // Test if the cast hit an IActor (test the root object)
-            if (hitInfo.collider.TryGetComponentInParent(out IActor actor, 20))
-            {
-                // continue if the actor is the player
-                if (actor is PlayerInfo info && info == weaponManager.PlayerInfo)
-                    continue;
+            if (!hitInfo.collider.TryGetComponentInParent(out IActor actor, 20))
+                continue;
 
-                // Calculate the damage falloff
-                var distance = Vector3.Distance(startingPosition, hitInfo.point);
-                var damage = gunInformation.EvaluateBaseDamage(distance) * weaponManager.CurrentDamageMultiplier;
+            // continue if the actor is the player
+            if (actor is PlayerInfo info && info == weaponManager.PlayerInfo)
+                continue;
 
-                // Debug.Log($"DAMAGE: {damage} - DISTANCE: {distance} / {gunInformation.Range}");
+            // Calculate the damage falloff
+            var distance = Vector3.Distance(startingPosition, hitInfo.point);
+            var damage = gunInformation.EvaluateBaseDamage(distance) * weaponManager.CurrentDamageMultiplier;
 
-                // Deal damage to the actor
-                actor.ChangeHealth(-damage, weaponManager.Player.PlayerInfo, this);
-            }
+            // Debug.Log($"DAMAGE: {damage} - DISTANCE: {distance} / {gunInformation.Range}");
+
+            // Deal damage to the actor
+            actor.ChangeHealth(-damage, weaponManager.Player.PlayerInfo, this);
         }
 
         // Play the fire sound

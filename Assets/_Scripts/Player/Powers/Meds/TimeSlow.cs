@@ -10,18 +10,7 @@ public class TimeSlow : MonoBehaviour, IPower
 
     [SerializeField] [Range(0.01f, 1)] private float timeScaleAdjust = 1;
 
-    //Fancy animation crap
-    [SerializeField] private int secondsBetweenFrames = 1;
-
     #endregion
-
-    #region Private Fields
-
-    //Time scale variables
-    private int _defaultTime = 1;
-
-    #endregion
-
 
     #region Getters
 
@@ -30,7 +19,6 @@ public class TimeSlow : MonoBehaviour, IPower
     public PowerScriptableObject PowerScriptableObject { get; set; }
 
     #endregion
-
 
     void Awake()
     {

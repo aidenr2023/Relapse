@@ -36,10 +36,14 @@ public class Shotgun : GenericGun
 
         // Fire the gun
         ShootProjectiles(weaponManager, pelletsPerShot, startingPosition, direction);
+
+        _currentMagazineSize = gunInformation.MagazineSize;
     }
 
     public override void Reload()
     {
+        return;
+
         base.Reload();
     }
 }
