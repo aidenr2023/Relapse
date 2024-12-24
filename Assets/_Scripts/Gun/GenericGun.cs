@@ -7,19 +7,22 @@ using UnityEngine.VFX;
 [RequireComponent(typeof(Rigidbody))]
 public class GenericGun : MonoBehaviour, IGun, IDebugged
 {
+    private static readonly int ShootingAnimationID = Animator.StringToHash("Shooting");
+
     #region Serialized Fields
 
-    [SerializeField] private GunInformation gunInformation;
-    [SerializeField] private Animator animator;
+    [SerializeField] protected GunInformation gunInformation;
+    [SerializeField] protected Animator animator;
 
     [Header("Muzzle Particles")] [SerializeField]
-    private Transform muzzleLocation;
-    [SerializeField] private VisualEffect muzzleFlash;
+    protected Transform muzzleLocation;
+
+    [SerializeField] protected VisualEffect muzzleFlash;
 
     [Header("Impact Particles")] [SerializeField]
-    private ParticleSystem impactParticles;
+    protected ParticleSystem impactParticles;
 
-    [SerializeField] [Range(0, 500)] private int impactParticlesCount = 200;
+    [SerializeField] [Range(0, 500)] protected int impactParticlesCount = 200;
 
     #endregion
 
@@ -28,36 +31,36 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     /// <summary>
     /// A flag to determine if the fire input is being held down.
     /// </summary>
-    private bool _isFiring;
+    protected bool _isFiring;
 
     /// <summary>
     /// A flag to determine if the fire input was pressed this frame.
     /// Used to force the player to release the fire button before firing again w/ semi-automatic weapons.
     /// </summary>
-    private bool _hasFiredThisFrame;
+    protected bool _hasFiredThisFrame;
 
     /// <summary>
     /// The time since the gun last fired.
     /// Used to control fire rate;
     /// </summary>
-    private float _fireDelta;
+    protected float _fireDelta;
 
     /// <summary>
     /// How many bullets are remaining in the magazine.
     /// </summary>
-    private int _currentMagazineSize;
+    protected int _currentMagazineSize;
 
     /// <summary>
     /// How long the player has spent reloading the gun.
     /// </summary>
-    private float _currentReloadTime;
+    protected float _currentReloadTime;
 
-    private bool _isReloading;
+    protected bool _isReloading;
 
     /// <summary>
     /// A reference to the weapon manager that is currently using this gun.
     /// </summary>
-    private WeaponManager _weaponManager;
+    protected WeaponManager _weaponManager;
 
     #endregion
 
@@ -69,7 +72,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     public GameObject GameObject => gameObject;
 
-    private float TimeBetweenShots => 1 / gunInformation.FireRate;
+    protected float TimeBetweenShots => 1 / gunInformation.FireRate;
 
     public bool IsMagazineEmpty => _currentMagazineSize <= 0;
 
@@ -89,7 +92,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     #endregion
 
-    private void Awake()
+    protected virtual void Awake()
     {
         // Get the collider component
         Collider = GetComponent<Collider>();
@@ -98,22 +101,18 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         //animator = GetComponent<Animator>();
     }
 
-    private void Start()
+    protected virtual void Start()
     {
         // Set the current magazine size to the max magazine size
         _currentMagazineSize = gunInformation.MagazineSize;
 
         // Set the fire delta to the time between shots
         _fireDelta = TimeBetweenShots;
-
-        // // Reinitialize the visual effect
-        // muzzleFlash.Stop();
-        // muzzleFlash.Reinit();
     }
 
     #region Update Functions
 
-    private void Update()
+    protected virtual void Update()
     {
         UpdateFireDelta();
 
@@ -165,7 +164,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     #endregion
 
-    public void OnFire(WeaponManager weaponManager)
+    public virtual void OnFire(WeaponManager weaponManager)
     {
         // Return if the gun is currently reloading
         if (IsReloading)
@@ -179,47 +178,62 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         _hasFiredThisFrame = true;
     }
 
-    public void OnFireReleased()
+    public virtual void OnFireReleased()
     {
         // Set the firing flag to false
         _isFiring = false;
     }
 
-    public void Fire(WeaponManager weaponManager, Vector3 startingPosition, Vector3 direction)
+    public virtual void Fire(WeaponManager weaponManager, Vector3 startingPosition, Vector3 direction)
     {
-        // If the gun is not firing, return
-        if (!_isFiring)
-            return;
-
-        // Return if the gun is currently reloading
-        if (IsReloading)
-            return;
-
-        // return if the magazine is empty
-        if (IsMagazineEmpty)
-            return;
-
-        // Special logic to determine if the gun should fire this frame based on the gun's fire type
-        switch (gunInformation.FireType)
-        {
-            case GunInformation.GunFireType.SemiAutomatic:
-                if (!_hasFiredThisFrame)
-                    return;
-                break;
-        }
-
-        // Determine if the gun can fire based on the fire rate
-        if (_fireDelta < TimeBetweenShots)
+        // If the gun should not fire, return
+        if (!ShouldFire())
             return;
 
         // Determine how many times the gun should fire this frame
         var timesToFire = (int)(_fireDelta / TimeBetweenShots);
         _fireDelta %= TimeBetweenShots;
 
-        // Create a ray cast from the starting point in the direction with the specified range
+        // Fire the gun
+        ShootProjectiles(weaponManager, timesToFire, startingPosition, direction);
+    }
 
-        // Emit the fire particles
-        // PlayParticles(muzzleParticles, muzzleLocation.position, muzzleParticlesCount);
+    protected virtual bool ShouldFire()
+    {
+        // If the gun is not firing, return
+        if (!_isFiring)
+            return false;
+
+        // Return if the gun is currently reloading
+        if (IsReloading)
+            return false;
+
+        // return if the magazine is empty
+        if (IsMagazineEmpty)
+            return false;
+
+        // Special logic to determine if the gun should fire this frame based on the gun's fire type
+        switch (gunInformation.FireType)
+        {
+            case GunInformation.GunFireType.SemiAutomatic:
+                if (!_hasFiredThisFrame)
+                    return false;
+                break;
+        }
+
+        // Determine if the gun can fire based on the fire rate
+        if (_fireDelta < TimeBetweenShots)
+            return false;
+
+        return true;
+    }
+
+    protected void ShootProjectiles(
+        WeaponManager weaponManager, int pelletsToFire, Vector3 startingPosition, Vector3 direction
+    )
+    {
+        // Play shooting animation
+        animator.SetTrigger(ShootingAnimationID);
 
         // Play the muzzle flash VFX
         PlayMuzzleFlash();
@@ -227,8 +241,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Recoil the gun
         Recoil();
 
-        // Fire the gun
-        for (var i = 0; i < timesToFire; i++)
+        for (var i = 0; i < pelletsToFire; i++)
         {
             // break if the magazine is empty
             if (IsMagazineEmpty)
@@ -254,13 +267,6 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             // Decrease the magazine size
             _currentMagazineSize--;
 
-            //Play shooting animation
-            animator.SetTrigger("Shooting");
-
-            // Play the fire sound
-            var fireSound = gunInformation.FireSounds.GetRandomSound();
-            SoundManager.Instance.PlaySfx(fireSound);
-
             // Continue if the raycast did not hit anything
             if (!hit)
                 continue;
@@ -285,6 +291,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
                 actor.ChangeHealth(-damage, weaponManager.Player.PlayerInfo, this);
             }
         }
+
+        // Play the fire sound
+        var fireSound = gunInformation.FireSounds.GetRandomSound();
+        SoundManager.Instance.PlaySfx(fireSound);
     }
 
     private void Recoil()
@@ -297,7 +307,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         playerRecoil.AddRecoil(GunInformation);
     }
 
-    public void Reload()
+    public virtual void Reload()
     {
         // Return if the player is reloading
         if (IsReloading)
@@ -361,7 +371,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
                $"\n";
     }
 
-    private static void PlayParticles(ParticleSystem system, Vector3 position, int count)
+    protected static void PlayParticles(ParticleSystem system, Vector3 position, int count)
     {
         if (system == null)
             return;
@@ -377,8 +387,12 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         system.Emit(emitParams, count);
     }
 
-    private void PlayMuzzleFlash()
+    protected void PlayMuzzleFlash()
     {
+        // Return if the muzzle flash is null
+        if (muzzleFlash == null)
+            return;
+
         // // Instantiate the muzzle flash VFX
         // var muzzleFlashInstance = Instantiate(muzzleFlash, muzzleLocation.position, muzzleLocation.rotation);
 

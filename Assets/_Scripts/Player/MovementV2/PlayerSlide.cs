@@ -516,6 +516,10 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
 
     private void OnDrawGizmos()
     {
+        // Return if there is no parent component
+        if (ParentComponent == null)
+            return;
+
         // Draw the slope down direction
         Gizmos.color = Color.magenta;
         Gizmos.DrawRay(ParentComponent.Rigidbody.position, _tmpSlopeDownDirection * 100);
