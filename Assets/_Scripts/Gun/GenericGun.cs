@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.Serialization;
 using UnityEngine.VFX;
 using Random = UnityEngine.Random;
@@ -30,6 +31,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     [SerializeField] protected LayerMask layersToIgnore;
 
     [SerializeField] protected TrailRenderer bulletTrailRenderer;
+    [SerializeField] protected DecalProjector bulletHoleDecal;
 
     #endregion
 
@@ -293,8 +295,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             if (!hit)
                 continue;
 
-            // Emit the particles
-            PlayParticles(impactParticles, hitInfo.point, impactParticlesCount);
+            // // Emit the particles
+            // PlayParticles(impactParticles, hitInfo.point, impactParticlesCount);
 
             // Test if the cast hit an IActor (test the root object)
             if (!hitInfo.collider.TryGetComponentInParent(out IActor actor, 20))
@@ -362,6 +364,21 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Destroy the trail
         trail.autodestruct = true;
+
+        // Instantiate the bullet hole decal
+        if (hit.collider != null)
+        {
+            var decal = Instantiate(bulletHoleDecal, hit.point, Quaternion.LookRotation(hit.normal));
+
+            // Set the parent of the decal to the object that was hit
+            decal.transform.SetParent(hit.collider.transform);
+
+            // Fix decal clipping
+            decal.transform.position += hit.normal * -0.01f;
+
+            // Set the decal to destroy itself after 10 seconds
+            Destroy(decal.gameObject, 10);
+        }
     }
 
     public virtual void Reload()
