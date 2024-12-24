@@ -24,11 +24,11 @@ public class Shotgun : GenericGun
             return;
 
         // Determine how many times the gun should fire this frame
-        var timesToFire = (int)(_fireDelta / TimeBetweenShots);
-        _fireDelta %= TimeBetweenShots;
+        var timesToFire = (int)(fireDelta / TimeBetweenShots);
+        fireDelta %= TimeBetweenShots;
 
         // Overfill the mag before firing
-        _currentMagazineSize += (pelletsPerShot - 1) * timesToFire;
+        currentMagazineSize += (pelletsPerShot - 1) * timesToFire;
 
         // // TODO: Delete eventually when the shotgun has the new VFX
         // // Emit the fire particles
@@ -37,7 +37,7 @@ public class Shotgun : GenericGun
         // Fire the gun
         ShootProjectiles(weaponManager, pelletsPerShot, startingPosition, direction);
 
-        _currentMagazineSize = gunInformation.MagazineSize;
+        currentMagazineSize = gunInformation.MagazineSize;
     }
 
     public override void Reload()

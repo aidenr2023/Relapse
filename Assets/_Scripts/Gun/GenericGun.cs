@@ -1,13 +1,16 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.VFX;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(Rigidbody))]
 public class GenericGun : MonoBehaviour, IGun, IDebugged
 {
     private static readonly int ShootingAnimationID = Animator.StringToHash("Shooting");
+    private static readonly int ReloadAnimationID = Animator.StringToHash("Reload");
 
     #region Serialized Fields
 
@@ -26,6 +29,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     [SerializeField] protected LayerMask layersToIgnore;
 
+    [SerializeField] protected TrailRenderer bulletTrailRenderer;
+
     #endregion
 
     #region Private Fields
@@ -33,36 +38,36 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     /// <summary>
     /// A flag to determine if the fire input is being held down.
     /// </summary>
-    protected bool _isFiring;
+    protected bool isFiring;
 
     /// <summary>
     /// A flag to determine if the fire input was pressed this frame.
     /// Used to force the player to release the fire button before firing again w/ semi-automatic weapons.
     /// </summary>
-    protected bool _hasFiredThisFrame;
+    protected bool hasFiredThisFrame;
 
     /// <summary>
     /// The time since the gun last fired.
     /// Used to control fire rate;
     /// </summary>
-    protected float _fireDelta;
+    protected float fireDelta;
 
     /// <summary>
     /// How many bullets are remaining in the magazine.
     /// </summary>
-    protected int _currentMagazineSize;
+    protected int currentMagazineSize;
 
     /// <summary>
     /// How long the player has spent reloading the gun.
     /// </summary>
-    protected float _currentReloadTime;
+    protected float currentReloadTime;
 
-    protected bool _isReloading;
+    protected bool isReloading;
 
     /// <summary>
     /// A reference to the weapon manager that is currently using this gun.
     /// </summary>
-    protected WeaponManager _weaponManager;
+    private WeaponManager _weaponManager;
 
     #endregion
 
@@ -76,11 +81,11 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     protected float TimeBetweenShots => 1 / gunInformation.FireRate;
 
-    public bool IsMagazineEmpty => _currentMagazineSize <= 0;
+    public bool IsMagazineEmpty => currentMagazineSize <= 0;
 
-    public bool IsReloading => _isReloading;
+    public bool IsReloading => isReloading;
 
-    public float ReloadingPercentage => (gunInformation.ReloadTime - _currentReloadTime) / gunInformation.ReloadTime;
+    public float ReloadingPercentage => (gunInformation.ReloadTime - currentReloadTime) / gunInformation.ReloadTime;
 
     public bool HasOutline { get; set; }
 
@@ -106,10 +111,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     protected virtual void Start()
     {
         // Set the current magazine size to the max magazine size
-        _currentMagazineSize = gunInformation.MagazineSize;
+        currentMagazineSize = gunInformation.MagazineSize;
 
         // Set the fire delta to the time between shots
-        _fireDelta = TimeBetweenShots;
+        fireDelta = TimeBetweenShots;
     }
 
     #region Update Functions
@@ -123,7 +128,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             Fire(_weaponManager, _weaponManager.FireTransform.position, _weaponManager.FireTransform.forward);
 
         // Reset the fired this frame flag
-        _hasFiredThisFrame = false;
+        hasFiredThisFrame = false;
 
         // Update the reload time if the gun is currently reloading
         UpdateReload();
@@ -139,16 +144,16 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             return;
 
         // Update the reload time
-        _currentReloadTime = Mathf.Clamp(_currentReloadTime - Time.deltaTime, 0, gunInformation.ReloadTime);
+        currentReloadTime = Mathf.Clamp(currentReloadTime - Time.deltaTime, 0, gunInformation.ReloadTime);
 
-        if (_currentReloadTime > 0)
+        if (currentReloadTime > 0)
             return;
 
         // Set the reloading flag to false
-        _isReloading = false;
+        isReloading = false;
 
         // If the player has finished reloading, reset the magazine size
-        _currentMagazineSize = gunInformation.MagazineSize;
+        currentMagazineSize = gunInformation.MagazineSize;
     }
 
     private void UpdateFireDelta()
@@ -156,12 +161,12 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // If the player is reloading, force the fire delta to the TimeBetweenShots
         if (IsReloading)
         {
-            _fireDelta = TimeBetweenShots;
+            fireDelta = TimeBetweenShots;
             return;
         }
 
         // if the gun is currently firing, Update the time since the gun last fired
-        _fireDelta = Mathf.Clamp(_fireDelta + Time.deltaTime, 0, TimeBetweenShots);
+        fireDelta = Mathf.Clamp(fireDelta + Time.deltaTime, 0, TimeBetweenShots);
     }
 
     #endregion
@@ -174,16 +179,16 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
 
         // Set the firing flag to true
-        _isFiring = true;
+        isFiring = true;
         //
         // Set the fired this frame flag to true
-        _hasFiredThisFrame = true;
+        hasFiredThisFrame = true;
     }
 
     public virtual void OnFireReleased()
     {
         // Set the firing flag to false
-        _isFiring = false;
+        isFiring = false;
     }
 
     public virtual void Fire(WeaponManager weaponManager, Vector3 startingPosition, Vector3 direction)
@@ -193,8 +198,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             return;
 
         // Determine how many times the gun should fire this frame
-        var timesToFire = (int)(_fireDelta / TimeBetweenShots);
-        _fireDelta %= TimeBetweenShots;
+        var timesToFire = (int)(fireDelta / TimeBetweenShots);
+        fireDelta %= TimeBetweenShots;
 
         // Fire the gun
         ShootProjectiles(weaponManager, timesToFire, startingPosition, direction);
@@ -203,7 +208,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     protected virtual bool ShouldFire()
     {
         // If the gun is not firing, return
-        if (!_isFiring)
+        if (!isFiring)
             return false;
 
         // Return if the gun is currently reloading
@@ -218,13 +223,13 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         switch (gunInformation.FireType)
         {
             case GunInformation.GunFireType.SemiAutomatic:
-                if (!_hasFiredThisFrame)
+                if (!hasFiredThisFrame)
                     return false;
                 break;
         }
 
         // Determine if the gun can fire based on the fire rate
-        if (_fireDelta < TimeBetweenShots)
+        if (fireDelta < TimeBetweenShots)
             return false;
 
         return true;
@@ -277,7 +282,12 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             );
 
             // Decrease the magazine size
-            _currentMagazineSize--;
+            currentMagazineSize--;
+
+            // Spawn a bullet trail
+            StartCoroutine(
+                SpawnBulletTrail(bulletTrailRenderer, new Ray(muzzleLocation.position, spreadDirection), hitInfo)
+            );
 
             // Continue if the raycast did not hit anything
             if (!hit)
@@ -319,6 +329,41 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         playerRecoil.AddRecoil(GunInformation);
     }
 
+    private IEnumerator SpawnBulletTrail(TrailRenderer trailPrefab, Ray ray, RaycastHit hit)
+    {
+        var startPosition = ray.origin;
+
+        // Determine the end position of the bullet trail
+        var endPosition = hit.collider != null
+            ? hit.point
+            : ray.GetPoint(gunInformation.Range);
+
+        // Instantiate the prefab
+        var trail = Instantiate(trailPrefab, startPosition, Quaternion.identity);
+
+        const float trailSpeed = 250f;
+        const float variance = 0.25f;
+
+        var cSpeed = Random.Range(
+            trailSpeed - (variance * trailSpeed),
+            trailSpeed + (variance * trailSpeed)
+        );
+
+        while (Vector3.Distance(trail.transform.position, endPosition) > 0.1f)
+        {
+            trail.transform.position = Vector3.MoveTowards(
+                trail.transform.position,
+                endPosition,
+                Time.deltaTime * cSpeed
+            );
+
+            yield return null;
+        }
+
+        // Destroy the trail
+        trail.autodestruct = true;
+    }
+
     public virtual void Reload()
     {
         // Return if the player is reloading
@@ -326,22 +371,22 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             return;
 
         // Return if the gun's magazine is full
-        if (_currentMagazineSize == gunInformation.MagazineSize)
+        if (currentMagazineSize == gunInformation.MagazineSize)
             return;
 
         // Force the firing flag to false
-        _isFiring = false;
-        _hasFiredThisFrame = false;
+        isFiring = false;
+        hasFiredThisFrame = false;
 
         // Set the reload time to the reload time of the gun
-        _currentReloadTime = gunInformation.ReloadTime;
+        currentReloadTime = gunInformation.ReloadTime;
 
 
         // Set the reloading flag to true
-        _isReloading = true;
+        isReloading = true;
 
         // set animation param trigger to reload
-        animator.SetTrigger("Reload");
+        animator.SetTrigger(ReloadAnimationID);
 
         // Play the reload sound
         // Debug.Log($"Sound Settings: {gunInformation.ReloadSound.Clip.name}");
@@ -351,7 +396,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     public void OnEquip(WeaponManager weaponManager)
     {
         // Set the weapon manager
-        _weaponManager = weaponManager;
+        this._weaponManager = weaponManager;
 
         // Add to debug manager
         DebugManager.Instance.AddDebuggedObject(this);
@@ -363,24 +408,11 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         DebugManager.Instance.RemoveDebuggedObject(this);
 
         // Clear the weapon manager
-        _weaponManager = null;
+        this._weaponManager = null;
 
         // Add the outline to the weapon manager
         foreach (var mat in OutlineMaterials)
             weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, false, true);
-    }
-
-    public string GetDebugText()
-    {
-        return $"Equipped Generic Gun: {gunInformation.GunName}\n" +
-               $"\tFire Type: {gunInformation.FireType}\n" +
-               $"\tDamage: {gunInformation.BaseDamage}\n" +
-               $"\tFire Rate: {gunInformation.FireRate}\t ({TimeBetweenShots}) \tDelta: {_fireDelta}\n" +
-               $"\tEquipped: {(_weaponManager != null ? _weaponManager.gameObject.name : "NONE")}\n" +
-               $"\tFiring?: {_isFiring} - {_hasFiredThisFrame}\n" +
-               $"\tMagazine: {_currentMagazineSize} / {gunInformation.MagazineSize}\n" +
-               $"\tReloading: {_currentReloadTime} / {gunInformation.ReloadTime}" +
-               $"\n";
     }
 
     protected static void PlayParticles(ParticleSystem system, Vector3 position, int count)
@@ -451,11 +483,24 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     public void UpdateOutline(WeaponManager weaponManager)
     {
-        if (_weaponManager == null)
+        if (this._weaponManager == null)
             return;
 
         // Remove the outline from the previous weapon manager
         foreach (var mat in OutlineMaterials)
-            _weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, false, false);
+            this._weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, false, false);
+    }
+
+    public string GetDebugText()
+    {
+        return $"Equipped Generic Gun: {gunInformation.GunName}\n" +
+               $"\tFire Type: {gunInformation.FireType}\n" +
+               $"\tDamage: {gunInformation.BaseDamage}\n" +
+               $"\tFire Rate: {gunInformation.FireRate}\t ({TimeBetweenShots}) \tDelta: {fireDelta}\n" +
+               $"\tEquipped: {(_weaponManager != null ? _weaponManager.gameObject.name : "NONE")}\n" +
+               $"\tFiring?: {isFiring} - {hasFiredThisFrame}\n" +
+               $"\tMagazine: {currentMagazineSize} / {gunInformation.MagazineSize}\n" +
+               $"\tReloading: {currentReloadTime} / {gunInformation.ReloadTime}" +
+               $"\n";
     }
 }
