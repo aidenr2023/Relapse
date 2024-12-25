@@ -80,8 +80,6 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     private void Start()
     {
-        // Activate the animator's hit trigger
-        Enemy.EnemyInfo.OnDamaged += (_, args) => animator.SetTrigger("Hit");
     }
 
     #endregion

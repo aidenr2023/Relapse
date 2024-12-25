@@ -5,12 +5,16 @@ using UnityEngine.Serialization;
 [RequireComponent(typeof(Enemy))]
 public class EnemyInfo : MonoBehaviour, IActor
 {
+    private static readonly int HitAnimationID = Animator.StringToHash("Hit");
+
     #region Fields
 
     [SerializeField] private float maxHealth = 3f;
     [SerializeField] private float currentHealth;
 
     [SerializeField] [Min(0)] private int moneyReward;
+
+    [SerializeField] private Animator animator;
 
     #endregion
 
@@ -38,6 +42,10 @@ public class EnemyInfo : MonoBehaviour, IActor
         // OnHealed += LogOnHealed;
         // OnDamaged += LogOnDamaged;
         // OnDeath += LogOnDeath;
+
+        // Activate the animator's hit trigger
+        OnDamaged += (_, args) => animator?.SetTrigger(HitAnimationID);
+
         return;
 
         void LogOnHealed(object _, HealthChangedEventArgs args)

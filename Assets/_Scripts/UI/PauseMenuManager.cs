@@ -189,7 +189,7 @@ public class PauseMenuManager : GameMenu, IUsesInput
         // Reset the inputted this frame flag
         _inputtedThisFrame = false;
 
-        Debug.Log("Menu Manager Update");
+        // Debug.Log("Menu Manager Update");
     }
 
     /// <summary>

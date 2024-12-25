@@ -5,9 +5,9 @@ using UnityEngine.Serialization;
 
 public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebugged
 {
-    private static readonly int animatorIsMovingProperty = Animator.StringToHash("IsMoving");
-    private static readonly int animatorSpeedProperty = Animator.StringToHash("Speed");
-    private static readonly int animatorIsRunningProperty = Animator.StringToHash("IsRunning");
+    private static readonly int AnimatorIsMovingProperty = Animator.StringToHash("IsMoving");
+    private static readonly int AnimatorSpeedProperty = Animator.StringToHash("Speed");
+    private static readonly int AnimatorIsRunningProperty = Animator.StringToHash("IsRunning");
 
     #region Serialized Fields
 
@@ -125,7 +125,8 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     private void Update()
     {
         // Set the NavMeshAgent enabled state
-        NavMeshAgent.enabled = IsMovementEnabled;
+        // NavMeshAgent.enabled = IsMovementEnabled;
+        NavMeshAgent.updatePosition = IsMovementEnabled;
 
         // If the navmesh agent is enabled, check if the enemy is within stopping distance
         if (NavMeshAgent.enabled && IsWithinStoppingDistance)
@@ -242,9 +243,9 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         var isMoving = velocity > walkAnimationThreshold;
         var isRunning = velocity >= runAnimationThreshold;
 
-        animator.SetBool(animatorIsMovingProperty, isMoving);
-        animator.SetFloat(animatorSpeedProperty, velocity * animationSpeedCoefficient);
-        animator.SetBool(animatorIsRunningProperty, isRunning);
+        animator.SetBool(AnimatorIsMovingProperty, isMoving);
+        animator.SetFloat(AnimatorSpeedProperty, velocity * animationSpeedCoefficient);
+        animator.SetBool(AnimatorIsRunningProperty, isRunning);
     }
 
     private void CheckCheckpoint()
@@ -341,9 +342,9 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         if (animator == null)
             return "UHHH";
 
-        var isMoving = animator.GetBool(animatorIsMovingProperty);
-        var speed = animator.GetFloat(animatorSpeedProperty);
-        var isRunning = animator.GetBool(animatorIsRunningProperty);
+        var isMoving = animator.GetBool(AnimatorIsMovingProperty);
+        var speed = animator.GetFloat(AnimatorSpeedProperty);
+        var isRunning = animator.GetBool(AnimatorIsRunningProperty);
 
         return
             $"ANIMATOR:\n" +

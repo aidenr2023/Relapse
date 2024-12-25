@@ -105,7 +105,7 @@ public class JournalTooltip : MonoBehaviour
 
             _activeTimer.Stop();
 
-            Debug.Log($"IS IND: {_isIndefinite} - {_textFunction()}");
+            // Debug.Log($"IS IND: {_isIndefinite} - {_textFunction()}");
         };
 
         // Play the intro animation
