@@ -272,10 +272,13 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         // If the game is not in debug mode, hide the debug canvas and return
         if (!DebugManager.Instance.IsDebugMode)
         {
+            debugCanvas.gameObject.SetActive(false);
             debugCanvas.enabled = false;
             return;
         }
 
+        // Show the debug canvas
+        debugCanvas.gameObject.SetActive(true);
         debugCanvas.enabled = true;
 
         // Get the main camera
@@ -358,7 +361,7 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
 
     #region Debugging
 
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
         // Draw a line from the enemy to the player
         var undetectedColor = Color.green;

@@ -38,19 +38,25 @@ public class ShootingEnemyProjectile : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // Return if this is marked for destruction
-        if(_isMarkedForDestruction)
+        // Return if the other collider is the shooter
+        if (other.TryGetComponentInParent(out ShootingEnemyAttack shootingEnemyAttack) &&
+            shootingEnemyAttack == _shootingEnemyAttack
+           )
             return;
 
+        // Return if this is marked for destruction
+        if (_isMarkedForDestruction)
+            return;
+
+        // Mark this for destruction
+        _isMarkedForDestruction = true;
+
         // Return if the other collider is not an actor
-        if(!other.TryGetComponent(out IActor actor))
+        if (!other.TryGetComponent(out IActor actor))
             return;
 
         // Damage the player
         actor.ChangeHealth(-damage, actor, _shootingEnemyAttack);
-
-        // Mark this for destruction
-        _isMarkedForDestruction = true;
     }
 
     public void Shoot(ShootingEnemyAttack shootingEnemyAttack, Vector3 direction, float velocity, float lifetime)

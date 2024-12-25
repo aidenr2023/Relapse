@@ -166,7 +166,7 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     #region Debugging
 
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, meleeAttackRange);

@@ -304,7 +304,7 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
 
     #region Debugging
 
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
         //Make sure node list is not empty
         if (patrolCheckpoints == null || patrolCheckpoints.Length == 0)
