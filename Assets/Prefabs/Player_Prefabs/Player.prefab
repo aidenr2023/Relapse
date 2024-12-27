@@ -1105,6 +1105,11 @@ MonoBehaviour:
   layersToIgnore:
     serializedVersion: 2
     m_Bits: 33536
+  staminaDrains: 1
+  maxStamina: 100
+  staminaRegenRate: 50
+  sprintStaminaDrainRate: 20
+  staminaRegenDelay: 0.5
 --- !u!114 &-1310880380803664248
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1245,6 +1250,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5c5be46fefc4e2a8e5ec8f801f5a785, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canDie: 1
 --- !u!114 &9038693709593017749
 MonoBehaviour:
   m_ObjectHideFlags: 0

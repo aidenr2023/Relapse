@@ -43,6 +43,12 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     [SerializeField] private LayerMask layersToIgnore;
 
+    [Space, SerializeField] private bool staminaDrains = true;
+    [SerializeField, Min(0)] private float maxStamina = 100;
+    [SerializeField, Min(0)] private float staminaRegenRate = 20f;
+    [SerializeField, Min(0)] private float sprintStaminaDrainRate = 10f;
+    [SerializeField, Min(0)] private float staminaRegenDelay = .5f;
+
     #endregion
 
     #region Private Fields
@@ -67,6 +73,10 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private float _currentPlayerHeight;
     private float _rideHeight = .5f;
+
+    private float _currentStamina;
+
+    private CountdownTimer _staminaRegenDelayTimer;
 
     #endregion
 
@@ -120,6 +130,12 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public HashSet<InputData> InputActions { get; } = new();
 
+    public float CurrentStamina => _currentStamina;
+
+    public float MaxStamina => maxStamina;
+
+    public float StaminaRegenRate => staminaRegenRate;
+
     #endregion
 
     public event Action OnSprintStart;
@@ -137,6 +153,13 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         TargetPlayerHeight = defaultPlayerHeight;
         _currentPlayerHeight = defaultPlayerHeight;
+
+        // Set the current stamina to the max stamina
+        _currentStamina = maxStamina;
+
+        // Create the stamina regen delay timer
+        _staminaRegenDelayTimer = new CountdownTimer(staminaRegenDelay);
+        _staminaRegenDelayTimer.Start();
     }
 
     private void OnEnable()
@@ -211,6 +234,15 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private void Update()
     {
+        // Update the stamina
+        UpdateStamina();
+
+        if (IsSprinting && CurrentStamina <= 0)
+        {
+            _isSprinting = false;
+            IsSprintToggled = false;
+        }
+
         // Sprint events
         if (IsSprinting && !_wasPreviouslySprinting)
             OnSprintStart?.Invoke();
@@ -272,7 +304,6 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Set the was previously grounded state
         _wasPreviouslyGrounded = IsGrounded;
     }
-
 
     private void UpdateSpringForce()
     {
@@ -458,6 +489,29 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         _capsuleCollider.center = new Vector3(0, newYPosition, 0);
     }
 
+    private void UpdateStamina()
+    {
+        // Update the stamina regen delay timer
+        _staminaRegenDelayTimer.Update(Time.deltaTime);
+
+        // If this is the active movement script, the player is on the ground, and they are sprinting,
+        // drain the stamina
+        if (CurrentMovementScript != BasicPlayerMovement)
+            return;
+
+        if (IsGrounded)
+        {
+            if (IsSprinting)
+                ChangeStamina(-sprintStaminaDrainRate * Time.deltaTime);
+
+            // If the player is not sprinting, regenerate the stamina
+            else if (_staminaRegenDelayTimer.IsComplete)
+                ChangeStamina(StaminaRegenRate * Time.deltaTime);
+        }
+        else if (IsSprinting)
+            ChangeStamina(-sprintStaminaDrainRate / 2 * Time.deltaTime);
+    }
+
     #endregion
 
     #region Movement Script Management
@@ -532,6 +586,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         sb.AppendLine($"\tPosition: {transform.position}");
         sb.AppendLine($"\tVelocity: {_rigidbody.velocity} ({lateralVelocity.magnitude:0.0000})");
         sb.AppendLine($"\tGrounded: {IsGrounded}");
+        sb.AppendLine($"\tStamina: {_currentStamina:0.00} / {maxStamina:0.00}");
 
         sb.AppendLine($"\tAll Movement Scripts: {string.Join(", ", _movementScripts.Select(n => n.GetType().Name))}");
 
@@ -599,5 +654,22 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     public void ForceSetSprinting(bool sprinting)
     {
         _isSprinting = sprinting;
+    }
+
+    public void ChangeStamina(float amount)
+    {
+        // Don't drain the stamina if the stamina drains flag is false
+        if (!staminaDrains && amount < 0)
+        {
+            _currentStamina = maxStamina;
+            return;
+        }
+
+        _currentStamina = Mathf.Clamp(_currentStamina + amount, 0, maxStamina);
+
+
+        // Reset the stamina regen delay timer
+        if (amount < 0)
+            _staminaRegenDelayTimer.SetMaxTimeAndReset(staminaRegenDelay);
     }
 }
