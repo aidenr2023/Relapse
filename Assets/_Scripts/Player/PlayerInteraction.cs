@@ -11,6 +11,8 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
     private static readonly int CachedIsOutlinedProperty = Shader.PropertyToID("_IsOutlined");
     private static readonly int CachedIsSelectedProperty = Shader.PropertyToID("_IsSelected");
 
+    #region Serialized Fields
+
     [SerializeField] private Camera cam;
 
     [SerializeField] [Min(0)] private float interactDistance = 5;
@@ -20,10 +22,16 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
     [SerializeField] private Material outlineMaterial;
     [SerializeField] [Min(0)] private float outlineScale = 1.1f;
 
+    #endregion
+
+    #region Private Fields
+
     /// <summary>
     /// A reference to the interactable that the player is currently looking at.
     /// </summary>
     private IInteractable _selectedInteractable;
+
+    #endregion
 
     public event Action<IInteractable> OnLookAtInteractable;
     public event Action<IInteractable> OnStopLookingAtInteractable;
@@ -189,7 +197,6 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
     }
 
     #endregion
-
 
     #region Materials Functions
 

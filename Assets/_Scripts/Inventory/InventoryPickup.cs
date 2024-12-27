@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class InventoryPickup : MonoBehaviour, IInteractable
 {
     [SerializeField] private InventoryEntry inventoryEntry;
 
     [SerializeField] private bool destroyOnPickup = true;
+
+    [SerializeField] private UnityEvent onInteract;
 
     public InventoryEntry InventoryEntry => inventoryEntry;
 
@@ -32,6 +35,9 @@ public class InventoryPickup : MonoBehaviour, IInteractable
         // Destroy the game object if destroyOnPickup is true
         if (destroyOnPickup)
             _isMarkedForDestruction = true;
+
+        // Invoke the onInteract event
+        onInteract?.Invoke();
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)

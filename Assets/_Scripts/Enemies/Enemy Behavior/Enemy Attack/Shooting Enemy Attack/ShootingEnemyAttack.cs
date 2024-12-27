@@ -116,8 +116,9 @@ public class ShootingEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         // Check if the player is in range
         // Return if the fire delay timer is not complete
         // Return if the cooldown timer is not complete
+        // Return if the enemy's line of sight with the target is broken
         if (!IsAttackEnabled || !IsTargetInRange || _detectionFireDelayTimer.IsNotComplete ||
-            _attackCooldownTimer.IsNotComplete)
+            _attackCooldownTimer.IsNotComplete || !Enemy.EnemyDetectionBehavior.IsTargetDetected)
             return;
 
         // Reset the attack cooldown timer
