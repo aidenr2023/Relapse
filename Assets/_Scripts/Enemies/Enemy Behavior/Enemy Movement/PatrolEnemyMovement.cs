@@ -132,7 +132,7 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         if (NavMeshAgent.enabled && IsWithinStoppingDistance)
         {
             this.AddMovementDisableToken(this);
-            Debug.Log($"STOPPING DISTANCE REACHED: {gameObject.name}");
+            // Debug.Log($"STOPPING DISTANCE REACHED: {gameObject.name}");
         }
         else
             this.RemoveMovementDisableToken(this);
