@@ -135,10 +135,7 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
             Debug.Log($"STOPPING DISTANCE REACHED: {gameObject.name}");
         }
         else
-        {
             this.RemoveMovementDisableToken(this);
-            // _withinStoppingDistanceToken.Value = 1;
-        }
 
         // Update the detection state token
         _detectionStateToken.Value = Enemy.EnemyDetectionBehavior.CurrentDetectionState switch
@@ -163,22 +160,21 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
             NavMeshAgent.angularSpeed = angularSpeed * movementSpeedTokenMultiplier;
         }
 
-        // Return if disabled
-        if (!IsMovementEnabled)
-            return;
-
-        // Update the destination
-        UpdateDestination();
-
         // Update the movement animation
         UpdateMovementAnimation();
 
         // Update the movement speed tokens
         MovementSpeedTokens.Update(Time.deltaTime);
+
+        // Update the destination
+        UpdateDestination();
     }
 
     private void UpdateDestination()
     {
+        // Return if disabled
+        if (!IsMovementEnabled)
+            return;
         var currentDetectionState = Enemy.EnemyDetectionBehavior.CurrentDetectionState;
 
         switch (currentDetectionState)
@@ -239,12 +235,19 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
 
         // Get the velocity of the NavMeshAgent
         var velocity = _targetVelocity;
+        var isMoving = NavMeshAgent.velocity.magnitude > walkAnimationThreshold;
+        var isRunning = NavMeshAgent.velocity.magnitude >= runAnimationThreshold;
 
-        var isMoving = velocity > walkAnimationThreshold;
-        var isRunning = velocity >= runAnimationThreshold;
+        var speedValue = velocity * animationSpeedCoefficient;
+
+        // If the navmesh agent is disabled, set the speed value to 0
+        if (!NavMeshAgent.updatePosition)
+            isMoving = false;
+
+        Debug.Log($"Disabling movement animation! {speedValue}, {isMoving}, {isRunning}");
 
         animator.SetBool(AnimatorIsMovingProperty, isMoving);
-        animator.SetFloat(AnimatorSpeedProperty, velocity * animationSpeedCoefficient);
+        animator.SetFloat(AnimatorSpeedProperty, speedValue);
         animator.SetBool(AnimatorIsRunningProperty, isRunning);
     }
 
