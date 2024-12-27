@@ -48,8 +48,10 @@ public class ShootingEnemyProjectile : MonoBehaviour
         if (_isMarkedForDestruction)
             return;
 
-        // Mark this for destruction
-        _isMarkedForDestruction = true;
+        // // Mark this for destruction
+        // _isMarkedForDestruction = true;
+
+        Destroy(gameObject);
 
         // Return if the other collider is not an actor
         if (!other.TryGetComponent(out IActor actor))
