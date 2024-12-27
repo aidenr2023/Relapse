@@ -5,6 +5,12 @@ using UnityEngine.AI;
 
 public class StationaryEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
 {
+    #region Serialized Fields
+
+    [SerializeField, Range(0, 1)] private float rotationLerpAmount = 0.15f;
+
+    #endregion
+
     #region Private Fields
 
     private NavMeshAgent _navMeshAgent;
@@ -35,6 +41,27 @@ public class StationaryEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
         // Update the movement speed tokens
         MovementSpeedTokens.Update(Time.deltaTime);
 
+        // Return if the target is null
+        if (Enemy.EnemyDetectionBehavior.Target == null)
+            return;
+
+        var oldRotation = transform.rotation;
+
+        var diff = Enemy.EnemyDetectionBehavior.LastKnownTargetPosition - transform.position;
+
+        const float defaultFrameTime = 1 / 60f;
+        var frameTime = Time.deltaTime / defaultFrameTime;
+
+        // Set the y rotation to the desired rotation's y rotation
+        // var desiredRotation = Quaternion.FromToRotation(Vector3.forward, diff.normalized);
+        var desiredRotation = Quaternion.LookRotation(diff.normalized, Vector3.up);
+
+        transform.rotation = Quaternion.Euler(
+            0,
+            Mathf.Lerp(oldRotation.eulerAngles.y, desiredRotation.eulerAngles.y, rotationLerpAmount * frameTime),
+            0
+        );
+
         // Update the nav mesh agent
         UpdateNavMeshAgent();
     }
@@ -45,8 +72,13 @@ public class StationaryEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
         if (_navMeshAgent == null)
             return;
 
-        _navMeshAgent.updateRotation = true;
-        _navMeshAgent.updatePosition = false;
+        _navMeshAgent.enabled = false;
+
+        // _navMeshAgent.updateRotation = false;
+        // _navMeshAgent.updatePosition = false;
+
+        // Set the nav mesh agent's speed to 0
+        // _navMeshAgent.speed = 0;
 
         // Return if the detection is unaware
         if (Enemy.EnemyDetectionBehavior.CurrentDetectionState == EnemyDetectionState.Unaware)

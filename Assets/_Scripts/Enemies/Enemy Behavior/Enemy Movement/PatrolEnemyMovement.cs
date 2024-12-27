@@ -126,7 +126,7 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     {
         // Set the NavMeshAgent enabled state
         // NavMeshAgent.enabled = IsMovementEnabled;
-        NavMeshAgent.updatePosition = IsMovementEnabled;
+        NavMeshAgent.isStopped = !IsMovementEnabled;
 
         // If the navmesh agent is enabled, check if the enemy is within stopping distance
         if (NavMeshAgent.enabled && IsWithinStoppingDistance)
@@ -241,7 +241,7 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         var speedValue = velocity * animationSpeedCoefficient;
 
         // If the navmesh agent is disabled, set the speed value to 0
-        if (!NavMeshAgent.updatePosition)
+        if (NavMeshAgent.isStopped)
             isMoving = false;
 
         animator.SetBool(AnimatorIsMovingProperty, isMoving);
