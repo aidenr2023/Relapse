@@ -111,7 +111,7 @@ public class VendorShopButton : MonoBehaviour
 
         button.navigation = nav;
 
-        Debug.Log($"Setting {gameObject.name}'s up navigation to {selectable.name}");
+        // Debug.Log($"Setting {gameObject.name}'s up navigation to {selectable.name}");
     }
 
     public void SetNavigationDown(Selectable selectable)
@@ -122,7 +122,7 @@ public class VendorShopButton : MonoBehaviour
 
         button.navigation = nav;
 
-        Debug.Log($"Setting {gameObject.name}'s down navigation to {selectable.name}");
+        // Debug.Log($"Setting {gameObject.name}'s down navigation to {selectable.name}");
     }
 
     public void SetNavigationLeft(Selectable selectable)
@@ -133,7 +133,7 @@ public class VendorShopButton : MonoBehaviour
 
         button.navigation = nav;
 
-        Debug.Log($"Setting {gameObject.name}'s left navigation to {selectable.name}");
+        // Debug.Log($"Setting {gameObject.name}'s left navigation to {selectable.name}");
     }
 
     public void SetNavigationRight(Selectable selectable)
@@ -144,7 +144,7 @@ public class VendorShopButton : MonoBehaviour
 
         button.navigation = nav;
 
-        Debug.Log($"Setting {gameObject.name}'s right navigation to {selectable.name}");
+        // Debug.Log($"Setting {gameObject.name}'s right navigation to {selectable.name}");
     }
 
 }

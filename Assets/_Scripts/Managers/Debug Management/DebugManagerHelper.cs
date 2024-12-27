@@ -6,14 +6,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class DebugManager : MonoBehaviour, IDebugged, IDamager, IUsesInput
+public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput
 {
-    public static DebugManager Instance { get; private set; }
-
-    public bool IsDebugMode { get; private set; }
-
-    private HashSet<IDebugged> _debuggedObjects;
-
+    #region Serialized Fields
 
     [Tooltip("A Canvas object to display debug text")] [SerializeField]
     private Canvas debugCanvas;
@@ -21,32 +16,32 @@ public class DebugManager : MonoBehaviour, IDebugged, IDamager, IUsesInput
     [Tooltip("A TMP_Text object to display debug text")] [SerializeField]
     private TMP_Text debugText;
 
-    private Player _player;
+    [SerializeField] [Range(0, 1)] private float healthMult = 1f;
+    [SerializeField] [Min(0)] private float toleranceMult = 10f;
+
+    #endregion
+
+    #region Private Fields
 
     private float _healthChange;
     private float _toleranceChange;
 
-    [SerializeField] [Range(0, 1)] private float healthMult = 1f;
-    [SerializeField] [Min(0)] private float toleranceMult = 10f;
+    #endregion
+
+    #region Getters
 
     public GameObject GameObject => gameObject;
 
     public HashSet<InputData> InputActions { get; } = new();
 
+    private Player Player => Player.Instance;
+
+    #endregion
 
     #region Initialization Functions
 
     private void Awake()
     {
-        // Set the instance to this
-        Instance = this;
-
-        // Create the debug managed objects hash set
-        _debuggedObjects = new HashSet<IDebugged>();
-
-        // Add this to the debug managed objects
-        AddDebuggedObject(this);
-
         // Initialize the input
         InitializeInput();
     }
@@ -54,14 +49,8 @@ public class DebugManager : MonoBehaviour, IDebugged, IDamager, IUsesInput
     // Start is called before the first frame update
     private void Start()
     {
-        // // Set debug mode to true by default
-        // IsDebugMode = true;
-
         // Set the visibility of the debug text
-        SetDebugVisibility(IsDebugMode);
-
-        // Find the player in the scene
-        _player = FindFirstObjectByType<Player>();
+        SetDebugVisibility(DebugManager.Instance.IsDebugMode);
     }
 
     private void OnEnable()
@@ -102,10 +91,10 @@ public class DebugManager : MonoBehaviour, IDebugged, IDamager, IUsesInput
     private void ToggleDebugMode(InputAction.CallbackContext ctx)
     {
         // Toggle the debug mode
-        IsDebugMode = !IsDebugMode;
+        DebugManager.Instance.IsDebugMode = !DebugManager.Instance.IsDebugMode;
 
         // Set the debug text visibility
-        SetDebugVisibility(IsDebugMode);
+        SetDebugVisibility(DebugManager.Instance.IsDebugMode);
     }
 
 
@@ -145,11 +134,11 @@ public class DebugManager : MonoBehaviour, IDebugged, IDamager, IUsesInput
 
     private void UpdateToleranceAndHealth()
     {
-        _player.PlayerInfo.ChangeHealth(
+        Player.PlayerInfo.ChangeHealth(
             _healthChange * Time.deltaTime *
-            healthMult * _player.PlayerInfo.MaxHealth
-            , _player.PlayerInfo, this);
-        _player.PlayerInfo.ChangeTolerance(_toleranceChange * Time.deltaTime * toleranceMult);
+            healthMult * Player.PlayerInfo.MaxHealth
+            , Player.PlayerInfo, this);
+        Player.PlayerInfo.ChangeTolerance(_toleranceChange * Time.deltaTime * toleranceMult);
     }
 
     private void UpdateText()
@@ -160,7 +149,7 @@ public class DebugManager : MonoBehaviour, IDebugged, IDamager, IUsesInput
 
         // Create a new string from the debug managed objects
         StringBuilder textString = new();
-        foreach (var obj in _debuggedObjects)
+        foreach (var obj in DebugManager.Instance.DebuggedObjects)
             textString.Append($"{obj.GetDebugText()}\n");
 
         // Set the text
@@ -171,22 +160,5 @@ public class DebugManager : MonoBehaviour, IDebugged, IDamager, IUsesInput
     {
         // Set the debug canvas's visibility
         debugCanvas.enabled = isVisible;
-    }
-
-    public void AddDebuggedObject(IDebugged debugged)
-    {
-        // Add the debug managed object to the hash set
-        _debuggedObjects.Add(debugged);
-    }
-
-    public void RemoveDebuggedObject(IDebugged debugged)
-    {
-        // Remove the debug managed object from the hash set
-        _debuggedObjects.Remove(debugged);
-    }
-
-    public string GetDebugText()
-    {
-        return "PRESS F1 TO TOGGLE DEBUG MODE\n";
     }
 }

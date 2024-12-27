@@ -187,6 +187,12 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         EnableTopMostInputMap();
     }
 
+    private void OnDestroy()
+    {
+        // Remove this object from the debug manager
+        DebugManager.Instance.RemoveDebuggedObject(this);
+    }
+
     public void InitializeInput()
     {
         InputActions.Add(new InputData(

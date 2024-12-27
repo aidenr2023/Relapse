@@ -25,6 +25,8 @@ public class Player : MonoBehaviour
 
     public PlayerInventory PlayerInventory { get; private set; }
 
+    public PlayerDeathController PlayerDeathController { get; private set; }
+
     #endregion
 
     #region Initialization Functions
@@ -60,6 +62,9 @@ public class Player : MonoBehaviour
 
         // Get the PlayerInventory component
         PlayerInventory = GetComponent<PlayerInventory>();
+
+        // Get the PlayerDeathController component
+        PlayerDeathController = GetComponent<PlayerDeathController>();
     }
 
     #endregion

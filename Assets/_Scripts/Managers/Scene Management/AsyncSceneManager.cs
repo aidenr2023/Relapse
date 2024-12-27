@@ -380,22 +380,6 @@ public class AsyncSceneManager
 
         AsyncOperation activeSceneOp = null;
 
-        // Load the player data scene
-        if (startupSceneInfo.PlayerDataScene != null)
-        {
-            var operation = LoadSceneAsync(startupSceneInfo.PlayerDataScene);
-
-            // Set the scene to not be activated
-            operation.allowSceneActivation = false;
-
-            // Add the operation to the hash set
-            loadOperations.Add(operation);
-
-            // If this scene is the active scene, set the operation to set the active scene
-            if (startupSceneInfo.PlayerDataScene.SceneName == startupSceneInfo.ActiveScene.SceneName)
-                activeSceneOp = operation;
-        }
-
         // Load all the startup sections
         foreach (var section in startupSceneInfo.StartupSections)
         {
@@ -440,6 +424,22 @@ public class AsyncSceneManager
 
             percentageCallback?.Invoke(loadProgress);
             yield return null;
+        }
+
+        // Load the player data scene
+        if (startupSceneInfo.PlayerDataScene != null)
+        {
+            var operation = LoadSceneAsync(startupSceneInfo.PlayerDataScene);
+
+            // Set the scene to not be activated
+            operation.allowSceneActivation = false;
+
+            // Add the operation to the hash set
+            loadOperations.Add(operation);
+
+            // If this scene is the active scene, set the operation to set the active scene
+            if (startupSceneInfo.PlayerDataScene.SceneName == startupSceneInfo.ActiveScene.SceneName)
+                activeSceneOp = operation;
         }
 
         // Set all the load operations to allow scene activation

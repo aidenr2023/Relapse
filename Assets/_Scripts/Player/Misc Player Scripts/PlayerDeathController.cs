@@ -8,34 +8,33 @@ public class PlayerDeathController : ComponentScript<Player>
     private void Start()
     {
         // Subscribe to the OnDeath event
-        ParentComponent.PlayerInfo.OnDeath += OnDeath;
+        ParentComponent.PlayerInfo.OnDeath += EnableDeathScreenOnDeath;
     }
 
-    private void OnDeath(object sender, HealthChangedEventArgs args)
+    private void EnableDeathScreenOnDeath(object sender, HealthChangedEventArgs args)
     {
         // If the player cannot die, return
         if (!canDie)
             return;
 
-        var checkpointManager = CheckpointManager.Instance;
+        var isRelapse = args.DamagerObject == args.Actor;
 
         // Enable the Relapse Screen when the player relapses or there is no checkpoint manager
-        if (args.DamagerObject == args.Actor || checkpointManager == null)
-        {
-            RelapseScreen.Instance.Activate();
-            return;
-        }
+        if (isRelapse)
+            RelapseScreen.Instance.InitializeRelapse();
+        else
+            RelapseScreen.Instance.InitializeDeath();
 
-        // Respawn the player at the respawn position
-        Respawn();
-
-        // Reset the player's information when they respawn
-        ParentComponent.PlayerInfo.ResetPlayer();
+        // Activate the Relapse Screen
+        RelapseScreen.Instance.Activate();
     }
 
-    private void Respawn()
+    public void Respawn()
     {
         // Respawn at the current checkpoint
         CheckpointManager.Instance.RespawnAtCurrentCheckpoint(gameObject);
+
+        // Reset the player's information when they respawn
+        ParentComponent.PlayerInfo.ResetPlayer();
     }
 }
