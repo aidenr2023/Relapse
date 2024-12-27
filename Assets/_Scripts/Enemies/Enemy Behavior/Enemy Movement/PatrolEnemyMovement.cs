@@ -244,8 +244,6 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         if (!NavMeshAgent.updatePosition)
             isMoving = false;
 
-        Debug.Log($"Disabling movement animation! {speedValue}, {isMoving}, {isRunning}");
-
         animator.SetBool(AnimatorIsMovingProperty, isMoving);
         animator.SetFloat(AnimatorSpeedProperty, speedValue);
         animator.SetBool(AnimatorIsRunningProperty, isRunning);

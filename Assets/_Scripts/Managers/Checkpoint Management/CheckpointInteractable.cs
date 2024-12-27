@@ -29,7 +29,7 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
 
     public void Interact(PlayerInteraction playerInteraction)
     {
-        Checkpoint.Instance?.SaveCheckpoint(this);
+        CheckpointManager.Instance?.SaveCheckpoint(this);
 
         if (HasBeenCollected)
         {
