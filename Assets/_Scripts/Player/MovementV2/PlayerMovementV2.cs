@@ -499,7 +499,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // if (CurrentMovementScript != BasicPlayerMovement)
         //     return;
 
-        if (IsSprinting && (IsGrounded || WallRunning.IsWallRunning))
+        if (IsSprinting && ((IsGrounded && CurrentMovementScript == BasicPlayerMovement) || WallRunning.IsWallRunning))
             ChangeStamina(-sprintStaminaDrainRate * Time.deltaTime);
 
         // if (IsGrounded)

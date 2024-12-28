@@ -32,6 +32,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     private Vector2 _movementInput;
 
     private readonly CountdownTimer _footstepTimer = new(0.5f, true, false);
+    private float _timeSinceLastFootstep;
 
     private CountdownTimer _jumpGraceTimer;
 
@@ -135,6 +136,9 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
         // Reset the timer
         _footstepTimer.Reset();
+
+        // Reset the time since the last footstep
+        _timeSinceLastFootstep = 0;
     }
 
     #endregion
@@ -200,15 +204,25 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
     private void UpdateFootsteps()
     {
-        // Update the footstep timer
-        _footstepTimer.Update(Time.deltaTime);
-
         // Set the footstep timer's max time based on the player's walking/sprinting state
-        _footstepTimer.SetMaxTime(!IsSprinting ? walkingFootstepInterval : sprintingFootstepInterval);
+        _footstepTimer.SetMaxTime(walkingFootstepInterval);
+
+        // Update the time since the last footstep
+        _timeSinceLastFootstep += Time.deltaTime;
 
         // If this is NOT the active movement script, disable the footstep timer
         if (ParentComponent.CurrentMovementScript != this)
             _footstepTimer.SetActive(false);
+
+        // If the player is not grounded, disable the footstep timer
+        if (!ParentComponent.IsGrounded)
+            _footstepTimer.SetActive(false);
+
+        var sprintingMultiplier = IsSprinting ? walkingFootstepInterval / sprintingFootstepInterval : 1;
+        var moveMagnitude = _movementInput.magnitude;
+
+        // Update the footstep timer
+        _footstepTimer.Update(Time.deltaTime * sprintingMultiplier * moveMagnitude);
     }
 
     public override void FixedMovementUpdate()
@@ -250,11 +264,9 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     private void UpdateLateralMovement()
     {
         // Return if the movement input is zero
-        if (_movementInput == Vector2.zero)
-        {
-            // Stop the footstep timer to prevent footstep sounds
+        // Stop the footstep timer to prevent footstep sounds
+        if (_movementInput.magnitude <= 0)
             _footstepTimer.SetActive(false);
-        }
 
         var cameraTransform = ParentComponent.Orientation;
 
@@ -353,7 +365,18 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         }
 
         // Set the footstep timer to active
-        _footstepTimer.SetActive(true);
+        if (!_footstepTimer.IsActive && _movementInput.magnitude > 0)
+        {
+            _footstepTimer.SetActive(true);
+
+            // If it has been a while since the last footstep, force the footstep timer to complete
+            if (_timeSinceLastFootstep > 0.5f)
+            {
+                _footstepTimer.ForcePercent(1);
+
+                Debug.Log($"Running This!");
+            }
+        }
     }
 
     private void ApplyLateralSpeedLimit()
