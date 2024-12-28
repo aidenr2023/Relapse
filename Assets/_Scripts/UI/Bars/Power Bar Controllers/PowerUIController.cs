@@ -7,6 +7,8 @@ public class PowerUIController : MonoBehaviour
 {
     #region Serialized Fields
 
+    [SerializeField] private CanvasGroup canvasGroup;
+
     [SerializeField] private Image currentPowerImage;
 
     [SerializeField] private Image[] powerImages;
@@ -36,11 +38,26 @@ public class PowerUIController : MonoBehaviour
         // Get the power manager
         var powerManager = _player.PlayerPowerManager;
 
+        // Get the powers
+        var powers = powerManager.Powers.ToArray();
+
+        // If there are no powers, hide the canvas group
+        if (powers.Length == 0)
+        {
+            canvasGroup.alpha = 0;
+            return;
+        }
+
+        // Show the canvas group
+        canvasGroup.alpha = 1;
+
         // Get the current power
         var currentPower = powerManager.CurrentPower;
 
         if (currentPower != null)
         {
+            currentPowerImage.enabled = true;
+
             // Get the power token
             var powerToken = powerManager.CurrentPowerToken;
 
@@ -55,8 +72,8 @@ public class PowerUIController : MonoBehaviour
             // Set the sprite of the image
             currentPowerImage.sprite = currentPower.Icon;
         }
-
-        var powers = powerManager.Powers.ToArray();
+        else
+            currentPowerImage.enabled = false;
 
         // Set the rest of the power images
         for (var i = 0; i < powerImages.Length; i++)
@@ -66,8 +83,11 @@ public class PowerUIController : MonoBehaviour
             {
                 powerImages[i].fillAmount = 1;
                 powerImages[i].sprite = null;
+                powerImages[i].enabled = false;
                 continue;
             }
+
+            powerImages[i].enabled = true;
 
             var cPower = powers[i];
 
