@@ -12,9 +12,11 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
     [SerializeField] [Min(1)] private float sprintMultiplier = 1.5f;
 
-    [SerializeField, Min(0)] private float jumpForce = 10f;
+    [Space, SerializeField, Min(0)] private float jumpForce = 10f;
     [SerializeField, Min(0)] private float jumpGraceTime = 0.5f;
     [SerializeField, Range(0, 1)] private float airMovementMultiplier = 0.5f;
+    [SerializeField] private float variableJumpForce = 1f;
+    [SerializeField, Min(0)] private float variableJumpTime = 1f;
 
     [Header("Sounds")] [SerializeField] private SoundPool footstepSoundPool;
 
@@ -32,6 +34,9 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     private readonly CountdownTimer _footstepTimer = new(0.5f, true, false);
 
     private CountdownTimer _jumpGraceTimer;
+
+    private bool _isJumpHeld;
+    private CountdownTimer _variableJumpTimer;
 
     #endregion
 
@@ -67,6 +72,10 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         _jumpGraceTimer = new CountdownTimer(jumpGraceTime, false, true);
         _jumpGraceTimer.OnTimerEnd += () => _jumpGraceTimer.Stop();
         _jumpGraceTimer.Stop();
+
+        // Initialize the variable jump timer
+        _variableJumpTimer = new CountdownTimer(variableJumpTime, false, true);
+        _variableJumpTimer.Start();
     }
 
     private void Start()
@@ -102,6 +111,15 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         InputActions.Add(new InputData(
             InputManager.Instance.PControls.PlayerMovementBasic.Jump, InputType.Performed, OnJumpPerformed)
         );
+        InputActions.Add(new InputData(
+            InputManager.Instance.PControls.PlayerMovementBasic.Jump, InputType.Canceled, SetJumpOnJumpCanceled)
+        );
+    }
+
+    private void SetJumpOnJumpCanceled(InputAction.CallbackContext obj)
+    {
+        // Set the is jump held flag to false
+        _isJumpHeld = false;
     }
 
     private void InitializeFootsteps()
@@ -168,6 +186,10 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         _jumpGraceTimer.SetMaxTime(jumpGraceTime);
         _jumpGraceTimer.Update(Time.deltaTime);
 
+        // Update the variable jump timer
+        _variableJumpTimer.SetMaxTime(variableJumpTime);
+        _variableJumpTimer.Update(Time.deltaTime);
+
         // Set the is trying to jump flag to false if the player is falling
         if (ParentComponent.Rigidbody.velocity.y < 0)
             IsTryingToJump = false;
@@ -203,6 +225,26 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
         // Update the jump
         UpdateJump();
+
+        if (InputManager.Instance.PControls.PlayerMovementBasic.Jump.ReadValue<float>() < 0)
+            _isJumpHeld = false;
+
+        // Apply the variable jump force
+        if (_isJumpHeld && !_variableJumpTimer.IsComplete)
+        {
+            var gravity = -Physics.gravity;
+            var gravityMagnitude = gravity.magnitude;
+
+            ParentComponent.Rigidbody.AddForce(
+                gravity.normalized * (gravityMagnitude + variableJumpForce),
+                ForceMode.Acceleration
+            );
+
+            // ParentComponent.Rigidbody.AddForce(
+            //     Vector3.up * variableJumpForce,
+            //     ForceMode.VelocityChange
+            // );
+        }
     }
 
     private void UpdateLateralMovement()
@@ -383,6 +425,12 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         // Reset the jump grace timer
         _jumpGraceTimer.SetMaxTimeAndReset(jumpGraceTime);
         _jumpGraceTimer.Stop();
+
+        // Set the is jump held flag to true
+        _isJumpHeld = true;
+
+        // Reset the variable jump timer
+        _variableJumpTimer.SetMaxTimeAndReset(variableJumpTime);
     }
 
     #endregion
