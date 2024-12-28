@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,9 +15,12 @@ public class PowerUIController : MonoBehaviour
     [SerializeField] private PowerIconController[] powerImages;
     [SerializeField] private float powerIconsOpacityLerpAmount = .1f;
     [SerializeField] private float powerIconsStayOnScreenTime = .5f;
+    [SerializeField] private TMP_Text powerNameText;
 
     [Space, SerializeField] private Color selectedColor = Color.white;
     [SerializeField] private Color unselectedColor = Color.black;
+
+    [Space, SerializeField] private TMP_FontAsset font;
 
     #endregion
 
@@ -53,6 +57,9 @@ public class PowerUIController : MonoBehaviour
 
         // Update the power icons opacity
         UpdatePowerIconsOpacity();
+
+        // Update the power name text
+        UpdatePowerNameText();
     }
 
     private void UpdateImages()
@@ -168,5 +175,28 @@ public class PowerUIController : MonoBehaviour
 
         // Set the previous power index
         _previousPowerIndex = currentPowerIndex;
+    }
+
+    private void UpdatePowerNameText()
+    {
+        // Return if the power name text is null
+        if (powerNameText == null)
+            return;
+
+        // Get the current power
+        var currentPower = _player.PlayerPowerManager.CurrentPower;
+
+        // Return if the current power is null
+        if (currentPower == null)
+            return;
+
+        // Set the text of the power name text
+        powerNameText.text = currentPower.PowerName;
+
+        // Set the opacity of the power name text
+        powerNameText.alpha = powerIconsCanvasGroup.alpha;
+
+        // Set the font of the power name text
+        powerNameText.font = font;
     }
 }
