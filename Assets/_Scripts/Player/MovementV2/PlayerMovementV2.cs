@@ -494,22 +494,23 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Update the stamina regen delay timer
         _staminaRegenDelayTimer.Update(Time.deltaTime);
 
-        // If this is the active movement script, the player is on the ground, and they are sprinting,
-        // drain the stamina
-        if (CurrentMovementScript != BasicPlayerMovement)
-            return;
+        // // If this is the active movement script, the player is on the ground, and they are sprinting,
+        // // drain the stamina
+        // if (CurrentMovementScript != BasicPlayerMovement)
+        //     return;
 
-        if (IsGrounded)
+        if (IsSprinting && (IsGrounded || WallRunning.IsWallRunning))
+            ChangeStamina(-sprintStaminaDrainRate * Time.deltaTime);
+
+        // if (IsGrounded)
+        else
         {
-            if (IsSprinting)
-                ChangeStamina(-sprintStaminaDrainRate * Time.deltaTime);
-
             // If the player is not sprinting, regenerate the stamina
-            else if (_staminaRegenDelayTimer.IsComplete)
+            if (_staminaRegenDelayTimer.IsComplete)
                 ChangeStamina(StaminaRegenRate * Time.deltaTime);
         }
-        else if (IsSprinting)
-            ChangeStamina(-sprintStaminaDrainRate / 2 * Time.deltaTime);
+        // else if (IsSprinting)
+        //     ChangeStamina(-sprintStaminaDrainRate / 2 * Time.deltaTime);
     }
 
     #endregion
