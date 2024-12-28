@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StaminaBar : TransparentBar
+public class StaminaBarController : TransparentBarController
 {
     #region Private Fields
 
@@ -36,7 +36,7 @@ public class StaminaBar : TransparentBar
 
     protected override void SetCurrentValue()
     {
-        CurrentValue = _movementV2.CurrentStamina;
+        CurrentValue = Mathf.Clamp01(_movementV2.CurrentStamina / _movementV2.MaxStamina);
     }
 
     protected override void SetPreviousValue()
@@ -46,6 +46,6 @@ public class StaminaBar : TransparentBar
 
     protected override float CalculatePercentage()
     {
-        return Mathf.Clamp01(_movementV2.CurrentStamina / _movementV2.MaxStamina);
+        return CurrentValue;
     }
 }

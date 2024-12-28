@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class ToxicityBar : TransparentBar
+public class HealthBarController : TransparentBarController
 {
     #region Private Fields
 
@@ -27,7 +27,7 @@ public class ToxicityBar : TransparentBar
 
     protected override void SetCurrentValue()
     {
-        CurrentValue = _player.PlayerInfo.CurrentTolerance;
+        CurrentValue = _player.PlayerInfo.CurrentHealth;
     }
 
     protected override void SetPreviousValue()
@@ -37,6 +37,6 @@ public class ToxicityBar : TransparentBar
 
     protected override float CalculatePercentage()
     {
-        return Mathf.Clamp01(_player.PlayerInfo.CurrentTolerance / _player.PlayerInfo.MaxTolerance);
+        return Mathf.Clamp01(_player.PlayerInfo.CurrentHealth / _player.PlayerInfo.MaxHealth);
     }
 }
