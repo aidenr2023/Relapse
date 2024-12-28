@@ -93,6 +93,12 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     public HashSet<Material> OutlineMaterials { get; } = new();
 
+    public int CurrentAmmo
+    {
+        get => currentMagazineSize;
+        set => currentMagazineSize = value;
+    }
+
     #region IInteractable
 
     public bool IsInteractable => true;

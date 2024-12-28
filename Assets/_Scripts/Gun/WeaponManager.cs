@@ -372,6 +372,49 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
         _damageMultiplierTokens.Clear();
     }
 
+    public void SetUpWeapon(GameObject newGun, int currentAmmo)
+    {
+        var spawnNewGun = false;
+
+        // Remove the current gun (completely erase it, don't even drop it)
+        if (_equippedGun != null && _equippedGun.GameObject != newGun)
+        {
+            // Set the equipped gun's parent to null
+            _equippedGun.GameObject.transform.SetParent(null);
+
+            // Destroy the equipped gun
+            Destroy(_equippedGun.GameObject);
+
+            // Set the equipped gun to null
+            _equippedGun = null;
+
+            // Set the spawn new gun flag to true
+            spawnNewGun = true;
+        }
+
+        IGun gun;
+
+        if (spawnNewGun)
+        {
+            // Equip the new gun
+            gun = Instantiate(newGun).GetComponent<IGun>();
+
+            // Get the interactable materials of the gun
+            gun.GetOutlineMaterials(Player.PlayerInteraction.OutlineMaterial.shader);
+
+            // Equip the gun
+            EquipGun(gun);
+        }
+
+        gun = _equippedGun;
+
+        if (gun == null)
+            return;
+
+        // Set the ammo count
+        gun.CurrentAmmo = currentAmmo;
+    }
+
     public class DamageMultiplierToken : IComparable<DamageMultiplierToken>
     {
         private readonly float _multiplier;

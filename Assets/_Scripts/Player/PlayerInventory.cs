@@ -146,4 +146,22 @@ public class PlayerInventory : MonoBehaviour
         JournalTooltipManager.Instance.AddTooltip(
             $"+${quantity}!\nTotal: {GetItemCount(moneyObject)}");
     }
+
+    public void SetUpInventory(InventoryEntry[] entries)
+    {
+        // Clear the inventory
+        inventoryEntries.Clear();
+
+        // Add the entries (without calling the add item method)
+        foreach (var entry in entries)
+        {
+            var inventoryEntry = GetInventoryEntry(entry.InventoryObject);
+
+            // Create a new inventory entry and add it to the list
+            if (inventoryEntry == null)
+                inventoryEntries.Add(entry);
+            else
+                inventoryEntry.AddQuantity(entry.Quantity);
+        }
+    }
 }

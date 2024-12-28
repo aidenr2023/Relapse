@@ -57,6 +57,12 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
 
     public HashSet<InputData> InputActions { get; } = new();
 
+    public bool CanSlide
+    {
+        get => isEnabled;
+        set => isEnabled = value;
+    }
+
     #endregion
 
     #region Initialization Functions

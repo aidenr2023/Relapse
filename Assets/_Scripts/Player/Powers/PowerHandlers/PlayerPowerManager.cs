@@ -522,12 +522,12 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
         CurrentPower.PowerLogic.StartPassiveEffect(this, CurrentPowerToken);
 
         // Change the player's tolerance
-        // _player.PlayerInfo.ChangeTolerance(CurrentPowerToken.ToleranceMeterImpact);
-        StartCoroutine(
-            AddToxicityOverTime(
-                CurrentPowerToken.ToleranceMeterImpact,
-                .5f)
-        );
+        _player.PlayerInfo.ChangeTolerance(CurrentPowerToken.ToleranceMeterImpact);
+        // StartCoroutine(
+        //     AddToxicityOverTime(
+        //         CurrentPowerToken.ToleranceMeterImpact,
+        //         .5f)
+        // );
 
         // Invoke the event for the power used
         OnPowerUsed?.Invoke(this, CurrentPowerToken);
@@ -541,6 +541,19 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
 
         // Set the is charging power flag to false
         _isChargingPower = false;
+    }
+
+    public void SetUpPowers(int powerIndex, PowerScriptableObject[] newPowers)
+    {
+        // Clone the powers array
+        powers = new PowerScriptableObject[newPowers.Length];
+        Array.Copy(newPowers, powers, newPowers.Length);
+
+        // Initialize the power collections
+        InitializePowerCollections();
+
+        // Set the current power index
+        _currentPowerIndex = powerIndex;
     }
 
     #region Event Functions

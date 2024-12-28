@@ -429,4 +429,23 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
         // End the relapse
         EndRelapse();
     }
+
+    public void SetUpHealth(float cHealth, float mHealth)
+    {
+        health = cHealth;
+        maxHealth = mHealth;
+    }
+
+    public void SetUpToxicity(float cToxicity, float mToxicity, int relapseCount, bool isRelapsing)
+    {
+        var wasRelapsing = _isRelapsing;
+
+        currentTolerance = cToxicity;
+        maxTolerance = mToxicity;
+        _relapseCount = relapseCount;
+        _isRelapsing = isRelapsing;
+
+        if (!isRelapsing && wasRelapsing)
+            EndRelapse();
+    }
 }

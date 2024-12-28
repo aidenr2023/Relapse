@@ -673,4 +673,10 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         if (amount < 0)
             _staminaRegenDelayTimer.SetMaxTimeAndReset(staminaRegenDelay);
     }
+
+    public void SetUpStamina(float cStamina, float mStamina)
+    {
+        _currentStamina = cStamina;
+        maxStamina = mStamina;
+    }
 }

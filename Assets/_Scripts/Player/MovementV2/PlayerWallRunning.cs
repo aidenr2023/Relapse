@@ -92,6 +92,12 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     private float ForwardInput => ParentComponent.MovementInput.y;
 
+    public bool CanWallRun
+    {
+        get => isEnabled;
+        set => isEnabled = value;
+    }
+
     #endregion
 
     #region Initialization Functions

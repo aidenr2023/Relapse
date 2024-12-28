@@ -50,7 +50,11 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     public Vector2 MovementInput => _movementInput;
 
     // public bool CanSprint => canSprintWithoutPower && ParentComponent.IsGrounded;
-    public bool CanSprint => canSprintWithoutPower;
+    public bool CanSprint
+    {
+        get => canSprintWithoutPower;
+        set => canSprintWithoutPower = value;
+    }
 
     public bool IsSprinting => ParentComponent.IsSprinting;
 
@@ -59,6 +63,12 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     public bool IsTryingToJump { get; set; }
 
     public bool IsSetToJump => _jumpGraceTimer.IsActive && !_jumpGraceTimer.IsComplete;
+
+    public bool CanJump
+    {
+        get => canJumpWithoutPower;
+        set => canJumpWithoutPower = value;
+    }
 
     #endregion
 
