@@ -104,7 +104,7 @@ public class ShootingEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         var bulletObj = Instantiate(enemyBulletPrefab, spawnPoint.position, spawnPoint.rotation);
 
         // Calculate the direction of the bullet
-        var direction = Enemy.EnemyDetectionBehavior.Target.GameObject.transform.position - spawnPoint.position;
+        var direction = Enemy.EnemyDetectionBehavior.LastKnownTargetPosition - spawnPoint.position;
 
         // Call the shoot method on the bullet
         bulletObj.Shoot(this, direction, projectileSpeed, projectileLifetime);

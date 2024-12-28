@@ -8,10 +8,15 @@ public class PowerUIController : MonoBehaviour
     #region Serialized Fields
 
     [SerializeField] private CanvasGroup canvasGroup;
-
     [SerializeField] private Image currentPowerImage;
 
-    [SerializeField] private Image[] powerImages;
+    [Space, SerializeField] private CanvasGroup powerIconsCanvasGroup;
+    [SerializeField] private PowerIconController[] powerImages;
+    [SerializeField] private float powerIconsOpacityLerpAmount = .1f;
+    [SerializeField] private float powerIconsStayOnScreenTime = .5f;
+
+    [Space, SerializeField] private Color selectedColor = Color.white;
+    [SerializeField] private Color unselectedColor = Color.black;
 
     #endregion
 
@@ -19,7 +24,21 @@ public class PowerUIController : MonoBehaviour
 
     private Player _player;
 
+    private CountdownTimer _powerIconsStayOnScreenTimer;
+
+    private int _previousPowerIndex;
+
     #endregion
+
+    private void Awake()
+    {
+        // Create the power icons stay on screen timer
+        _powerIconsStayOnScreenTimer = new CountdownTimer(powerIconsStayOnScreenTime);
+        _powerIconsStayOnScreenTimer.Start();
+
+        // Set the opacity of the power icons canvas group to 0
+        powerIconsCanvasGroup.alpha = 0;
+    }
 
     private void Start()
     {
@@ -31,6 +50,9 @@ public class PowerUIController : MonoBehaviour
     {
         // Update the images
         UpdateImages();
+
+        // Update the power icons opacity
+        UpdatePowerIconsOpacity();
     }
 
     private void UpdateImages()
@@ -81,31 +103,70 @@ public class PowerUIController : MonoBehaviour
             // If there is no power at this index, set the fill amount to 1 and the sprite to null
             if (i >= powers.Length)
             {
-                powerImages[i].fillAmount = 1;
-                powerImages[i].sprite = null;
-                powerImages[i].enabled = false;
+                // powerImages[i].fillAmount = 1;
+                powerImages[i].SetFill(1);
+                powerImages[i].SetForeground(null);
+                powerImages[i].SetVisible(false);
                 continue;
             }
 
-            powerImages[i].enabled = true;
+            powerImages[i].SetVisible(true);
 
             var cPower = powers[i];
+
+            // Set the color of the image
+            if (currentPower != null && cPower == currentPower)
+                powerImages[i].SetColor(selectedColor);
+            else
+                powerImages[i].SetColor(unselectedColor);
 
             // Get the power token
             var powerToken = powerManager.GetPowerToken(cPower);
 
             // If there is no power token, set the fill amount to 1
             if (powerToken == null)
-                powerImages[i].fillAmount = 1;
+                powerImages[i].SetFill(1);
 
             // Set the fill amount
             else
-                powerImages[i].fillAmount = (powerToken.CooldownPercentage != 0)
+                powerImages[i].SetFill((powerToken.CooldownPercentage != 0)
                     ? powerToken.CooldownPercentage
-                    : 1;
+                    : 1);
 
             // Set the sprite of the image
-            powerImages[i].sprite = cPower.Icon;
+            powerImages[i].SetForeground(cPower.Icon);
         }
+    }
+
+    private void UpdatePowerIconsOpacity()
+    {
+        // Update the stay on screen timer
+        _powerIconsStayOnScreenTimer?.Update(Time.unscaledDeltaTime);
+
+        // Get the current power index
+        var currentPowerIndex = _player.PlayerPowerManager.CurrentPowerIndex;
+
+        // If the current power index is different from the previous power index, reset the stay on screen timer
+        if (currentPowerIndex != _previousPowerIndex)
+            _powerIconsStayOnScreenTimer?.Reset();
+
+        var desiredOpacity = 1;
+
+        // If the stay on screen timer is complete, set the desired opacity to 0
+        if (_powerIconsStayOnScreenTimer?.IsComplete ?? false)
+            desiredOpacity = 0;
+
+        const float defaultFrameTime = 1 / 60f;
+        var frameAmount = Time.unscaledDeltaTime / defaultFrameTime;
+
+        // Set the opacity of the power icons canvas group
+        powerIconsCanvasGroup.alpha = Mathf.Lerp(
+            powerIconsCanvasGroup.alpha,
+            desiredOpacity,
+            powerIconsOpacityLerpAmount * frameAmount
+        );
+
+        // Set the previous power index
+        _previousPowerIndex = currentPowerIndex;
     }
 }

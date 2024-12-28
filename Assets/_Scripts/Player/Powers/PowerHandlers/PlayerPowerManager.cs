@@ -62,6 +62,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
 
     public IReadOnlyCollection<PowerScriptableObject> Powers => powers;
 
+    public int CurrentPowerIndex => _currentPowerIndex;
+
     #endregion
 
     #region Initialization Functions
