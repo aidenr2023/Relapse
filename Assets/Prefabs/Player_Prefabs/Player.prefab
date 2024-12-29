@@ -1193,24 +1193,24 @@ MonoBehaviour:
   wallRunningDetectionDistance: 1
   rayCount: 16
   wallJumpForce: 15
-  wallJumpAngle: 35
+  wallJumpAngle: 40
   autoWallJumpForce: 0.5
   footstepSoundPool:
     sounds:
     - clip: {fileID: 8300000, guid: 81def98cd06884940b95459db1a841f7, type: 3}
       soundType: 1
-      volume: 0.25
+      volume: 0.0625
       isPersistent: 0
     - clip: {fileID: 8300000, guid: 5aa5e09256a042147921c24a52b741ae, type: 3}
       soundType: 1
-      volume: 0.25
+      volume: 0.0625
       isPersistent: 0
   walkingFootstepInterval: 0.35
   sprintingFootstepInterval: 0.25
   jumpSound:
     clip: {fileID: 8300000, guid: 5aa5e09256a042147921c24a52b741ae, type: 3}
     soundType: 1
-    volume: 1
+    volume: 0.125
     isPersistent: 0
 --- !u!114 &7032570368268033865
 MonoBehaviour:
