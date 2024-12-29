@@ -25,6 +25,8 @@ public class TimeScaleManager : IDebugged
 
     private readonly TokenManager<float> _timeScaleTokenManager;
 
+    private readonly TokenManager<float>.ManagedToken _menuPauseToken;
+
     #endregion
 
     #region Getters
@@ -36,11 +38,23 @@ public class TimeScaleManager : IDebugged
     private TimeScaleManager()
     {
         _timeScaleTokenManager = new TokenManager<float>(false, null, 1);
+
+        _menuPauseToken = _timeScaleTokenManager.AddToken(1, -1, true);
     }
 
     public void Update()
     {
+        // Update the Menu Pause Token
+        UpdateMenuPauseToken();
+
         Time.timeScale = 1 * GetCalculatedValue();
+    }
+
+    private void UpdateMenuPauseToken()
+    {
+        // If there are any menus active, pause the game
+        // If there are no menus active, resume the game
+        _menuPauseToken.Value = MenuManager.Instance.IsGamePausedInMenus ? 0 : 1;
     }
 
     private float GetCalculatedValue()

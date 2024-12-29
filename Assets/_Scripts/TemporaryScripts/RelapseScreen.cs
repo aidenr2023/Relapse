@@ -19,11 +19,13 @@ public class RelapseScreen : GameMenu
 
     [Space, SerializeField] private Button respawnButton;
 
+    [SerializeField] private Slider loadingBar;
+
     #endregion
 
     #region Private Fields
 
-    private TokenManager<float>.ManagedToken _pauseToken;
+    private bool _respawnButtonClicked;
 
     #endregion
 
@@ -56,6 +58,11 @@ public class RelapseScreen : GameMenu
     {
     }
 
+    private void Update()
+    {
+        // Set the loading bar's visibility based on whether the scene is loading
+        loadingBar.gameObject.SetActive(_respawnButtonClicked);
+    }
 
     private void SetBackgroundImage(Sprite sprite)
     {
@@ -86,40 +93,67 @@ public class RelapseScreen : GameMenu
 
     public void Activate()
     {
-        // Set the timescale to 0
-        _pauseToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(0, -1, true);
-
         // Enable the game object
         gameObject.SetActive(true);
+
+        // Reset the flag
+        _respawnButtonClicked = false;
     }
 
 
     public void LoadScene(string sceneName)
     {
-        // Set the timescale to 1
-        TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(_pauseToken);
-
         // Load the scene
         UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
     }
 
     public void RespawnAtLatestCheckpoint()
     {
-        // Set the timescale to 1
-        TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(_pauseToken);
-
-        // Disable the game object
-        gameObject.SetActive(false);
-
         // Check if there is a checkpoint manager
         if (CheckpointManager.Instance == null)
         {
             // Load the scene
             LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+
+            // Disable the game object
+            gameObject.SetActive(false);
+
             return;
         }
 
+        // Return if the button was already clicked
+        if (_respawnButtonClicked)
+            return;
+
+        // Set the flag to true
+        _respawnButtonClicked = true;
+
+        // Load the scene asynchronously
+        AsyncSceneManager.Instance.LoadMultipleScenesAsynchronously(
+            CheckpointManager.Instance.CurrentRespawnPoint.SceneLoaderInformation,
+            this, UpdateProgressBarPercent, RespawnOnCompletion);
+
+        // // Disable the game object
+        // gameObject.SetActive(false);
+
+        // // Respawn at the latest checkpoint
+        // Player.Instance.PlayerDeathController.Respawn();
+    }
+
+    private void UpdateProgressBarPercent(float amount)
+    {
+        loadingBar.value = amount;
+    }
+
+    private void RespawnOnCompletion()
+    {
         // Respawn at the latest checkpoint
         Player.Instance.PlayerDeathController.Respawn();
+
+        // Set the flag to false
+        _respawnButtonClicked = false;
+
+        // Set the game object to inactive
+        gameObject.SetActive(false);
     }
 }

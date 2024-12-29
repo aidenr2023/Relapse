@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.ProBuilder.MeshOperations;
 using UnityEngine.SceneManagement;
@@ -12,7 +13,7 @@ public class CheckpointManager : MonoBehaviour
 
     #region Serialized Fields
 
-    [SerializeField] private Transform initialSpawnPosition;
+    [SerializeField] private CheckpointInteractable initialSpawnPosition;
     [SerializeField] private CheckpointInteractable[] checkpointList;
 
     #endregion
@@ -26,9 +27,9 @@ public class CheckpointManager : MonoBehaviour
 
     #region Getters
 
-    public Transform CurrentRespawnPosition => _highestCheckpoint < 0
+    public CheckpointInteractable CurrentRespawnPoint => _highestCheckpoint < 0
         ? initialSpawnPosition
-        : checkpointList[_highestCheckpoint].RespawnPosition;
+        : checkpointList[_highestCheckpoint];
 
     #endregion
 
@@ -37,10 +38,16 @@ public class CheckpointManager : MonoBehaviour
         Instance = this;
     }
 
-    private void RespawnAt(GameObject objectToMove, Transform position)
+    private void RespawnAt(GameObject objectToMove, CheckpointInteractable checkpoint)
     {
+        // // Force the async scene manager to load the checkpoint's scene(s) synchronously before moving the player
+        // AsyncSceneManager.Instance.LoadScenesSynchronous(checkpoint.SceneLoaderInformation);
+
         // Set the position of the player to the position of the checkpoint
-        objectToMove.transform.position = position.position;
+        objectToMove.transform.position = checkpoint.RespawnPosition.position;
+
+        // // Wait for the scene to load before moving the player
+        // StartCoroutine(WaitThenMove(objectToMove, checkpoint.RespawnPosition.position, 1f));
     }
 
     // When player interacts with a burner phone, save the current checkpoint as the transform of the burner phone
@@ -55,5 +62,12 @@ public class CheckpointManager : MonoBehaviour
     }
 
     public void RespawnAtCurrentCheckpoint(GameObject objectToMove) =>
-        RespawnAt(objectToMove, CurrentRespawnPosition);
+        RespawnAt(objectToMove, CurrentRespawnPoint);
+
+    private IEnumerator WaitThenMove(GameObject objectToMove, Vector3 newPosition, float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+
+        objectToMove.transform.position = newPosition;
+    }
 }

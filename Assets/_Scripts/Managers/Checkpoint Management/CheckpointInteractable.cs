@@ -9,6 +9,8 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
 
     [SerializeField] private Transform respawnPosition;
 
+    [SerializeField] private SceneLoaderInformation sceneLoaderInformation;
+
     #endregion
 
     #region Getters
@@ -24,6 +26,7 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
     public HashSet<Material> OutlineMaterials { get; } = new();
 
     public bool HasBeenCollected { get; private set; }
+    public SceneLoaderInformation SceneLoaderInformation => sceneLoaderInformation;
 
     #endregion
 

@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class AsyncSceneManager
+public class AsyncSceneManager : IDebugged
 {
     private static AsyncSceneManager _instance;
 
@@ -33,6 +33,9 @@ public class AsyncSceneManager
         // Set the instance
         if (_instance == null)
             _instance = this;
+
+        // Add the scene manager to the debug manager
+        DebugManager.Instance.AddDebuggedObject(this);
     }
 
     #region Scene Methods
@@ -174,6 +177,17 @@ public class AsyncSceneManager
             LoadSceneSynchronous(levelSectionSceneInfo.SectionPersistentData);
     }
 
+    public void LoadScenesSynchronous(SceneLoaderInformation loaderInformation)
+    {
+        // Unload all the scenes to unload asynchronously
+        foreach (var scene in loaderInformation.SectionsToUnload)
+            UnloadSceneAsync(scene);
+
+        // Load all the scenes to load synchronously
+        foreach (var scene in loaderInformation.SectionsToLoad)
+            LoadSceneSynchronous(scene);
+    }
+
     private void UnloadSceneAsync(SceneUnloadField scene)
     {
         // If there is no record, the scene is not managed by the scene manager / not open
@@ -221,6 +235,7 @@ public class AsyncSceneManager
             case AsyncSceneState.Loaded:
                 if (!scene.IsDisableInstead)
                 {
+                    Debug.Log($"Unloading scene {scene.SceneField.SceneName}");
                     SceneManager.UnloadSceneAsync(sceneRecord.SceneField);
                     _asyncSceneRecords.Remove(scene);
                 }
@@ -477,7 +492,176 @@ public class AsyncSceneManager
         Debug.Log($"All Operations Done! - {startupSceneInfo.ActiveScene.SceneName}");
     }
 
+    public void LoadMultipleScenesAsynchronously(SceneLoaderInformation loaderInformation,
+        MonoBehaviour coroutineRunner,
+        Action<float> percentageCallback,
+        Action onCompletion)
+    {
+        // Return if the coroutine runner is null
+        if (coroutineRunner == null)
+        {
+            Debug.LogError("Coroutine runner is null!");
+            return;
+        }
+
+        // Return if the startup scene info is null
+        if (loaderInformation == null)
+        {
+            Debug.LogError("Loader Information is null!");
+            return;
+        }
+
+        // Start the coroutine
+        coroutineRunner.StartCoroutine(LoadMultipleScenes(loaderInformation, coroutineRunner, percentageCallback,
+            onCompletion));
+    }
+
+    private IEnumerator LoadMultipleScenes(SceneLoaderInformation loaderInformation, MonoBehaviour coroutineRunner,
+        Action<float> percentageCallback, Action onCompletion)
+
+    {
+        List<Scene> scenesToUnload = new();
+
+        // Get all currently loaded scenes that need to be unloaded
+        foreach (var section in loaderInformation.SectionsToUnload)
+        {
+            var scene = SceneManager.GetSceneByName(section.SectionScene.SceneName);
+
+            if (scene.IsValid())
+            {
+                Debug.Log($"Adding scene to unload: {scene.name}");
+                scenesToUnload.Add(scene);
+            }
+        }
+
+        // Create a hash set to store all the load operations
+        HashSet<AsyncOperation> loadOperations = new();
+
+        // AsyncOperation activeSceneOp = null;
+
+        // Load all the startup sections
+        foreach (var section in loaderInformation.SectionsToLoad)
+        {
+            // Load the section scene
+            if (section.SectionScene != null)
+            {
+                var operation = LoadSceneAsync(section.SectionScene);
+
+                if (operation == null)
+                {
+                    Debug.LogError($"Operation for {section.SectionScene.SceneName} is null!");
+                    continue;
+                }
+
+                // Set the scene to not be activated
+                operation.allowSceneActivation = false;
+
+                // Add the operation to the hash set
+                loadOperations.Add(operation);
+
+                Debug.Log($"Loading scene: {section.SectionScene.SceneName}");
+
+                // // If this scene is the active scene, set the operation to set the active scene
+                // if (section.SectionScene.SceneName == loaderInformation.ActiveScene.SceneName)
+                //     activeSceneOp = operation;
+            }
+
+            // Load the section persistent data
+            if (section.SectionPersistentData != null)
+            {
+                var operation = LoadSceneAsync(section.SectionPersistentData);
+
+                if (operation == null)
+                {
+                    Debug.LogError($"Operation for {section.SectionPersistentData.SceneName} is null!");
+                    continue;
+                }
+
+                // Set the scene to not be activated
+                operation.allowSceneActivation = false;
+
+                // Add the operation to the hash set
+                loadOperations.Add(operation);
+
+                Debug.Log($"Loading scene: {section.SectionPersistentData.SceneName}");
+
+                // // If this scene is the active scene, set the operation to set the active scene
+                // if (section.SectionPersistentData.SceneName == startupSceneInfo.ActiveScene.SceneName)
+                //     activeSceneOp = operation;
+            }
+        }
+
+        Debug.Log($"Total scenes to load: {loadOperations.Count}");
+
+        // Wait while the operations are not done
+        while (loadOperations.Any(n => n.progress < 0.9f))
+        {
+            // Calculate the total progress
+            var loadProgress = loadOperations.Sum(n => n.progress) / loadOperations.Count;
+
+            percentageCallback?.Invoke(loadProgress);
+            yield return null;
+        }
+
+        // // Load the player data scene
+        // if (startupSceneInfo.PlayerDataScene != null)
+        // {
+        //     var operation = LoadSceneAsync(startupSceneInfo.PlayerDataScene);
+        //
+        //     // Set the scene to not be activated
+        //     operation.allowSceneActivation = false;
+        //
+        //     // Add the operation to the hash set
+        //     loadOperations.Add(operation);
+        //
+        //     // If this scene is the active scene, set the operation to set the active scene
+        //     if (startupSceneInfo.PlayerDataScene.SceneName == startupSceneInfo.ActiveScene.SceneName)
+        //         activeSceneOp = operation;
+        // }
+
+        // Set all the load operations to allow scene activation
+        foreach (var operation in loadOperations)
+            operation.allowSceneActivation = true;
+
+        // var emptyScene = SceneManager.CreateScene("Empty");
+
+        // Unload all the currently loaded scenes asynchronously,
+        // but don't remove them from the hierarchy yet
+        foreach (var scene in scenesToUnload)
+        {
+            var operation = SceneManager.UnloadSceneAsync(scene.name);
+
+            // Set the scene to be activated
+            operation.allowSceneActivation = true;
+        }
+
+        // // if the active scene is not done, wait
+        // if (activeSceneOp != null)
+        // {
+        //     yield return new WaitUntil(() => activeSceneOp.isDone);
+        //
+        //     // Get the scene reference for the active scene
+        //     var activeScene = SceneManager.GetSceneByName(startupSceneInfo.ActiveScene);
+        //
+        //     // Set the active scene to the active scene
+        //     SceneManager.SetActiveScene(activeScene);
+        // }
+
+        // // Unload the empty scene
+        // var emptySceneOp = SceneManager.UnloadSceneAsync(emptyScene);
+        // emptySceneOp.allowSceneActivation = true;
+        //
+        // Debug.Log($"All Operations Done! - {startupSceneInfo.ActiveScene.SceneName}");
+
+        onCompletion?.Invoke();
+    }
+
     #endregion
+
+    public string GetDebugText()
+    {
+        return $"Managed Scenes: {string.Join(", ", _asyncSceneRecords.Keys)}";
+    }
 
     private enum AsyncSceneState
     {

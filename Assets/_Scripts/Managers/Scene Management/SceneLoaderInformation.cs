@@ -57,6 +57,7 @@ public class SceneLoaderInformation
             // // Remove all the null scenes
             // scenes.Remove(null);
             //
+
             // // Remove all the scenes to load
             // foreach (var scene in sectionsToLoad)
             //     scenes.Remove(scene);
