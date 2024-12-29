@@ -986,6 +986,16 @@ MonoBehaviour:
   relapseDuration: 10
   relapseText: {fileID: 0}
   vCam: {fileID: 0}
+  hitSound:
+    clip: {fileID: 8300000, guid: 0333d0f3b492ef74e93a3c58ea0cb7c6, type: 3}
+    soundType: 1
+    volume: 0.125
+    isPersistent: 0
+  deathSound:
+    clip: {fileID: 8300000, guid: 0333d0f3b492ef74e93a3c58ea0cb7c6, type: 3}
+    soundType: 1
+    volume: 0.125
+    isPersistent: 0
 --- !u!114 &5203053287727495698
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1308,6 +1318,8 @@ MonoBehaviour:
     sprintLerpAmount: 0.2
     dashFOVMultiplier: 1.25
     dashRunLerpAmount: 0.25
+    aimFOVMultiplier: 0.75
+    aimLerpAmount: 0.2
   dynamicRotationModule:
     defaultRotation: {x: 0, y: 0, z: 0}
     wallRunRotation: {x: 0, y: 0, z: 15}

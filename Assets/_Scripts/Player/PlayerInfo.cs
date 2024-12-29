@@ -47,6 +47,9 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
     // TODO: Find a better way to do this
     [SerializeField] private CinemachineVirtualCamera vCam;
 
+    [Header("Audio"), SerializeField] private Sound hitSound;
+    [SerializeField] private Sound deathSound;
+
     #endregion
 
     #region Private Fields
@@ -134,16 +137,14 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
         // OnDamaged += (sender, args) =>
         //     Debug.Log(
         //         $"{gameObject.name} damaged: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
-
-        OnDeath += (sender, args) =>
-            Debug.Log($"{gameObject.name} died: {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
-
-        OnDeath += (sender, args) =>
-            Debug.Log($"{(args.DamagerObject == args.Actor ? "RELAPSE" : "DEATH")}!");
+        // OnDeath += (sender, args) =>
+        //     Debug.Log($"{gameObject.name} died: {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
+        //
+        // OnDeath += (sender, args) =>
+        //     Debug.Log($"{(args.DamagerObject == args.Actor ? "RELAPSE" : "DEATH")}!");
 
         // Disable the relapse image
         relapseImage.enabled = false;
-
         relapseOpacityTimer.OnTimerEnd += () => { relapseOpacityTimer.Reset(); };
 
         // Initialize the events
@@ -163,6 +164,21 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
         // Subscribe to the OnRelapseEnd event
         // Change the color of the relapse image
         OnRelapseEnd += EndRelapseImage;
+
+        // Subscribe to the OnDamaged event to play a sound
+        OnDamaged += PlaySoundOnDamaged;
+    }
+
+    private void PlaySoundOnDamaged(object sender, HealthChangedEventArgs e)
+    {
+        var cSound = (health > 0) ? hitSound : deathSound;
+
+        // Return if the sound is null
+        if (cSound == null)
+            return;
+
+        // Play the sound
+        SoundManager.Instance.PlaySfx(cSound);
     }
 
     private void StartRelapseImage(PlayerInfo obj)
