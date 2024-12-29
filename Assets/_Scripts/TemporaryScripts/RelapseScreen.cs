@@ -131,13 +131,8 @@ public class RelapseScreen : GameMenu
         // Load the scene asynchronously
         AsyncSceneManager.Instance.LoadMultipleScenesAsynchronously(
             CheckpointManager.Instance.CurrentRespawnPoint.SceneLoaderInformation,
-            this, UpdateProgressBarPercent, RespawnOnCompletion);
-
-        // // Disable the game object
-        // gameObject.SetActive(false);
-
-        // // Respawn at the latest checkpoint
-        // Player.Instance.PlayerDeathController.Respawn();
+            this, UpdateProgressBarPercent, RespawnOnCompletion
+        );
     }
 
     private void UpdateProgressBarPercent(float amount)

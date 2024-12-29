@@ -512,34 +512,21 @@ public class AsyncSceneManager : IDebugged
         }
 
         // Start the coroutine
-        coroutineRunner.StartCoroutine(LoadMultipleScenes(loaderInformation, coroutineRunner, percentageCallback,
-            onCompletion));
+        coroutineRunner.StartCoroutine(
+            LoadMultipleScenes(loaderInformation, coroutineRunner, percentageCallback, onCompletion)
+        );
     }
 
     private IEnumerator LoadMultipleScenes(SceneLoaderInformation loaderInformation, MonoBehaviour coroutineRunner,
         Action<float> percentageCallback, Action onCompletion)
 
     {
-        List<Scene> scenesToUnload = new();
-
-        // Get all currently loaded scenes that need to be unloaded
-        foreach (var section in loaderInformation.SectionsToUnload)
-        {
-            var scene = SceneManager.GetSceneByName(section.SectionScene.SceneName);
-
-            if (scene.IsValid())
-            {
-                Debug.Log($"Adding scene to unload: {scene.name}");
-                scenesToUnload.Add(scene);
-            }
-        }
-
         // Create a hash set to store all the load operations
         HashSet<AsyncOperation> loadOperations = new();
 
         // AsyncOperation activeSceneOp = null;
 
-        // Load all the startup sections
+        // Load all the sections
         foreach (var section in loaderInformation.SectionsToLoad)
         {
             // Load the section scene
@@ -627,12 +614,14 @@ public class AsyncSceneManager : IDebugged
 
         // Unload all the currently loaded scenes asynchronously,
         // but don't remove them from the hierarchy yet
-        foreach (var scene in scenesToUnload)
+        foreach (var section in loaderInformation.SectionsToUnload)
         {
-            var operation = SceneManager.UnloadSceneAsync(scene.name);
+            // var operation = SceneManager.UnloadSceneAsync(scene.name);
+            //
+            // // Set the scene to be activated
+            // operation.allowSceneActivation = true;
 
-            // Set the scene to be activated
-            operation.allowSceneActivation = true;
+            UnloadSceneAsync(section);
         }
 
         // // if the active scene is not done, wait

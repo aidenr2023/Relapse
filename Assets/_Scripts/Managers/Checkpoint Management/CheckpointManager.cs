@@ -38,16 +38,10 @@ public class CheckpointManager : MonoBehaviour
         Instance = this;
     }
 
-    private void RespawnAt(GameObject objectToMove, CheckpointInteractable checkpoint)
+    private void RespawnAt(Rigidbody rb, CheckpointInteractable checkpoint)
     {
-        // // Force the async scene manager to load the checkpoint's scene(s) synchronously before moving the player
-        // AsyncSceneManager.Instance.LoadScenesSynchronous(checkpoint.SceneLoaderInformation);
-
         // Set the position of the player to the position of the checkpoint
-        objectToMove.transform.position = checkpoint.RespawnPosition.position;
-
-        // // Wait for the scene to load before moving the player
-        // StartCoroutine(WaitThenMove(objectToMove, checkpoint.RespawnPosition.position, 1f));
+        rb.position = checkpoint.RespawnPosition.position;
     }
 
     // When player interacts with a burner phone, save the current checkpoint as the transform of the burner phone
@@ -61,13 +55,6 @@ public class CheckpointManager : MonoBehaviour
             _highestCheckpoint = _mostRecentCheckpointIndex;
     }
 
-    public void RespawnAtCurrentCheckpoint(GameObject objectToMove) =>
-        RespawnAt(objectToMove, CurrentRespawnPoint);
-
-    private IEnumerator WaitThenMove(GameObject objectToMove, Vector3 newPosition, float waitTime)
-    {
-        yield return new WaitForSeconds(waitTime);
-
-        objectToMove.transform.position = newPosition;
-    }
+    public void RespawnAtCurrentCheckpoint(Rigidbody rb) =>
+        RespawnAt(rb, CurrentRespawnPoint);
 }

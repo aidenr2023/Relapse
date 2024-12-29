@@ -31,8 +31,10 @@ public class PlayerDeathController : ComponentScript<Player>
 
     public void Respawn()
     {
+        var movementV2 = ParentComponent.PlayerController as PlayerMovementV2;
+
         // Respawn at the current checkpoint
-        CheckpointManager.Instance.RespawnAtCurrentCheckpoint(gameObject);
+        CheckpointManager.Instance.RespawnAtCurrentCheckpoint(movementV2.Rigidbody);
 
         // Reset the player's information when they respawn
         ParentComponent.PlayerInfo.ResetPlayer();
