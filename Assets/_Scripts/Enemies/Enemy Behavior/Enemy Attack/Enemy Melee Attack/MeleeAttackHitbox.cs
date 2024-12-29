@@ -36,7 +36,9 @@ public class MeleeAttackHitbox : MonoBehaviour
             return;
 
         // Deal damage to the actor
-        actor.ChangeHealth(-meleeEnemyAttack.Damage, meleeEnemyAttack.Enemy.EnemyInfo, meleeEnemyAttack);
+        actor.ChangeHealth(-meleeEnemyAttack.Damage, meleeEnemyAttack.Enemy.EnemyInfo, meleeEnemyAttack,
+            transform.position
+        );
 
         // Disable the hit box
         SetEnabled(false);

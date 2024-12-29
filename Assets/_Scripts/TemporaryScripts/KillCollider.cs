@@ -18,6 +18,9 @@ public class KillCollider : MonoBehaviour
             return;
 
         // Kill the player
-        player.PlayerInfo.ChangeHealth(-player.PlayerInfo.MaxHealth, player.PlayerInfo, player.PlayerInfo);
+        player.PlayerInfo.ChangeHealth(
+            -player.PlayerInfo.MaxHealth, player.PlayerInfo, player.PlayerInfo,
+            other.transform.position
+        );
     }
 }

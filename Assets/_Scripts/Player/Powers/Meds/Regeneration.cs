@@ -71,7 +71,8 @@ public class Regeneration : MonoBehaviour, IPower
         powerManager.Player.PlayerInfo.ChangeHealth(
             regenerationAmount / PowerScriptableObject.PassiveEffectDuration * Time.deltaTime,
             powerManager.Player.PlayerInfo,
-            this
+            this,
+            powerManager.Player.transform.position
         );
     }
 

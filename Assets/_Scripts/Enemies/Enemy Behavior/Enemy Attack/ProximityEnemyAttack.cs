@@ -190,7 +190,7 @@ public class ProximityEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         CreateExplosiveForce();
 
         // Kill the enemy by changing the health to 0
-        Enemy.EnemyInfo.ChangeHealth(-Enemy.EnemyInfo.MaxHealth, Enemy.EnemyInfo, this);
+        Enemy.EnemyInfo.ChangeHealth(-Enemy.EnemyInfo.MaxHealth, Enemy.EnemyInfo, this, transform.position);
     }
 
     private void CreateExplosiveForce()
@@ -206,7 +206,7 @@ public class ProximityEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
                 continue;
 
             // Change the health of the player
-            player.ChangeHealth(-explosionDamage, Enemy.EnemyInfo, this);
+            player.ChangeHealth(-explosionDamage, Enemy.EnemyInfo, this, player.transform.position);
 
             // Get the rigidbody component from the player
             if (!player.TryGetComponentInParent(out Rigidbody rb))

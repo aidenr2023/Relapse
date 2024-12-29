@@ -136,8 +136,9 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput
     {
         Player.PlayerInfo.ChangeHealth(
             _healthChange * Time.deltaTime *
-            healthMult * Player.PlayerInfo.MaxHealth
-            , Player.PlayerInfo, this);
+            healthMult * Player.PlayerInfo.MaxHealth,
+            Player.PlayerInfo, this, Player.transform.position
+        );
         Player.PlayerInfo.ChangeTolerance(_toleranceChange * Time.deltaTime * toleranceMult);
     }
 

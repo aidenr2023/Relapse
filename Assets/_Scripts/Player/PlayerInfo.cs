@@ -312,11 +312,11 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
     #endregion
 
-    public void ChangeHealth(float amount, IActor changer, IDamager damager)
+    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position)
     {
         // If the amount is negative, the player is taking damage
         if (amount < 0)
-            TakeDamage(-amount, changer, damager);
+            TakeDamage(-amount, changer, damager, position);
 
         // If the amount is positive, the player is gaining health
         else if (amount > 0)
@@ -324,12 +324,12 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
             health = Mathf.Clamp(health + amount, 0, maxHealth);
 
             // Invoke the OnHealed event
-            var args = new HealthChangedEventArgs(this, changer, damager, amount);
+            var args = new HealthChangedEventArgs(this, changer, damager, amount, position);
             OnHealed?.Invoke(this, args);
         }
     }
 
-    private void TakeDamage(float damageAmount, IActor changer, IDamager damager)
+    private void TakeDamage(float damageAmount, IActor changer, IDamager damager, Vector3 position)
     {
         // Return if the player is invincible
         if (_invincibilityTimer.IsActive)
@@ -338,7 +338,7 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
         health = Mathf.Clamp(health - damageAmount, 0, maxHealth);
 
         // Invoke the OnDamaged event
-        var args = new HealthChangedEventArgs(this, changer, damager, damageAmount);
+        var args = new HealthChangedEventArgs(this, changer, damager, damageAmount, position);
         OnDamaged?.Invoke(this, args);
 
         if (health <= 0)
@@ -415,7 +415,7 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
     private void DieFromRelapse()
     {
-        ChangeHealth(-maxHealth, this, this);
+        ChangeHealth(-maxHealth, this, this, transform.position);
     }
 
     public void ResetPlayer()

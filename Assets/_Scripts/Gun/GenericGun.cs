@@ -319,7 +319,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             // Debug.Log($"DAMAGE: {damage} - DISTANCE: {distance} / {gunInformation.Range}");
 
             // Deal damage to the actor
-            actor.ChangeHealth(-damage, weaponManager.Player.PlayerInfo, this);
+            actor.ChangeHealth(-damage, weaponManager.Player.PlayerInfo, this, hitInfo.point);
         }
 
         // Play the fire sound

@@ -64,7 +64,7 @@ public class Gun : MonoBehaviour, IDamager
             if (enemyInfoHealth != null)
             {
                 // Deal 2 points of damage, adjust as needed
-                enemyInfoHealth.ChangeHealth(-2, pi, this);
+                enemyInfoHealth.ChangeHealth(-2, pi, this, hit.point);
             }
 
             // if (hitSound != null)

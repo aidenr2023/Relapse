@@ -58,7 +58,7 @@ public class ShootingEnemyProjectile : MonoBehaviour
             return;
 
         // Damage the player
-        actor.ChangeHealth(-damage, actor, _shootingEnemyAttack);
+        actor.ChangeHealth(-damage, actor, _shootingEnemyAttack, transform.position);
     }
 
     public void Shoot(ShootingEnemyAttack shootingEnemyAttack, Vector3 direction, float velocity, float lifetime)

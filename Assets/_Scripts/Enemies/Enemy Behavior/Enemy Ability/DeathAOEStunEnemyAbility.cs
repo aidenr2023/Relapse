@@ -84,7 +84,7 @@ public class DeathAOEStunEnemyAbility : ComponentScript<Enemy>, IEnemyAbilityBeh
             var damage = Mathf.Ceil(explosionDamage * damageFalloffValue);
 
             // Damage the actor
-            actor.ChangeHealth(-damage, Enemy.EnemyInfo, this);
+            actor.ChangeHealth(-damage, Enemy.EnemyInfo, this, actor.GameObject.transform.position);
 
             // Get the movement behavior of the actor
             if (!actor.GameObject.TryGetComponent(out IEnemyMovementBehavior movementBehavior))

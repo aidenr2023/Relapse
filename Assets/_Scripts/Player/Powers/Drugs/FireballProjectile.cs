@@ -86,7 +86,7 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
 
         // If the projectile hits something with an IActor component, deal damage
         if (other.TryGetComponentInParent(out IActor actor))
-            actor.ChangeHealth(-damage, _powerManager.Player.PlayerInfo, _fireball);
+            actor.ChangeHealth(-damage, _powerManager.Player.PlayerInfo, _fireball, transform.position);
 
         // Destroy the projectile when it hits something
         // Debug.Log($"BOOM! {gameObject.name} hit {other.name}");

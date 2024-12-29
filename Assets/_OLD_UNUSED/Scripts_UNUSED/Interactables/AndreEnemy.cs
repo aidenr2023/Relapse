@@ -55,7 +55,7 @@ public class AndreEnemy : MonoBehaviour, IActor, IDamager
         var playerInfo = _player.GetComponent<IActor>();
 
         if (playerInfo != null)
-            playerInfo.ChangeHealth(-1, this, this);
+            playerInfo.ChangeHealth(-1, this, this, transform.position);
 
         // Instantiate the explosion effect at the enemy's position
         if (explosionEffect != null)
@@ -86,12 +86,12 @@ public class AndreEnemy : MonoBehaviour, IActor, IDamager
         Destroy(gameObject);
     }
 
-    private void TakeDamage(float damageAmount, IActor changer, IDamager damager)
+    private void TakeDamage(float damageAmount, IActor changer, IDamager damager, Vector3 position)
     {
         enemyHealth -= damageAmount;
 
         // Invoke the OnDamaged event
-        var args = new HealthChangedEventArgs(this, changer, damager, damageAmount);
+        var args = new HealthChangedEventArgs(this, changer, damager, damageAmount, position);
         OnDamaged?.Invoke(this, args);
 
         if (enemyHealth <= 0)
@@ -133,10 +133,10 @@ public class AndreEnemy : MonoBehaviour, IActor, IDamager
     }
 
 
-    public void ChangeHealth(float amount, IActor changer, IDamager damager)
+    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position)
     {
         if (amount < 0)
-            TakeDamage(-amount, changer, damager);
+            TakeDamage(-amount, changer, damager, position);
         else
             enemyHealth = Mathf.Clamp(enemyHealth + amount, 0, _maxHealth);
     }

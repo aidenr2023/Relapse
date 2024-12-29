@@ -57,7 +57,7 @@ public class PlayerHealthImage : MonoBehaviour, IDebugged
 
         // Decrease the health
         if (Input.GetKeyDown(KeyCode.K))
-            player.PlayerInfo.ChangeHealth(-10, player.PlayerInfo, player.PlayerInfo);
+            player.PlayerInfo.ChangeHealth(-10, player.PlayerInfo, player.PlayerInfo, player.transform.position);
     }
 
     private float DetermineCurrentFlashTime()
