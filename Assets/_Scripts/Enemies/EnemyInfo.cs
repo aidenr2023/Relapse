@@ -22,6 +22,9 @@ public class EnemyInfo : MonoBehaviour, IActor
     [SerializeField, Min(0)] private float maxVFXRangeDamage = 50f;
     [SerializeField, Min(0)] private float minVFXDamage = 5f;
 
+    [Space, SerializeField] private Sound enemyHitSound;
+    [SerializeField] private Sound enemyDeathSound;
+
     #endregion
 
     #region Private Fields
@@ -59,7 +62,9 @@ public class EnemyInfo : MonoBehaviour, IActor
 
         OnDamaged += AddDamageThisFrame;
         OnDamaged += SetDamagePositionOnDamaged;
+        OnDamaged += PlaySoundOnDamaged;
         OnDeath += DetachVFXOnDeath;
+        OnDeath += PlaySoundOnDeath;
 
         // Activate the animator's hit trigger
         OnDamaged += (_, args) => animator?.SetTrigger(HitAnimationID);
@@ -87,6 +92,30 @@ public class EnemyInfo : MonoBehaviour, IActor
     private void SetDamagePositionOnDamaged(object sender, HealthChangedEventArgs args)
     {
         _damagePosition = args.Position;
+    }
+
+    private void PlaySoundOnDamaged(object sender, HealthChangedEventArgs e)
+    {
+        // Return if the sound is null
+        if (enemyHitSound == null)
+            return;
+
+        // Return if the enemy's health is less than or equal to 0
+        if (currentHealth <= 0)
+            return;
+
+        // Play the sound at the enemy's position
+        SoundManager.Instance.PlaySfxAtPoint(enemyHitSound, transform.position);
+    }
+
+    private void PlaySoundOnDeath(object sender, HealthChangedEventArgs e)
+    {
+        // Return if the sound is null
+        if (enemyDeathSound == null)
+            return;
+
+        // Play the sound at the enemy's position
+        SoundManager.Instance.PlaySfxAtPoint(enemyDeathSound, transform.position);
     }
 
     private void AddDamageThisFrame(object sender, HealthChangedEventArgs args)

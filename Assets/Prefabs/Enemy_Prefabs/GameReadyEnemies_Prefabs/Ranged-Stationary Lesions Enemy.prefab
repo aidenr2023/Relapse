@@ -100,8 +100,19 @@ MonoBehaviour:
   moneyReward: 50
   animator: {fileID: 77801565629690777}
   enemyHitEffect: {fileID: 3788798300173647694}
+  minVFXRangeDamage: 10
+  maxVFXRangeDamage: 50
   minVFXDamage: 10
-  maxVFXDamage: 50
+  enemyHitSound:
+    clip: {fileID: 8300000, guid: 32b051a2dc514c648af732e4c7f89d00, type: 3}
+    soundType: 2
+    volume: 0.25
+    isPersistent: 0
+  enemyDeathSound:
+    clip: {fileID: 8300000, guid: 32b051a2dc514c648af732e4c7f89d00, type: 3}
+    soundType: 2
+    volume: 0.25
+    isPersistent: 0
 --- !u!114 &2774274488318970656
 MonoBehaviour:
   m_ObjectHideFlags: 0
