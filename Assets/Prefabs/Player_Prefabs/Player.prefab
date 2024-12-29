@@ -905,6 +905,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f220fffecabb47649091accdac1b8e0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerData:
+    position: {x: 0, y: 0, z: 0}
+    rotation: {x: 0, y: 0, z: 0, w: 0}
+    velocity: {x: 0, y: 0, z: 0}
+    currentHealth: 0
+    maxHealth: 0
+    currentToxicity: 0
+    maxToxicity: 0
+    relapseCount: 0
+    isRelapsing: 0
+    currentPowerIndex: 0
+    equippedPowers: []
+    equippedGun: {fileID: 0}
+    currentAmmo: 0
+    inventoryEntries: []
+    currentStamina: 0
+    maxStamina: 0
+    canSprint: 0
+    canJump: 0
+    canWallRun: 0
+    canSlide: 0
 --- !u!114 &8740482916909296334
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1253,6 +1274,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canDie: 1
+  blackScreenOnTime: 1
 --- !u!114 &9038693709593017749
 MonoBehaviour:
   m_ObjectHideFlags: 0
