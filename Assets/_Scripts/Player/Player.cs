@@ -27,6 +27,8 @@ public class Player : MonoBehaviour
 
     public PlayerInventory PlayerInventory { get; private set; }
 
+    public PlayerVirtualCameraController PlayerVirtualCameraController { get; private set; }
+
     public PlayerDeathController PlayerDeathController { get; private set; }
 
     #endregion
@@ -64,6 +66,9 @@ public class Player : MonoBehaviour
 
         // Get the PlayerInventory component
         PlayerInventory = GetComponent<PlayerInventory>();
+
+        // Get the PlayerVirtualCameraController component
+        PlayerVirtualCameraController = GetComponent<PlayerVirtualCameraController>();
 
         // Get the PlayerDeathController component
         PlayerDeathController = GetComponent<PlayerDeathController>();

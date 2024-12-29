@@ -16,6 +16,9 @@ public sealed class DynamicFOVModule : DynamicVCamModule
     [Space, SerializeField, Min(0)] private float dashFOVMultiplier = 1.5f;
     [SerializeField, Range(0, 1)] private float dashRunLerpAmount = 0.1f;
 
+    [Space, SerializeField, Min(0)] private float aimFOVMultiplier = 0.75f;
+    [SerializeField, Min(0)] private float aimLerpAmount = 0.2f;
+
     #endregion
 
     #region Private Fields
@@ -25,11 +28,14 @@ public sealed class DynamicFOVModule : DynamicVCamModule
     // Tokens for the sprint and dash transitions
     private TokenManager<float>.ManagedToken _sprintToken;
     private TokenManager<float>.ManagedToken _dashToken;
+    private TokenManager<float>.ManagedToken _aimToken;
 
     private bool _sprintStart;
     private bool _sprintEnd = true;
     private bool _dashStart;
     private bool _dashEnd = true;
+
+    private bool _isAiming;
 
     #endregion
 
@@ -47,6 +53,7 @@ public sealed class DynamicFOVModule : DynamicVCamModule
         // Create the tokens
         _sprintToken = _fovTokens.AddToken(1f, -1, true);
         _dashToken = _fovTokens.AddToken(1f, -1, true);
+        _aimToken = _fovTokens.AddToken(1f, -1, true);
     }
 
     public override void Start()
@@ -100,6 +107,7 @@ public sealed class DynamicFOVModule : DynamicVCamModule
         // Update the tokens
         UpdateSprintToken();
         UpdateDashToken();
+        UpdateAimToken();
 
         // Update the token manager
         _fovTokens.Update(Time.deltaTime);
@@ -142,6 +150,16 @@ public sealed class DynamicFOVModule : DynamicVCamModule
         _dashToken.Value = Mathf.Lerp(_dashToken.Value, targetValue, dashRunLerpAmount * frameAmount);
     }
 
+    private void UpdateAimToken()
+    {
+        var targetValue = _isAiming ? aimFOVMultiplier : 1f;
+
+        const float defaultFrameTime = 1 / 60f;
+        var frameAmount = Time.deltaTime / defaultFrameTime;
+
+        _aimToken.Value = Mathf.Lerp(_aimToken.Value, targetValue, aimLerpAmount * frameAmount);
+    }
+
     private float CurrentTokenValue()
     {
         var value = 1f;
@@ -150,5 +168,10 @@ public sealed class DynamicFOVModule : DynamicVCamModule
             value *= token.Value;
 
         return value;
+    }
+
+    public void SetAiming(bool isAiming)
+    {
+        _isAiming = isAiming;
     }
 }
