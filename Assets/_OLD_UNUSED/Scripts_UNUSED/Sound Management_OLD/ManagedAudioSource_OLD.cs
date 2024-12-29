@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class ManagedAudioSource
+public class ManagedAudioSource_OLD
 {
     private readonly AudioSource _source;
 
@@ -16,7 +16,7 @@ public class ManagedAudioSource
 
     #endregion
 
-    public ManagedAudioSource(AudioSource source)
+    public ManagedAudioSource_OLD(AudioSource source)
     {
         _source = source;
     }
@@ -33,13 +33,13 @@ public class ManagedAudioSource
         // Source.loop = sound.Settings.Loop;
         Source.volume = sound.Volume;
 
-        if (sound.Settings == null)
-            return;
-
-        Source.pitch = sound.Settings.Pitch;
-        Source.panStereo = sound.Settings.StereoPan;
-        Source.spatialBlend = sound.Settings.SpatialBlend;
-        Source.reverbZoneMix = sound.Settings.ReverbZoneMix;
+        // if (sound.Settings == null)
+        //     return;
+        //
+        // Source.pitch = sound.Settings.Pitch;
+        // Source.panStereo = sound.Settings.StereoPan;
+        // Source.spatialBlend = sound.Settings.SpatialBlend;
+        // Source.reverbZoneMix = sound.Settings.ReverbZoneMix;
     }
 
     public void PlaySound(Sound sound, bool globalLocation = false)

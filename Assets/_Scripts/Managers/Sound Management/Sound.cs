@@ -7,7 +7,9 @@ public class Sound
     #region Serialized Fields
 
     [SerializeField] private AudioClip clip;
-    [SerializeField] private SoundSettings settings;
+
+    [SerializeField] private SoundType soundType = SoundType.PlayerSfx;
+
     [SerializeField] [Range(0, 1)] private float volume = 1;
     [SerializeField] private bool isPersistent;
 
@@ -17,7 +19,8 @@ public class Sound
 
     public AudioClip Clip => clip;
 
-    public SoundSettings Settings => settings;
+    public SoundType SoundType => soundType;
+
 
     public bool IsPersistent => isPersistent;
 
@@ -27,9 +30,9 @@ public class Sound
 
     public override string ToString()
     {
-        if (clip == null || settings == null)
+        if (clip == null)
             return "";
 
-        return $"[Clip: {clip?.name}, Settings: {settings?.name}]";
+        return $"[Clip: {clip?.name}, Type: {soundType}]";
     }
 }

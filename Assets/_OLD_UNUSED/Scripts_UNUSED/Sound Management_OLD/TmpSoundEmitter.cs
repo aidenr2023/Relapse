@@ -11,6 +11,7 @@ public class TmpSoundEmitter : MonoBehaviour
     {
         timeBetweenSounds.OnTimerEnd += () =>
         {
+            // SoundManager_OLD.Instance.PlaySfxAtPoint(sounds.GetRandomSound(), transform.position);
             SoundManager.Instance.PlaySfxAtPoint(sounds.GetRandomSound(), transform.position);
             timeBetweenSounds.Reset();
         };

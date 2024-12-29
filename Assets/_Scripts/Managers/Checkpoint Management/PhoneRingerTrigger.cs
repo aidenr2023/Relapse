@@ -3,15 +3,26 @@ using UnityEngine;
 
 public class PhoneRingerTrigger : MonoBehaviour
 {
+    #region Serialized Fields
+
     [SerializeField] private CheckpointInteractable checkpointInteractable;
 
     [SerializeField] private Sound ringSound;
 
     [SerializeField] private float ringInterval;
 
+    #endregion
+
+    #region Private Fields
+
     private bool _isInTrigger;
 
     private CountdownTimer _ringTimer;
+
+    private ManagedAudioSource _audioSource;
+
+    #endregion
+
 
     private void Awake()
     {
@@ -45,6 +56,13 @@ public class PhoneRingerTrigger : MonoBehaviour
 
         // Update the ring timer
         _ringTimer.Update(Time.deltaTime);
+
+        // If the current audio source is not null & the audio source is still playing, stop it
+        if (_audioSource != null && checkpointInteractable.HasBeenCollected)
+        {
+            _audioSource.Kill();
+            _audioSource = null;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -82,6 +100,7 @@ public class PhoneRingerTrigger : MonoBehaviour
             return;
 
         // Play the ring SFX from the checkpointInteractable
-        SoundManager.Instance.PlaySfxAtPoint(ringSound, checkpointInteractable.transform.position);
+        // SoundManager_OLD.Instance.PlaySfxAtPoint(ringSound, checkpointInteractable.transform.position);
+        _audioSource = SoundManager.Instance.PlaySfxAtPoint(ringSound, checkpointInteractable.transform.position);
     }
 }

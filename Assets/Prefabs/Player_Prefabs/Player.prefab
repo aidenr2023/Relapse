@@ -1154,19 +1154,19 @@ MonoBehaviour:
   footstepSoundPool:
     sounds:
     - clip: {fileID: 8300000, guid: 81def98cd06884940b95459db1a841f7, type: 3}
-      settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
+      soundType: 1
       volume: 0.0625
       isPersistent: 0
     - clip: {fileID: 8300000, guid: 5aa5e09256a042147921c24a52b741ae, type: 3}
-      settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
+      soundType: 1
       volume: 0.0625
       isPersistent: 0
   walkingFootstepInterval: 0.35
   sprintingFootstepInterval: 0.25
   jumpSound:
     clip: {fileID: 8300000, guid: 5aa5e09256a042147921c24a52b741ae, type: 3}
-    settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
-    volume: 1
+    soundType: 1
+    volume: 0.125
     isPersistent: 0
 --- !u!114 &-2300652163101954379
 MonoBehaviour:
@@ -1198,18 +1198,18 @@ MonoBehaviour:
   footstepSoundPool:
     sounds:
     - clip: {fileID: 8300000, guid: 81def98cd06884940b95459db1a841f7, type: 3}
-      settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
+      soundType: 1
       volume: 0.25
       isPersistent: 0
     - clip: {fileID: 8300000, guid: 5aa5e09256a042147921c24a52b741ae, type: 3}
-      settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
+      soundType: 1
       volume: 0.25
       isPersistent: 0
   walkingFootstepInterval: 0.35
   sprintingFootstepInterval: 0.25
   jumpSound:
     clip: {fileID: 8300000, guid: 5aa5e09256a042147921c24a52b741ae, type: 3}
-    settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
+    soundType: 1
     volume: 1
     isPersistent: 0
 --- !u!114 &7032570368268033865
@@ -1234,8 +1234,8 @@ MonoBehaviour:
   maxDashesInAir: 2
   dashSound:
     clip: {fileID: 8300000, guid: 5aa5e09256a042147921c24a52b741ae, type: 3}
-    settings: {fileID: 11400000, guid: 69bb7d7ef2a140049933975799ea56c6, type: 2}
-    volume: 0.5
+    soundType: 1
+    volume: 0.6
     isPersistent: 1
 --- !u!114 &936152737596805865
 MonoBehaviour:

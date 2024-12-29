@@ -2,7 +2,7 @@
 using System.Text;
 using UnityEngine;
 
-public class SoundManager : MonoBehaviour, IDebugged
+public class SoundManager_OLD : MonoBehaviour, IDebugged
 {
     #region Constants
 
@@ -18,7 +18,7 @@ public class SoundManager : MonoBehaviour, IDebugged
 
     #endregion
 
-    public static SoundManager Instance { get; private set; }
+    public static SoundManager_OLD Instance { get; private set; }
 
     #region Serialized Fields
 
@@ -31,22 +31,22 @@ public class SoundManager : MonoBehaviour, IDebugged
     /// <summary>
     /// Audio sources for music that DO NOT MOVE.
     /// </summary>
-    private ManagedAudioSource[] _globalMusicSources;
+    private ManagedAudioSource_OLD[] _globalMusicSources;
 
     /// <summary>
     /// Audio sources for music that DO MOVE.
     /// </summary>
-    private ManagedAudioSource[] _worldMusicSources;
+    private ManagedAudioSource_OLD[] _worldMusicSources;
 
     /// <summary>
     /// Audio sources for sound effects that DO NOT MOVE.
     /// </summary>
-    private ManagedAudioSource[] _globalSfxSources;
+    private ManagedAudioSource_OLD[] _globalSfxSources;
 
     /// <summary>
     /// Audio sources for sound effects that DO MOVE.
     /// </summary>
-    private ManagedAudioSource[] _worldSfxSources;
+    private ManagedAudioSource_OLD[] _worldSfxSources;
 
     #endregion
 
@@ -68,7 +68,7 @@ public class SoundManager : MonoBehaviour, IDebugged
         InitializeSources();
     }
 
-    private ManagedAudioSource CreateNewManagedSource(string sourceType, int i)
+    private ManagedAudioSource_OLD CreateNewManagedSource(string sourceType, int i)
     {
         // Create a new game object for the source
         var newChild = new GameObject($"{sourceType} {i}");
@@ -83,7 +83,7 @@ public class SoundManager : MonoBehaviour, IDebugged
         source.playOnAwake = false;
 
         // Return the managed audio source
-        return new ManagedAudioSource(source);
+        return new ManagedAudioSource_OLD(source);
     }
 
     private void InitializeSources()
@@ -92,22 +92,22 @@ public class SoundManager : MonoBehaviour, IDebugged
         // so we need to split the audio sources into groups
 
         // Create the world sfx sources
-        _worldSfxSources = new ManagedAudioSource[WORLD_SFX_SOURCE_COUNT];
+        _worldSfxSources = new ManagedAudioSource_OLD[WORLD_SFX_SOURCE_COUNT];
         for (var i = 0; i < WORLD_SFX_SOURCE_COUNT; i++)
             _worldSfxSources[i] = CreateNewManagedSource("World SFX", i);
 
         // Create the global sfx sources
-        _globalSfxSources = new ManagedAudioSource[GLOBAL_SFX_SOURCE_COUNT];
+        _globalSfxSources = new ManagedAudioSource_OLD[GLOBAL_SFX_SOURCE_COUNT];
         for (var i = 0; i < GLOBAL_SFX_SOURCE_COUNT; i++)
             _globalSfxSources[i] = CreateNewManagedSource("Global SFX", i);
 
         // Create the world music sources
-        _worldMusicSources = new ManagedAudioSource[WORLD_MUSIC_SOURCE_COUNT];
+        _worldMusicSources = new ManagedAudioSource_OLD[WORLD_MUSIC_SOURCE_COUNT];
         for (var i = 0; i < WORLD_MUSIC_SOURCE_COUNT; i++)
             _worldMusicSources[i] = CreateNewManagedSource("World Music", i);
 
         // Create the global music sources
-        _globalMusicSources = new ManagedAudioSource[GLOBAL_MUSIC_SOURCE_COUNT];
+        _globalMusicSources = new ManagedAudioSource_OLD[GLOBAL_MUSIC_SOURCE_COUNT];
         for (var i = 0; i < GLOBAL_MUSIC_SOURCE_COUNT; i++)
             _globalMusicSources[i] = CreateNewManagedSource("Global Music", i);
     }
@@ -118,7 +118,7 @@ public class SoundManager : MonoBehaviour, IDebugged
         // DebugManager.Instance.AddDebuggedObject(this);
     }
 
-    private ManagedAudioSource GetNextSoundSource(ManagedAudioSource[] sources)
+    private ManagedAudioSource_OLD GetNextSoundSource(ManagedAudioSource_OLD[] sources)
     {
         var highestCompletionTime = 0f;
         var highestCompletionIndex = -1;
@@ -169,13 +169,13 @@ public class SoundManager : MonoBehaviour, IDebugged
         return sources[highestCompletionIndex];
     }
 
-    private void PlaySound(Sound sound, ManagedAudioSource source, bool globalLocation = false)
+    private void PlaySound(Sound sound, ManagedAudioSource_OLD source, bool globalLocation = false)
     {
         // Play the sound
         source?.PlaySound(sound, globalLocation);
     }
 
-    public void PlaySoundAtPoint(Sound sound, ManagedAudioSource source, Vector3 pos)
+    public void PlaySoundAtPoint(Sound sound, ManagedAudioSource_OLD source, Vector3 pos)
     {
         // return if the source is null
         if (source == null)

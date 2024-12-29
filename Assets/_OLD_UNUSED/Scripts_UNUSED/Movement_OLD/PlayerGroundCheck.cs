@@ -65,6 +65,7 @@ public class PlayerFallDetection : MonoBehaviour
             CinemachineShake.Instance.ShakeCamera(cameraShakeIntensity, cameraShakeDuration);
 
             // Play the fall sound
+            // SoundManager_OLD.Instance.PlaySfx(fallSound);
             SoundManager.Instance.PlaySfx(fallSound);
         }
 
