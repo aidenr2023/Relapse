@@ -44,11 +44,11 @@ Light:
   serializedVersion: 10
   m_Type: 0
   m_Shape: 0
-  m_Color: {r: 1, g: 1, b: 0.88235295, a: 1}
-  m_Intensity: 11.2
-  m_Range: 10
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 4
+  m_Range: 15
   m_SpotAngle: 179
-  m_InnerSpotAngle: 136.48503
+  m_InnerSpotAngle: 150.7415
   m_CookieSize: 10
   m_Shadows:
     m_Type: 2
@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 510117809490398927}
   - component: {fileID: 7495540183734363322}
   m_Layer: 0
-  m_Name: Spot Light (16)
+  m_Name: Point Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -162,8 +162,8 @@ Light:
   serializedVersion: 10
   m_Type: 2
   m_Shape: 0
-  m_Color: {r: 1, g: 1, b: 0.88235295, a: 1}
-  m_Intensity: 1
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Intensity: 0.3
   m_Range: 8
   m_SpotAngle: 86.61802
   m_InnerSpotAngle: 78.42008
@@ -248,7 +248,7 @@ GameObject:
   - component: {fileID: 1192180757999467676}
   - component: {fileID: 6113168358475197665}
   m_Layer: 0
-  m_Name: Hallway Light
+  m_Name: BrightHallwayLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
