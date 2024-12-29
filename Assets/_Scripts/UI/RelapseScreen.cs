@@ -32,7 +32,7 @@ public class RelapseScreen : GameMenu
     #region Getters
 
     public Sprite DeathImage => deathImage;
-    public Sprite RelapseImage => RelapseImage;
+    public Sprite RelapseImage => relapseImage;
 
     #endregion
 
@@ -44,21 +44,22 @@ public class RelapseScreen : GameMenu
 
     private void Start()
     {
-        // Disable the game object
-        gameObject.SetActive(false);
     }
 
-    protected override void CustomOnEnable()
+    protected override void CustomActivate()
     {
         // Set the event system's current selected game object to the first selected game object
         EventSystem.current.SetSelectedGameObject(firstSelectedButton.gameObject);
+
+        // Reset the flag
+        _respawnButtonClicked = false;
     }
 
-    protected override void CustomOnDisable()
+    protected override void CustomDeactivate()
     {
     }
 
-    private void Update()
+    protected override void CustomUpdate()
     {
         // Set the loading bar's visibility based on whether the scene is loading
         loadingBar.gameObject.SetActive(_respawnButtonClicked);
@@ -91,16 +92,6 @@ public class RelapseScreen : GameMenu
         respawnButton.gameObject.SetActive(true);
     }
 
-    public void Activate()
-    {
-        // Enable the game object
-        gameObject.SetActive(true);
-
-        // Reset the flag
-        _respawnButtonClicked = false;
-    }
-
-
     public void LoadScene(string sceneName)
     {
         // Load the scene
@@ -115,8 +106,9 @@ public class RelapseScreen : GameMenu
             // Load the scene
             LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
 
-            // Disable the game object
-            gameObject.SetActive(false);
+            // // Disable the game object
+            // gameObject.SetActive(false);
+            Deactivate();
 
             return;
         }
@@ -148,7 +140,13 @@ public class RelapseScreen : GameMenu
         // Set the flag to false
         _respawnButtonClicked = false;
 
-        // Set the game object to inactive
-        gameObject.SetActive(false);
+        // // Set the game object to inactive
+        // gameObject.SetActive(false);
+        Deactivate();
+    }
+
+    public override void OnBackPressed()
+    {
+        // Do nothing
     }
 }

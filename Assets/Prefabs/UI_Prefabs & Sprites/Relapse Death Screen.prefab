@@ -1023,6 +1023,7 @@ GameObject:
   - component: {fileID: 4928314774569887265}
   - component: {fileID: 2252164812194594633}
   - component: {fileID: 3880110732352911763}
+  - component: {fileID: 1442284068151374302}
   - component: {fileID: 5837453629038169250}
   m_Layer: 5
   m_Name: Relapse Death Screen
@@ -1118,6 +1119,18 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!225 &1442284068151374302
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8742230972636916065}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &5837453629038169250
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1130,6 +1143,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43d82ca47af941489a9eb2b9b2e7750b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 1442284068151374302}
+  isActiveOnStart: 0
   isCursorRequired: 1
   disablePlayerControls: 1
   pausesGame: 1

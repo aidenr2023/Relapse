@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,15 +26,21 @@ public class MainMenu : GameMenu
     {
     }
 
-    protected override void CustomOnEnable()
+    protected override void CustomActivate()
     {
     }
 
-    protected override void CustomOnDisable()
+    protected override void CustomDeactivate()
     {
     }
 
-    private void Update()
+    private void OnDisable()
+    {
+        // Deactivate the main menu
+        Deactivate();
+    }
+
+    protected override void CustomUpdate()
     {
         // Set the loading bar's visibility based on whether the scene is loading
         loadingBar.gameObject.SetActive(_clickedButton);
@@ -50,7 +57,9 @@ public class MainMenu : GameMenu
         if (!_startedLoading)
         {
             // StartCoroutine(LoadSceneAsync());
-            AsyncSceneManager.Instance.LoadStartupScene(levelStartupSceneInfo, this, UpdateProgressBarPercent);
+            AsyncSceneManager.Instance.LoadStartupScene(
+                levelStartupSceneInfo, this, UpdateProgressBarPercent
+            );
 
             // Set the flag to true
             _startedLoading = true;
@@ -69,5 +78,17 @@ public class MainMenu : GameMenu
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif
+    }
+
+    private void DeactivateOnLoad()
+    {
+        // Deactivate the main menu
+        Deactivate();
+    }
+
+    public override void OnBackPressed()
+    {
+        // Do nothing for now
+        // TODO: Make the submenus recognize the back button
     }
 }

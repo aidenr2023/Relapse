@@ -65,24 +65,17 @@ public class PauseMenuManager : GameMenu, IUsesInput
 
     public void InitializeInput()
     {
-        // Connect to input system
-        InputActions.Add(
-            new InputData(InputManager.Instance.DefaultInputActions.UI.Cancel, InputType.Performed, OnBackPerformed)
-        );
+        // // Connect to input system
+        // InputActions.Add(
+        //     new InputData(InputManager.Instance.DefaultInputActions.UI.Cancel, InputType.Performed, OnBackPerformed)
+        // );
 
         InputActions.Add(
             new InputData(InputManager.Instance.PControls.Player.Pause, InputType.Performed, OnPausePerformed)
         );
     }
 
-
-    private void Start()
-    {
-        // Hide the pause menu at the start
-        pauseMenuParent.SetActive(false);
-    }
-
-    protected override void CustomOnEnable()
+    private void OnEnable()
     {
         if (!_isInputRegistered)
         {
@@ -92,12 +85,15 @@ public class PauseMenuManager : GameMenu, IUsesInput
             // Set the input registered flag to true
             _isInputRegistered = true;
         }
+    }
 
+    protected override void CustomActivate()
+    {
         // Set the event system's selected object to the first button
         SetSelectedButton(firstSelectedButton);
     }
 
-    protected override void CustomOnDisable()
+    protected override void CustomDeactivate()
     {
     }
 
@@ -136,7 +132,7 @@ public class PauseMenuManager : GameMenu, IUsesInput
         // Check if the menu stack has more than one item
         // If it does, go back to the previous menu
         if (_menuStack.Count > 1)
-            Back();
+            GoBack();
 
         // Resume the game
         else
@@ -182,14 +178,10 @@ public class PauseMenuManager : GameMenu, IUsesInput
             tmpText.color = normalColor;
     }
 
-    public override void MenuManagerUpdate()
+    protected override void CustomUpdate()
     {
-        base.MenuManagerUpdate();
-
         // Reset the inputted this frame flag
         _inputtedThisFrame = false;
-
-        // Debug.Log("Menu Manager Update");
     }
 
     /// <summary>
@@ -239,10 +231,11 @@ public class PauseMenuManager : GameMenu, IUsesInput
 
         TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(_pauseToken);
 
-        //Hide menu
-        pauseMenuParent.SetActive(false);
+        // Hide menu
+        // pauseMenuParent.SetActive(false);
+        Deactivate();
 
-        //Set pause to false
+        // Set pause to false
         IsPaused = false;
 
         // Clear the menu stack
@@ -254,7 +247,8 @@ public class PauseMenuManager : GameMenu, IUsesInput
         Debug.Log($"Pause!");
 
         // Un-hide the pause menu
-        pauseMenuParent.SetActive(true);
+        // pauseMenuParent.SetActive(true);
+        Activate();
 
         // Pause the game
         _pauseToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(0, -1, true);
@@ -328,7 +322,7 @@ public class PauseMenuManager : GameMenu, IUsesInput
         SceneManager.LoadScene("MainMenu");
     }
 
-    public void Back()
+    public void GoBack()
     {
         // Pop the current menu off the stack
         _menuStack.Pop();
@@ -350,12 +344,25 @@ public class PauseMenuManager : GameMenu, IUsesInput
         EventSystem.current.SetSelectedGameObject(button);
     }
 
-    private void ReRegisterInput()
+    public override void OnBackPressed()
     {
-        // Unregister the input user
-        InputManager.Instance.Unregister(this);
+        // Return if inputted this frame
+        if (_inputtedThisFrame)
+            return;
 
-        // Register the input user
-        InputManager.Instance.Register(this);
+        // If the game is not paused, return
+        if (!IsPaused)
+            return;
+
+        _inputtedThisFrame = true;
+
+        // Check if the menu stack has more than one item
+        // If it does, go back to the previous menu
+        if (_menuStack.Count > 1)
+            GoBack();
+
+        // Resume the game
+        else
+            Resume(pauseMenuPanel.transform.GetChild(0).gameObject);
     }
 }

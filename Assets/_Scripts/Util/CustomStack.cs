@@ -74,6 +74,13 @@ public class CustomStack<TItemType> : IEnumerable<TItemType>
         // Remove the item
         _sortedList.RemoveAt(index);
 
+        // If there are no items in the list, return
+        if (_sortedList.Count == 0)
+        {
+            _topItem = default;
+            return;
+        }
+
         // Set the top item
         _topItem = _sortedList.Last().Value;
     }

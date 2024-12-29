@@ -355,7 +355,7 @@ public class AsyncSceneManager : IDebugged
     }
 
     public void LoadStartupScene(LevelStartupSceneInfo startupSceneInfo, MonoBehaviour coroutineRunner,
-        Action<float> percentageCallback = null)
+        Action<float> percentageCallback = null, Action onCompletion = null)
     {
         // Return if the coroutine runner is null
         if (coroutineRunner == null)
@@ -372,11 +372,13 @@ public class AsyncSceneManager : IDebugged
         }
 
         // Start the coroutine
-        coroutineRunner.StartCoroutine(LoadMultipleScenes(startupSceneInfo, coroutineRunner, percentageCallback));
+        coroutineRunner.StartCoroutine(
+            LoadMultipleScenes(startupSceneInfo, coroutineRunner, percentageCallback, onCompletion)
+        );
     }
 
     private IEnumerator LoadMultipleScenes(LevelStartupSceneInfo startupSceneInfo, MonoBehaviour coroutineRunner,
-        Action<float> percentageCallback)
+        Action<float> percentageCallback, Action onCompletion)
     {
         List<Scene> scenesToUnload = new();
 
@@ -488,6 +490,9 @@ public class AsyncSceneManager : IDebugged
         // Unload the empty scene
         var emptySceneOp = SceneManager.UnloadSceneAsync(emptyScene);
         emptySceneOp.allowSceneActivation = true;
+
+        // Invoke the on completion action
+        onCompletion?.Invoke();
 
         Debug.Log($"All Operations Done! - {startupSceneInfo.ActiveScene.SceneName}");
     }

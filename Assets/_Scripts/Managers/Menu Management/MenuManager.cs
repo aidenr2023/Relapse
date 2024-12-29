@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.InputSystem;
 
-public class MenuManager
+public class MenuManager : IUsesInput
 {
     #region Singleton Pattern
 
@@ -22,7 +23,7 @@ public class MenuManager
 
     #region Private Fields
 
-    private readonly HashSet<GameMenu> _activeMenus = new();
+    private readonly CustomStack<GameMenu> _activeMenus = new();
 
     private readonly HashSet<GameMenu> _managedMenus = new();
 
@@ -30,7 +31,9 @@ public class MenuManager
 
     #region Getters
 
-    public IReadOnlyCollection<GameMenu> ActiveMenus => _activeMenus;
+    public HashSet<InputData> InputActions { get; } = new();
+
+    public IReadOnlyCollection<GameMenu> ActiveMenus => _activeMenus.ToArray();
 
     public bool IsCursorActiveInMenus => _activeMenus.Any(menu => menu.IsCursorRequired);
 
@@ -43,14 +46,36 @@ public class MenuManager
     private MenuManager()
     {
         // Private constructor to prevent instantiation
+        InitializeInput();
+
+        // Register the MenuManager to use input
+        InputManager.Instance.Register(this);
     }
 
-    public void AddMenu(GameMenu menu)
+
+    public void InitializeInput()
     {
-        _activeMenus.Add(menu);
+        InputActions.Add(new InputData(
+            InputManager.Instance.DefaultInputActions.UI.Cancel, InputType.Performed, ActiveMenuBack)
+        );
     }
 
-    public void RemoveMenu(GameMenu menu)
+    private void ActiveMenuBack(InputAction.CallbackContext obj)
+    {
+        // Get the active menu
+        var activeMenu = _activeMenus.Peek();
+
+        // If the active menu is not null
+        if (activeMenu != null)
+            activeMenu.OnBackPressed();
+    }
+
+    public void AddActiveMenu(GameMenu menu)
+    {
+        _activeMenus.Push(menu);
+    }
+
+    public void RemoveActiveMenu(GameMenu menu)
     {
         _activeMenus.Remove(menu);
     }
@@ -63,12 +88,5 @@ public class MenuManager
     public void UnManageMenu(GameMenu menu)
     {
         _managedMenus.Remove(menu);
-    }
-
-    public void Update()
-    {
-        var managedMenus = _managedMenus.ToArray();
-        foreach (var menu in managedMenus)
-            menu.MenuManagerUpdate();
     }
 }

@@ -68,6 +68,10 @@ public class Regeneration : MonoBehaviour, IPower
 
     public void UpdatePassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
+        // Return if the player's health is less than or equal to 0
+        if (powerManager.Player.PlayerInfo.CurrentHealth <= 0)
+            return;
+
         powerManager.Player.PlayerInfo.ChangeHealth(
             regenerationAmount / PowerScriptableObject.PassiveEffectDuration * Time.deltaTime,
             powerManager.Player.PlayerInfo,

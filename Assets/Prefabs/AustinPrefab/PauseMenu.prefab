@@ -258,7 +258,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6391058391777522658}
         m_TargetAssemblyTypeName: PauseMenuManager, Assembly-CSharp
-        m_MethodName: Back
+        m_MethodName: GoBack
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1644,6 +1644,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4637364023696632064}
+  - component: {fileID: 8050477692727250407}
   - component: {fileID: 6391058391777522658}
   m_Layer: 0
   m_Name: PauseMenu
@@ -1668,6 +1669,18 @@ Transform:
   - {fileID: 3864808573176446055}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!225 &8050477692727250407
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5355089321176547943}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &6391058391777522658
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1680,6 +1693,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31922928ae5f8a84b99e51e85768ea47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 8050477692727250407}
+  isActiveOnStart: 0
+  opacityLerpAmount: 0.25
   isCursorRequired: 1
   disablePlayerControls: 1
   pausesGame: 1
@@ -1816,7 +1832,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6391058391777522658}
         m_TargetAssemblyTypeName: PauseMenuManager, Assembly-CSharp
-        m_MethodName: Back
+        m_MethodName: GoBack
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2867,7 +2883,7 @@ PrefabInstance:
     - target: {fileID: 2708926448236505104, guid: 620f8883a2659444898445af48c1612e,
         type: 3}
       propertyPath: m_Value
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2896115921561634897, guid: 620f8883a2659444898445af48c1612e,
         type: 3}

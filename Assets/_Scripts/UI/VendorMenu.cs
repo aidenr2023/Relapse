@@ -44,8 +44,6 @@ public class VendorMenu : GameMenu
     private PowerScriptableObject[] _medPowers;
     private PowerScriptableObject[] _drugPowers;
 
-    private TokenManager<float>.ManagedToken _pauseToken;
-
     #endregion
 
     #region Getters
@@ -59,8 +57,6 @@ public class VendorMenu : GameMenu
 
     public GameObject GossipMenu => gossipMenu;
 
-    public bool IsVendorActive => gameObject.activeSelf;
-
     public VendorScriptableObject CurrentVendor => _currentVendor;
 
     private DialogueNode GossipDialogue => _currentVendor.GossipDialogue;
@@ -73,11 +69,11 @@ public class VendorMenu : GameMenu
         Instance = this;
     }
 
-    protected override void CustomOnEnable()
+    protected override void CustomActivate()
     {
     }
 
-    protected override void CustomOnDisable()
+    protected override void CustomDeactivate()
     {
     }
 
@@ -88,6 +84,10 @@ public class VendorMenu : GameMenu
 
         // Set the bigger icon image to null
         SetBiggerIconImage(null);
+    }
+
+    protected override void CustomUpdate()
+    {
     }
 
     public void StartDialogue()
@@ -292,11 +292,9 @@ public class VendorMenu : GameMenu
         _medPowers = vendor.MedicinePowers;
         _drugPowers = vendor.DrugPowers;
 
-        // Set this menu to active
-        gameObject.SetActive(true);
-
-        // Pause the game
-        _pauseToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(0, -1, true);
+        // // Set this menu to active
+        // gameObject.SetActive(true);
+        Activate();
 
         // Populate the shop
         PopulateShop();
@@ -307,16 +305,23 @@ public class VendorMenu : GameMenu
 
     public void EndVendor()
     {
-        // Set this menu to inactive
-        gameObject.SetActive(false);
-
-        // Unpause the game
-        TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(_pauseToken);
+        // // Set this menu to inactive
+        // gameObject.SetActive(false);
+        Deactivate();
     }
 
     public void SetSelectedGameObject(GameObject element)
     {
         // Set the selected element
         EventSystem.current.SetSelectedGameObject(element);
+    }
+
+    public override void OnBackPressed()
+    {
+        // If the initial menu is active, end the vendor
+        if (initialMenu.activeSelf)
+            EndVendor();
+        else if (powerMenu.activeSelf)
+            IsolateMenu(initialMenu);
     }
 }
