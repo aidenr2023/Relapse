@@ -37,12 +37,12 @@ public class PlayerHealthImage : MonoBehaviour, IDebugged
     private void Start()
     {
         // Add an event that adds a tooltip
-        player.PlayerInfo.OnDamaged += (_, args) =>
-        {
-            JournalTooltipManager.Instance.AddTooltip(
-                $"{player.PlayerInfo.CurrentHealth} / {player.PlayerInfo.MaxHealth} - ({args.Amount} damage)"
-            );
-        };
+        // player.PlayerInfo.OnDamaged += (_, args) =>
+        // {
+        //     JournalTooltipManager.Instance.AddTooltip(
+        //         $"{player.PlayerInfo.CurrentHealth} / {player.PlayerInfo.MaxHealth} - ({args.Amount} damage)"
+        //     );
+        // };
     }
 
     private void Update()

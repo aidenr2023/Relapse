@@ -2,8 +2,10 @@
 using System.Linq;
 using UnityEngine;
 
-public class KillCollider : MonoBehaviour
+public class KillCollider : MonoBehaviour, IDamager
 {
+    public GameObject GameObject => gameObject;
+
     private void Awake()
     {
         // Assert that there is a trigger collider
@@ -19,7 +21,7 @@ public class KillCollider : MonoBehaviour
 
         // Kill the player
         player.PlayerInfo.ChangeHealth(
-            -player.PlayerInfo.MaxHealth, player.PlayerInfo, player.PlayerInfo,
+            -player.PlayerInfo.MaxHealth, player.PlayerInfo, this,
             other.transform.position
         );
     }

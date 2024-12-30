@@ -121,7 +121,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
 
     private void InitializeEvents()
     {
-        _player.PlayerInfo.OnRelapseStart += OnRelapseStart;
+        _player.PlayerInfo.onRelapseStart += OnRelapseStart;
 
         // Add the event for the power used
         OnPowerUsed += PlaySoundOnUse;

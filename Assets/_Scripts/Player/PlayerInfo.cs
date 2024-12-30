@@ -99,12 +99,12 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
     /// An event that is called when the player relapses.
     /// Used mostly to connect to outside scripts.
     /// </summary>
-    public Action<PlayerInfo> OnRelapseStart;
+    public Action<PlayerInfo> onRelapseStart;
 
     /// <summary>
     /// An event that is called when the player's relapse ends.
     /// </summary>
-    public Action<PlayerInfo> OnRelapseEnd;
+    public Action<PlayerInfo> onRelapseEnd;
 
     public event HealthChangedEventHandler OnDamaged;
     public event HealthChangedEventHandler OnHealed;
@@ -159,11 +159,11 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
     {
         // Subscribe to the OnRelapseStart event
         // Change the color of the relapse image
-        OnRelapseStart += StartRelapseImage;
+        onRelapseStart += StartRelapseImage;
 
         // Subscribe to the OnRelapseEnd event
         // Change the color of the relapse image
-        OnRelapseEnd += EndRelapseImage;
+        onRelapseEnd += EndRelapseImage;
 
         // Subscribe to the OnDamaged event to play a sound
         OnDamaged += PlaySoundOnDamaged;
@@ -410,7 +410,7 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
         _currentRelapseDuration = 0;
 
         // Invoke the relapse event
-        OnRelapseStart?.Invoke(this);
+        onRelapseStart?.Invoke(this);
     }
 
     private void EndRelapse()
@@ -426,7 +426,7 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
             relapseText.gameObject.SetActive(false);
 
         // Invoke the end relapse event
-        OnRelapseEnd?.Invoke(this);
+        onRelapseEnd?.Invoke(this);
     }
 
     private void DieFromRelapse()
