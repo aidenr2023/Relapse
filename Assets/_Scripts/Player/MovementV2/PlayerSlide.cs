@@ -7,6 +7,7 @@ using UnityEngine.Serialization;
 public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
 {
     #region Serialized Fields
+    [SerializeField] private Animator _playerAnimator;
 
     [SerializeField] private bool isEnabled = true;
 
@@ -498,6 +499,8 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
 
         // Invoke the slide event
         OnSlideStart?.Invoke(this);
+        //trigger slide animation
+        _playerAnimator.SetTrigger("Slide");
     }
 
     private void EndSlide()

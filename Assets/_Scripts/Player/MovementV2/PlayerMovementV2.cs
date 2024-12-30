@@ -19,6 +19,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     // Reference to the player's orientation transform
     [SerializeField] private Transform orientation;
 
+    //Reference to player animator
+    [SerializeField] private Animator playerAnimator;
     [Header("Floating Controller")] [SerializeField, Min(0)]
     private float desiredCapsuleHeightOffset = .25f;
 
@@ -626,12 +628,16 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         // Set the sprinting flag to true
         _isSprinting = true;
+        //set animator isMoving to true
+        playerAnimator.SetBool("isMoving", true);
+        
     }
 
     private void OnSprintCanceled(InputAction.CallbackContext obj)
     {
         // Set the sprinting flag to false
         _isSprinting = false;
+        playerAnimator.SetBool("isMoving", false);
     }
 
 
