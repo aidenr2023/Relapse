@@ -9,10 +9,14 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
 
     [SerializeField] private NoiseTokenValue defaultNoise;
 
-    [Header("Ground Shake"), SerializeField] private NoiseTokenValue groundShakeNoise;
+    [Header("Ground Shake"), SerializeField]
+    private NoiseTokenValue groundShakeNoise;
+
     [SerializeField, Range(0, 1)] private float groundCheckLerpAmount = 0.2f;
     [SerializeField, Min(0)] private float groundShakeTime;
     [SerializeField, Min(0)] private float groundShakeVelocityThreshold = 10f;
+
+    [Header("Relapse"), SerializeField] private NoiseTokenValue relapseNoise;
 
     #endregion
 
@@ -121,6 +125,15 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
 
     private void UpdateRelapseToken()
     {
+        var desiredValue = default(NoiseTokenValue);
+
+        if (playerVCamController.ParentComponent.PlayerInfo.IsRelapsing)
+            desiredValue = relapseNoise;
+
+        const float defaultFrameTime = 1 / 60f;
+        var frameAmount = Time.deltaTime / defaultFrameTime;
+
+        _relapseToken.Value = NoiseTokenValue.Lerp(_relapseToken.Value, desiredValue, .4f * frameAmount);
     }
 
     private void UpdateGroundCheckToken()

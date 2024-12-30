@@ -12,6 +12,7 @@ public class DynamicPostProcessVolume : MonoBehaviour
     [SerializeField] private VolumeProfile profile;
 
     [Header("Modules"), SerializeField] private DynamicVignetteModule vignetteModule;
+    [SerializeField] private DynamicChromaticAberrationModule chromaticAberrationModule;
 
     #endregion
 
@@ -41,6 +42,9 @@ public class DynamicPostProcessVolume : MonoBehaviour
     {
         // Initialize the dynamic vignette module
         vignetteModule.Initialize(this);
+
+        // Initialize the dynamic chromatic aberration module
+        chromaticAberrationModule.Initialize(this);
     }
 
     private void Start()

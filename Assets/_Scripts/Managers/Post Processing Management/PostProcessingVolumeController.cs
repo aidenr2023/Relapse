@@ -12,8 +12,6 @@ public class PostProcessingVolumeController : MonoBehaviour
     [SerializeField] private DynamicPostProcessVolume screenVolume;
     [SerializeField] private DynamicPostProcessVolume worldVolume;
 
-    [SerializeField, Range(0, 10)] private float vignetteMultiplier = 1f;
-
     #endregion
 
     #region Getters
