@@ -1285,7 +1285,6 @@ RectTransform:
   - {fileID: 8509072925305906951}
   - {fileID: 2452716848311214926}
   - {fileID: 4358043799532194686}
-  - {fileID: 6896154939900077863}
   - {fileID: 3657869250711793700}
   m_Father: {fileID: 7359971134057426887}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3126,7 +3125,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3361465419576456493}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3134,11 +3133,11 @@ RectTransform:
   - {fileID: 8341896596108731679}
   - {fileID: 2208572988813745995}
   - {fileID: 6931896482978066819}
-  m_Father: {fileID: 4666451552308068049}
+  m_Father: {fileID: 8147392721071177718}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 16, y: -16}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 16, y: 0}
   m_SizeDelta: {x: 720, y: 64}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &6009269860172148683
@@ -3846,6 +3845,7 @@ MonoBehaviour:
   powerIconsOpacityLerpAmount: 0.4
   powerIconsStayOnScreenTime: 1
   powerNameText: {fileID: 3271727262414168536}
+  powerIconFadeInOffset: {x: -250, y: 0, z: 0}
   selectedColor: {r: 1, g: 1, b: 1, a: 1}
   unselectedColor: {r: 0, g: 0, b: 0, a: 1}
   font: {fileID: 11400000, guid: 0bc19927327f9834abba8c39c7b043b3, type: 2}
@@ -8364,13 +8364,14 @@ RectTransform:
   m_Children:
   - {fileID: 5125656298977720186}
   - {fileID: 6181502079357609976}
+  - {fileID: 6896154939900077863}
   m_Father: {fileID: 3657869250711793700}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 16, y: 16}
-  m_SizeDelta: {x: 256, y: 256}
-  m_Pivot: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 16, y: -16}
+  m_SizeDelta: {x: 192, y: 192}
+  m_Pivot: {x: 0, y: 1}
 --- !u!1 &8133644287665543770
 GameObject:
   m_ObjectHideFlags: 0

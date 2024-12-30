@@ -16,6 +16,7 @@ public class PowerUIController : MonoBehaviour
     [SerializeField] private float powerIconsOpacityLerpAmount = .1f;
     [SerializeField] private float powerIconsStayOnScreenTime = .5f;
     [SerializeField] private TMP_Text powerNameText;
+    [SerializeField] private Vector3 powerIconFadeInOffset;
 
     [Space, SerializeField] private Color selectedColor = Color.white;
     [SerializeField] private Color unselectedColor = Color.black;
@@ -31,6 +32,10 @@ public class PowerUIController : MonoBehaviour
     private CountdownTimer _powerIconsStayOnScreenTimer;
 
     private int _previousPowerIndex;
+
+    private Vector3 _currentPowerIconsOffset;
+
+    private bool _isFadingIn;
 
     #endregion
 
@@ -57,6 +62,9 @@ public class PowerUIController : MonoBehaviour
 
         // Update the power icons opacity
         UpdatePowerIconsOpacity();
+
+        // Update the power icons offset
+        UpdatePowerIconsOffset();
 
         // Update the power name text
         UpdatePowerNameText();
@@ -148,6 +156,7 @@ public class PowerUIController : MonoBehaviour
     private void UpdatePowerIconsOpacity()
     {
         // Update the stay on screen timer
+        _powerIconsStayOnScreenTimer?.SetMaxTime(powerIconsStayOnScreenTime);
         _powerIconsStayOnScreenTimer?.Update(Time.unscaledDeltaTime);
 
         // Get the current power index
@@ -159,9 +168,14 @@ public class PowerUIController : MonoBehaviour
 
         var desiredOpacity = 1;
 
+        _isFadingIn = true;
+
         // If the stay on screen timer is complete, set the desired opacity to 0
         if (_powerIconsStayOnScreenTimer?.IsComplete ?? false)
+        {
             desiredOpacity = 0;
+            _isFadingIn = false;
+        }
 
         const float defaultFrameTime = 1 / 60f;
         var frameAmount = Time.unscaledDeltaTime / defaultFrameTime;
@@ -175,6 +189,25 @@ public class PowerUIController : MonoBehaviour
 
         // Set the previous power index
         _previousPowerIndex = currentPowerIndex;
+    }
+
+    private void UpdatePowerIconsOffset()
+    {
+        var previousPowerIconsOffset = _currentPowerIconsOffset;
+
+        var direction = _isFadingIn ? 1 : -1;
+
+        _currentPowerIconsOffset = Vector3.Lerp(
+            powerIconFadeInOffset * direction,
+            Vector3.zero,
+            powerIconsCanvasGroup.alpha
+        );
+
+        // Remove the previous offset from the icon group's position
+        powerIconsCanvasGroup.transform.position -= previousPowerIconsOffset;
+
+        // Add the current offset to the icon group's position
+        powerIconsCanvasGroup.transform.position += _currentPowerIconsOffset;
     }
 
     private void UpdatePowerNameText()
