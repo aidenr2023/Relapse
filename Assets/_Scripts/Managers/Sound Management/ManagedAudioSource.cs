@@ -11,6 +11,8 @@ public class ManagedAudioSource : MonoBehaviour
 
     private bool _isPaused;
 
+    private bool _isPermanent;
+
     #endregion
 
     #region Getters
@@ -27,16 +29,19 @@ public class ManagedAudioSource : MonoBehaviour
 
     private void Update()
     {
-        // If the audio source is done playing, destroy the game object
-        if (!_audioSource.isPlaying && !_isPaused && _audioSource.clip != null)
-            Destroy(gameObject);
-
         // If the game is paused, pause the audio source
         // Otherwise, unpause the audio source
         if (MenuManager.Instance.IsGamePausedInMenus)
             Pause();
         else
             Resume();
+
+        // If the audio source is done playing, destroy the game object
+        if (!_audioSource.isPlaying && !_isPaused && !_isPermanent)
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         // TODO: Change pitch with time scale
     }
@@ -101,5 +106,10 @@ public class ManagedAudioSource : MonoBehaviour
 
         // Destroy the game object
         Destroy(gameObject);
+    }
+
+    public void SetPermanent(bool isPermanent)
+    {
+        _isPermanent = isPermanent;
     }
 }

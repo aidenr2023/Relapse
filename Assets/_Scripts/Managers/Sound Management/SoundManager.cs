@@ -19,6 +19,19 @@ public class SoundManager : MonoBehaviour
     {
         // Set the instance
         Instance = this;
+
+        // Initialize the audio sources
+        InitializeAudioSources();
+    }
+
+    private void InitializeAudioSources()
+    {
+        // Set the audio sources to be permanent
+        musicSource.SetPermanent(true);
+        playerSfxSource.SetPermanent(true);
+        enemySfxSource.SetPermanent(true);
+        otherSfxSource.SetPermanent(true);
+        uiSfxSource.SetPermanent(true);
     }
 
     public ManagedAudioSource PlaySfxAtPoint(Sound sound, Vector3 position)

@@ -279,9 +279,6 @@ public class PauseMenuManager : GameMenu, IUsesInput
         // Isolate the journal panel
         IsolateMenu(_menuStack.Peek());
 
-        // Add your Journal logic here
-        Debug.Log("Open Journal");
-
         // Set the event system's selected object to the first button
         SetSelectedButton(journalFirstSelected);
     }
@@ -299,9 +296,6 @@ public class PauseMenuManager : GameMenu, IUsesInput
 
         // Isolate the settings panel
         IsolateMenu(_menuStack.Peek());
-
-        // Add your Settings logic here
-        Debug.Log("Open Settings");
 
         // Set the event system's selected object to the first button
         SetSelectedButton(settingsFirstSelected);

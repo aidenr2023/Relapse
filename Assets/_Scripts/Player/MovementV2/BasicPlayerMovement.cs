@@ -381,11 +381,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
             // If it has been a while since the last footstep, force the footstep timer to complete
             if (_timeSinceLastFootstep > 0.5f)
-            {
                 _footstepTimer.ForcePercent(1);
-
-                Debug.Log($"Running This!");
-            }
         }
     }
 
