@@ -31,6 +31,8 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
     /// </summary>
     private IInteractable _selectedInteractable;
 
+    private RaycastHit _interactionHitInfo;
+
     #endregion
 
     public event Action<IInteractable> OnLookAtInteractable;
@@ -47,6 +49,8 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
     public Material OutlineMaterial => outlineMaterial;
 
     public float OutlineScale => outlineScale;
+
+    public RaycastHit InteractionHitInfo => _interactionHitInfo;
 
     #endregion
 
@@ -128,7 +132,7 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
         var hit = Physics.Raycast(
             cameraPivot.position,
             cameraPivot.forward,
-            out var hitInfo,
+            out _interactionHitInfo,
             interactDistance
         );
 
@@ -137,7 +141,7 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
         {
             // If the player is looking at an interactable,
             // set the current selected interactable to the interactable that the player is looking at
-            if (hitInfo.collider.TryGetComponent(out IInteractable interactable))
+            if (_interactionHitInfo.collider.TryGetComponent(out IInteractable interactable))
             {
                 // If the interactable is interactable,
                 // set the current selected interactable to the interactable
@@ -168,6 +172,8 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
 
     private void UpdateInteractText()
     {
+        return;
+
         // If the player is not looking at an interactable, hide the interact text
         if (_selectedInteractable == null)
         {

@@ -5,8 +5,17 @@ using UnityEngine;
 public class UILookAtCam : MonoBehaviour
 {
     // Update is called once per frame
-    void LateUpdate()
+    private void LateUpdate()
     {
-        transform.LookAt(transform.position + Camera.main.transform.rotation * Vector3.forward, Camera.main.transform.rotation * Vector3.up);
+        var mainCamera = Camera.main;
+
+        // Return if the main camera is null
+        if (mainCamera == null)
+            return;
+
+        transform.LookAt(
+            transform.position + mainCamera.transform.rotation * Vector3.forward,
+            mainCamera.transform.rotation * Vector3.up
+        );
     }
 }
