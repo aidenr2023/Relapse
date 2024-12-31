@@ -416,16 +416,19 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         SoundManager.Instance.PlaySfx(gunInformation.ReloadSound);
     }
 
-    public void OnEquip(WeaponManager weaponManager)
+    public void OnEquipToPlayer(WeaponManager weaponManager)
     {
         // Set the weapon manager
         this._weaponManager = weaponManager;
 
         // Add to debug manager
         DebugManager.Instance.AddDebuggedObject(this);
+
+        // Get the interactable materials of the gun
+        this.GetOutlineMaterials(weaponManager.Player.PlayerInteraction.OutlineMaterial.shader);
     }
 
-    public void OnRemoval(WeaponManager weaponManager)
+    public void OnRemovalFromPlayer(WeaponManager weaponManager)
     {
         // Remove from debug manager
         DebugManager.Instance.RemoveDebuggedObject(this);
@@ -506,12 +509,12 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     public void UpdateOutline(WeaponManager weaponManager)
     {
-        if (this._weaponManager == null)
+        if (_weaponManager == null)
             return;
 
         // Remove the outline from the previous weapon manager
         foreach (var mat in OutlineMaterials)
-            this._weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, false, false);
+            _weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, false, false);
     }
 
     public string GetDebugText()

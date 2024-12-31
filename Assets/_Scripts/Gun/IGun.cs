@@ -22,8 +22,8 @@ public interface IGun : IInteractable, IDamager
     public void Fire(WeaponManager weaponManager, Vector3 startingPosition, Vector3 direction);
     public void Reload();
 
-    public void OnEquip(WeaponManager weaponManager);
-    public void OnRemoval(WeaponManager weaponManager);
+    public void OnEquipToPlayer(WeaponManager weaponManager);
+    public void OnRemovalFromPlayer(WeaponManager weaponManager);
 
     public void UpdateOutline(WeaponManager weaponManager);
 }

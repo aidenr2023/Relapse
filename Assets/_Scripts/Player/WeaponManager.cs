@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
+public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
 {
     #region Fields
 
@@ -22,11 +22,17 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
 
     [SerializeField] private TMP_Text reloadText;
 
+    #endregion
+
+    #region Private Fields
+
     private Player _player;
     private PlayerInfo _playerInfo;
     private IGun _equippedGun;
 
-    private SortedSet<DamageMultiplierToken> _damageMultiplierTokens = new();
+    private readonly SortedSet<DamageMultiplierToken> _damageMultiplierTokens = new();
+
+    private bool _spawnedInitialGun = false;
 
     #endregion
 
@@ -55,6 +61,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
 
     #endregion
 
+    public Action<WeaponManager, IGun> OnGunEquipped { get; set; }
+    public Action<WeaponManager, IGun> OnGunRemoved { get; set; }
+
     #region Initialization Functions
 
     private void Awake()
@@ -75,8 +84,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
         {
             var gun = Instantiate(initialGunPrefab).GetComponent<IGun>();
 
-            // Get the interactable materials of the gun
-            gun.GetOutlineMaterials(Player.PlayerInteraction.OutlineMaterial.shader);
+            // // Get the interactable materials of the gun
+            // gun.GetOutlineMaterials(Player.PlayerInteraction.OutlineMaterial.shader);
 
             EquipGun(gun);
             _spawnedInitialGun = true;
@@ -156,11 +165,6 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
 
     #endregion
 
-    public Action<WeaponManager, IGun> OnGunEquipped;
-    public Action<WeaponManager, IGun> OnGunRemoved;
-
-    private bool _spawnedInitialGun = false;
-
     private void Update()
     {
         // TODO: Remove this and replace it with a bar or something
@@ -194,7 +198,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
         _equippedGun = gun;
 
         // Set the gun's parent to the gun holder
-        gun.GameObject.transform.SetParent(gunHolder);
+        gun.GameObject.transform.SetParent(gunHolder, true);
 
         // Set the local position of the gun to the gun holder's local position
         gun.GameObject.transform.localPosition = Vector3.zero;
@@ -207,12 +211,16 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
         {
             rb.isKinematic = true;
 
-            // Also disable the collider
-            gun.Collider.enabled = false;
+            // // Also disable the collider
+            // if (gun.Collider != null)
+            //     gun.Collider.enabled = false;
+
+            // Disable collision on the gun
+            rb.detectCollisions = false;
         }
 
         // Call the OnEquip function
-        gun.OnEquip(this);
+        gun.OnEquipToPlayer(this);
 
         // Play the equip sound
         SoundManager.Instance.PlaySfx(gun.GunInformation.PickupSound);
@@ -254,26 +262,29 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
         if (_equippedGun == null)
             return;
 
-        // Fire the IGun
+        // Release the fire button on the gun
         EquippedGun.OnFireReleased();
 
         // Set the equipped gun's parent to null
-        _equippedGun.GameObject.transform.SetParent(null);
+        _equippedGun.GameObject.transform.SetParent(null, true);
 
         // Make the weapon non-kinematic (if it has a rigidbody)
         if (_equippedGun.GameObject.TryGetComponent(out Rigidbody rb))
         {
             rb.isKinematic = false;
 
-            // Also enable the collider
-            _equippedGun.Collider.enabled = true;
+            // // Also enable the collider
+            // _equippedGun.Collider.enabled = true;
+
+            // Also, enable the collisions
+            rb.detectCollisions = true;
 
             // Throw the gun
             ThrowRigidBody(rb);
         }
 
         // Call the OnRemoval function
-        _equippedGun.OnRemoval(this);
+        _equippedGun.OnRemovalFromPlayer(this);
 
         // Get the gun's game object and child objects
         var gunTransforms = _equippedGun.GameObject.GetComponentsInChildren<Transform>().ToList();
@@ -380,7 +391,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged
         if (_equippedGun != null && _equippedGun.GameObject != newGun)
         {
             // Set the equipped gun's parent to null
-            _equippedGun.GameObject.transform.SetParent(null);
+            _equippedGun.GameObject.transform.SetParent(null, true);
 
             // Destroy the equipped gun
             Destroy(_equippedGun.GameObject);

@@ -13,6 +13,8 @@ public class GunInformation : ScriptableObject
     [Header("Gun Information")] [SerializeField]
     private string gunName;
 
+    [SerializeField, Min(0)] private int cost;
+
     [SerializeField] private GunFireType gunFireType;
 
     [Header("Stats")] [SerializeField] private float baseDamage;
@@ -53,16 +55,16 @@ public class GunInformation : ScriptableObject
     [SerializeField, Range(0, 1)] private float recoilLerpAmount = 0.1f;
     [SerializeField, Range(0, 1)] private float recoveryLerpAmount = 0.1f;
 
-    [SerializeField]
-    private DynamicNoiseModule.NoiseTokenValue recoilNoise;
+    [SerializeField] private DynamicNoiseModule.NoiseTokenValue recoilNoise;
 
     [SerializeField, Min(0)] private float recoilNoiseTime = 0.25f;
     [SerializeField, Range(0, 1)] private float recoilNoiseLerpAmount = 0.2f;
 
-
     #region Getters
 
     public string GunName => gunName;
+
+    public int Cost => cost;
 
     public GunFireType FireType => gunFireType;
 
