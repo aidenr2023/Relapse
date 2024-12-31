@@ -37,6 +37,8 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable
     public bool HasOutline { get; set; }
     public HashSet<Material> OutlineMaterials { get; } = new();
 
+    public InteractionIcon InteractionIcon => InteractionIcon.Pickup;
+
     #endregion
 
     public Action<WeaponManager, IGun> OnGunEquipped { get; set; }

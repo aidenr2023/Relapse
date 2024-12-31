@@ -6,11 +6,17 @@ using UnityEngine.Events;
 
 public class InventoryPickup : MonoBehaviour, IInteractable
 {
+    #region Serialized Fields
+
     [SerializeField] private InventoryEntry inventoryEntry;
 
     [SerializeField] private bool destroyOnPickup = true;
 
     [SerializeField] private UnityEvent onInteract;
+
+    #endregion
+
+    #region Getters
 
     public InventoryEntry InventoryEntry => inventoryEntry;
 
@@ -21,6 +27,11 @@ public class InventoryPickup : MonoBehaviour, IInteractable
     public bool HasOutline { get; set; }
 
     public HashSet<Material> OutlineMaterials { get; } = new();
+
+    public InteractionIcon InteractionIcon => InteractionIcon.Pickup;
+
+    #endregion
+
 
     private bool _isMarkedForDestruction;
 

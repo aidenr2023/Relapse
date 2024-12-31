@@ -52,6 +52,8 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
 
     public RaycastHit InteractionHitInfo => _interactionHitInfo;
 
+    public InteractionIcon CurrentInteractionIcon => _selectedInteractable?.InteractionIcon ?? InteractionIcon.None;
+
     #endregion
 
     private void Awake()

@@ -28,6 +28,8 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
     public bool HasBeenCollected { get; private set; }
     public SceneLoaderInformation SceneLoaderInformation => sceneLoaderInformation;
 
+    public InteractionIcon InteractionIcon => InteractionIcon.Action;
+
     #endregion
 
     public void Interact(PlayerInteraction playerInteraction)

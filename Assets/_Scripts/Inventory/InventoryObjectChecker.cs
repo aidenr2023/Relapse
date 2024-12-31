@@ -20,6 +20,8 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable
 
     [SerializeField] [TextArea(1, 8)] private string failedInteractText;
 
+    [SerializeField] private InteractionIcon interactionIcon = InteractionIcon.Action;
+
     [SerializeField] private UnityEvent onInventoryObjectFound;
 
     #endregion
@@ -43,6 +45,8 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable
     public bool HasOutline { get; set; }
 
     public HashSet<Material> OutlineMaterials { get; } = new();
+
+    public InteractionIcon InteractionIcon => interactionIcon;
 
     #endregion
 

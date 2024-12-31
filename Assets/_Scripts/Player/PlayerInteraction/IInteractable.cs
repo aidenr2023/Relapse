@@ -18,6 +18,11 @@ public interface IInteractable : IInterfacedObject
     public HashSet<Material> OutlineMaterials { get; }
 
     /// <summary>
+    /// The icon the reticle changes to when looking at the object.
+    /// </summary>
+    public InteractionIcon InteractionIcon { get; }
+
+    /// <summary>
     /// The function that is called when the player interacts with the object.
     /// </summary>
     public void Interact(PlayerInteraction playerInteraction);

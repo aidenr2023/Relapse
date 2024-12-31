@@ -4,9 +4,17 @@ using UnityEngine.Events;
 
 public class CustomInteraction : MonoBehaviour, IInteractable
 {
+    #region Serialized Fields
+
     [SerializeField] private string interactText = "Interact";
 
     [SerializeField] private UnityEvent OnInteract;
+
+    [SerializeField] private InteractionIcon interactionIcon;
+
+    #endregion
+
+    #region Getters
 
     public GameObject GameObject => gameObject;
     public bool IsInteractable => true;
@@ -14,6 +22,10 @@ public class CustomInteraction : MonoBehaviour, IInteractable
     public bool HasOutline { get; set; }
 
     public HashSet<Material> OutlineMaterials { get; } = new();
+
+    public InteractionIcon InteractionIcon => interactionIcon;
+
+    #endregion
 
     public void Interact(PlayerInteraction playerInteraction)
     {

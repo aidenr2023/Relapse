@@ -7,7 +7,8 @@ public class DialogueInteractable : MonoBehaviour, IInteractable
 {
     #region Serialized Fields
 
-    [FormerlySerializedAs("dialogueObject")] [SerializeField] private DialogueNode dialogueNode;
+    [FormerlySerializedAs("dialogueObject")] [SerializeField]
+    private DialogueNode dialogueNode;
 
     #endregion
 
@@ -20,6 +21,8 @@ public class DialogueInteractable : MonoBehaviour, IInteractable
     public bool HasOutline { get; set; }
 
     public HashSet<Material> OutlineMaterials { get; } = new();
+
+    public InteractionIcon InteractionIcon => InteractionIcon.Action;
 
     #endregion
 

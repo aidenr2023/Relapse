@@ -25,6 +25,8 @@ public class MemoryPickup : MonoBehaviour, IInteractable
     public bool HasOutline { get; set; }
     public HashSet<Material> OutlineMaterials { get; } = new();
 
+    public InteractionIcon InteractionIcon => InteractionIcon.Pickup;
+
     #endregion
 
     private void Update()
