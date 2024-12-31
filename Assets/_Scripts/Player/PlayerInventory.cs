@@ -36,8 +36,8 @@ public class PlayerInventory : MonoBehaviour
 
     private void Start()
     {
-        // Subscribe to the OnItemAdded event
-        OnItemAdded += MoneyTooltipOnPickup;
+        // // Subscribe to the OnItemAdded event
+        // OnItemAdded += MoneyTooltipOnPickup;
 
         // Subscribe to the OnItemAdded event
         OnItemAdded += ItemTooltipOnPickup;
