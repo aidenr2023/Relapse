@@ -27,6 +27,8 @@ public class InputManager
 
     private readonly HashSet<IUsesInput> _registeredItems = new();
 
+    private bool _hasStarted;
+
     #endregion
 
     #region Getters
@@ -62,17 +64,21 @@ public class InputManager
 
         // Initialize the registered items
         _registeredItems.Clear();
-
-        // Start Function
-        Start();
     }
 
     // Start is called before the first frame update
-    private void Start()
+    public void Start()
     {
+        // Return if the InputManager has already started
+        if (_hasStarted)
+            return;
+
         // Hide & Lock the cursor
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        // Set the flag to true
+        _hasStarted = true;
     }
 
     #endregion

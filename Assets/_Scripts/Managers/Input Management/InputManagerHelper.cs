@@ -1,7 +1,14 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class InputManagerHelper : MonoBehaviour
 {
+    private void Start()
+    {
+        // Start Function
+        InputManager.Instance.Start();
+    }
+
     private void Update()
     {
         // Enable / disable the cursor based on the cursor state

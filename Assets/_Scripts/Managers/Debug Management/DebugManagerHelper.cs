@@ -134,6 +134,10 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput
 
     private void UpdateToleranceAndHealth()
     {
+        // If there is no player, return
+        if (Player == null)
+            return;
+
         Player.PlayerInfo.ChangeHealth(
             _healthChange * Time.deltaTime *
             healthMult * Player.PlayerInfo.MaxHealth,
