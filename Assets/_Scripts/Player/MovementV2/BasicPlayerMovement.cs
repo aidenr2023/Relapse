@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 {
     #region Serialized Fields
-
     [SerializeField] private bool canSprintWithoutPower = true;
     [SerializeField] private bool canJumpWithoutPower = true;
 
@@ -24,6 +23,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     [SerializeField] private float sprintingFootstepInterval = 0.25f;
 
     [SerializeField] private Sound jumpSound;
+    [SerializeField] private Animator player_Animator;
 
     #endregion
 
@@ -159,7 +159,9 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     {
         // Get the movement input
         _movementInput = obj.ReadValue<Vector2>();
-
+        // set walking true in animator
+        player_Animator.SetBool("Walking",true);
+        
         // Reset the parent component's isSprintToggled flag if there is no forward input
         if (_movementInput == Vector2.zero)
             ParentComponent.IsSprintToggled = false;
@@ -169,6 +171,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     {
         // Reset the movement input
         _movementInput = Vector2.zero;
+        player_Animator.SetBool("Walking",false);
+
     }
 
 
