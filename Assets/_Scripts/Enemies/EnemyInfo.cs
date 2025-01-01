@@ -31,9 +31,11 @@ public class EnemyInfo : MonoBehaviour, IActor
 
     private bool _isDead;
 
-    private float _damageThisFrame;
+    private float _damagedThisFrame;
     private Vector3 _damagePosition;
     private bool _hasPlayedHitVFX;
+
+    private bool _hasPlayedHitSoundThisFrame;
 
     #endregion
 
@@ -104,8 +106,15 @@ public class EnemyInfo : MonoBehaviour, IActor
         if (currentHealth <= 0)
             return;
 
+        // Return if the hit sound has already played this frame
+        if (_hasPlayedHitSoundThisFrame)
+            return;
+
         // Play the sound at the enemy's position
         SoundManager.Instance.PlaySfxAtPoint(enemyHitSound, transform.position);
+
+        // Set the hasPlayedHitSoundThisFrame flag to true
+        _hasPlayedHitSoundThisFrame = true;
     }
 
     private void PlaySoundOnDeath(object sender, HealthChangedEventArgs e)
@@ -114,13 +123,20 @@ public class EnemyInfo : MonoBehaviour, IActor
         if (enemyDeathSound == null)
             return;
 
+        // Return if the hit sound has already played this frame
+        if (_hasPlayedHitSoundThisFrame)
+            return;
+
         // Play the sound at the enemy's position
         SoundManager.Instance.PlaySfxAtPoint(enemyDeathSound, transform.position);
+
+        // Set the hasPlayedHitSoundThisFrame flag to true
+        _hasPlayedHitSoundThisFrame = true;
     }
 
     private void AddDamageThisFrame(object sender, HealthChangedEventArgs args)
     {
-        _damageThisFrame += args.Amount;
+        _damagedThisFrame += args.Amount;
     }
 
     private void Update()
@@ -134,9 +150,12 @@ public class EnemyInfo : MonoBehaviour, IActor
         // Reset the damage this frame if the visual effect has played
         if (_hasPlayedHitVFX)
         {
-            _damageThisFrame = 0;
+            _damagedThisFrame = 0;
             _hasPlayedHitVFX = false;
         }
+
+        // Reset the hasPlayedHitSoundThisFrame flag
+        _hasPlayedHitSoundThisFrame = false;
     }
 
     private void PlayVFXAfterDamage()
@@ -147,7 +166,7 @@ public class EnemyInfo : MonoBehaviour, IActor
 
         // If there was no damage this frame, return
         // If the damage this frame is less than the minimum damage for the visual effect, return
-        if (_damageThisFrame <= 0 || _damageThisFrame < minVFXDamage)
+        if (_damagedThisFrame <= 0 || _damagedThisFrame < minVFXDamage)
             return;
 
         // If hit vfx has already played, return
@@ -158,7 +177,7 @@ public class EnemyInfo : MonoBehaviour, IActor
         enemyHitEffect.SetVector3("StartPosition", _damagePosition);
 
         // Calculate the damage percentage based on the amount of damage the enemy took this frame
-        var damagePercentage = Mathf.InverseLerp(minVFXRangeDamage, maxVFXRangeDamage, _damageThisFrame);
+        var damagePercentage = Mathf.InverseLerp(minVFXRangeDamage, maxVFXRangeDamage, _damagedThisFrame);
 
         // Set the damage amount float
         enemyHitEffect.SetFloat("DamageAmount", damagePercentage);

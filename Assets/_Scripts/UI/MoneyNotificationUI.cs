@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MoneyNotificationUI : MonoBehaviour
 {
-    private const float ALPHA_THRESHOLD = 0.0001f;
+    private const float ALPHA_THRESHOLD = 0.001f;
 
     #region Serialized Fields
 

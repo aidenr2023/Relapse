@@ -30,7 +30,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
     private PlayerInfo _playerInfo;
     private IGun _equippedGun;
 
-    private readonly SortedSet<DamageMultiplierToken> _damageMultiplierTokens = new();
+    // private readonly SortedSet<DamageMultiplierToken> _damageMultiplierTokens = new();
+    private TokenManager<float> _damageMultiplierTokens;
 
     private bool _spawnedInitialGun = false;
 
@@ -50,14 +51,16 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
     {
         get
         {
-            float multiplier = 1;
+            var multiplier = 1f;
 
-            foreach (var token in _damageMultiplierTokens)
-                multiplier *= token.Multiplier;
+            foreach (var token in _damageMultiplierTokens.Tokens)
+                multiplier *= token.Value;
 
             return multiplier;
         }
     }
+
+    public TokenManager<float> DamageMultiplierTokens => _damageMultiplierTokens;
 
     #endregion
 
@@ -73,6 +76,13 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
 
         // Initialize the input actions
         InitializeInput();
+
+        // Initialize the damage multiplier tokens
+        _damageMultiplierTokens = new TokenManager<float>(
+            true,
+            (token1, token2) => token1.Value.CompareTo(token2.Value),
+            1
+        );
     }
 
     private void Start()
@@ -322,7 +332,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
 
     public string GetDebugText()
     {
-        return $"Equipped Gun: {_equippedGun?.GunInformation.name}\n";
+        return
+            $"Equipped Gun: {_equippedGun?.GunInformation.name}\n" +
+            $"Damage Multiplier: {CurrentDamageMultiplier:0.00}x\n";
     }
 
     private void OnDrawGizmos()
@@ -334,47 +346,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
         Gizmos.DrawRay(fireTransform.position, fireTransform.forward * 10);
     }
 
-    public DamageMultiplierToken AddDamageMultiplier(float multiplier, float duration, bool isPermanent = false)
-    {
-        // Create the new token
-        var token = new DamageMultiplierToken(multiplier, duration, isPermanent);
-
-        // Add the token to the list
-        _damageMultiplierTokens.Add(token);
-
-        // Return the token
-        return token;
-    }
-
     private void UpdateDamageMultipliers()
     {
-        // Create a list of tokens to remove
-        var tokensToRemove = new List<DamageMultiplierToken>();
-
-        // Loop through the tokens
-        foreach (var token in _damageMultiplierTokens)
-        {
-            // If the token is permanent, continue
-            if (token.IsPermanent)
-                continue;
-
-            // Update the duration of the token
-            token.UpdateDuration(-Time.deltaTime);
-
-            // If the duration is less than or equal to 0, add it to the list of tokens to remove
-            if (token.Duration <= 0)
-                tokensToRemove.Add(token);
-        }
-
-        // Remove the tokens
-        foreach (var token in tokensToRemove)
-            _damageMultiplierTokens.Remove(token);
-    }
-
-    public void RemoveDamageMultiplier(DamageMultiplierToken token)
-    {
-        // Remove the token from the list
-        _damageMultiplierTokens.Remove(token);
+        _damageMultiplierTokens.Update(Time.deltaTime);
     }
 
     public void ResetPlayer()
@@ -424,45 +398,5 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
 
         // Set the ammo count
         gun.CurrentAmmo = currentAmmo;
-    }
-
-    public class DamageMultiplierToken : IComparable<DamageMultiplierToken>
-    {
-        private readonly float _multiplier;
-        private float _duration;
-        private readonly bool _isPermanent;
-
-        public float Multiplier => _multiplier;
-        public float Duration => _duration;
-        public bool IsPermanent => _isPermanent;
-
-        public DamageMultiplierToken(float multiplier, float duration, bool isPermanent = false)
-        {
-            _multiplier = multiplier;
-            _duration = duration;
-            _isPermanent = isPermanent;
-        }
-
-        public void UpdateDuration(float changeAmount)
-        {
-            _duration += changeAmount;
-        }
-
-        public int CompareTo(DamageMultiplierToken other)
-        {
-            if (ReferenceEquals(this, other))
-                return 0;
-
-            if (other is null)
-                return 1;
-
-            var multiplierComparison = _multiplier.CompareTo(other._multiplier);
-
-            // Return the comparison if the multipliers are not equal
-            if (multiplierComparison != 0)
-                return multiplierComparison;
-
-            return _duration.CompareTo(other._duration);
-        }
     }
 }

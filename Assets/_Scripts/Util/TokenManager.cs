@@ -13,6 +13,8 @@ public class TokenManager<TTokenType>
     private readonly List<ManagedToken> _sortedTokens = new();
     private bool _hasBeenEditedSinceLastSort = true;
 
+    private readonly ManagedToken _indefiniteToken;
+
     #endregion
 
     #region Getters
@@ -55,7 +57,7 @@ public class TokenManager<TTokenType>
 
         // Add the indefinite default value
         if (indefiniteDefaultValue != null)
-            AddToken(indefiniteDefaultValue, 0, true);
+            _indefiniteToken = AddToken(indefiniteDefaultValue, 0, true);
     }
 
     public void Update(float deltaTime)
@@ -95,11 +97,28 @@ public class TokenManager<TTokenType>
 
     public void RemoveToken(ManagedToken token)
     {
+        // If the token is the indefinite token, return
+        if (token == _indefiniteToken)
+            return;
+
         // Remove the token from the tokens
         _tokens.Remove(token);
 
         // Set the has been edited since last sort to true
         _hasBeenEditedSinceLastSort = true;
+    }
+
+    public void Clear()
+    {
+        // Clear the tokens
+        _tokens.Clear();
+
+        // Set the has been edited since last sort to true
+        _hasBeenEditedSinceLastSort = true;
+
+        // Add the indefinite token back
+        if (_indefiniteToken != null)
+            _tokens.Add(_indefiniteToken);
     }
 
     public class ManagedToken

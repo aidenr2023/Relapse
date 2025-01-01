@@ -220,7 +220,7 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable
             // Send a tooltip to the player
             JournalTooltipManager.Instance.AddTooltip(
                 new BasicJournalTooltipInfo(
-                    $"Purchased {gun.GunInformation.GunName} for {gun.GunInformation.Cost} money!",
+                    $"Purchased {gun.GunInformation.GunName} for ${gun.GunInformation.Cost}!",
                     JournalTooltipType.General
                 )
             );

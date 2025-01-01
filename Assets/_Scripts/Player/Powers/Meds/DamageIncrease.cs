@@ -38,18 +38,6 @@ public class DamageIncrease : MonoBehaviour, IPower
 
     public void StartActiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
-    }
-
-    public void UpdateActiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
-    {
-    }
-
-    public void EndActiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
-    {
-    }
-
-    public void StartPassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
-    {
         // Instantiate the regeneration particles
         var particles = Instantiate(damageIncreaseParticles, powerManager.transform);
 
@@ -63,7 +51,8 @@ public class DamageIncrease : MonoBehaviour, IPower
         var token = powerManager
             .Player
             .WeaponManager
-            .AddDamageMultiplier(multiplier, PowerScriptableObject.PassiveEffectDuration);
+            .DamageMultiplierTokens
+            .AddToken(multiplier, -1, true);
 
         // Create a new data object to store the token and particles
         var data = new DamageIncreaseData(token, particles);
@@ -72,11 +61,11 @@ public class DamageIncrease : MonoBehaviour, IPower
         pToken.AddData(DAMAGE_INCREASE_KEY, data);
     }
 
-    public void UpdatePassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
+    public void UpdateActiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
     }
 
-    public void EndPassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
+    public void EndActiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
         // Get the particles from the power token's data dictionary
         // Remove the particles from the power token's data dictionary
@@ -87,26 +76,36 @@ public class DamageIncrease : MonoBehaviour, IPower
 
         // Destroy the particles' game object after the duration of the particle system
         Destroy(data.Particles.gameObject, data.Particles.main.duration);
-        
+
         // Remove the damage multiplier token
         powerManager
             .Player
             .WeaponManager
-            .RemoveDamageMultiplier(data.Token);
+            .DamageMultiplierTokens
+            .RemoveToken(data.Token);
+    }
+
+    public void StartPassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
+    {
+    }
+
+    public void UpdatePassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
+    {
+    }
+
+    public void EndPassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
+    {
     }
 
     private class DamageIncreaseData
     {
-        private readonly WeaponManager.DamageMultiplierToken _token;
-        private readonly ParticleSystem _particles;
+        public TokenManager<float>.ManagedToken Token { get; }
+        public ParticleSystem Particles { get; }
 
-        public WeaponManager.DamageMultiplierToken Token => _token;
-        public ParticleSystem Particles => _particles;
-
-        public DamageIncreaseData(WeaponManager.DamageMultiplierToken token, ParticleSystem particles)
+        public DamageIncreaseData(TokenManager<float>.ManagedToken token, ParticleSystem particles)
         {
-            _token = token;
-            _particles = particles;
+            Token = token;
+            Particles = particles;
         }
     }
 }
