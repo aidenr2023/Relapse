@@ -61,6 +61,13 @@ public class InventoryPickup : MonoBehaviour, IInteractable
 
         sb.Append("Pick up ");
 
+        // If the object is money, display the quantity w/ a $ sign
+        if (Player.Instance != null && Player.Instance.PlayerInventory.MoneyObject == inventoryEntry.InventoryObject)
+        {
+            sb.Append($"${inventoryEntry.Quantity}");
+            return sb.ToString();
+        }
+
         if (inventoryEntry.Quantity > 1)
             sb.Append($"{inventoryEntry.Quantity}x ");
 
@@ -77,5 +84,15 @@ public class InventoryPickup : MonoBehaviour, IInteractable
             Destroy(gameObject);
             return;
         }
+    }
+
+    public void SetInventoryEntry(InventoryEntry entry)
+    {
+        inventoryEntry = entry;
+    }
+
+    public void SetQuantity(int quantity)
+    {
+        inventoryEntry.SetQuantity(quantity);
     }
 }

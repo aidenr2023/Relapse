@@ -39,4 +39,20 @@ public class InventoryEntry
         if (quantity <= 0)
             OnEmpty?.Invoke(this, value);
     }
+
+    public void SetQuantity(int value)
+    {
+        // If the value is the same as the current quantity, return
+        if (value == quantity)
+            return;
+
+        // If the value is less 0, set the value to 0
+        if (value < 0)
+            value = 0;
+
+        if (value < quantity)
+            RemoveQuantity(quantity - value);
+        else
+            AddQuantity(value - quantity);
+    }
 }
