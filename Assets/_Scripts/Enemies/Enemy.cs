@@ -1,8 +1,8 @@
 ﻿using System;
 using UnityEngine;
 
-[RequireComponent(typeof(EnemyInfo))]
-public class Enemy : MonoBehaviour
+[RequireComponent(typeof(EnemyInfo)), RequireComponent(typeof(UniqueId))]
+public class Enemy : MonoBehaviour, ILevelLoaderInfo
 {
     #region Fields
 
@@ -26,7 +26,6 @@ public class Enemy : MonoBehaviour
     public IEnemyMovementBehavior EnemyMovementBehavior => _enemyMovementBehavior;
 
     #endregion
-
 
     private void Awake()
     {
@@ -64,4 +63,55 @@ public class Enemy : MonoBehaviour
         // Assert that the IEnemyAttackBehavior component is not null
         Debug.Assert(_enemyAttackBehavior != null, "The IEnemyAttackBehavior component is null.");
     }
+
+    private void OnDestroy()
+    {
+        // Save the fact that the enemy is dead
+        SaveData(LevelLoader.Instance);
+    }
+
+    #region ILevelLoaderInfo
+
+    public GameObject GameObject => gameObject;
+
+    private UniqueId _uniqueId;
+
+    public UniqueId UniqueId
+    {
+        get
+        {
+            if (_uniqueId == null)
+                _uniqueId = GetComponent<UniqueId>();
+
+            return _uniqueId;
+        }
+    }
+
+    private const string IS_ALIVE_KEY = "_isAlive";
+
+    public void LoadData(LevelLoader levelLoader)
+    {
+        // Load whether the enemy is alive or not
+        if (levelLoader.GetData($"{UniqueId.UniqueIdValue}{IS_ALIVE_KEY}", out bool isAlive) && !isAlive)
+        {
+            // Drain all the enemy's health
+            _enemyInfo.ChangeHealth(-_enemyInfo.MaxHealth, _enemyInfo, _enemyAttackBehavior, transform.position);
+
+            Destroy(gameObject);
+        }
+    }
+
+    public void SaveData(LevelLoader levelLoader)
+    {
+        var isAlive = _enemyInfo.CurrentHealth > 0;
+
+        // Create boolean data for whether the enemy is alive or not
+        var isAliveData =
+            SerializationDataInfo.SetOrCreateBooleanData($"{UniqueId.UniqueIdValue}{IS_ALIVE_KEY}", isAlive);
+
+        // Save the data
+        levelLoader.AddData(isAliveData);
+    }
+
+    #endregion
 }

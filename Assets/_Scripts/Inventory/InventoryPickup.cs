@@ -32,7 +32,6 @@ public class InventoryPickup : MonoBehaviour, IInteractable
 
     #endregion
 
-
     private bool _isMarkedForDestruction;
 
     public void Interact(PlayerInteraction playerInteraction)

@@ -1,19 +1,12 @@
 ﻿using System;
 using UnityEngine;
 
-public class DataSerializer : MonoBehaviour
+[RequireComponent(typeof(UniqueId))]
+public class DataSerializer : MonoBehaviour, ILevelLoaderInfo
 {
     [SerializeField] private SerializationDataEvent[] dataLoadedEvents;
 
-    private bool _hasRunEvents;
-
-    private void Update()
-    {
-        // If the events have not been run
-        // Load the data
-        if (!_hasRunEvents)
-            RunEvents();
-    }
+    public GameObject GameObject => gameObject;
 
     private void RunEvents()
     {
@@ -64,13 +57,42 @@ public class DataSerializer : MonoBehaviour
                 Debug.Log($"{dataLoadedEvent.DataInfo.VariableName} is false!");
             }
         }
-
-        // Set the events as run
-        _hasRunEvents = true;
     }
 
     public void PrintMessage(string text)
     {
         Debug.Log(text);
     }
+
+    #region ILevelLoaderInfo
+
+    private UniqueId _uniqueId;
+
+    public UniqueId UniqueId
+    {
+        get
+        {
+            if (_uniqueId == null)
+                _uniqueId = GetComponent<UniqueId>();
+
+            return _uniqueId;
+        }
+    }
+
+
+    public void LoadData(LevelLoader levelLoader)
+    {
+        // Load the data
+        RunEvents();
+    }
+
+    public void SaveData(LevelLoader levelLoader)
+    {
+        // For each event in the data loaded events
+        // Add the data to the level loader
+        foreach (var dataLoadedEvent in dataLoadedEvents)
+            levelLoader.AddData(dataLoadedEvent.DataInfo);
+    }
+
+    #endregion
 }

@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 
-public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable
+[RequireComponent(typeof(UniqueId))]
+public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoaderInfo
 {
     #region Serialized Fields
 
@@ -25,6 +26,8 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable
 
     private Vector3 _originalGunScale;
 
+    private bool _hasOriginalGun = true;
+
     #endregion
 
     #region Getters
@@ -32,6 +35,7 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable
     public IGun EquippedGun { get; private set; }
 
     public GameObject GameObject => gameObject;
+
     public bool IsInteractable => EquippedGun != null;
 
     public bool HasOutline { get; set; }
@@ -47,7 +51,7 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable
 
     private void Start()
     {
-        if (initialGunPrefab != null)
+        if (initialGunPrefab != null && _hasOriginalGun)
         {
             var gun = Instantiate(initialGunPrefab, gunHolderTransform.position, gunHolderTransform.rotation)
                 .GetComponent<IGun>();
@@ -57,6 +61,8 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable
 
             EquipGun(gun);
         }
+        else
+            _hasOriginalGun = false;
     }
 
     private void FixedUpdate()
@@ -155,6 +161,9 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable
         // If there is no gun equipped, return
         if (EquippedGun == null)
             return;
+
+        // Set the has original gun flag to false
+        _hasOriginalGun = false;
 
         // Set the gun's parent to null
         EquippedGun.GameObject.transform.SetParent(null, true);
@@ -264,4 +273,51 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable
         else
             return $"Purchase {EquippedGun.GunInformation.GunName} for ${EquippedGun.GunInformation.Cost}";
     }
+
+    #region ILevelLoaderInfo
+
+    private const string IS_FREE_KEY = "_isFree";
+    private const string HAS_ORIGINAL_GUN_KEY = "_hasOriginalGun";
+
+    private UniqueId _uniqueId;
+
+    public UniqueId UniqueId
+    {
+        get
+        {
+            if (_uniqueId == null)
+                _uniqueId = GetComponent<UniqueId>();
+
+            return _uniqueId;
+        }
+    }
+
+    public void LoadData(LevelLoader levelLoader)
+    {
+        // Load the isFree data
+        if (levelLoader.GetData($"{UniqueId.UniqueIdValue}{IS_FREE_KEY}", out bool isFreeValue))
+            isFree = isFreeValue;
+
+        var hasOriginalGunDataExists =
+            levelLoader.GetData($"{UniqueId.UniqueIdValue}{HAS_ORIGINAL_GUN_KEY}", out bool hasOriginalGun);
+
+        // set the has original gun flag if the data exists
+        if (hasOriginalGunDataExists)
+            _hasOriginalGun = hasOriginalGun;
+    }
+
+    public void SaveData(LevelLoader levelLoader)
+    {
+        // Save the isFree data
+        var isFreeData = SerializationDataInfo.SetOrCreateBooleanData($"{UniqueId.UniqueIdValue}{IS_FREE_KEY}", isFree);
+        levelLoader.AddData(isFreeData);
+
+        // Save the hasGun data
+        var hasOriginalGunData =
+            SerializationDataInfo.SetOrCreateBooleanData($"{UniqueId.UniqueIdValue}{HAS_ORIGINAL_GUN_KEY}",
+                _hasOriginalGun);
+        levelLoader.AddData(hasOriginalGunData);
+    }
+
+    #endregion
 }

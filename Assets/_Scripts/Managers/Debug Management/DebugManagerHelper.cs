@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput
+public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 {
     #region Serialized Fields
 
@@ -44,6 +45,9 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput
     {
         // Initialize the input
         InitializeInput();
+
+        // Add this to the debug manager
+        DebugManager.Instance.AddDebuggedObject(this);
     }
 
     // Start is called before the first frame update
@@ -165,5 +169,27 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput
     {
         // Set the debug canvas's visibility
         debugCanvas.enabled = isVisible;
+    }
+
+    public string GetDebugText()
+    {
+        var sb = new StringBuilder();
+
+        sb.Append($"Serialization Data Info:\n");
+
+        foreach (var keyValue in SerializationDataInfo.DataInfoDictionary)
+        {
+            var dataValueString = keyValue.Value.DataType switch
+            {
+                SerializationDataType.Boolean => keyValue.Value.GetBoolValue().ToString(),
+                SerializationDataType.Number => keyValue.Value.GetNumberValue().ToString(CultureInfo.InvariantCulture),
+                SerializationDataType.String => keyValue.Value.GetStringValue(),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
+            sb.Append($"\t{keyValue.Key}: {dataValueString}\n");
+        }
+
+        return sb.ToString();
     }
 }

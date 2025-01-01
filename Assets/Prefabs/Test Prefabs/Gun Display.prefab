@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3247149799016266902}
   - component: {fileID: 7561312569275159390}
   - component: {fileID: 8351781765238915938}
+  - component: {fileID: 7092536005763294856}
   - component: {fileID: 2248965152384434232}
   m_Layer: 0
   m_Name: Gun Display
@@ -326,6 +327,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
+--- !u!114 &7092536005763294856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3460983561665167566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f5f533b130e40eca5347083903f3682, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uniqueId: 
 --- !u!114 &2248965152384434232
 MonoBehaviour:
   m_ObjectHideFlags: 0

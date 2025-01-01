@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -9,6 +10,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Serialization Data Info", menuName = "Serialization/Serialization Data Info")]
 public class SerializationDataInfo : ScriptableObject
 {
+    // A dictionary that contains the data info for each variable
+    private static readonly Dictionary<string, SerializationDataInfo> _dataInfoDictionary = new();
+
+    public static IReadOnlyDictionary<string, SerializationDataInfo> DataInfoDictionary => _dataInfoDictionary;
+
     [SerializeField] public SerializationDataType dataType;
     // [SerializeField] private string variableName;
 
@@ -24,6 +30,17 @@ public class SerializationDataInfo : ScriptableObject
     public string VariableName => name;
 
     #endregion
+
+    private void Awake()
+    {
+    }
+
+    private void OnEnable()
+    {
+        // Add this instance to the dictionary
+        if (!_dataInfoDictionary.TryAdd(name, this))
+            _dataInfoDictionary[name] = this;
+    }
 
     public void SetBoolValue(bool value)
     {
@@ -82,4 +99,80 @@ public class SerializationDataInfo : ScriptableObject
     {
         return stringValue;
     }
+
+    #region Factory Methods
+
+    public static SerializationDataInfo SetOrCreateNumberData(string dataName, float value)
+    {
+        // Check if the instance of the variable already exists
+        if (!_dataInfoDictionary.TryGetValue(dataName, out var data))
+        {
+            // Create a new instance of the SerializationDataInfo class
+            data = CreateInstance<SerializationDataInfo>();
+
+            // Remove the item from the dictionary
+            _dataInfoDictionary.Remove(data.name);
+
+            data.name = dataName;
+
+            // Add the item back to the dictionary
+            _dataInfoDictionary.Add(dataName, data);
+        }
+
+        // Set the value of the data
+        data.SetDataType(SerializationDataType.Number);
+        data.SetNumberValue(value);
+
+        return data;
+    }
+
+    public static SerializationDataInfo SetOrCreateBooleanData(string dataName, bool value)
+    {
+        // Check if the instance of the variable already exists
+        if (!_dataInfoDictionary.TryGetValue(dataName, out var data))
+        {
+            // Create a new instance of the SerializationDataInfo class
+            data = CreateInstance<SerializationDataInfo>();
+
+            // Remove the item from the dictionary
+            _dataInfoDictionary.Remove(data.name);
+
+            data.name = dataName;
+
+            // Add the item back to the dictionary
+            _dataInfoDictionary.Add(dataName, data);
+        }
+
+        // Set the value of the data
+        data.SetDataType(SerializationDataType.Boolean);
+        data.SetBoolValue(value);
+
+        return data;
+    }
+
+    public static SerializationDataInfo SetOrCreateStringData(string dataName, string value)
+    {
+        // Check if the instance of the variable already exists
+        if (!_dataInfoDictionary.TryGetValue(dataName, out var data))
+        {
+            // Create a new instance of the SerializationDataInfo class
+            data = CreateInstance<SerializationDataInfo>();
+
+            // Remove the item from the dictionary
+            _dataInfoDictionary.Remove(data.name);
+
+            data.name = dataName;
+
+            // Add the item back to the dictionary
+            _dataInfoDictionary.Add(dataName, data);
+        }
+
+        // Set the value of the data
+        data.SetDataType(SerializationDataType.String);
+        data.SetStringValue(value);
+
+        return data;
+    }
+
+    #endregion
 }
