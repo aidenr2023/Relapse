@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,8 +8,6 @@ using UnityEngine.SceneManagement;
 public class LevelLoader : MonoBehaviour
 {
     public static LevelLoader Instance { get; private set; }
-
-    private Scene _originalScene;
 
     private readonly Dictionary<string, Dictionary<string, object>> _data = new();
 
@@ -26,6 +25,9 @@ public class LevelLoader : MonoBehaviour
         // Set the instance to this object
         Instance = this;
 
+        // Set the parent to null
+        transform.parent = null;
+
         // Set this to not be destroyed when reloading scene
         DontDestroyOnLoad(gameObject);
 
@@ -35,24 +37,64 @@ public class LevelLoader : MonoBehaviour
 
     private void LoadDataOnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
     {
-        // Set the original scene to the scene that was loaded
-        _originalScene = scene;
-
         // TODO: Load the data from the disk
         LoadDataFromDisk();
 
         // Apply the loaded data to the game objects
-        LoadDataObjects();
+        LoadDataObjects(scene);
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.F7))
-            SaveDataObjects();
+            SaveDataObjects(null);
 
         // Reload the current scene to test the saving and loading
         if (Input.GetKeyDown(KeyCode.F8))
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            StartCoroutine(ReloadScenes());
+    }
+
+    private IEnumerator ReloadScenes()
+    {
+        // Get the build index of the active scene
+        var activeSceneBuildIndex = SceneManager.GetActiveScene().buildIndex;
+
+        // Get the build indices of the scenes that are loaded
+        var loadedSceneBuildIndices = new List<int>();
+        for (var i = 0; i < SceneManager.sceneCount; i++)
+            loadedSceneBuildIndices.Add(SceneManager.GetSceneAt(i).buildIndex);
+
+        // Create an empty scene
+        // var emptyScene = SceneManager.CreateScene("EmptyScene");
+
+        // Load the scene single
+        SceneManager.LoadScene(0, LoadSceneMode.Single);
+
+        // Wait for the end of the frame
+        yield return new WaitForEndOfFrame();
+
+        // // Unload all the scenes
+        // foreach (var scene in loadedSceneBuildIndices)
+        //     SceneManager.UnloadSceneAsync(scene);
+
+        // // Wait for the end of the frame
+        // yield return new WaitForEndOfFrame();
+
+        // Load all the previously loaded scenes
+        foreach (var scene in loadedSceneBuildIndices)
+            SceneManager.LoadScene(scene, LoadSceneMode.Additive);
+
+        // Wait for the end of the frame
+        yield return new WaitForEndOfFrame();
+
+        // Set the active scene to the previously active scene
+        SceneManager.SetActiveScene(SceneManager.GetSceneByBuildIndex(activeSceneBuildIndex));
+
+        // Wait for the end of the frame
+        yield return new WaitForEndOfFrame();
+
+        // Remove the empty scene
+        SceneManager.UnloadSceneAsync(0);
     }
 
 
@@ -64,10 +106,23 @@ public class LevelLoader : MonoBehaviour
         // TODO: Populate the _data dictionary with the data from the disk
     }
 
-    private void LoadDataObjects()
+    public void LoadDataObjects(Scene? scene)
     {
+        GameObject[] rootGameObjects;
+
         // Get all the root game objects in the scene
-        var rootGameObjects = _originalScene.GetRootGameObjects();
+        if (scene != null)
+            rootGameObjects = scene.Value.GetRootGameObjects();
+
+        // Get all the root game objects in all the scenes
+        else
+        {
+            var scenes = new List<Scene>();
+            for (var i = 0; i < SceneManager.sceneCount; i++)
+                scenes.Add(SceneManager.GetSceneAt(i));
+
+            rootGameObjects = scenes.SelectMany(n => n.GetRootGameObjects()).ToArray();
+        }
 
         // Get all the scripts in the scene that implement the ILevelLoaderInfo interface
         var levelLoaderInfos = rootGameObjects
@@ -80,10 +135,23 @@ public class LevelLoader : MonoBehaviour
             levelLoaderInfo.LoadData(this);
     }
 
-    private void SaveDataObjects()
+    private void SaveDataObjects(Scene? scene)
     {
+        GameObject[] rootGameObjects;
+
         // Get all the root game objects in the scene
-        var rootGameObjects = _originalScene.GetRootGameObjects();
+        if (scene != null)
+            rootGameObjects = scene.Value.GetRootGameObjects();
+
+        // Get all the root game objects in all the scenes
+        else
+        {
+            var scenes = new List<Scene>();
+            for (var i = 0; i < SceneManager.sceneCount; i++)
+                scenes.Add(SceneManager.GetSceneAt(i));
+
+            rootGameObjects = scenes.SelectMany(n => n.GetRootGameObjects()).ToArray();
+        }
 
         // Get all the scripts in the scene that implement the ILevelLoaderInfo interface
         var levelLoaderInfos = rootGameObjects
