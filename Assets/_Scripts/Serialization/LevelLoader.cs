@@ -52,6 +52,10 @@ public class LevelLoader : MonoBehaviour
         // Reload the current scene to test the saving and loading
         if (Input.GetKeyDown(KeyCode.F8))
             StartCoroutine(ReloadScenes());
+
+        // Save the data to the disk
+        if (Input.GetKeyDown(KeyCode.F10))
+            SaveDataToDisk();
     }
 
     private IEnumerator ReloadScenes()
@@ -96,7 +100,6 @@ public class LevelLoader : MonoBehaviour
         // Remove the empty scene
         SceneManager.UnloadSceneAsync(0);
     }
-
 
     /// <summary>
     /// Load the data from the disk and fill the dictionary with it.
@@ -237,6 +240,111 @@ public class LevelLoader : MonoBehaviour
 
             default:
                 throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    public void SaveDataToDisk()
+    {
+        // Create a list of JsonDataObjectWrappers
+        var jsonDataObjectWrappers = new List<JsonDataObjectWrapper>();
+
+        // For each unique id in the data dictionary
+        foreach (var (uniqueId, dataValue) in _data)
+        {
+            // Create a list of JsonDataWrappers
+            var jsonDataWrappers = new List<JsonDataWrapper>();
+
+            // For each key-value pair in the data dictionary
+            foreach (var (key, value) in dataValue)
+            {
+                // Debug.Log($"Saving {key} with value {value} for {uniqueId} to the disk.");
+
+                // Determine the type of the value
+                var valueType = value.GetType();
+
+                JsonDataWrapper wrapper;
+
+                // Based on the type of the value, create the appropriate JsonDataWrapper
+                if (valueType == typeof(bool))
+                    wrapper = new JsonDataWrapper(key, SerializationDataType.Boolean, value.ToString());
+
+                else if (valueType == typeof(double))
+                    wrapper = new JsonDataWrapper(key, SerializationDataType.Number, value.ToString());
+
+                else if (valueType == typeof(string))
+                    wrapper = new JsonDataWrapper(key, SerializationDataType.String, value.ToString());
+
+                else if (valueType == typeof(Vector3))
+                    wrapper = new JsonDataWrapper(key, SerializationDataType.Vector3, JsonUtility.ToJson(value));
+
+                else
+                {
+                    Debug.LogError($"The value type {valueType} is not supported!");
+                    throw new ArgumentOutOfRangeException();
+                }
+
+                // Add the JsonDataWrapper to the list
+                jsonDataWrappers.Add(wrapper);
+            }
+
+            // Create a JsonDataObjectWrapper
+            var jsonDataObjectWrapper = new JsonDataObjectWrapper(uniqueId, jsonDataWrappers);
+
+            // Add the JsonDataObjectWrapper to the list
+            jsonDataObjectWrappers.Add(jsonDataObjectWrapper);
+        }
+
+        // Create a new AllJsonData object
+        var allJsonData = new AllJsonData(jsonDataObjectWrappers);
+
+        // Convert the list of JsonDataObjectWrappers to a JSON string
+        var jsonDataObjects = JsonUtility.ToJson(allJsonData);
+
+        // Save the JSON string to the disk
+        Debug.Log(jsonDataObjects);
+    }
+
+    [Serializable]
+    public class JsonDataWrapper
+    {
+        [SerializeField] public string key;
+        [SerializeField] SerializationDataType dataType;
+        [SerializeField] public string value;
+
+        public JsonDataWrapper(string key, SerializationDataType dataType, string value)
+        {
+            this.key = key;
+            this.dataType = dataType;
+            this.value = value;
+        }
+    }
+
+    [Serializable]
+    private class JsonDataObjectWrapper
+    {
+        [SerializeField] protected string variableName;
+        [SerializeField] protected JsonDataWrapper[] data;
+
+        public JsonDataObjectWrapper(string variableName, IEnumerable<JsonDataWrapper> data)
+        {
+            this.variableName = variableName;
+
+            // Convert the list of JsonDataWrappers to a JSON string
+            this.data = data.ToArray();
+        }
+
+        // public void Add<TOtherType>(JsonDataWrapper<TOtherType> jsonDataWrapper) =>
+        //     jsonDataWrappers.Add((JsonDataWrapper<object>)jsonDataWrapper);
+    }
+
+    [Serializable]
+    private class AllJsonData
+    {
+        [SerializeField] private JsonDataObjectWrapper[] data;
+
+        public AllJsonData(IEnumerable<JsonDataObjectWrapper> jsonDataObjectWrappers)
+        {
+            data = jsonDataObjectWrappers.ToArray();
         }
     }
 }
