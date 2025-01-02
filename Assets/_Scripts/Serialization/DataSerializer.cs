@@ -26,8 +26,8 @@ public class DataSerializer : MonoBehaviour, ILevelLoaderInfo
 
                 case SerializationDataType.Number:
                     if (Mathf.Approximately(
-                            dataLoadedEvent.NumberConditionalValue,
-                            dataLoadedEvent.DataInfo.GetNumberValue())
+                            (float)dataLoadedEvent.NumberConditionalValue,
+                            (float)dataLoadedEvent.DataInfo.GetNumberValue())
                        )
                         conditionMet = true;
                     break;
@@ -37,6 +37,17 @@ public class DataSerializer : MonoBehaviour, ILevelLoaderInfo
                             dataLoadedEvent.StringConditionalValue,
                             dataLoadedEvent.DataInfo.GetStringValue(),
                             StringComparison.Ordinal) == 0
+                       )
+                        conditionMet = true;
+                    break;
+
+                case SerializationDataType.Vector3:
+                    if (Mathf.Approximately(dataLoadedEvent.Vector3ConditionalValue.x,
+                            dataLoadedEvent.DataInfo.GetVector3Value().x) &&
+                        Mathf.Approximately(dataLoadedEvent.Vector3ConditionalValue.y,
+                            dataLoadedEvent.DataInfo.GetVector3Value().y) &&
+                        Mathf.Approximately(dataLoadedEvent.Vector3ConditionalValue.z,
+                            dataLoadedEvent.DataInfo.GetVector3Value().z)
                        )
                         conditionMet = true;
                     break;
@@ -91,7 +102,7 @@ public class DataSerializer : MonoBehaviour, ILevelLoaderInfo
         // For each event in the data loaded events
         // Add the data to the level loader
         foreach (var dataLoadedEvent in dataLoadedEvents)
-            levelLoader.AddData(dataLoadedEvent.DataInfo);
+            levelLoader.AddData(UniqueId, dataLoadedEvent.DataInfo);
     }
 
     #endregion

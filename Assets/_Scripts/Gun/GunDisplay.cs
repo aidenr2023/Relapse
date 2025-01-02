@@ -295,11 +295,10 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
     public void LoadData(LevelLoader levelLoader)
     {
         // Load the isFree data
-        if (levelLoader.GetData($"{UniqueId.UniqueIdValue}{IS_FREE_KEY}", out bool isFreeValue))
+        if (levelLoader.GetData(UniqueId, IS_FREE_KEY, out bool isFreeValue))
             isFree = isFreeValue;
 
-        var hasOriginalGunDataExists =
-            levelLoader.GetData($"{UniqueId.UniqueIdValue}{HAS_ORIGINAL_GUN_KEY}", out bool hasOriginalGun);
+        var hasOriginalGunDataExists = levelLoader.GetData(UniqueId, HAS_ORIGINAL_GUN_KEY, out bool hasOriginalGun);
 
         // set the has original gun flag if the data exists
         if (hasOriginalGunDataExists)
@@ -309,14 +308,12 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
     public void SaveData(LevelLoader levelLoader)
     {
         // Save the isFree data
-        var isFreeData = SerializationDataInfo.SetOrCreateBooleanData($"{UniqueId.UniqueIdValue}{IS_FREE_KEY}", isFree);
-        levelLoader.AddData(isFreeData);
+        var isFreeData = new DataInfo(IS_FREE_KEY, isFree);
+        levelLoader.AddData(UniqueId, isFreeData);
 
         // Save the hasGun data
-        var hasOriginalGunData =
-            SerializationDataInfo.SetOrCreateBooleanData($"{UniqueId.UniqueIdValue}{HAS_ORIGINAL_GUN_KEY}",
-                _hasOriginalGun);
-        levelLoader.AddData(hasOriginalGunData);
+        var hasOriginalGunData = new DataInfo(HAS_ORIGINAL_GUN_KEY, _hasOriginalGun);
+        levelLoader.AddData(UniqueId, hasOriginalGunData);
     }
 
     #endregion

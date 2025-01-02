@@ -177,17 +177,14 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
         sb.Append($"Serialization Data Info:\n");
 
-        foreach (var keyValue in SerializationDataInfo.DataInfoDictionary)
+        foreach (var keyValue in LevelLoader.Instance.Data)
         {
-            var dataValueString = keyValue.Value.DataType switch
-            {
-                SerializationDataType.Boolean => keyValue.Value.GetBoolValue().ToString(),
-                SerializationDataType.Number => keyValue.Value.GetNumberValue().ToString(CultureInfo.InvariantCulture),
-                SerializationDataType.String => keyValue.Value.GetStringValue(),
-                _ => throw new ArgumentOutOfRangeException()
-            };
+            var uniqueId = keyValue.Key;
 
-            sb.Append($"\t{keyValue.Key}: {dataValueString}\n");
+            sb.Append($"\tUniqueId: {uniqueId}\n");
+
+            foreach (var data in keyValue.Value)
+                sb.Append($"\t\t{data.Key}: {data.Value}\n");
         }
 
         return sb.ToString();

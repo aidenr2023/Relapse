@@ -38,11 +38,15 @@ public class SerializationDataInfoCustomEditor : Editor
                 break;
 
             case SerializationDataType.Number:
-                _dataInfo.SetNumberValue(EditorGUILayout.FloatField("Value", _dataInfo.GetNumberValue()));
+                _dataInfo.SetNumberValue(EditorGUILayout.DoubleField("Value", _dataInfo.GetNumberValue()));
                 break;
 
             case SerializationDataType.String:
                 _dataInfo.SetStringValue(EditorGUILayout.TextField("Value", _dataInfo.GetStringValue()));
+                break;
+
+            case SerializationDataType.Vector3:
+                _dataInfo.SetVector3Value(EditorGUILayout.Vector3Field("Value", _dataInfo.GetVector3Value()));
                 break;
 
             default:

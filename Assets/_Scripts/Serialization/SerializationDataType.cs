@@ -3,4 +3,5 @@
     Boolean,
     Number,
     String,
+    Vector3,
 }

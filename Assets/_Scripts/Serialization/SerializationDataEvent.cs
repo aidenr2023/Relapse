@@ -13,8 +13,9 @@ public class SerializationDataEvent
     [SerializeField] private SerializationDataInfo dataInfo;
 
     [SerializeField] private bool boolConditionalValue;
-    [SerializeField] private float numberConditionalValue;
+    [SerializeField] private double numberConditionalValue;
     [SerializeField] private string stringConditionalValue;
+    [SerializeField] private Vector3 vector3ConditionalValue;
 
     [SerializeField] private UnityEvent onFalse;
     [SerializeField] private UnityEvent onTrue;
@@ -22,8 +23,9 @@ public class SerializationDataEvent
     public SerializationDataInfo DataInfo => dataInfo;
 
     public bool BoolConditionalValue => boolConditionalValue;
-    public float NumberConditionalValue => numberConditionalValue;
+    public double NumberConditionalValue => numberConditionalValue;
     public string StringConditionalValue => stringConditionalValue;
+    public Vector3 Vector3ConditionalValue => vector3ConditionalValue;
 
     public UnityEvent OnFalse => onFalse;
     public UnityEvent OnTrue => onTrue;

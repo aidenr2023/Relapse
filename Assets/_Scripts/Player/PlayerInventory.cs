@@ -111,7 +111,7 @@ public class PlayerInventory : MonoBehaviour
 
         inventoryEntry.RemoveQuantity(quantity);
 
-        Debug.Log($"Removed {quantity} {inventoryObject.ItemName} from the inventory!");
+        // Debug.Log($"Removed {quantity} {inventoryObject.ItemName} from the inventory!");
 
         // If the quantity is 0, remove the inventory entry from the list
         if (inventoryEntry.Quantity <= 0)

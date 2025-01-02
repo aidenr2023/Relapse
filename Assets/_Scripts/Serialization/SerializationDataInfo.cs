@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 [Serializable]
 [CreateAssetMenu(fileName = "New Serialization Data Info", menuName = "Serialization/Serialization Data Info")]
-public class SerializationDataInfo : ScriptableObject
+public class SerializationDataInfo : ScriptableObject, IDataInfo
 {
     // A dictionary that contains the data info for each variable
     private static readonly Dictionary<string, SerializationDataInfo> _dataInfoDictionary = new();
@@ -19,8 +19,9 @@ public class SerializationDataInfo : ScriptableObject
     // [SerializeField] private string variableName;
 
     [SerializeField] private bool boolValue;
-    [SerializeField] private float numberValue;
+    [SerializeField] private double numberValue;
     [SerializeField] private string stringValue;
+    [SerializeField] private Vector3 vector3Value;
 
     #region Getters
 
@@ -30,10 +31,6 @@ public class SerializationDataInfo : ScriptableObject
     public string VariableName => name;
 
     #endregion
-
-    private void Awake()
-    {
-    }
 
     private void OnEnable()
     {
@@ -47,7 +44,7 @@ public class SerializationDataInfo : ScriptableObject
         boolValue = value;
     }
 
-    public void SetNumberValue(float value)
+    public void SetNumberValue(double value)
     {
         numberValue = value;
     }
@@ -55,6 +52,11 @@ public class SerializationDataInfo : ScriptableObject
     public void SetStringValue(string value)
     {
         stringValue = value;
+    }
+
+    public void SetVector3Value(Vector3 value)
+    {
+        vector3Value = value;
     }
 
     public void SetValue<T>(SerializationDataType type, T data) where T : struct
@@ -75,6 +77,10 @@ public class SerializationDataInfo : ScriptableObject
                 SetStringValue((string)dataAsObject);
                 break;
 
+            case SerializationDataType.Vector3:
+                SetVector3Value((Vector3)dataAsObject);
+                break;
+
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }
@@ -90,7 +96,7 @@ public class SerializationDataInfo : ScriptableObject
         return boolValue;
     }
 
-    public float GetNumberValue()
+    public double GetNumberValue()
     {
         return numberValue;
     }
@@ -100,24 +106,18 @@ public class SerializationDataInfo : ScriptableObject
         return stringValue;
     }
 
+    public Vector3 GetVector3Value()
+    {
+        return vector3Value;
+    }
+
     #region Factory Methods
 
-    public static SerializationDataInfo SetOrCreateNumberData(string dataName, float value)
+    private static SerializationDataInfo SetNumberData(string dataName, float value)
     {
         // Check if the instance of the variable already exists
         if (!_dataInfoDictionary.TryGetValue(dataName, out var data))
-        {
-            // Create a new instance of the SerializationDataInfo class
-            data = CreateInstance<SerializationDataInfo>();
-
-            // Remove the item from the dictionary
-            _dataInfoDictionary.Remove(data.name);
-
-            data.name = dataName;
-
-            // Add the item back to the dictionary
-            _dataInfoDictionary.Add(dataName, data);
-        }
+            throw new KeyNotFoundException($"The data with the name {dataName} does not exist in the dictionary!");
 
         // Set the value of the data
         data.SetDataType(SerializationDataType.Number);
@@ -126,22 +126,11 @@ public class SerializationDataInfo : ScriptableObject
         return data;
     }
 
-    public static SerializationDataInfo SetOrCreateBooleanData(string dataName, bool value)
+    private static SerializationDataInfo SetBooleanData(string dataName, bool value)
     {
         // Check if the instance of the variable already exists
         if (!_dataInfoDictionary.TryGetValue(dataName, out var data))
-        {
-            // Create a new instance of the SerializationDataInfo class
-            data = CreateInstance<SerializationDataInfo>();
-
-            // Remove the item from the dictionary
-            _dataInfoDictionary.Remove(data.name);
-
-            data.name = dataName;
-
-            // Add the item back to the dictionary
-            _dataInfoDictionary.Add(dataName, data);
-        }
+            throw new KeyNotFoundException($"The data with the name {dataName} does not exist in the dictionary!");
 
         // Set the value of the data
         data.SetDataType(SerializationDataType.Boolean);
@@ -150,22 +139,11 @@ public class SerializationDataInfo : ScriptableObject
         return data;
     }
 
-    public static SerializationDataInfo SetOrCreateStringData(string dataName, string value)
+    private static SerializationDataInfo SetStringData(string dataName, string value)
     {
         // Check if the instance of the variable already exists
         if (!_dataInfoDictionary.TryGetValue(dataName, out var data))
-        {
-            // Create a new instance of the SerializationDataInfo class
-            data = CreateInstance<SerializationDataInfo>();
-
-            // Remove the item from the dictionary
-            _dataInfoDictionary.Remove(data.name);
-
-            data.name = dataName;
-
-            // Add the item back to the dictionary
-            _dataInfoDictionary.Add(dataName, data);
-        }
+            throw new KeyNotFoundException($"The data with the name {dataName} does not exist in the dictionary!");
 
         // Set the value of the data
         data.SetDataType(SerializationDataType.String);

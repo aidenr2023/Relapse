@@ -28,6 +28,8 @@ public class SerializationDataEventPropertyDrawer : PropertyDrawer
         // Get the stringConditionValue property
         var stringConditionalValueProperty = property.FindPropertyRelative("stringConditionalValue");
 
+        var vector3ConditionalValueProperty = property.FindPropertyRelative("vector3ConditionalValue");
+
         // Get the onFalse property
         var onFalseProperty = property.FindPropertyRelative("onFalse");
 
@@ -95,6 +97,14 @@ public class SerializationDataEventPropertyDrawer : PropertyDrawer
                         new Rect(position.x, currentY, position.width,
                             EditorGUIUtility.singleLineHeight),
                         stringConditionalValueProperty
+                    );
+                    break;
+
+                case SerializationDataType.Vector3:
+                    EditorGUI.PropertyField(
+                        new Rect(position.x, currentY, position.width,
+                            EditorGUIUtility.singleLineHeight),
+                        vector3ConditionalValueProperty
                     );
                     break;
 

@@ -88,17 +88,32 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
     }
 
     private const string IS_ALIVE_KEY = "_isAlive";
+    private const string CURRENT_HEALTH_KEY = "_currentHealth";
+    private const string POSITION_KEY = "_position";
+    private const string ROTATION_KEY = "_rotation";
 
     public void LoadData(LevelLoader levelLoader)
     {
         // Load whether the enemy is alive or not
-        if (levelLoader.GetData($"{UniqueId.UniqueIdValue}{IS_ALIVE_KEY}", out bool isAlive) && !isAlive)
+        if (levelLoader.GetData(UniqueId, IS_ALIVE_KEY, out bool isAlive) && !isAlive)
         {
             // Drain all the enemy's health
             _enemyInfo.ChangeHealth(-_enemyInfo.MaxHealth, _enemyInfo, _enemyAttackBehavior, transform.position);
 
             Destroy(gameObject);
         }
+
+        // Load the current health
+        else if (levelLoader.GetData(UniqueId, CURRENT_HEALTH_KEY, out float currentHealth))
+            _enemyInfo.ChangeHealth(currentHealth - _enemyInfo.CurrentHealth, _enemyInfo, _enemyAttackBehavior,
+                transform.position);
+
+        // Load the position and rotation
+        if (levelLoader.GetData(UniqueId, POSITION_KEY, out Vector3 position))
+            transform.position = position;
+
+        if (levelLoader.GetData(UniqueId, ROTATION_KEY, out Vector3 rotation))
+            transform.rotation = Quaternion.Euler(rotation);
     }
 
     public void SaveData(LevelLoader levelLoader)
@@ -106,11 +121,24 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
         var isAlive = _enemyInfo.CurrentHealth > 0;
 
         // Create boolean data for whether the enemy is alive or not
-        var isAliveData =
-            SerializationDataInfo.SetOrCreateBooleanData($"{UniqueId.UniqueIdValue}{IS_ALIVE_KEY}", isAlive);
-
         // Save the data
-        levelLoader.AddData(isAliveData);
+        var isAliveData = new DataInfo(IS_ALIVE_KEY, isAlive);
+        levelLoader.AddData(UniqueId, isAliveData);
+
+        // Create number data for the current health
+        // Save the data
+        var currentHealthData = new DataInfo(CURRENT_HEALTH_KEY, _enemyInfo.CurrentHealth);
+        levelLoader.AddData(UniqueId, currentHealthData);
+
+        // Create vector3 data for the position
+        // Save the data
+        var positionData = new DataInfo(POSITION_KEY, transform.position);
+        levelLoader.AddData(UniqueId, positionData);
+
+        // Create vector3 data for the rotation
+        // Save the data
+        var rotationData = new DataInfo(ROTATION_KEY, transform.rotation.eulerAngles);
+        levelLoader.AddData(UniqueId, rotationData);
     }
 
     #endregion

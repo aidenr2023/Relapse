@@ -10,7 +10,9 @@ public class LevelLoader : MonoBehaviour
 
     private Scene _originalScene;
 
-    private readonly Dictionary<string, object> _data = new Dictionary<string, object>();
+    private readonly Dictionary<string, Dictionary<string, object>> _data = new();
+
+    public IReadOnlyDictionary<string, Dictionary<string, object>> Data => _data;
 
     private void Awake()
     {
@@ -47,11 +49,10 @@ public class LevelLoader : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F7))
             SaveDataObjects();
+
+        // Reload the current scene to test the saving and loading
         if (Input.GetKeyDown(KeyCode.F8))
-        {
-            // Reload the current scene
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }
     }
 
 
@@ -89,7 +90,7 @@ public class LevelLoader : MonoBehaviour
             .SelectMany(rootGameObject => rootGameObject.GetComponentsInChildren<MonoBehaviour>())
             .OfType<ILevelLoaderInfo>();
 
-        Debug.Log($"Saving data for {levelLoaderInfos.Count()} objects. ({rootGameObjects.Length} root objects)");
+        // Debug.Log($"Saving data for {levelLoaderInfos.Count()} objects. ({rootGameObjects.Length} root objects)");
 
         // For each script that implements the ILevelLoaderInfo interface
         // Save the data
@@ -97,17 +98,26 @@ public class LevelLoader : MonoBehaviour
             levelLoaderInfo.SaveData(this);
     }
 
-    public bool GetData<T>(string key, out T value)
+    public bool GetData<T>(UniqueId id, string key, out T value)
     {
-        // Check if the key exists in the data dictionary
-        var hasValue = _data.TryGetValue(key, out var dataValue);
+        // Check if the id exists in the data dictionary
+        var hasIdValue = _data.TryGetValue(id.UniqueIdValue, out var idData);
 
         // If the key exists in the data dictionary
-        if (hasValue)
+        if (hasIdValue && idData.TryGetValue(key, out var dataValue))
         {
             if (dataValue is T castedValue)
             {
                 value = castedValue;
+                return true;
+            }
+
+            var tType = typeof(T);
+
+            if (tType == typeof(float) || tType == typeof(int))
+            {
+                var doubleValue = (double)dataValue;
+                value = (T)Convert.ChangeType(doubleValue, typeof(T));
                 return true;
             }
 
@@ -118,23 +128,43 @@ public class LevelLoader : MonoBehaviour
         return false;
     }
 
-    public void AddData(SerializationDataInfo dataInfo)
+    public void AddData(UniqueId id, IDataInfo dataInfo)
     {
+        // If the unique id is empty, log an error and return
+        if (id.UniqueIdValue == "")
+        {
+            Debug.LogError(
+                $"The unique id for {id.gameObject.name} is empty! Click on the object in the inspector to generate a new unique id!");
+            return;
+        }
+
+        // First, try to add the data to the dictionary
+        if (!_data.TryGetValue(id.UniqueIdValue, out var idData))
+        {
+            idData = new Dictionary<string, object>();
+            _data.Add(id.UniqueIdValue, idData);
+        }
+
         switch (dataInfo.DataType)
         {
             case SerializationDataType.Boolean:
-                if (!_data.TryAdd(dataInfo.VariableName, dataInfo.GetBoolValue()))
-                    _data[dataInfo.VariableName] = dataInfo.GetBoolValue();
+                if (!idData.TryAdd(dataInfo.VariableName, dataInfo.GetBoolValue()))
+                    idData[dataInfo.VariableName] = dataInfo.GetBoolValue();
                 break;
 
             case SerializationDataType.Number:
-                if (!_data.TryAdd(dataInfo.VariableName, dataInfo.GetNumberValue()))
-                    _data[dataInfo.VariableName] = dataInfo.GetNumberValue();
+                if (!idData.TryAdd(dataInfo.VariableName, dataInfo.GetNumberValue()))
+                    idData[dataInfo.VariableName] = dataInfo.GetNumberValue();
                 break;
 
             case SerializationDataType.String:
-                if (!_data.TryAdd(dataInfo.VariableName, dataInfo.GetStringValue()))
-                    _data[dataInfo.VariableName] = dataInfo.GetStringValue();
+                if (!idData.TryAdd(dataInfo.VariableName, dataInfo.GetStringValue()))
+                    idData[dataInfo.VariableName] = dataInfo.GetStringValue();
+                break;
+
+            case SerializationDataType.Vector3:
+                if (!idData.TryAdd(dataInfo.VariableName, dataInfo.GetVector3Value()))
+                    idData[dataInfo.VariableName] = dataInfo.GetVector3Value();
                 break;
 
             default:
