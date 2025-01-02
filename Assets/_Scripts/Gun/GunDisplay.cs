@@ -295,10 +295,10 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
     public void LoadData(LevelLoader levelLoader)
     {
         // Load the isFree data
-        if (levelLoader.GetData(UniqueId, IS_FREE_KEY, out bool isFreeValue))
+        if (levelLoader.GetDataFromMemory(UniqueId, IS_FREE_KEY, out bool isFreeValue))
             isFree = isFreeValue;
 
-        var hasOriginalGunDataExists = levelLoader.GetData(UniqueId, HAS_ORIGINAL_GUN_KEY, out bool hasOriginalGun);
+        var hasOriginalGunDataExists = levelLoader.GetDataFromMemory(UniqueId, HAS_ORIGINAL_GUN_KEY, out bool hasOriginalGun);
 
         // set the has original gun flag if the data exists
         if (hasOriginalGunDataExists)
@@ -309,11 +309,11 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
     {
         // Save the isFree data
         var isFreeData = new DataInfo(IS_FREE_KEY, isFree);
-        levelLoader.AddData(UniqueId, isFreeData);
+        levelLoader.AddDataToMemory(UniqueId, isFreeData);
 
         // Save the hasGun data
         var hasOriginalGunData = new DataInfo(HAS_ORIGINAL_GUN_KEY, _hasOriginalGun);
-        levelLoader.AddData(UniqueId, hasOriginalGunData);
+        levelLoader.AddDataToMemory(UniqueId, hasOriginalGunData);
     }
 
     #endregion

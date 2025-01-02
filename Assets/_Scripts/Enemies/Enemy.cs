@@ -95,7 +95,7 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
     public void LoadData(LevelLoader levelLoader)
     {
         // Load whether the enemy is alive or not
-        if (levelLoader.GetData(UniqueId, IS_ALIVE_KEY, out bool isAlive) && !isAlive)
+        if (levelLoader.GetDataFromMemory(UniqueId, IS_ALIVE_KEY, out bool isAlive) && !isAlive)
         {
             // Drain all the enemy's health
             _enemyInfo.ChangeHealth(-_enemyInfo.MaxHealth, _enemyInfo, _enemyAttackBehavior, transform.position);
@@ -104,15 +104,15 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
         }
 
         // Load the current health
-        else if (levelLoader.GetData(UniqueId, CURRENT_HEALTH_KEY, out float currentHealth))
+        else if (levelLoader.GetDataFromMemory(UniqueId, CURRENT_HEALTH_KEY, out float currentHealth))
             _enemyInfo.ChangeHealth(currentHealth - _enemyInfo.CurrentHealth, _enemyInfo, _enemyAttackBehavior,
                 transform.position);
 
         // Load the position and rotation
-        if (levelLoader.GetData(UniqueId, POSITION_KEY, out Vector3 position))
+        if (levelLoader.GetDataFromMemory(UniqueId, POSITION_KEY, out Vector3 position))
             transform.position = position;
 
-        if (levelLoader.GetData(UniqueId, ROTATION_KEY, out Vector3 rotation))
+        if (levelLoader.GetDataFromMemory(UniqueId, ROTATION_KEY, out Vector3 rotation))
             transform.rotation = Quaternion.Euler(rotation);
     }
 
@@ -123,22 +123,22 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
         // Create boolean data for whether the enemy is alive or not
         // Save the data
         var isAliveData = new DataInfo(IS_ALIVE_KEY, isAlive);
-        levelLoader.AddData(UniqueId, isAliveData);
+        levelLoader.AddDataToMemory(UniqueId, isAliveData);
 
         // Create number data for the current health
         // Save the data
         var currentHealthData = new DataInfo(CURRENT_HEALTH_KEY, _enemyInfo.CurrentHealth);
-        levelLoader.AddData(UniqueId, currentHealthData);
+        levelLoader.AddDataToMemory(UniqueId, currentHealthData);
 
         // Create vector3 data for the position
         // Save the data
         var positionData = new DataInfo(POSITION_KEY, transform.position);
-        levelLoader.AddData(UniqueId, positionData);
+        levelLoader.AddDataToMemory(UniqueId, positionData);
 
         // Create vector3 data for the rotation
         // Save the data
         var rotationData = new DataInfo(ROTATION_KEY, transform.rotation.eulerAngles);
-        levelLoader.AddData(UniqueId, rotationData);
+        levelLoader.AddDataToMemory(UniqueId, rotationData);
     }
 
     #endregion

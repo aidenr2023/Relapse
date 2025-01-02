@@ -50,6 +50,12 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         DebugManager.Instance.AddDebuggedObject(this);
     }
 
+    private void OnDestroy()
+    {
+        // Remove this from the debug manager
+        DebugManager.Instance.RemoveDebuggedObject(this);
+    }
+
     // Start is called before the first frame update
     private void Start()
     {
@@ -159,7 +165,10 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         // Create a new string from the debug managed objects
         StringBuilder textString = new();
         foreach (var obj in DebugManager.Instance.DebuggedObjects)
-            textString.Append($"{obj.GetDebugText()}\n");
+        {
+            textString.Append(obj.GetDebugText());
+            textString.Append('\n');
+        }
 
         // Set the text
         debugText.text = textString.ToString();
@@ -174,6 +183,8 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     public string GetDebugText()
     {
         var sb = new StringBuilder();
+
+        sb.Append($"Fixed Time Step: {Time.fixedDeltaTime}\n");
 
         sb.Append($"Serialization Data Info:\n");
 

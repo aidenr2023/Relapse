@@ -102,7 +102,7 @@ public class DataSerializer : MonoBehaviour, ILevelLoaderInfo
         // For each event in the data loaded events
         // Add the data to the level loader
         foreach (var dataLoadedEvent in dataLoadedEvents)
-            levelLoader.AddData(UniqueId, dataLoadedEvent.DataInfo);
+            levelLoader.AddDataToMemory(UniqueId, dataLoadedEvent.DataInfo);
     }
 
     #endregion

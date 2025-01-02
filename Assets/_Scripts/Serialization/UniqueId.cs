@@ -14,22 +14,28 @@ public class UniqueId : MonoBehaviour
 {
     [SerializeField, UniqueIdentifier] private string uniqueId;
     [SerializeField, Readonly] private int instanceID;
+    [SerializeField, Readonly] private string originalScene;
 
     public string UniqueIdValue => uniqueId;
+
+    public string OriginalScene => originalScene;
 
     private void Awake()
     {
         GenerateNewInstanceIdIfNeeded();
+        originalScene = gameObject.scene.name;
     }
 
     private void OnDisable()
     {
         GenerateNewInstanceIdIfNeeded();
+        SetOriginalSceneIfNeeded();
     }
 
     private void Update()
     {
         GenerateNewInstanceIdIfNeeded();
+        SetOriginalSceneIfNeeded();
     }
 
     private void GenerateNewInstanceIdIfNeeded()
@@ -58,6 +64,15 @@ public class UniqueId : MonoBehaviour
             return;
         }
 
+#endif
+    }
+
+    private void SetOriginalSceneIfNeeded()
+    {
+#if UNITY_EDITOR
+
+        if (!Application.isPlaying)
+            originalScene = gameObject.scene.name;
 #endif
     }
 }

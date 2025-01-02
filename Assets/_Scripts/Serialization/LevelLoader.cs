@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,7 +10,18 @@ public class LevelLoader : MonoBehaviour
 {
     public static LevelLoader Instance { get; private set; }
 
+    /// <summary>
+    /// [
+    ///     SceneName: name,
+    ///     data: [{
+    ///         UniqueId: id,
+    ///         data    : [{ variableName, dataType, value }]
+    ///     }]
+    /// ]
+    /// </summary>
     private readonly Dictionary<string, Dictionary<string, object>> _data = new();
+
+    private readonly Dictionary<string, string> _objectToScene = new();
 
     public IReadOnlyDictionary<string, Dictionary<string, object>> Data => _data;
 
@@ -37,17 +49,17 @@ public class LevelLoader : MonoBehaviour
 
     private void LoadDataOnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
     {
-        // TODO: Load the data from the disk
-        LoadDataFromDisk();
+        // Load the data from the disk
+        LoadDataDiskToMemory(scene);
 
         // Apply the loaded data to the game objects
-        LoadDataObjects(scene);
+        LoadDataMemoryToScene(scene);
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.F7))
-            SaveDataObjects(null);
+            SaveDataSceneToMemory(null);
 
         // Reload the current scene to test the saving and loading
         if (Input.GetKeyDown(KeyCode.F8))
@@ -55,7 +67,11 @@ public class LevelLoader : MonoBehaviour
 
         // Save the data to the disk
         if (Input.GetKeyDown(KeyCode.F10))
-            SaveDataToDisk();
+            SaveDataMemoryToDisk();
+
+        // Load the data from the disk
+        if (Input.GetKeyDown(KeyCode.F11))
+            LoadDataDiskToMemory(null);
     }
 
     private IEnumerator ReloadScenes()
@@ -101,15 +117,104 @@ public class LevelLoader : MonoBehaviour
         SceneManager.UnloadSceneAsync(0);
     }
 
+    private void ParseDataWrapper(JsonDataWrapper dataWrapper, string id, string sceneName)
+    {
+        // Get the current dictionary / create a new one if it doesn't already exist
+        if (!_data.TryGetValue(id, out var idData))
+        {
+            idData = new Dictionary<string, object>();
+            _data.Add(id, idData);
+        }
+
+        // Then, add the id to the object to scene dictionary
+        if (sceneName != null && !_objectToScene.TryAdd(id, sceneName))
+            _objectToScene[id] = sceneName;
+
+        // Parse the data wrapper
+        switch (dataWrapper.DataType)
+        {
+            case SerializationDataType.Boolean:
+                if (!idData.TryAdd(dataWrapper.Key, bool.Parse(dataWrapper.Value)))
+                    idData[dataWrapper.Key] = bool.Parse(dataWrapper.Value);
+                break;
+
+            case SerializationDataType.Number:
+                if (!idData.TryAdd(dataWrapper.Key, double.Parse(dataWrapper.Value)))
+                    idData[dataWrapper.Key] = double.Parse(dataWrapper.Value);
+                break;
+
+            case SerializationDataType.String:
+                if (!idData.TryAdd(dataWrapper.Key, dataWrapper.Value))
+                    idData[dataWrapper.Key] = dataWrapper.Value;
+                break;
+
+            case SerializationDataType.Vector3:
+                if (!idData.TryAdd(dataWrapper.Key, JsonUtility.FromJson<Vector3>(dataWrapper.Value)))
+                    idData[dataWrapper.Key] = JsonUtility.FromJson<Vector3>(dataWrapper.Value);
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        // Debug.Log(
+        //     $"Added {dataWrapper.Key} ({dataWrapper.DataType}) with value {dataWrapper.Value} to {id}: {idData[dataWrapper.Key]}");
+    }
+
+
     /// <summary>
     /// Load the data from the disk and fill the dictionary with it.
     /// </summary>
-    private void LoadDataFromDisk()
+    private void LoadDataDiskToMemory(Scene? scene)
     {
+        // TODO: Establish a file / folder structure for the data
+
         // TODO: Populate the _data dictionary with the data from the disk
+
+        // TODO: Establish scene logic
+
+        var saveFileName = $"{Application.persistentDataPath}/data.json";
+
+        if (!System.IO.File.Exists(saveFileName))
+        {
+            Debug.LogWarning($"The file {saveFileName} does not exist!");
+            return;
+        }
+
+        // Read the JSON string from the disk
+        var jsonDataObjectsString = System.IO.File.ReadAllText(saveFileName);
+
+        // Convert the JSON string to an AllJsonData object
+        var allJsonData = JsonUtility.FromJson<SceneJsonDataCollection>(jsonDataObjectsString);
+
+        foreach (var sceneJsonData in allJsonData.Data)
+        {
+            // Skip the scene if it is not the current scene AND the scene is not null
+            if (scene != null && sceneJsonData.SceneName != scene.Value.name)
+                continue;
+
+            var str = new StringBuilder();
+
+            str.Append($"Loading data for {sceneJsonData.SceneName}");
+
+            foreach (var jsonDataObjectWrapper in sceneJsonData.Data)
+            {
+                str.Append($"\n\tLoading data for {jsonDataObjectWrapper.UniqueId}");
+
+                foreach (var dataWrapper in jsonDataObjectWrapper.Data)
+                {
+                    // str.Append(
+                    //     $"\n\t\tLoading {dataWrapper.Key} ({dataWrapper.DataType}) with value {dataWrapper.Value}");
+
+                    ParseDataWrapper(dataWrapper, jsonDataObjectWrapper.UniqueId, sceneJsonData.SceneName);
+                }
+            }
+
+            Debug.Log(str);
+        }
     }
 
-    public void LoadDataObjects(Scene? scene)
+    private void LoadDataMemoryToScene(Scene? scene)
     {
         GameObject[] rootGameObjects;
 
@@ -138,7 +243,7 @@ public class LevelLoader : MonoBehaviour
             levelLoaderInfo.LoadData(this);
     }
 
-    private void SaveDataObjects(Scene? scene)
+    private void SaveDataSceneToMemory(Scene? scene)
     {
         GameObject[] rootGameObjects;
 
@@ -169,88 +274,32 @@ public class LevelLoader : MonoBehaviour
             levelLoaderInfo.SaveData(this);
     }
 
-    public bool GetData<T>(UniqueId id, string key, out T value)
+    public void SaveDataMemoryToDisk()
     {
-        // Check if the id exists in the data dictionary
-        var hasIdValue = _data.TryGetValue(id.UniqueIdValue, out var idData);
+        // Create a dictionary of SceneName -> List of JsonDataObjectWrappers
+        var sceneData = new Dictionary<string, List<JsonDataObjectWrapper>>();
 
-        // If the key exists in the data dictionary
-        if (hasIdValue && idData.TryGetValue(key, out var dataValue))
-        {
-            if (dataValue is T castedValue)
-            {
-                value = castedValue;
-                return true;
-            }
-
-            var tType = typeof(T);
-
-            if (tType == typeof(float) || tType == typeof(int))
-            {
-                var doubleValue = (double)dataValue;
-                value = (T)Convert.ChangeType(doubleValue, typeof(T));
-                return true;
-            }
-
-            throw new InvalidCastException($"The value for the key {key} is not of type {typeof(T)}!");
-        }
-
-        value = default;
-        return false;
-    }
-
-    public void AddData(UniqueId id, IDataInfo dataInfo)
-    {
-        // If the unique id is empty, log an error and return
-        if (id.UniqueIdValue == "")
-        {
-            Debug.LogError(
-                $"The unique id for {id.gameObject.name} is empty! Click on the object in the inspector to generate a new unique id!");
-            return;
-        }
-
-        // First, try to add the data to the dictionary
-        if (!_data.TryGetValue(id.UniqueIdValue, out var idData))
-        {
-            idData = new Dictionary<string, object>();
-            _data.Add(id.UniqueIdValue, idData);
-        }
-
-        switch (dataInfo.DataType)
-        {
-            case SerializationDataType.Boolean:
-                if (!idData.TryAdd(dataInfo.VariableName, dataInfo.GetBoolValue()))
-                    idData[dataInfo.VariableName] = dataInfo.GetBoolValue();
-                break;
-
-            case SerializationDataType.Number:
-                if (!idData.TryAdd(dataInfo.VariableName, dataInfo.GetNumberValue()))
-                    idData[dataInfo.VariableName] = dataInfo.GetNumberValue();
-                break;
-
-            case SerializationDataType.String:
-                if (!idData.TryAdd(dataInfo.VariableName, dataInfo.GetStringValue()))
-                    idData[dataInfo.VariableName] = dataInfo.GetStringValue();
-                break;
-
-            case SerializationDataType.Vector3:
-                if (!idData.TryAdd(dataInfo.VariableName, dataInfo.GetVector3Value()))
-                    idData[dataInfo.VariableName] = dataInfo.GetVector3Value();
-                break;
-
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
-
-    public void SaveDataToDisk()
-    {
-        // Create a list of JsonDataObjectWrappers
-        var jsonDataObjectWrappers = new List<JsonDataObjectWrapper>();
+        // // Create a list of JsonDataObjectWrappers
+        // var jsonDataObjectWrappers = new List<JsonDataObjectWrapper>();
 
         // For each unique id in the data dictionary
         foreach (var (uniqueId, dataValue) in _data)
         {
+            // Get the original scene of the object
+            // If there is no valid original scene, log an error and continue
+            if (!_objectToScene.TryGetValue(uniqueId, out var originalScene))
+            {
+                Debug.LogError($"The object with the unique id {uniqueId} does not have an original scene!");
+                continue;
+            }
+
+            // If the sceneData dictionary doesn't contain the original scene
+            if (!sceneData.TryGetValue(originalScene, out var jsonDataObjectWrappers))
+            {
+                jsonDataObjectWrappers = new List<JsonDataObjectWrapper>();
+                sceneData.Add(originalScene, jsonDataObjectWrappers);
+            }
+
             // Create a list of JsonDataWrappers
             var jsonDataWrappers = new List<JsonDataWrapper>();
 
@@ -294,22 +343,116 @@ public class LevelLoader : MonoBehaviour
             jsonDataObjectWrappers.Add(jsonDataObjectWrapper);
         }
 
-        // Create a new AllJsonData object
-        var allJsonData = new AllJsonData(jsonDataObjectWrappers);
+        // Convert the dictionary of sceneData to a SceneJsonDataCollection
+        var allJsonData = new SceneJsonDataCollection(
+            sceneData.Select(n => new SceneJsonData(n.Key, n.Value))
+        );
 
         // Convert the list of JsonDataObjectWrappers to a JSON string
         var jsonDataObjects = JsonUtility.ToJson(allJsonData);
 
-        // Save the JSON string to the disk
-        Debug.Log(jsonDataObjects);
+        // // Save the JSON string to the disk
+        // Debug.Log(jsonDataObjects);
+
+        var saveFileName = $"{Application.persistentDataPath}/data.json";
+
+        System.IO.File.WriteAllText(saveFileName, jsonDataObjects);
+
+        Debug.Log($"Saved the data to {saveFileName}");
+    }
+
+    public bool GetDataFromMemory<T>(UniqueId id, string key, out T value)
+    {
+        // Add the unique id to the object to scene dictionary
+        if (!_objectToScene.TryAdd(id.UniqueIdValue, id.OriginalScene))
+            _objectToScene[id.UniqueIdValue] = id.OriginalScene;
+
+        // Check if the id exists in the data dictionary
+        var hasIdValue = _data.TryGetValue(id.UniqueIdValue, out var idData);
+
+        // If the key exists in the data dictionary
+        if (hasIdValue && idData.TryGetValue(key, out var dataValue))
+        {
+            if (dataValue is T castedValue)
+            {
+                value = castedValue;
+                return true;
+            }
+
+            var tType = typeof(T);
+
+            if (tType == typeof(float) || tType == typeof(int))
+            {
+                var doubleValue = (double)dataValue;
+                value = (T)Convert.ChangeType(doubleValue, typeof(T));
+                return true;
+            }
+
+            throw new InvalidCastException($"The value for the key {key} is not of type {typeof(T)}!");
+        }
+
+        value = default;
+        return false;
+    }
+
+    public void AddDataToMemory(UniqueId id, IDataInfo dataInfo)
+    {
+        // If the unique id is empty, log an error and return
+        if (id.UniqueIdValue == "")
+        {
+            Debug.LogError(
+                $"The unique id for {id.gameObject.name} is empty! Click on the object in the inspector to generate a new unique id!");
+            return;
+        }
+
+        // First, try to add the data to the dictionary
+        if (!_data.TryGetValue(id.UniqueIdValue, out var idData))
+        {
+            idData = new Dictionary<string, object>();
+            _data.Add(id.UniqueIdValue, idData);
+        }
+
+        // Then, add the id to the object to scene dictionary
+        if (!_objectToScene.TryAdd(id.UniqueIdValue, id.OriginalScene))
+            _objectToScene[id.UniqueIdValue] = id.OriginalScene;
+
+        switch (dataInfo.DataType)
+        {
+            case SerializationDataType.Boolean:
+                if (!idData.TryAdd(dataInfo.VariableName, dataInfo.GetBoolValue()))
+                    idData[dataInfo.VariableName] = dataInfo.GetBoolValue();
+                break;
+
+            case SerializationDataType.Number:
+                if (!idData.TryAdd(dataInfo.VariableName, dataInfo.GetNumberValue()))
+                    idData[dataInfo.VariableName] = dataInfo.GetNumberValue();
+                break;
+
+            case SerializationDataType.String:
+                if (!idData.TryAdd(dataInfo.VariableName, dataInfo.GetStringValue()))
+                    idData[dataInfo.VariableName] = dataInfo.GetStringValue();
+                break;
+
+            case SerializationDataType.Vector3:
+                if (!idData.TryAdd(dataInfo.VariableName, dataInfo.GetVector3Value()))
+                    idData[dataInfo.VariableName] = dataInfo.GetVector3Value();
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
     [Serializable]
     public class JsonDataWrapper
     {
-        [SerializeField] public string key;
-        [SerializeField] SerializationDataType dataType;
-        [SerializeField] public string value;
+        [SerializeField] private string key;
+        [SerializeField] private SerializationDataType dataType;
+        [SerializeField] private string value;
+
+        public string Key => key;
+        public SerializationDataType DataType => dataType;
+        public string Value => value;
 
         public JsonDataWrapper(string key, SerializationDataType dataType, string value)
         {
@@ -322,12 +465,15 @@ public class LevelLoader : MonoBehaviour
     [Serializable]
     private class JsonDataObjectWrapper
     {
-        [SerializeField] protected string variableName;
+        [SerializeField] protected string uniqueId;
         [SerializeField] protected JsonDataWrapper[] data;
 
-        public JsonDataObjectWrapper(string variableName, IEnumerable<JsonDataWrapper> data)
+        public string UniqueId => uniqueId;
+        public IReadOnlyList<JsonDataWrapper> Data => data;
+
+        public JsonDataObjectWrapper(string uniqueId, IEnumerable<JsonDataWrapper> data)
         {
-            this.variableName = variableName;
+            this.uniqueId = uniqueId;
 
             // Convert the list of JsonDataWrappers to a JSON string
             this.data = data.ToArray();
@@ -338,13 +484,31 @@ public class LevelLoader : MonoBehaviour
     }
 
     [Serializable]
-    private class AllJsonData
+    private class SceneJsonData
     {
+        [SerializeField] private string sceneName;
         [SerializeField] private JsonDataObjectWrapper[] data;
 
-        public AllJsonData(IEnumerable<JsonDataObjectWrapper> jsonDataObjectWrappers)
+        public string SceneName => sceneName;
+        public IReadOnlyList<JsonDataObjectWrapper> Data => data;
+
+        public SceneJsonData(string sceneName, IEnumerable<JsonDataObjectWrapper> jsonDataObjectWrappers)
         {
+            this.sceneName = sceneName;
             data = jsonDataObjectWrappers.ToArray();
+        }
+    }
+
+    [Serializable]
+    private class SceneJsonDataCollection
+    {
+        [SerializeField] private SceneJsonData[] data;
+
+        public IReadOnlyList<SceneJsonData> Data => data;
+
+        public SceneJsonDataCollection(IEnumerable<SceneJsonData> jsonDataObjects)
+        {
+            data = jsonDataObjects.ToArray();
         }
     }
 }
