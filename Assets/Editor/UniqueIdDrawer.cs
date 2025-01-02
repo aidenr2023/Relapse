@@ -30,7 +30,6 @@ public class UniqueIdentifierDrawer : PropertyDrawer
         else if (isPrefab)
             prop.stringValue = "";
 
-
         // If the property is not being multi-edited, draw the label field
         // Place a label so it can't be edited by accident
         if (!isMultiEditing)
@@ -56,13 +55,13 @@ public class UniqueIdentifierDrawer : PropertyDrawer
                 var so = new SerializedObject(target);
                 var sp = so.FindProperty(prop.propertyPath);
 
-                if (uniqueValues.Contains(sp.stringValue))
-                {
-                    isMultipleValuesTheSame = true;
-                    break;
-                }
+                // If the value is unique, add it to the hash set
+                if (uniqueValues.Add(sp.stringValue))
+                    continue;
 
-                uniqueValues.Add(sp.stringValue);
+                // Otherwise, set the flag to true and break
+                isMultipleValuesTheSame = true;
+                break;
             }
 
             var warningRect = new Rect(position.x, position.y, position.width, BUTTON_HEIGHT);
