@@ -48,6 +48,18 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
 
         // Set the has been collected flag to true
         HasBeenCollected = true;
+
+        // Check if there is an instance of the level loader
+        if (LevelLoader.Instance != null)
+        {
+            // Save all the scenes to memory
+            LevelLoader.Instance.SaveDataSceneToMemory(null);
+
+            // Save the data to the disk
+            LevelLoader.Instance.SaveDataMemoryToDisk();
+
+            Debug.Log("Checkpoint saved all the scenes to memory and disk.");
+        }
     }
 
     public string InteractText(PlayerInteraction playerInteraction)

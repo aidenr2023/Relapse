@@ -11,7 +11,13 @@ public class SceneUnloadField
 
     public SceneField SceneField => sceneField;
 
-    public bool IsDisableInstead => isDisableInstead;
+    public bool IsDisableInstead
+    {
+        get => isDisableInstead;
+
+        // TODO: Possibly delete this line
+        set => isDisableInstead = value;
+    }
 
     public static implicit operator SceneField(SceneUnloadField sceneUnloadField) =>
         sceneUnloadField.sceneField;

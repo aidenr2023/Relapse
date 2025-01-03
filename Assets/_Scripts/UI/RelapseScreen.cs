@@ -103,8 +103,15 @@ public class RelapseScreen : GameMenu
         // Check if there is a checkpoint manager
         if (CheckpointManager.Instance == null)
         {
+            // If there is a level loader instance, load the data from disk
+            if (LevelLoader.Instance != null)
+                LevelLoader.Instance.LoadDataDiskToMemory();
+
             // Load the scene
             LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+
+            // Load the data from the memory to the scene
+            LevelLoader.Instance.LoadDataMemoryToScene(null);
 
             // // Disable the game object
             // gameObject.SetActive(false);
@@ -116,6 +123,10 @@ public class RelapseScreen : GameMenu
         // Return if the button was already clicked
         if (_respawnButtonClicked)
             return;
+
+        // If there is a level loader instance, load the data from disk
+        if (LevelLoader.Instance != null)
+            LevelLoader.Instance.LoadDataDiskToMemory();
 
         // Set the flag to true
         _respawnButtonClicked = true;

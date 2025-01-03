@@ -169,7 +169,7 @@ public class LevelLoader : MonoBehaviour
     /// <summary>
     /// Load the data from the disk and fill the dictionary with it.
     /// </summary>
-    private void LoadDataDiskToMemory(Scene? scene)
+    public void LoadDataDiskToMemory(params Scene[] scenes)
     {
         // TODO: Establish a file / folder structure for the data
 
@@ -191,10 +191,17 @@ public class LevelLoader : MonoBehaviour
         // Convert the JSON string to an AllJsonData object
         var allJsonData = JsonUtility.FromJson<SceneJsonDataCollection>(jsonDataObjectsString);
 
+        // Return if the allJsonData object is null
+        if (allJsonData == null)
+        {
+            Debug.LogWarning($"The save file {saveFileName} is empty / is invalid and could not be loaded!");
+            return;
+        }
+
         foreach (var sceneJsonData in allJsonData.Data)
         {
             // Skip the scene if it is not the current scene AND the scene is not null
-            if (scene != null && sceneJsonData.SceneName != scene.Value.name)
+            if (scenes != null && scenes.Length > 0 && !scenes.Contains(SceneManager.GetSceneByName(sceneJsonData.SceneName)))
                 continue;
 
             var str = new StringBuilder();
@@ -218,13 +225,21 @@ public class LevelLoader : MonoBehaviour
         }
     }
 
-    private void LoadDataMemoryToScene(Scene? scene)
+    public void LoadDataMemoryToScene(Scene? scene)
     {
         GameObject[] rootGameObjects;
 
         // Get all the root game objects in the scene
         if (scene != null)
+        {
+            if (!scene.Value.IsValid() || !scene.Value.isLoaded)
+            {
+                Debug.LogError($"The scene {scene.Value.name} is not valid or not loaded! Cannot load data.");
+                return;
+            }
+
             rootGameObjects = scene.Value.GetRootGameObjects();
+        }
 
         // Get all the root game objects in all the scenes
         else
@@ -234,6 +249,8 @@ public class LevelLoader : MonoBehaviour
                 scenes.Add(SceneManager.GetSceneAt(i));
 
             rootGameObjects = scenes.SelectMany(n => n.GetRootGameObjects()).ToArray();
+
+            Debug.Log($"Loading data for all scenes because the scene is null. {scenes.Count} & {rootGameObjects.Length}");
         }
 
         // Get all the scripts in the scene that implement the ILevelLoaderInfo interface
@@ -244,7 +261,10 @@ public class LevelLoader : MonoBehaviour
         // For each script that implements the ILevelLoaderInfo interface
         // Load the data
         foreach (var levelLoaderInfo in levelLoaderInfos)
+        {
+            Debug.Log($"Loading data for {levelLoaderInfo.GameObject.name} {levelLoaderInfo.UniqueId.UniqueIdValue}");
             levelLoaderInfo.LoadData(this);
+        }
     }
 
     public bool GetDataFromMemory<T>(UniqueId id, string key, out T value)
@@ -285,12 +305,12 @@ public class LevelLoader : MonoBehaviour
 
     #region Saving
 
-    private void SaveDataSceneToMemory(Scene? scene)
+    public void SaveDataSceneToMemory(Scene? scene)
     {
         GameObject[] rootGameObjects;
 
         // Get all the root game objects in the scene
-        if (scene != null)
+        if (scene != null && scene.Value.IsValid() && scene.Value.isLoaded)
             rootGameObjects = scene.Value.GetRootGameObjects();
 
         // Get all the root game objects in all the scenes
