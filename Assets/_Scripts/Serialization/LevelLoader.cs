@@ -43,8 +43,11 @@ public class LevelLoader : MonoBehaviour
         // Set this to not be destroyed when reloading scene
         DontDestroyOnLoad(gameObject);
 
-        // Whenever a new scene is loaded, call the LoadDataOnSceneLoaded function
-        SceneManager.sceneLoaded += LoadDataOnSceneLoaded;
+        // // Whenever a new scene is loaded, call the LoadDataOnSceneLoaded function
+        // SceneManager.sceneLoaded += LoadDataOnSceneLoaded;
+
+        // Load ALL the data from the disk
+        LoadDataDiskToMemory(null);
     }
 
     private void LoadDataOnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
@@ -117,6 +120,8 @@ public class LevelLoader : MonoBehaviour
         SceneManager.UnloadSceneAsync(0);
     }
 
+    #region Loading
+
     private void ParseDataWrapper(JsonDataWrapper dataWrapper, string id, string sceneName)
     {
         // Get the current dictionary / create a new one if it doesn't already exist
@@ -160,7 +165,6 @@ public class LevelLoader : MonoBehaviour
         // Debug.Log(
         //     $"Added {dataWrapper.Key} ({dataWrapper.DataType}) with value {dataWrapper.Value} to {id}: {idData[dataWrapper.Key]}");
     }
-
 
     /// <summary>
     /// Load the data from the disk and fill the dictionary with it.
@@ -242,6 +246,44 @@ public class LevelLoader : MonoBehaviour
         foreach (var levelLoaderInfo in levelLoaderInfos)
             levelLoaderInfo.LoadData(this);
     }
+
+    public bool GetDataFromMemory<T>(UniqueId id, string key, out T value)
+    {
+        // Add the unique id to the object to scene dictionary
+        if (!_objectToScene.TryAdd(id.UniqueIdValue, id.OriginalScene))
+            _objectToScene[id.UniqueIdValue] = id.OriginalScene;
+
+        // Check if the id exists in the data dictionary
+        var hasIdValue = _data.TryGetValue(id.UniqueIdValue, out var idData);
+
+        // If the key exists in the data dictionary
+        if (hasIdValue && idData.TryGetValue(key, out var dataValue))
+        {
+            if (dataValue is T castedValue)
+            {
+                value = castedValue;
+                return true;
+            }
+
+            var tType = typeof(T);
+
+            if (tType == typeof(float) || tType == typeof(int))
+            {
+                var doubleValue = (double)dataValue;
+                value = (T)Convert.ChangeType(doubleValue, typeof(T));
+                return true;
+            }
+
+            throw new InvalidCastException($"The value for the key {key} is not of type {typeof(T)}!");
+        }
+
+        value = default;
+        return false;
+    }
+
+    #endregion
+
+    #region Saving
 
     private void SaveDataSceneToMemory(Scene? scene)
     {
@@ -361,40 +403,6 @@ public class LevelLoader : MonoBehaviour
         Debug.Log($"Saved the data to {saveFileName}");
     }
 
-    public bool GetDataFromMemory<T>(UniqueId id, string key, out T value)
-    {
-        // Add the unique id to the object to scene dictionary
-        if (!_objectToScene.TryAdd(id.UniqueIdValue, id.OriginalScene))
-            _objectToScene[id.UniqueIdValue] = id.OriginalScene;
-
-        // Check if the id exists in the data dictionary
-        var hasIdValue = _data.TryGetValue(id.UniqueIdValue, out var idData);
-
-        // If the key exists in the data dictionary
-        if (hasIdValue && idData.TryGetValue(key, out var dataValue))
-        {
-            if (dataValue is T castedValue)
-            {
-                value = castedValue;
-                return true;
-            }
-
-            var tType = typeof(T);
-
-            if (tType == typeof(float) || tType == typeof(int))
-            {
-                var doubleValue = (double)dataValue;
-                value = (T)Convert.ChangeType(doubleValue, typeof(T));
-                return true;
-            }
-
-            throw new InvalidCastException($"The value for the key {key} is not of type {typeof(T)}!");
-        }
-
-        value = default;
-        return false;
-    }
-
     public void AddDataToMemory(UniqueId id, IDataInfo dataInfo)
     {
         // If the unique id is empty, log an error and return
@@ -442,6 +450,10 @@ public class LevelLoader : MonoBehaviour
                 throw new ArgumentOutOfRangeException();
         }
     }
+
+    #endregion
+
+    #region Serialization Helper Classes
 
     [Serializable]
     public class JsonDataWrapper
@@ -511,4 +523,6 @@ public class LevelLoader : MonoBehaviour
             data = jsonDataObjects.ToArray();
         }
     }
+
+    #endregion
 }

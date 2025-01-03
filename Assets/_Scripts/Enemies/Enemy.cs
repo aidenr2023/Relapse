@@ -110,7 +110,7 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
 
         // Load the position and rotation
         if (levelLoader.GetDataFromMemory(UniqueId, POSITION_KEY, out Vector3 position))
-            transform.position = position;
+            _enemyMovementBehavior.SetPosition(position);
 
         if (levelLoader.GetDataFromMemory(UniqueId, ROTATION_KEY, out Vector3 rotation))
             transform.rotation = Quaternion.Euler(rotation);

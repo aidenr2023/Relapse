@@ -184,19 +184,17 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     {
         var sb = new StringBuilder();
 
-        sb.Append($"Fixed Time Step: {Time.fixedDeltaTime}\n");
-
-        sb.Append($"Serialization Data Info:\n");
-
-        foreach (var keyValue in LevelLoader.Instance.Data)
-        {
-            var uniqueId = keyValue.Key;
-
-            sb.Append($"\tUniqueId: {uniqueId}\n");
-
-            foreach (var data in keyValue.Value)
-                sb.Append($"\t\t{data.Key}: {data.Value}\n");
-        }
+        // sb.Append($"Serialization Data Info:\n");
+        //
+        // foreach (var keyValue in LevelLoader.Instance.Data)
+        // {
+        //     var uniqueId = keyValue.Key;
+        //
+        //     sb.Append($"\tUniqueId: {uniqueId}\n");
+        //
+        //     foreach (var data in keyValue.Value)
+        //         sb.Append($"\t\t{data.Key}: {data.Value}\n");
+        // }
 
         return sb.ToString();
     }

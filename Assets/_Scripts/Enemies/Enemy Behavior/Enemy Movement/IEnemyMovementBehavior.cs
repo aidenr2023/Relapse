@@ -1,11 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using Object = System.Object;
 
 public interface IEnemyMovementBehavior : IEnemyBehavior
 {
     public HashSet<object> MovementDisableTokens { get; }
 
     public TokenManager<float> MovementSpeedTokens { get; }
+
+    public void SetPosition(Vector3 pos);
 }
 
 public static class EnemyMovementBehaviorExtensions

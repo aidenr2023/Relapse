@@ -302,6 +302,26 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
 
         return closestCheckpointIndex;
     }
+    
+    public void SetPosition(Vector3 pos)
+    {
+        // If there is a nav mesh agent, set the position
+        if (NavMeshAgent != null)
+        {
+            NavMeshAgent.Warp(pos);
+            return;
+        }
+
+        // If there is a rigidbody, set the position
+        if (TryGetComponent(out Rigidbody rb))
+        {
+            rb.MovePosition(pos);
+            return;
+        }
+
+        // Set the position
+        transform.position = pos;
+    }
 
     #region Debugging
 
