@@ -136,7 +136,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Fire the weapon if applicable
         if (_weaponManager != null)
             Fire(_weaponManager, _weaponManager.FireTransform.position, _weaponManager.FireTransform.forward);
-
+        
+        //if weapon is empty play empty animation
+        animator.SetBool("isEmpty", IsMagazineEmpty);
         // Reset the fired this frame flag
         hasFiredThisFrame = false;
 
