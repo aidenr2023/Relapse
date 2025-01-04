@@ -25,6 +25,8 @@ public class LevelLoader : MonoBehaviour
 
     public IReadOnlyDictionary<string, Dictionary<string, object>> Data => _data;
 
+    private static string LevelDataPath => $"{SaveFile.CurrentSaveFile.SaveFileDirectory}/LevelData.json";
+
     private void Awake()
     {
         // If there is already an instance, destroy this object and return
@@ -177,7 +179,7 @@ public class LevelLoader : MonoBehaviour
 
         // TODO: Establish scene logic
 
-        var saveFileName = $"{Application.persistentDataPath}/data.json";
+        var saveFileName = LevelDataPath;
 
         if (!System.IO.File.Exists(saveFileName))
         {
@@ -201,7 +203,8 @@ public class LevelLoader : MonoBehaviour
         foreach (var sceneJsonData in allJsonData.Data)
         {
             // Skip the scene if it is not the current scene AND the scene is not null
-            if (scenes != null && scenes.Length > 0 && !scenes.Contains(SceneManager.GetSceneByName(sceneJsonData.SceneName)))
+            if (scenes != null && scenes.Length > 0 &&
+                !scenes.Contains(SceneManager.GetSceneByName(sceneJsonData.SceneName)))
                 continue;
 
             var str = new StringBuilder();
@@ -250,7 +253,8 @@ public class LevelLoader : MonoBehaviour
 
             rootGameObjects = scenes.SelectMany(n => n.GetRootGameObjects()).ToArray();
 
-            Debug.Log($"Loading data for all scenes because the scene is null. {scenes.Count} & {rootGameObjects.Length}");
+            Debug.Log(
+                $"Loading data for all scenes because the scene is null. {scenes.Count} & {rootGameObjects.Length}");
         }
 
         // Get all the scripts in the scene that implement the ILevelLoaderInfo interface
@@ -416,11 +420,11 @@ public class LevelLoader : MonoBehaviour
         // // Save the JSON string to the disk
         // Debug.Log(jsonDataObjects);
 
-        var saveFileName = $"{Application.persistentDataPath}/data.json";
+        var dataFileName = LevelDataPath;
 
-        System.IO.File.WriteAllText(saveFileName, jsonDataObjects);
+        System.IO.File.WriteAllText(dataFileName, jsonDataObjects);
 
-        Debug.Log($"Saved the data to {saveFileName}");
+        Debug.Log($"Saved the data to {dataFileName}");
     }
 
     public void AddDataToMemory(UniqueId id, IDataInfo dataInfo)
