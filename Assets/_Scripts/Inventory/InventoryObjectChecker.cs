@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 
-public class InventoryObjectChecker : MonoBehaviour, IInteractable
+[RequireComponent(typeof(UniqueId))]
+public class InventoryObjectChecker : MonoBehaviour, IInteractable, ILevelLoaderInfo
 {
     #region Serialized Fields
 
@@ -50,6 +51,19 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable
 
     #endregion
 
+    private void OnInteract()
+    {
+        // Set the object as interacted with
+        _hasInteracted = true;
+
+        // Invoke the event
+        onInventoryObjectFound.Invoke();
+
+        // Destroy the game object if destroyOnInteract is true
+        if (destroyOnInteract)
+            _isMarkedForDestruction = true;
+    }
+
     public void Interact(PlayerInteraction playerInteraction)
     {
         // Return if the object has already been interacted with
@@ -79,12 +93,6 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable
             return;
         }
 
-        // Set the object as interacted with
-        _hasInteracted = true;
-
-        // Invoke the event
-        onInventoryObjectFound.Invoke();
-
         // Remove the inventory objects from the player's inventory
         if (removeFromInventory)
         {
@@ -97,9 +105,8 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable
             }
         }
 
-        // Destroy the game object if destroyOnInteract is true
-        if (destroyOnInteract)
-            _isMarkedForDestruction = true;
+        // Call the OnInteract method
+        OnInteract();
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)
@@ -166,4 +173,43 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable
             }
         }
     }
+
+    #region ILevelLoaderInfo
+
+    private UniqueId _uniqueId;
+
+    public UniqueId UniqueId
+    {
+        get
+        {
+            if (_uniqueId == null)
+                _uniqueId = GetComponent<UniqueId>();
+
+            return _uniqueId;
+        }
+    }
+
+    private const string IS_INTERACTED_KEY = "_isInteracted";
+
+    public void LoadData(LevelLoader levelLoader)
+    {
+        // Get the is interacted data
+        if (levelLoader.TryGetDataFromMemory(UniqueId, IS_INTERACTED_KEY, out bool isInteractedData))
+        {
+            _hasInteracted = isInteractedData;
+
+            // Call the OnInteract method if the object has been interacted with
+            if (_hasInteracted)
+                OnInteract();
+        }
+    }
+
+    public void SaveData(LevelLoader levelLoader)
+    {
+        // Create the is interacted data
+        var isInteractedData = new DataInfo(IS_INTERACTED_KEY, _hasInteracted);
+        levelLoader.AddDataToMemory(UniqueId, isInteractedData);
+    }
+
+    #endregion
 }

@@ -125,7 +125,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Add the event for the power used
         OnPowerUsed += PlaySoundOnUse;
-        OnPowerUsed += DisplayTooltipOnUse;
+        // OnPowerUsed += DisplayTooltipOnUse;
     }
 
     public void InitializeInput()
