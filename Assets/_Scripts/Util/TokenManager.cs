@@ -108,6 +108,11 @@ public class TokenManager<TTokenType>
         _hasBeenEditedSinceLastSort = true;
     }
 
+    public bool HasToken(ManagedToken token)
+    {
+        return _tokens.Contains(token);
+    }
+
     public void Clear()
     {
         // Clear the tokens

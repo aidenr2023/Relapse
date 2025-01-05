@@ -1,10 +1,15 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "New Power", menuName = "Power")]
 public class PowerScriptableObject : ScriptableObject
 {
+    private static readonly HashSet<PowerScriptableObject> powerScriptableObjects = new();
+
+    public static IReadOnlyCollection<PowerScriptableObject> PowerScriptableObjects => powerScriptableObjects;
+
     [Header("Overview Information")] [SerializeField]
     private string powerName;
 
@@ -20,6 +25,8 @@ public class PowerScriptableObject : ScriptableObject
     [SerializeField] private float[] toleranceMeterLevelMultiplier = { 1, .75f, .5f };
 
     [SerializeField] private GameObject powerLogicPrefab;
+
+    [SerializeField, UniqueIdentifier] private string uniqueId;
 
     private IPower _powerLogic;
 
@@ -59,6 +66,8 @@ public class PowerScriptableObject : ScriptableObject
 
     public int MaxLevel => toleranceMeterLevelMultiplier.Length - 1;
 
+    public string UniqueId => uniqueId;
+
     #region Sound
 
     public Sound ChargeStartSound => chargeStartSound;
@@ -71,10 +80,10 @@ public class PowerScriptableObject : ScriptableObject
 
     #endregion
 
-    private void OnValidate()
+    public PowerScriptableObject()
     {
-        // Validate the power
-        ValidatePower();
+        // Add the power to the list of power scriptable objects
+        powerScriptableObjects.Add(this);
     }
 
     private void InitializeComponents()
@@ -90,17 +99,6 @@ public class PowerScriptableObject : ScriptableObject
 
         // Hide the PowerLogic object in the hierarchy
         _powerLogic.GameObject.hideFlags = HideFlags.HideInHierarchy;
-    }
-
-    /// <summary>
-    /// A method to make sure the power was set up correctly.
-    /// </summary>
-    private void ValidatePower()
-    {
-        // // Make sure the PowerLogic is not null
-        // Debug.Assert(powerLogicPrefab != null,
-        //     "PowerLogic is null. Please assign a PowerLogic prefab to the PowerScriptableObject."
-        // );
     }
 
     /// <summary>

@@ -10,7 +10,7 @@ using UnityEngine.UI;
 using UnityEngine.VFX;
 
 [RequireComponent(typeof(Player))]
-public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
+public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerLoaderInfo
 {
     public static PlayerPowerManager Instance { get; private set; }
 
@@ -412,7 +412,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
             addSet.Add(power);
 
             // Add the power to the power usage tokens
-            _powerTokens.Add(power, new PowerToken(power));
+            if (!_powerTokens.ContainsKey(power))
+                _powerTokens.Add(power, new PowerToken(power));
         }
 
         // clamp the current power index to the new powers array
@@ -672,6 +673,30 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
         );
     }
 
+    private void AddPower(PowerToken powerToken)
+    {
+        // Add the power to the power tokens / replace the power token if it already exists
+        _powerTokens[powerToken.PowerScriptableObject] = powerToken;
+
+        // Add the power to the correct hash set
+        var powerSet = powerToken.PowerScriptableObject.PowerType switch
+        {
+            PowerType.Drug => _drugsSet,
+            PowerType.Medicine => _medsSet,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        // Also, add the power to the end of the powers array
+        if (powerSet.Add(powerToken.PowerScriptableObject))
+        {
+            Array.Resize(ref powers, powers.Length + 1);
+            powers[^1] = powerToken.PowerScriptableObject;
+        }
+
+        // Update the power collections
+        UpdatePowerCollections(powerToken.PowerScriptableObject);
+    }
+
     public void RemovePower(PowerScriptableObject powerScriptableObject)
     {
         // Check if the power is already in one of the hash sets
@@ -805,6 +830,105 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput
         }
 
         return debugString.ToString();
+    }
+
+    #endregion
+
+    #region IPlayerLoaderInfo
+
+    public GameObject GameObject => gameObject;
+    public string Id => "PlayerPowerManager";
+
+    private const string POWER_LEVEL_KEY = "_powerLevel";
+    private const string ACTIVE_DURATION_KEY = "_activeDuration";
+    private const string PASSIVE_DURATION_KEY = "_passiveDuration";
+    private const string COOLDOWN_DURATION_KEY = "_cooldownDuration";
+
+    public void LoadData(PlayerLoader playerLoader, bool restore)
+    {
+        // End the passive and active effects of all the powers
+        foreach (var power in _powerTokens.Keys)
+        {
+            var powerToken = _powerTokens[power];
+
+            // End the active effect
+            if (powerToken.IsActiveEffectOn)
+                power.PowerLogic.EndActiveEffect(this, powerToken);
+
+            // End the passive effect
+            if (powerToken.IsPassiveEffectOn)
+                power.PowerLogic.EndPassiveEffect(this, powerToken);
+        }
+
+        // Clear the power tokens, the drugs set, the meds set, and the powers array
+        _powerTokens.Clear();
+        _drugsSet.Clear();
+        _medsSet.Clear();
+        powers = Array.Empty<PowerScriptableObject>();
+
+
+        // Load the power scriptable objects
+        foreach (var pso in PowerScriptableObject.PowerScriptableObjects)
+        {
+            // Check if the id is in the player loader's memory
+            if (!playerLoader.TryGetDataFromMemory(Id, pso.UniqueId, out bool _))
+                continue;
+
+            // Load in each of the power token's stats
+            if (!playerLoader.TryGetDataFromMemory(Id, $"{pso.UniqueId}{POWER_LEVEL_KEY}", out int powerLevel))
+                continue;
+
+            if (!playerLoader.TryGetDataFromMemory(Id, $"{pso.UniqueId}{ACTIVE_DURATION_KEY}",
+                    out float activeDuration))
+                continue;
+
+            if (!playerLoader.TryGetDataFromMemory(Id, $"{pso.UniqueId}{PASSIVE_DURATION_KEY}",
+                    out float passiveDuration))
+                continue;
+
+            if (!playerLoader.TryGetDataFromMemory(Id, $"{pso.UniqueId}{COOLDOWN_DURATION_KEY}",
+                    out float cooldownDuration))
+                continue;
+
+            // Create a new power token
+            var powerToken =
+                PowerToken.CreatePowerToken(pso, powerLevel, activeDuration, passiveDuration, cooldownDuration);
+
+            // Add the power token
+            AddPower(powerToken);
+        }
+    }
+
+    public void SaveData(PlayerLoader playerLoader)
+    {
+        // For each power, save the data
+        foreach (var power in _powerTokens.Keys)
+        {
+            var powerToken = _powerTokens[power];
+
+            // Save the id of the power
+            var powerIdData = new DataInfo($"{power.UniqueId}", true);
+            playerLoader.AddDataToMemory(Id, powerIdData);
+
+            // Save the power level
+            var powerLevelData = new DataInfo($"{power.UniqueId}{POWER_LEVEL_KEY}", powerToken.CurrentLevel);
+            playerLoader.AddDataToMemory(Id, powerLevelData);
+
+            // Save the power active duration
+            var activeDurationData =
+                new DataInfo($"{power.UniqueId}{ACTIVE_DURATION_KEY}", powerToken.CurrentActiveDuration);
+            playerLoader.AddDataToMemory(Id, activeDurationData);
+
+            // Save the power passive duration
+            var passiveDurationData =
+                new DataInfo($"{power.UniqueId}{PASSIVE_DURATION_KEY}", powerToken.CurrentPassiveDuration);
+            playerLoader.AddDataToMemory(Id, passiveDurationData);
+
+            // Save the power cooldown duration
+            var cooldownDurationData =
+                new DataInfo($"{power.UniqueId}{COOLDOWN_DURATION_KEY}", powerToken.CurrentCooldownDuration);
+            playerLoader.AddDataToMemory(Id, cooldownDurationData);
+        }
     }
 
     #endregion

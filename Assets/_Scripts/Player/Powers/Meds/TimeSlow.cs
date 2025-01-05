@@ -57,7 +57,7 @@ public class TimeSlow : MonoBehaviour, IPower
     {
     }
 
-    public void StartPassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
+    private void CreateEffectToken(PlayerPowerManager powerManager, PowerToken pToken)
     {
         // Begin time slow
         // Set the timeScale to the adjusted timeScale from the inspector
@@ -70,14 +70,24 @@ public class TimeSlow : MonoBehaviour, IPower
         // Time.fixedDeltaTime = this._fixedDeltaTime * Time.timeScale;
     }
 
+    public void StartPassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
+    {
+        CreateEffectToken(powerManager, pToken);
+    }
+
     public void UpdatePassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
+        var hasData = pToken.TryGetData<TokenManager<float>.ManagedToken>(TIME_TOKEN_DATA_KEY, out var timeToken);
+
+        // Ensure the player has the time token
+        if (!hasData && !TimeScaleManager.Instance.TimeScaleTokenManager.HasToken(timeToken))
+            CreateEffectToken(powerManager, pToken);
     }
 
     public void EndPassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
         // Retrieve the time token from the power token's data
-        var timeToken = pToken.RemoveData<TokenManager<float>.ManagedToken>(TIME_TOKEN_DATA_KEY);
+        _ = pToken.RemoveData<TokenManager<float>.ManagedToken>(TIME_TOKEN_DATA_KEY, out var timeToken);
 
         // Remove the time token from the timeScale manager
         TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(timeToken);

@@ -208,28 +208,62 @@ public class PowerToken
             throw new System.Exception($"Key {key} already exists in the data dictionary.");
     }
 
-    public T GetData<T>(string key)
+    public bool TryGetData<T>(string key, out T rValue)
     {
         if (_dataDictionary.TryGetValue(key, out var value))
-            return (T)value;
+        {
+            rValue = (T)value;
+            return true;
+        }
 
-        return default;
+        rValue = default;
+        return false;
     }
 
-    public T RemoveData<T>(string key)
+    public bool RemoveData<T>(string key, out T rValue)
     {
         if (_dataDictionary.Remove(key, out var value))
-            return (T)value;
+        {
+            rValue = (T)value;
+            return true;
+        }
 
-        return default;
+        rValue = default;
+        return false;
     }
 
     public void SetPowerLevel(int level)
     {
         // Clamp the level to the max level of the power
         level = Mathf.Clamp(level, 0, _powerScriptableObject.MaxLevel);
-        
+
         // Set the current level value
         _currentLevel = level;
+    }
+
+    public static PowerToken CreatePowerToken(
+        PowerScriptableObject powerScriptableObject,
+        int powerLevel, float activeDuration, float passiveDuration, float cooldownDuration
+    )
+    {
+        // Create a new power token
+        var powerToken = new PowerToken(powerScriptableObject);
+
+        // Set the power level
+        powerToken.SetPowerLevel(powerLevel);
+
+        // Set the active duration
+        powerToken._currentCurrentActiveDuration = activeDuration;
+        powerToken._isActiveEffectOn = activeDuration > 0;
+
+        // Set the passive duration
+        powerToken._currentPassiveDuration = passiveDuration;
+        powerToken._isPassiveEffectOn = passiveDuration > 0;
+
+        // Set the cooldown duration
+        powerToken.SetCooldownDuration(cooldownDuration);
+        powerToken._isCoolingDown = cooldownDuration > 0;
+
+        return powerToken;
     }
 }

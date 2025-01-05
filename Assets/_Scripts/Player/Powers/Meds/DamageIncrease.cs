@@ -36,7 +36,7 @@ public class DamageIncrease : MonoBehaviour, IPower
     {
     }
 
-    public void StartActiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
+    private void CreateEffectToken(PlayerPowerManager powerManager, PowerToken pToken)
     {
         // Instantiate the regeneration particles
         var particles = Instantiate(damageIncreaseParticles, powerManager.transform);
@@ -61,15 +61,28 @@ public class DamageIncrease : MonoBehaviour, IPower
         pToken.AddData(DAMAGE_INCREASE_KEY, data);
     }
 
+    public void StartActiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
+    {
+        CreateEffectToken(powerManager, pToken);
+    }
+
     public void UpdateActiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
+        var hasData = pToken.TryGetData<DamageIncreaseData>(DAMAGE_INCREASE_KEY, out var data);
+
+        // Ensure the player has the damage multiplier token
+        if (!hasData && !powerManager.Player.WeaponManager.DamageMultiplierTokens.HasToken(data.Token))
+            CreateEffectToken(powerManager, pToken);
     }
 
     public void EndActiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
         // Get the particles from the power token's data dictionary
         // Remove the particles from the power token's data dictionary
-        var data = pToken.RemoveData<DamageIncreaseData>(DAMAGE_INCREASE_KEY);
+        var hasData = pToken.RemoveData<DamageIncreaseData>(DAMAGE_INCREASE_KEY, out var data);
+
+        if (!hasData)
+            return;
 
         // Stop the particle system
         data.Particles.Stop();
