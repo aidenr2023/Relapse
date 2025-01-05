@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class PlayerInventory : MonoBehaviour
+public class PlayerInventory : MonoBehaviour, IPlayerLoaderInfo
 {
     #region Serialized Fields
 
@@ -44,6 +44,10 @@ public class PlayerInventory : MonoBehaviour
 
         // Force the money object to be in the inventory
         ForceItem(moneyObject, 0);
+
+        // Get all instance of the inventory objects
+        foreach (var obj in InventoryObject.InventoryObjects)
+            Debug.Log($"Found {obj.ItemName} in the scene!");
     }
 
     private InventoryEntry GetInventoryEntry(InventoryObject inventoryObject)
@@ -164,4 +168,40 @@ public class PlayerInventory : MonoBehaviour
                 inventoryEntry.AddQuantity(entry.Quantity);
         }
     }
+
+    #region Saving and Loading
+
+    public GameObject GameObject => gameObject;
+    public string Id => "PlayerInventory";
+
+    public void LoadData(PlayerLoader playerLoader, bool restore)
+    {
+        // Clear the inventory
+        inventoryEntries.Clear();
+
+        // For each possible inventory object, check if it exists in the save data
+        foreach (var inventoryObject in InventoryObject.InventoryObjects)
+        {
+            // If the inventory object is not in the save data, skip it
+            if (!playerLoader.TryGetDataFromMemory(Id, inventoryObject.UniqueId, out int quantity))
+                continue;
+
+            // Add the item to the inventory
+            AddItem(inventoryObject, quantity);
+
+            Debug.Log($"Reloaded & added {quantity} {inventoryObject.ItemName} to the inventory!");
+        }
+    }
+
+    public void SaveData(PlayerLoader playerLoader)
+    {
+        // For each inventory entry, save the data
+        foreach (var entry in inventoryEntries)
+        {
+            var itemData = new DataInfo(entry.InventoryObject.UniqueId, entry.Quantity);
+            playerLoader.AddDataToMemory(Id, itemData);
+        }
+    }
+
+    #endregion
 }

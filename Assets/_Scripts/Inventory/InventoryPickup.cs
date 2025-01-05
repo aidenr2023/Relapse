@@ -4,7 +4,8 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class InventoryPickup : MonoBehaviour, IInteractable
+[RequireComponent(typeof(UniqueId))]
+public class InventoryPickup : MonoBehaviour, IInteractable, ILevelLoaderInfo
 {
     #region Serialized Fields
 
@@ -22,6 +23,7 @@ public class InventoryPickup : MonoBehaviour, IInteractable
 
     public GameObject GameObject => gameObject;
 
+
     public bool IsInteractable => true;
 
     public bool HasOutline { get; set; }
@@ -32,6 +34,8 @@ public class InventoryPickup : MonoBehaviour, IInteractable
 
     #endregion
 
+    private bool _hasBeenInteracted;
+
     private bool _isMarkedForDestruction;
 
     public void Interact(PlayerInteraction playerInteraction)
@@ -39,6 +43,12 @@ public class InventoryPickup : MonoBehaviour, IInteractable
         // Add the inventory entry to the player's inventory
         playerInteraction.Player.PlayerInventory.AddItem(inventoryEntry);
 
+        // Call the OnPickup method
+        OnPickup();
+    }
+
+    private void OnPickup()
+    {
         // Subtract the quantity from the inventory entry
         inventoryEntry.RemoveQuantity(inventoryEntry.Quantity);
 
@@ -48,6 +58,9 @@ public class InventoryPickup : MonoBehaviour, IInteractable
 
         // Invoke the onInteract event
         onInteract?.Invoke();
+
+        // Set the has been interacted flag to true
+        _hasBeenInteracted = true;
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)
@@ -85,6 +98,12 @@ public class InventoryPickup : MonoBehaviour, IInteractable
         }
     }
 
+    private void OnDestroy()
+    {
+        // Save the data
+        SaveData(LevelLoader.Instance);
+    }
+
     public void SetInventoryEntry(InventoryEntry entry)
     {
         inventoryEntry = entry;
@@ -94,4 +113,43 @@ public class InventoryPickup : MonoBehaviour, IInteractable
     {
         inventoryEntry.SetQuantity(quantity);
     }
+
+    #region ILevelLoaderInfo
+
+    private UniqueId _uniqueId;
+
+    public UniqueId UniqueId
+    {
+        get
+        {
+            if (_uniqueId == null)
+                _uniqueId = GetComponent<UniqueId>();
+
+            return _uniqueId;
+        }
+    }
+
+    private const string INTERACTED_KEY = "_interacted";
+
+    public void LoadData(LevelLoader levelLoader)
+    {
+        // Load the data
+        if (levelLoader.TryGetDataFromMemory(UniqueId, INTERACTED_KEY, out bool interacted))
+        {
+            _hasBeenInteracted = interacted;
+
+            // Call the OnPickup method if the object has been interacted with
+            if (_hasBeenInteracted)
+                OnPickup();
+        }
+    }
+
+    public void SaveData(LevelLoader levelLoader)
+    {
+        // If the object has been interacted with, save the data
+        var interactedData = new DataInfo(INTERACTED_KEY, _hasBeenInteracted);
+        levelLoader.AddDataToMemory(UniqueId, interactedData);
+    }
+
+    #endregion
 }
