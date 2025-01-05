@@ -60,10 +60,24 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
 
             Debug.Log("Checkpoint saved all the scenes to memory and disk.");
         }
+
+        if (PlayerLoader.Instance != null)
+        {
+            // Save the player data to memory
+            PlayerLoader.Instance.SaveDataSceneToMemory();
+
+            // Save the player data to disk
+            PlayerLoader.Instance.SaveDataMemoryToDisk();
+
+            Debug.Log("Checkpoint saved the player data to memory and disk.");
+        }
     }
 
     public string InteractText(PlayerInteraction playerInteraction)
     {
+        if (HasBeenCollected)
+            return "Checkpoint Saved!";
+
         return "Save checkpoint";
     }
 

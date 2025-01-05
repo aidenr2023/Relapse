@@ -107,11 +107,18 @@ public class RelapseScreen : GameMenu
             if (LevelLoader.Instance != null)
                 LevelLoader.Instance.LoadDataDiskToMemory();
 
+            // Also, if there is a Player Loader Instance, load the data from disk
+            if (PlayerLoader.Instance != null)
+                PlayerLoader.Instance.LoadDataDiskToMemory();
+
             // Load the scene
             LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
 
             // Load the data from the memory to the scene
             LevelLoader.Instance.LoadDataMemoryToScene(null);
+
+            // Also, load the player data from memory to the scene
+            PlayerLoader.Instance.LoadDataMemoryToScene();
 
             // // Disable the game object
             // gameObject.SetActive(false);
@@ -147,6 +154,13 @@ public class RelapseScreen : GameMenu
     {
         // Respawn at the latest checkpoint
         Player.Instance.PlayerDeathController.Respawn();
+
+        // Also, if there is a Player Loader Instance, load the data from disk
+        if (PlayerLoader.Instance != null)
+        {
+            PlayerLoader.Instance.LoadDataDiskToMemory();
+            PlayerLoader.Instance.LoadDataMemoryToScene(true);
+        }
 
         // Set the flag to false
         _respawnButtonClicked = false;

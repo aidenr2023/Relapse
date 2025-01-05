@@ -8,6 +8,8 @@ using UnityEngine.SceneManagement;
 
 public class LevelLoader : MonoBehaviour
 {
+    private const string FILE_NAME = "LevelData";
+
     public static LevelLoader Instance { get; private set; }
 
     /// <summary>
@@ -18,6 +20,9 @@ public class LevelLoader : MonoBehaviour
     ///         data    : [{ variableName, dataType, value }]
     ///     }]
     /// ]
+    ///
+    /// {ID: { variableName: value }}
+    ///
     /// </summary>
     private readonly Dictionary<string, Dictionary<string, object>> _data = new();
 
@@ -25,7 +30,7 @@ public class LevelLoader : MonoBehaviour
 
     public IReadOnlyDictionary<string, Dictionary<string, object>> Data => _data;
 
-    private static string LevelDataPath => $"{SaveFile.CurrentSaveFile.SaveFileDirectory}/LevelData.json";
+    private static string LevelDataPath => $"{SaveFile.CurrentSaveFile.SaveFileDirectory}/{FILE_NAME}.json";
 
     private void Awake()
     {
@@ -173,12 +178,6 @@ public class LevelLoader : MonoBehaviour
     /// </summary>
     public void LoadDataDiskToMemory(params Scene[] scenes)
     {
-        // TODO: Establish a file / folder structure for the data
-
-        // TODO: Populate the _data dictionary with the data from the disk
-
-        // TODO: Establish scene logic
-
         var saveFileName = LevelDataPath;
 
         if (!System.IO.File.Exists(saveFileName))
@@ -271,7 +270,7 @@ public class LevelLoader : MonoBehaviour
         }
     }
 
-    public bool GetDataFromMemory<T>(UniqueId id, string key, out T value)
+    public bool TryGetDataFromMemory<T>(UniqueId id, string key, out T value)
     {
         // Add the unique id to the object to scene dictionary
         if (!_objectToScene.TryAdd(id.UniqueIdValue, id.OriginalScene))
@@ -477,76 +476,5 @@ public class LevelLoader : MonoBehaviour
 
     #endregion
 
-    #region Serialization Helper Classes
 
-    [Serializable]
-    public class JsonDataWrapper
-    {
-        [SerializeField] private string key;
-        [SerializeField] private SerializationDataType dataType;
-        [SerializeField] private string value;
-
-        public string Key => key;
-        public SerializationDataType DataType => dataType;
-        public string Value => value;
-
-        public JsonDataWrapper(string key, SerializationDataType dataType, string value)
-        {
-            this.key = key;
-            this.dataType = dataType;
-            this.value = value;
-        }
-    }
-
-    [Serializable]
-    private class JsonDataObjectWrapper
-    {
-        [SerializeField] protected string uniqueId;
-        [SerializeField] protected JsonDataWrapper[] data;
-
-        public string UniqueId => uniqueId;
-        public IReadOnlyList<JsonDataWrapper> Data => data;
-
-        public JsonDataObjectWrapper(string uniqueId, IEnumerable<JsonDataWrapper> data)
-        {
-            this.uniqueId = uniqueId;
-
-            // Convert the list of JsonDataWrappers to a JSON string
-            this.data = data.ToArray();
-        }
-
-        // public void Add<TOtherType>(JsonDataWrapper<TOtherType> jsonDataWrapper) =>
-        //     jsonDataWrappers.Add((JsonDataWrapper<object>)jsonDataWrapper);
-    }
-
-    [Serializable]
-    private class SceneJsonData
-    {
-        [SerializeField] private string sceneName;
-        [SerializeField] private JsonDataObjectWrapper[] data;
-
-        public string SceneName => sceneName;
-        public IReadOnlyList<JsonDataObjectWrapper> Data => data;
-
-        public SceneJsonData(string sceneName, IEnumerable<JsonDataObjectWrapper> jsonDataObjectWrappers)
-        {
-            this.sceneName = sceneName;
-            data = jsonDataObjectWrappers.ToArray();
-        }
-    }
-
-    [Serializable]
-    private class SceneJsonDataCollection
-    {
-        [SerializeField] private SceneJsonData[] data;
-
-        public IReadOnlyList<SceneJsonData> Data => data;
-
-        public SceneJsonDataCollection(IEnumerable<SceneJsonData> jsonDataObjects)
-        {
-            data = jsonDataObjects.ToArray();
-        }
-    }
-
-    #endregion
 }

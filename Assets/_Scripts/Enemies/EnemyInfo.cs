@@ -254,7 +254,7 @@ public class EnemyInfo : MonoBehaviour, IActor
 
         Player.Instance.PlayerInventory.AddItem(Player.Instance.PlayerInventory.MoneyObject, moneyReward);
 
-        // TODO: Implement death logic
+        // Implement death logic
         Destroy(gameObject);
     }
 }

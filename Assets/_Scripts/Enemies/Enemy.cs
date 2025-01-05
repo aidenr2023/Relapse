@@ -95,34 +95,32 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
     public void LoadData(LevelLoader levelLoader)
     {
         // Load whether the enemy is alive or not
-        if (levelLoader.GetDataFromMemory(UniqueId, IS_ALIVE_KEY, out bool isAlive) && !isAlive)
+        if (levelLoader.TryGetDataFromMemory(UniqueId, IS_ALIVE_KEY, out bool isAlive) && !isAlive)
         {
-            // Drain all the enemy's health
-            _enemyInfo.ChangeHealth(-_enemyInfo.MaxHealth, _enemyInfo, _enemyAttackBehavior, transform.position);
+            // // Drain all the enemy's health
+            // _enemyInfo.ChangeHealth(-_enemyInfo.MaxHealth, _enemyInfo, _enemyAttackBehavior, transform.position);
 
             Destroy(gameObject);
         }
 
         // Load the current health
-        else if (levelLoader.GetDataFromMemory(UniqueId, CURRENT_HEALTH_KEY, out float currentHealth))
+        else if (levelLoader.TryGetDataFromMemory(UniqueId, CURRENT_HEALTH_KEY, out float currentHealth))
             _enemyInfo.ChangeHealth(currentHealth - _enemyInfo.CurrentHealth, _enemyInfo, _enemyAttackBehavior,
                 transform.position);
 
         // Load the position and rotation
-        if (levelLoader.GetDataFromMemory(UniqueId, POSITION_KEY, out Vector3 position))
+        if (levelLoader.TryGetDataFromMemory(UniqueId, POSITION_KEY, out Vector3 position))
             _enemyMovementBehavior.SetPosition(position);
 
-        if (levelLoader.GetDataFromMemory(UniqueId, ROTATION_KEY, out Vector3 rotation))
+        if (levelLoader.TryGetDataFromMemory(UniqueId, ROTATION_KEY, out Vector3 rotation))
             transform.rotation = Quaternion.Euler(rotation);
     }
 
     public void SaveData(LevelLoader levelLoader)
     {
-        var isAlive = _enemyInfo.CurrentHealth > 0;
-
         // Create boolean data for whether the enemy is alive or not
         // Save the data
-        var isAliveData = new DataInfo(IS_ALIVE_KEY, isAlive);
+        var isAliveData = new DataInfo(IS_ALIVE_KEY, _enemyInfo.CurrentHealth > 0);
         levelLoader.AddDataToMemory(UniqueId, isAliveData);
 
         // Create number data for the current health
