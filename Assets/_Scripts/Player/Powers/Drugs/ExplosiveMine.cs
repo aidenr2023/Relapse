@@ -1,19 +1,24 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using Unity.VisualScripting;
 using UnityEngine;
 
-public class Fireball : MonoBehaviour, IPower
+public class ExplosiveMine : MonoBehaviour, IPower
 {
-    // a field for a projectile prefab
-    [SerializeField] private GameObject projectilePrefab;
+    #region Serialized Fields
+
+    [SerializeField] private ExplosiveMineProjectile explosiveMineProjectilePrefab;
+
+    #endregion
+
+    #region Getters
 
     public GameObject GameObject => gameObject;
     public PowerScriptableObject PowerScriptableObject { get; set; }
 
-    public string PassiveEffectDebugText(PlayerPowerManager powerManager, PowerToken pToken) => string.Empty;
+    #endregion
 
     #region IPower Methods
+
+    public string PassiveEffectDebugText(PlayerPowerManager powerManager, PowerToken pToken) => string.Empty;
 
     public void StartCharge(PlayerPowerManager powerManager, PowerToken pToken, bool startedChargingThisFrame)
     {
@@ -21,12 +26,10 @@ public class Fireball : MonoBehaviour, IPower
 
     public void Charge(PlayerPowerManager powerManager, PowerToken pToken)
     {
-        powerManager.Player.PlayerVirtualCameraController.DynamicFOVModule.SetAiming(true);
     }
 
     public void Release(PlayerPowerManager powerManager, PowerToken pToken, bool isCharged)
     {
-        powerManager.Player.PlayerVirtualCameraController.DynamicFOVModule.SetAiming(false);
     }
 
     public void Use(PlayerPowerManager powerManager, PowerToken pToken)
@@ -38,19 +41,10 @@ public class Fireball : MonoBehaviour, IPower
         var firePosition = powerManager.Player.PlayerController.CameraPivot.transform.position + fireForward * 1;
 
         // Instantiate the projectile prefab
-        var projectile = Instantiate(projectilePrefab, firePosition, Quaternion.identity);
-
-        // Get the IPowerProjectile component from the projectile
-        var powerProjectile = projectile.GetComponent<IPowerProjectile>();
+        var projectile = Instantiate(explosiveMineProjectilePrefab, firePosition, Quaternion.identity);
 
         // Shoot the projectile
-        powerProjectile.Shoot(this, powerManager, pToken, firePosition, fireForward);
-
-        // // Create the projectile
-        // var projectileScript = CreateProjectile(firePosition, fireForward);
-        //
-        // // Set up the projectile
-        // SetUpProjectile(powerManager, projectileScript);
+        projectile.Shoot(this, powerManager, pToken, firePosition, fireForward);
     }
 
     #region Active Effects
