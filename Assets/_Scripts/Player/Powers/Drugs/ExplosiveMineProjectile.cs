@@ -7,8 +7,20 @@ using UnityEngine.Serialization;
 [RequireComponent(typeof(Rigidbody))]
 public class ExplosiveMineProjectile : AbstractMineProjectile
 {
-    [Header("Unique Stats")]
-    [SerializeField, Min(0)] protected float damage = 50f;
+    [Header("Unique Stats")] [SerializeField, Min(0)]
+    protected float damage = 50f;
+
+    protected override void CustomAwake()
+    {
+    }
+
+    protected override void CustomUpdate()
+    {
+    }
+
+    protected override void CustomFixedUpdate()
+    {
+    }
 
     protected override void OnStartFuse()
     {

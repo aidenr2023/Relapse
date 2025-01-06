@@ -6,6 +6,18 @@ public class StunMineProjectile : AbstractMineProjectile
     [Header("Unique Stats")] [SerializeField, Min(0)]
     protected float stunDuration = 5f;
 
+    protected override void CustomAwake()
+    {
+    }
+
+    protected override void CustomUpdate()
+    {
+    }
+
+    protected override void CustomFixedUpdate()
+    {
+    }
+
     protected override void OnStartFuse()
     {
     }

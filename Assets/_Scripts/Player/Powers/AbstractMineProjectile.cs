@@ -3,7 +3,7 @@ using UnityEngine;
 
 public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
 {
-    private const int MAX_ENEMIES = 64;
+    protected const int MAX_ENEMIES = 64;
 
     #region Serialized Fields
 
@@ -18,6 +18,8 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
 
     [SerializeField, Min(0)] protected float fuseTime = 2f;
     [SerializeField, Min(0)] protected float inactiveDestroyTime = 10f;
+
+    [SerializeField] private bool destroyOnExplode = true;
 
     #endregion
 
@@ -38,7 +40,7 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
 
     #endregion
 
-    private void Awake()
+    protected void Awake()
     {
         // Get the rigidbody component
         _rigidbody = GetComponent<Rigidbody>();
@@ -52,9 +54,14 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
         // Create the inactive destroy timer
         _inactiveDestroyTimer = new CountdownTimer(inactiveDestroyTime);
         _inactiveDestroyTimer.OnTimerEnd += () => Destroy(gameObject);
+
+        // Custom awake function
+        CustomAwake();
     }
 
-    private void Update()
+    protected abstract void CustomAwake();
+
+    protected void Update()
     {
         // Update the fuse timer
         _fuseTimer.SetActive(_isFuseLit);
@@ -65,7 +72,12 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
         _inactiveDestroyTimer.SetActive(!_isFuseLit);
         _inactiveDestroyTimer.SetMaxTime(inactiveDestroyTime);
         _inactiveDestroyTimer.Update(Time.deltaTime);
+
+        // Custom update function
+        CustomUpdate();
     }
+
+    protected abstract void CustomUpdate();
 
     private void DetectEnemies()
     {
@@ -151,14 +163,19 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
 
     protected abstract void OnStartFuse();
 
-    private void FixedUpdate()
+    protected void FixedUpdate()
     {
         // Check the distance
         DetectEnemies();
 
         // Explode when ready
         Explode();
+
+        // Custom fixed update function
+        CustomFixedUpdate();
     }
+
+    protected abstract void CustomFixedUpdate();
 
     private void Explode()
     {
@@ -232,7 +249,8 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
         // TODO: Play explosion vfx
 
         // Destroy the game object
-        Destroy(gameObject);
+        if (destroyOnExplode)
+            Destroy(gameObject);
     }
 
     protected abstract void ApplyExplosion(IActor actor);

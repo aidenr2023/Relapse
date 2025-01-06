@@ -5,7 +5,7 @@ public class ExplosiveMine : MonoBehaviour, IPower
 {
     #region Serialized Fields
 
-    [SerializeField] private ExplosiveMineProjectile explosiveMineProjectilePrefab;
+    [SerializeField] private AbstractMineProjectile explosiveMineProjectilePrefab;
 
     #endregion
 
