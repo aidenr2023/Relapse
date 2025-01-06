@@ -33,6 +33,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
     // private readonly SortedSet<DamageMultiplierToken> _damageMultiplierTokens = new();
     private TokenManager<float> _damageMultiplierTokens;
 
+    private TokenManager<float> _fireRateMultiplierTokens;
+
     private bool _spawnedInitialGun = false;
 
     #endregion
@@ -60,7 +62,22 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
         }
     }
 
+    public float CurrentFireRateMultiplier
+    {
+        get
+        {
+            var multiplier = 1f;
+
+            foreach (var token in _fireRateMultiplierTokens.Tokens)
+                multiplier *= token.Value;
+
+            return multiplier;
+        }
+    }
+
     public TokenManager<float> DamageMultiplierTokens => _damageMultiplierTokens;
+
+    public TokenManager<float> FireRateMultiplierTokens => _fireRateMultiplierTokens;
 
     #endregion
 
@@ -79,6 +96,13 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
 
         // Initialize the damage multiplier tokens
         _damageMultiplierTokens = new TokenManager<float>(
+            true,
+            (token1, token2) => token1.Value.CompareTo(token2.Value),
+            1
+        );
+
+        // Initialize the fire rate multiplier tokens
+        _fireRateMultiplierTokens = new TokenManager<float>(
             true,
             (token1, token2) => token1.Value.CompareTo(token2.Value),
             1
@@ -182,6 +206,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
 
         // Update the damage multipliers
         UpdateDamageMultipliers();
+
+        // Update the fire rate multipliers
+        UpdateFireRateMultipliers();
     }
 
     private void UpdateReloadText()
@@ -334,7 +361,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
     {
         return
             $"Equipped Gun: {_equippedGun?.GunInformation.name}\n" +
-            $"Damage Multiplier: {CurrentDamageMultiplier:0.00}x\n";
+            $"Damage Multiplier: {CurrentDamageMultiplier:0.00}x\n" +
+            $"Fire Rate Multiplier: {CurrentFireRateMultiplier:0.00}x\n";
     }
 
     private void OnDrawGizmos()
@@ -349,6 +377,11 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
     private void UpdateDamageMultipliers()
     {
         _damageMultiplierTokens.Update(Time.deltaTime);
+    }
+
+    private void UpdateFireRateMultipliers()
+    {
+        _fireRateMultiplierTokens.Update(Time.deltaTime);
     }
 
     public void ResetPlayer()

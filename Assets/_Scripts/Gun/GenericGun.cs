@@ -177,8 +177,12 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             return;
         }
 
+        var fireRateMultiplier = _weaponManager != null ? _weaponManager.CurrentFireRateMultiplier : 1;
+
         // if the gun is currently firing, Update the time since the gun last fired
-        fireDelta = Mathf.Clamp(fireDelta + Time.deltaTime, 0, TimeBetweenShots);
+        fireDelta = Mathf.Clamp(
+            fireDelta + (Time.deltaTime * fireRateMultiplier),
+            0, TimeBetweenShots);
     }
 
     #endregion
