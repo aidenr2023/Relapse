@@ -1,8 +1,6 @@
 ﻿using UnityEngine;
 
-public interface IEnemyBehavior
+public interface IEnemyBehavior : IInterfacedObject
 {
     public Enemy Enemy { get; }
-
-    public GameObject GameObject { get; }
 }

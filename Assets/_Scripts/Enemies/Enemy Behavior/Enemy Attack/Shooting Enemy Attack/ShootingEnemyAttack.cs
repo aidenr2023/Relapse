@@ -44,7 +44,7 @@ public class ShootingEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     public Enemy Enemy { get; private set; }
 
-    public bool IsAttackEnabled => _isExternallyEnabled;
+    public bool IsAttackEnabled => _isExternallyEnabled && this.IsAttackEnabledTokens();
 
     private bool IsTargetInRange =>
         Enemy.EnemyDetectionBehavior.Target != null &&
@@ -52,6 +52,8 @@ public class ShootingEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
             transform.position,
             Enemy.EnemyDetectionBehavior.Target.GameObject.transform.position
         ) <= fireRange;
+
+    public HashSet<object> AttackDisableTokens { get; } = new();
 
     #endregion
 

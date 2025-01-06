@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
@@ -36,9 +37,11 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     public Enemy Enemy { get; private set; }
     public GameObject GameObject => gameObject;
 
-    public bool IsAttackEnabled => _isExternallyEnabled;
+    public bool IsAttackEnabled => _isExternallyEnabled && this.IsAttackEnabledTokens();
 
     public float Damage => damage;
+
+    public HashSet<object> AttackDisableTokens { get; } = new();
 
     #endregion
 

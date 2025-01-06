@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class PlayerInfo : MonoBehaviour, IActor, IDamager
+public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 {
     #region Serialized Fields
 

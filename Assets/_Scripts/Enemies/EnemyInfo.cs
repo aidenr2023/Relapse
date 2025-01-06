@@ -4,7 +4,7 @@ using UnityEngine.Serialization;
 using UnityEngine.VFX;
 
 [RequireComponent(typeof(Enemy))]
-public class EnemyInfo : MonoBehaviour, IActor
+public class EnemyInfo : ComponentScript<Enemy>, IActor
 {
     private static readonly int HitAnimationID = Animator.StringToHash("Hit");
 

@@ -68,7 +68,9 @@ public class ProximityEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     public Enemy Enemy { get; private set; }
 
-    public bool IsAttackEnabled => _isExternallyEnabled;
+    public bool IsAttackEnabled => _isExternallyEnabled && this.IsAttackEnabledTokens();
+
+    public HashSet<object> AttackDisableTokens { get; } = new();
 
     #endregion
 
@@ -128,6 +130,10 @@ public class ProximityEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         // if (Vector3.Distance(transform.position, players[0].transform.position) > detectionRadius)
         //     return;
 
+        // Return if there are attack disabled tokens
+        if (!this.IsAttackEnabledTokens())
+            return;
+
         // Check if the detection mode is Aware
         if (Enemy.EnemyDetectionBehavior?.CurrentDetectionState != EnemyDetectionState.Aware)
             return;
@@ -181,6 +187,10 @@ public class ProximityEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     {
         // Return if the enemy has already exploded
         if (_hasExploded)
+            return;
+
+        // Return if there are attack disabled tokens
+        if (!this.IsAttackEnabledTokens())
             return;
 
         // Create the explosion particles
