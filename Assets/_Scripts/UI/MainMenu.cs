@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainMenu : GameMenu
@@ -90,5 +91,11 @@ public class MainMenu : GameMenu
     {
         // Do nothing for now
         // TODO: Make the submenus recognize the back button
+    }
+
+    public void ForceChangeScene(string sceneName)
+    {
+        // Load the scene singularly
+        SceneManager.LoadScene(sceneName);
     }
 }

@@ -39,8 +39,6 @@ public class PauseMenuManager : GameMenu, IUsesInput
 
     private bool _isInputRegistered;
 
-    private TokenManager<float>.ManagedToken _pauseToken;
-
     private bool _inputtedThisFrame;
 
     #endregion
@@ -101,6 +99,9 @@ public class PauseMenuManager : GameMenu, IUsesInput
     {
         // Unregister the input user
         InputManager.Instance.Unregister(this);
+
+        // Deactivate the menu
+        Deactivate();
     }
 
     private void OnPausePerformed(InputAction.CallbackContext context)
@@ -229,8 +230,6 @@ public class PauseMenuManager : GameMenu, IUsesInput
         // Add your Resume logic here
         Debug.Log("Resume game");
 
-        TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(_pauseToken);
-
         // Hide menu
         // pauseMenuParent.SetActive(false);
         Deactivate();
@@ -249,9 +248,6 @@ public class PauseMenuManager : GameMenu, IUsesInput
         // Un-hide the pause menu
         // pauseMenuParent.SetActive(true);
         Activate();
-
-        // Pause the game
-        _pauseToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(0, -1, true);
 
         // Set pause to true
         IsPaused = true;
@@ -306,9 +302,6 @@ public class PauseMenuManager : GameMenu, IUsesInput
     /// </summary>
     public void Exit(GameObject textObject)
     {
-        // Resume the game
-        TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(_pauseToken);
-
         ChangeClickColor(textObject);
 
         // Go back to main menu
