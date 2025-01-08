@@ -63,6 +63,10 @@ public class MoneyNotificationUI : MonoBehaviour
         if (item != Player.Instance.PlayerInventory.MoneyObject)
             return;
 
+        // If the quantity is 0, return
+        if (quantity == 0)
+            return;
+
         var initialMoneyAmount = _moneyAmount;
 
         // Add the quantity to the money amount
