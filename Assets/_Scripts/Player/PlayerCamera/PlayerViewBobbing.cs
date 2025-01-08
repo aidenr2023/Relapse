@@ -47,7 +47,9 @@ public class PlayerViewBobbing : ComponentScript<PlayerVirtualCameraController>
                 _playerMovement.ParentComponent.CurrentMovementScript == _playerWallRunning &&
                 _playerWallRunning.IsWallRunning;
 
-            return (playerMovementGrounded || wallRunningActive) && _playerMovement.MovementInput != Vector2.zero;
+            return (playerMovementGrounded || wallRunningActive) &&
+                   _playerMovement.MovementInput != Vector2.zero &&
+                   !MenuManager.Instance.IsControlsDisabledInMenus;
         }
     }
 

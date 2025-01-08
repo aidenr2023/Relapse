@@ -59,4 +59,11 @@ public class CustomInteraction : MonoBehaviour, IInteractable
         // Complete the objective
         JournalObjectiveManager.Instance.CompleteObjective(objective);
     }
+
+    public void PlayTutorial(TutorialScreen.Tutorial tutorial)
+    {
+        // Play the tutorial
+        TutorialScreen.Instance.ChangeTutorial(tutorial);
+        TutorialScreen.Instance.Activate();
+    }
 }

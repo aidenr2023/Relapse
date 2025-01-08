@@ -347,7 +347,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
         var forceX = UnityEngine.Random.Range(throwForce * .75f, throwForce);
 
         // Add a force to the gun
-        rb.AddForce(transform.forward * forceX, ForceMode.Impulse);
+        rb.AddForce(Player.PlayerController.Orientation.forward * forceX, ForceMode.Impulse);
 
         // Create random torque force
         var torqueX = UnityEngine.Random.Range(-throwForce, throwForce);

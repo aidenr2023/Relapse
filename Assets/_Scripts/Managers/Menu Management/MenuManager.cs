@@ -72,6 +72,10 @@ public class MenuManager : IUsesInput
 
     public void AddActiveMenu(GameMenu menu)
     {
+        // Return if the menu is already active
+        if (_activeMenus.Contains(menu))
+            return;
+
         _activeMenus.Push(menu);
     }
 

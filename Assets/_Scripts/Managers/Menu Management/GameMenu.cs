@@ -38,6 +38,8 @@ public abstract class GameMenu : MonoBehaviour
 
     public bool PausesGame => pausesGame;
 
+    public bool IsActive => _isActive;
+
     #endregion
 
     protected void Awake()
