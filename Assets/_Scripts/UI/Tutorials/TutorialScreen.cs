@@ -54,10 +54,7 @@ public class TutorialScreen : GameMenu
     protected override void CustomUpdate()
     {
         if (Input.GetKeyDown(KeyCode.T))
-        {
-            ChangeTutorial(debugTutorial);
-            Activate();
-        }
+            PlayTutorial(debugTutorial);
 
         if (IsActive)
         {
@@ -164,26 +161,14 @@ public class TutorialScreen : GameMenu
         SetTutorialPage(_currentTutorialPage - 1);
     }
 
-    [CreateAssetMenu(fileName = "Tutorial", menuName = "New Tutorial")]
-    public class Tutorial : ScriptableObject
+    public void PlayTutorial(Tutorial tutorial)
     {
-        [SerializeField] private string tutorialName;
-        [SerializeField] private TutorialPage[] tutorialPages;
+        ChangeTutorial(tutorial);
+        Activate();
 
-        public string TutorialName => tutorialName;
-        public IReadOnlyList<TutorialPage> TutorialPages => tutorialPages;
-        public int TotalPages => tutorialPages.Length;
+        // Get the instance of the player tutorial manager & complete the tutorial
+        Player.Instance.PlayerTutorialManager.CompleteTutorial(tutorial);
     }
 
-    [Serializable]
-    public struct TutorialPage
-    {
-        [SerializeField] private string subTitle;
-        [SerializeField] private VideoClip videoClip;
-        [SerializeField, TextArea] private string description;
 
-        public string SubTitle => subTitle;
-        public VideoClip VideoClip => videoClip;
-        public string Description => description;
-    }
 }

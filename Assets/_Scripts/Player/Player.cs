@@ -31,6 +31,8 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
 
     public PlayerDeathController PlayerDeathController { get; private set; }
 
+    public PlayerTutorialManager PlayerTutorialManager { get; private set; }
+
     #endregion
 
     #region Initialization Functions
@@ -72,6 +74,9 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
 
         // Get the PlayerDeathController component
         PlayerDeathController = GetComponent<PlayerDeathController>();
+
+        // Get the PlayerTutorialManager component
+        PlayerTutorialManager = GetComponent<PlayerTutorialManager>();
     }
 
     #endregion

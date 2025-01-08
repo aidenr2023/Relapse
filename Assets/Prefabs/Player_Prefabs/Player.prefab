@@ -769,6 +769,7 @@ GameObject:
   - component: {fileID: 1509308928883412678}
   - component: {fileID: 764185980036498148}
   - component: {fileID: 5810650263794967371}
+  - component: {fileID: 6786839480701899547}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -1079,6 +1080,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraPivot: {fileID: 5244302159661097867}
   orientation: {fileID: 5224293575626551686}
+  playerAnimator: {fileID: 0}
   desiredCapsuleHeightOffset: 0.5
   defaultPlayerHeight: 2
   rideSpringStrength: 512
@@ -1178,6 +1180,7 @@ MonoBehaviour:
     soundType: 1
     volume: 0.125
     isPersistent: 0
+  player_Animator: {fileID: 0}
 --- !u!114 &-2300652163101954379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1259,6 +1262,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 641ce49655a1404aaf1759e9b2105a9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerAnimator: {fileID: 0}
   isEnabled: 1
   slideStrength: 4
   slideHeight: 1
@@ -1427,6 +1431,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugFlashlight: {fileID: 4801983020748179433}
   canBeEnabled: 1
+--- !u!114 &6786839480701899547
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3703685084401515452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69f9b5c1ee5946faa0472c121c9c3401, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  completedTutorials: []
 --- !u!1 &3974296981908917931
 GameObject:
   m_ObjectHideFlags: 0
