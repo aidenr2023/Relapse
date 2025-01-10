@@ -17,26 +17,27 @@ public interface IActor : IInterfacedObject
     /// </summary>
     /// <param name="amount">The amount to change the actor's health by.</param>
     /// <param name="changer">The actor that is changing the actor's health.</param>
-    public void ChangeHealth(float amount, IActor changer, IDamager damager);
+    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position);
 }
 
 public sealed class HealthChangedEventArgs : EventArgs
 {
-    private readonly IActor _actor;
-    private readonly IActor _changer;
-    private readonly IDamager _damagerObject;
-    private readonly float _amount;
+    public IActor Actor { get; }
 
-    public IActor Actor => _actor;
-    public IActor Changer => _changer;
-    public IDamager DamagerObject => _damagerObject;
-    public float Amount => _amount;
+    public IActor Changer { get; }
 
-    public HealthChangedEventArgs(IActor actor, IActor changer, IDamager damager, float amount)
+    public IDamager DamagerObject { get; }
+
+    public float Amount { get; }
+
+    public Vector3 Position { get; }
+
+    public HealthChangedEventArgs(IActor actor, IActor changer, IDamager damager, float amount, Vector3 position)
     {
-        _actor = actor;
-        _changer = changer;
-        _damagerObject = damager;
-        _amount = amount;
+        Actor = actor;
+        Changer = changer;
+        DamagerObject = damager;
+        Amount = amount;
+        Position = position;
     }
 }

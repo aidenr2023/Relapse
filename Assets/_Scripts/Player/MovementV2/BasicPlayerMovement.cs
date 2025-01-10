@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class BasicPlayerMovement : PlayerMovementScript
+public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 {
     #region Serialized Fields
 
@@ -12,7 +12,11 @@ public class BasicPlayerMovement : PlayerMovementScript
 
     [SerializeField] [Min(1)] private float sprintMultiplier = 1.5f;
 
-    [SerializeField] [Min(0)] private float jumpForce = 10f;
+    [Space, SerializeField, Min(0)] private float jumpForce = 10f;
+    [SerializeField, Min(0)] private float jumpGraceTime = 0.5f;
+    [SerializeField, Range(0, 1)] private float airMovementMultiplier = 0.5f;
+    [SerializeField] private float variableJumpForce = 1f;
+    [SerializeField, Min(0)] private float variableJumpTime = 1f;
 
     [Header("Sounds")] [SerializeField] private SoundPool footstepSoundPool;
 
@@ -20,52 +24,114 @@ public class BasicPlayerMovement : PlayerMovementScript
     [SerializeField] private float sprintingFootstepInterval = 0.25f;
 
     [SerializeField] private Sound jumpSound;
+    [SerializeField] private Animator player_Animator;
 
     #endregion
 
+    #region Private Fields
+
     private Vector2 _movementInput;
 
-    private bool _isSprinting;
-    private bool _isJumpThisFrame;
+    private readonly CountdownTimer _footstepTimer = new(0.5f, true, false);
+    private float _timeSinceLastFootstep;
 
-    private CountdownTimer _footstepTimer = new(0.5f, true, false);
+    private CountdownTimer _jumpGraceTimer;
 
+    private bool _isJumpHeld;
+    private CountdownTimer _variableJumpTimer;
+
+    #endregion
 
     #region Getters
 
-    public override InputActionMap InputActionMap => InputManager.Instance.PlayerControls.PlayerMovementBasic;
+    public HashSet<InputData> InputActions { get; } = new();
+
+    public override InputActionMap InputActionMap => InputManager.Instance.PControls.PlayerMovementBasic;
 
     public Vector2 MovementInput => _movementInput;
 
-    private bool CanSprint => canSprintWithoutPower && ParentComponent.IsGrounded;
+    // public bool CanSprint => canSprintWithoutPower && ParentComponent.IsGrounded;
+    public bool CanSprint
+    {
+        get => canSprintWithoutPower;
+        set => canSprintWithoutPower = value;
+    }
 
-    public bool IsSprinting => _isSprinting;
+    public bool IsSprinting => ParentComponent.IsSprinting;
 
     public float SprintMultiplier => sprintMultiplier;
+
+    public bool IsTryingToJump { get; set; }
+
+    public bool IsSetToJump => _jumpGraceTimer.IsActive && !_jumpGraceTimer.IsComplete;
+
+    public bool CanJump
+    {
+        get => canJumpWithoutPower;
+        set => canJumpWithoutPower = value;
+    }
 
     #endregion
 
     #region Initialization Functions
 
-    private void Start()
+    protected override void CustomAwake()
     {
         // Initialize the controls
-        InitializeControls();
+        InitializeInput();
 
-        // Initialize the footstep sounds
-        InitializeFootsteps();
+        // Initialize the jump grace timer
+        _jumpGraceTimer = new CountdownTimer(jumpGraceTime, false, true);
+        _jumpGraceTimer.OnTimerEnd += () => _jumpGraceTimer.Stop();
+        _jumpGraceTimer.Stop();
+
+        // Initialize the variable jump timer
+        _variableJumpTimer = new CountdownTimer(variableJumpTime, false, true);
+        _variableJumpTimer.Start();
     }
 
-    private void InitializeControls()
+    private void Start()
     {
-        // Subscribe to the movement input
-        InputManager.Instance.PlayerControls.PlayerMovementBasic.Move.performed += OnMovePerformed;
-        InputManager.Instance.PlayerControls.PlayerMovementBasic.Move.canceled += OnMoveCanceled;
+        // Initialize the footstep sounds
+        InitializeFootsteps();
 
-        InputManager.Instance.PlayerControls.PlayerMovementBasic.Sprint.performed += OnSprintPerformed;
-        InputManager.Instance.PlayerControls.PlayerMovementBasic.Sprint.canceled += OnSprintCanceled;
+        // Add this script to the debug manager
+        DebugManager.Instance.AddDebuggedObject(this);
+    }
 
-        InputManager.Instance.PlayerControls.PlayerMovementBasic.Jump.performed += OnJumpPerformed;
+    private void OnEnable()
+    {
+        // Register this script with the input manager
+        InputManager.Instance.Register(this);
+    }
+
+    private void OnDisable()
+    {
+        // Unregister this script with the input manager
+        InputManager.Instance.Unregister(this);
+    }
+
+    public void InitializeInput()
+    {
+        InputActions.Add(new InputData(
+            InputManager.Instance.PControls.PlayerMovementBasic.Move, InputType.Performed, OnMovePerformed)
+        );
+        InputActions.Add(new InputData(
+            InputManager.Instance.PControls.PlayerMovementBasic.Move, InputType.Canceled, OnMoveCanceled)
+        );
+
+        InputActions.Add(new InputData(
+            InputManager.Instance.PControls.PlayerMovementBasic.Jump, InputType.Performed, OnJumpPerformed)
+        );
+        InputActions.Add(new InputData(
+            InputManager.Instance.PControls.PlayerMovementBasic.Jump, InputType.Canceled, SetJumpOnJumpCanceled)
+        );
+    }
+
+    private void SetJumpOnJumpCanceled(InputAction.CallbackContext obj)
+    {
+        // Set the is jump held flag to false
+        _isJumpHeld = false;
     }
 
     private void InitializeFootsteps()
@@ -81,6 +147,9 @@ public class BasicPlayerMovement : PlayerMovementScript
 
         // Reset the timer
         _footstepTimer.Reset();
+
+        // Reset the time since the last footstep
+        _timeSinceLastFootstep = 0;
     }
 
     #endregion
@@ -91,192 +160,280 @@ public class BasicPlayerMovement : PlayerMovementScript
     {
         // Get the movement input
         _movementInput = obj.ReadValue<Vector2>();
+
+        // set walking true in animator
+        if (player_Animator != null)
+            player_Animator.SetBool("Walking", true);
+
+        // Reset the parent component's isSprintToggled flag if there is no forward input
+        if (_movementInput == Vector2.zero)
+            ParentComponent.IsSprintToggled = false;
     }
 
     private void OnMoveCanceled(InputAction.CallbackContext obj)
     {
         // Reset the movement input
         _movementInput = Vector2.zero;
+
+        if (player_Animator != null)
+            player_Animator.SetBool("Walking", false);
     }
 
-    private void OnSprintPerformed(InputAction.CallbackContext obj)
-    {
-        // Return if the player cannot sprint
-        if (!CanSprint)
-            return;
 
-        // Set the sprinting flag to true
-        _isSprinting = true;
-    }
-
-    private void OnSprintCanceled(InputAction.CallbackContext obj)
-    {
-        // Set the sprinting flag to false
-        _isSprinting = false;
-    }
-
-    private void OnJumpPerformed(InputAction.CallbackContext obj)
+    public void OnJumpPerformed(InputAction.CallbackContext obj)
     {
         // Return if the player cannot jump
         if (!canJumpWithoutPower)
             return;
 
-        // If the player is not grounded, return
-        if (!ParentComponent.IsGrounded)
-        {
-            _isJumpThisFrame = false;
+        // Return if this is not the active movement script
+        if (ParentComponent.CurrentMovementScript != this)
             return;
-        }
 
-        // Set the jump flag to true
-        _isJumpThisFrame = true;
+        // Restart the jump grace timer
+        _jumpGraceTimer.SetMaxTimeAndReset(jumpGraceTime);
+        _jumpGraceTimer.Start();
+
+        // Reset the slide pre fire of the slide script
+        ParentComponent.PlayerSlide.ResetSlidePreFire();
     }
 
     #endregion
-
 
     #region Update Functions
 
     private void Update()
     {
+        // Update the jump grace timer
+        _jumpGraceTimer.SetMaxTime(jumpGraceTime);
+        _jumpGraceTimer.Update(Time.deltaTime);
+
+        // Update the variable jump timer
+        _variableJumpTimer.SetMaxTime(variableJumpTime);
+        _variableJumpTimer.Update(Time.deltaTime);
+
+        // Set the is trying to jump flag to false if the player is falling
+        if (ParentComponent.Rigidbody.velocity.y < 0)
+            IsTryingToJump = false;
+
         // Update the footstep sounds
         UpdateFootsteps();
     }
 
     private void UpdateFootsteps()
     {
-        // Update the footstep timer
-        _footstepTimer.Update(Time.deltaTime);
-
         // Set the footstep timer's max time based on the player's walking/sprinting state
-        _footstepTimer.SetMaxTime(!_isSprinting ? walkingFootstepInterval : sprintingFootstepInterval);
+        _footstepTimer.SetMaxTime(walkingFootstepInterval);
+
+        // Update the time since the last footstep
+        _timeSinceLastFootstep += Time.deltaTime;
 
         // If this is NOT the active movement script, disable the footstep timer
         if (ParentComponent.CurrentMovementScript != this)
             _footstepTimer.SetActive(false);
+
+        // If the player is not grounded, disable the footstep timer
+        if (!ParentComponent.IsGrounded)
+            _footstepTimer.SetActive(false);
+
+        var sprintingMultiplier = IsSprinting ? walkingFootstepInterval / sprintingFootstepInterval : 1;
+        var moveMagnitude = _movementInput.magnitude;
+
+        // Update the footstep timer
+        _footstepTimer.Update(Time.deltaTime * sprintingMultiplier * moveMagnitude);
     }
 
     public override void FixedMovementUpdate()
     {
+        // Update the sprinting state for toggled sprinting
+        if (MovementInput == Vector2.zero)
+            ParentComponent.IsSprintToggled = false;
+
         // Update the movement
-        if (ParentComponent.IsGrounded)
-            UpdateGroundedLateralMovement();
-        else
-            UpdateAirborneLateralMovement();
+        UpdateLateralMovement();
+
+        // Apply the lateral speed limit
+        ApplyLateralSpeedLimit();
 
         // Update the jump
         UpdateJump();
 
-        // Apply the lateral speed
-        var sprintMod = _isSprinting ? sprintMultiplier : 1;
-        ApplyLateralSpeedLimit(ParentComponent.MovementSpeed * sprintMod);
+        if (InputManager.Instance.PControls.PlayerMovementBasic.Jump.ReadValue<float>() < 0)
+            _isJumpHeld = false;
+
+        // Apply the variable jump force
+        if (_isJumpHeld && !_variableJumpTimer.IsComplete)
+        {
+            var gravity = -Physics.gravity;
+            var gravityMagnitude = gravity.magnitude;
+
+            ParentComponent.Rigidbody.AddForce(
+                gravity.normalized * (gravityMagnitude + variableJumpForce),
+                ForceMode.Acceleration
+            );
+
+            // ParentComponent.Rigidbody.AddForce(
+            //     Vector3.up * variableJumpForce,
+            //     ForceMode.VelocityChange
+            // );
+        }
     }
 
-    private void UpdateGroundedLateralMovement()
+    private void UpdateLateralMovement()
     {
         // Return if the movement input is zero
-        if (_movementInput == Vector2.zero)
-        {
-            // Kill the velocity
-            ParentComponent.Rigidbody.velocity = new Vector3(0, 0, 0);
-
-            // Stop the footstep timer to prevent footstep sounds
+        // Stop the footstep timer to prevent footstep sounds
+        if (_movementInput.magnitude <= 0)
             _footstepTimer.SetActive(false);
 
-            return;
+        var cameraTransform = ParentComponent.Orientation;
+
+        // Get the camera's forward without the y component
+        var cameraForward = new Vector3(cameraTransform.forward.x, 0, cameraTransform.forward.z).normalized;
+
+        // Get the camera's right without the y component
+        var cameraRight = new Vector3(cameraTransform.right.x, 0, cameraTransform.right.z).normalized;
+
+        // Get the current move multiplier
+        var currentMoveMult = IsSprinting ? sprintMultiplier : 1;
+
+        // Calculate the movement vector
+        var forwardMovement = (cameraForward * _movementInput.y);
+        var rightMovement = (cameraRight * _movementInput.x);
+
+        if (ParentComponent.IsGrounded)
+        {
+            // Get the normal of the current surface
+            var surfaceNormal = ParentComponent.GroundHit.normal;
+
+            // Get the forward and right vectors based on the surface normal
+            forwardMovement = Vector3.ProjectOnPlane(forwardMovement, surfaceNormal);
+            rightMovement = Vector3.ProjectOnPlane(rightMovement, surfaceNormal);
+
+            // var rightNormal = Vector3.Cross(surfaceNormal, cameraForward);
+            // var forwardNormal = Vector3.Cross(surfaceNormal, cameraRight);
+            //
+            // forwardMovement = forwardNormal.normalized * forwardMovement.magnitude;
+            // rightMovement = rightNormal.normalized * rightMovement.magnitude;
+            //
+            // if (_movementInput.y > 0)
+            //     forwardMovement = -forwardMovement;
+            // if (_movementInput.x < 0)
+            //     rightMovement = -rightMovement;
+
+            // Debug.Log(
+            //     $"DOT: " +
+            //     $"{Vector3.Dot(rightNormal.normalized, rightMovement.normalized):0.00000000} - " +
+            //     $"{rightNormal.normalized} " +
+            //     $"{rightMovement.normalized}");
         }
 
-        // Get the camera's transform
-        // var cameraTransform = ParentComponent.ParentComponent.PlayerCameraController.CurrentCamera.transform;
-
-        var cameraTransform = ParentComponent.Orientation;
-
-        // Get the camera's forward without the y component
-        var cameraForward = new Vector3(cameraTransform.forward.x, 0, cameraTransform.forward.z).normalized;
-
-        // Get the camera's right without the y component
-        var cameraRight = new Vector3(cameraTransform.right.x, 0, cameraTransform.right.z).normalized;
-
-        cameraForward = ParentComponent.GroundCollisionForward.normalized;
-        cameraRight = ParentComponent.GroundCollisionRight.normalized;
-
-        // Calculate the movement direction relative to the player's transform
-        var movementDirection =
-            cameraRight * _movementInput.x +
-            cameraForward * _movementInput.y;
+        // Get the angle of the forward movement
+        var angle = Vector3.Angle(Vector3.up, forwardMovement);
 
 
-        var sprintMult = _isSprinting ? sprintMultiplier : 1;
+        // Calculate the current movement
+        var currentMovement = forwardMovement + rightMovement;
 
-        // Calculate the move vector
-        var move = movementDirection * (ParentComponent.MovementSpeed * sprintMult);
+        // Normalize the current movement if the magnitude is greater than 1
+        if (currentMovement.magnitude > 1)
+            currentMovement.Normalize();
 
-        // Set the velocity of the rigid body
-        // ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, 0, move.z), ForceMode.VelocityChange);
+        // Calculate how fast the player should be moving
+        var currentTargetVelocityMagnitude = ParentComponent.MovementSpeed * currentMoveMult;
 
-        // if (move.y >= 0)
-        //     ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, 0, move.z), ForceMode.VelocityChange);
-        // else
-        //     ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, move.y, move.z), ForceMode.VelocityChange);
+        // Calculate the velocity the rigidbody should be moving at
+        var targetVelocity = (currentMovement * currentTargetVelocityMagnitude) +
+                             new Vector3(0, ParentComponent.Rigidbody.velocity.y, 0);
 
-        if (move.y >= 0)
-            ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, 0, move.z), ForceMode.VelocityChange);
-        else
-            ParentComponent.Rigidbody.CustomAddForce(new Vector3(move.x, move.y, move.z), ForceMode.VelocityChange);
+        // Get the dot product between the target velocity and the current velocity
+        var directionChangeDot = Vector3.Dot(ParentComponent.Rigidbody.velocity.normalized, targetVelocity.normalized);
 
+        // Evaluate the direction change dot to get the acceleration factor
+        var evaluation = ParentComponent.AccelerationFactorFromDot.Evaluate(directionChangeDot);
+
+        // This is the force required to reach the target velocity in EXACTLY one frame
+        var targetForce = (targetVelocity - ParentComponent.Rigidbody.velocity) / Time.fixedDeltaTime;
+
+        // Calculate the force that is going to be applied to the rigidbody THIS frame
+        var force = targetForce.normalized * (ParentComponent.Acceleration * evaluation);
+
+        // If the player is midair, apply the air movement multiplier
+        if (!ParentComponent.IsGrounded)
+            force *= airMovementMultiplier;
+
+        // If the player only needs to move a little bit, just set the force to the target force
+        if (targetForce.magnitude < ParentComponent.Acceleration)
+            force = targetForce;
+
+        // If the force is greater than the target force, clamp it
+        if (force.magnitude > targetForce.magnitude)
+            force = targetForce;
+
+        // Apply the force to the rigidbody
+        ParentComponent.Rigidbody.AddForce(force, ForceMode.Acceleration);
+
+        // Ensure the player stays on the ground when moving downward along a slope
+        // if (currentMovement.y < 0)
+        //     force += Vector3.down * (20f * ParentComponent.Rigidbody.velocity.magnitude);
+        if (force.y < 0)
+        {
+            // Debug.Log($"FORCE: {force.normalized} - MOVEMENT {currentMovement.normalized}");
+            // force += new Vector3(0, currentMovement.normalized.y, 0) * (currentTargetVelocityMagnitude * 16);
+        }
 
         // Set the footstep timer to active
-        _footstepTimer.SetActive(true);
+        if (!_footstepTimer.IsActive && _movementInput.magnitude > 0)
+        {
+            _footstepTimer.SetActive(true);
+
+            // If it has been a while since the last footstep, force the footstep timer to complete
+            if (_timeSinceLastFootstep > 0.5f)
+                _footstepTimer.ForcePercent(1);
+        }
     }
 
-    private void UpdateAirborneLateralMovement()
+    private void ApplyLateralSpeedLimit()
     {
-        // Disable the footstep timer
-        _footstepTimer.SetActive(false);
+        var vel = ParentComponent.Rigidbody.velocity;
 
-        // Return if the movement input is zero
-        if (_movementInput == Vector2.zero)
+        // Get the lateral velocity of the player
+        var lateralVelocity = new Vector3(vel.x, 0, vel.z);
+
+        // Get the speed limit
+        var speedLimit = ParentComponent.HardSpeedLimit;
+
+        // If the lateral velocity is less than the speed limit, return
+        if (lateralVelocity.magnitude <= speedLimit)
             return;
 
-        // Get the camera's transform
-        // var cameraTransform = ParentComponent.ParentComponent.PlayerCameraController.CurrentCamera.transform;
-        var cameraTransform = ParentComponent.Orientation;
+        // Get the normalized lateral velocity
+        var normalizedLateralVelocity = lateralVelocity.normalized;
 
-        // Get the camera's forward without the y component
-        var cameraForward = new Vector3(cameraTransform.forward.x, 0, cameraTransform.forward.z).normalized;
+        const float fixedFrameTime = 1 / 50f;
+        var frameAmount = Time.fixedDeltaTime / fixedFrameTime;
 
-        // Get the camera's right without the y component
-        var cameraRight = new Vector3(cameraTransform.right.x, 0, cameraTransform.right.z).normalized;
+        var lerpAmount = ParentComponent.HardSpeedLimitLerpAmount;
 
-        // Calculate the movement direction relative to the player's transform
-        var movementDirection =
-            cameraRight * _movementInput.x +
-            cameraForward * _movementInput.y;
+        // Calculate the new velocity
+        var newVelocity =
+            Vector3.Lerp(lateralVelocity, normalizedLateralVelocity * speedLimit, lerpAmount * frameAmount);
 
-        var sprintMult = _isSprinting ? sprintMultiplier : 1;
-
-        // Calculate the move vector
-        var move = movementDirection * (ParentComponent.MovementSpeed * sprintMult);
-
-        // Set the velocity of the rigid body
-        ParentComponent.Rigidbody.CustomAddForce(
-            new Vector3(move.x, 0, move.z), ForceMode.Impulse
-        );
-
-        // ParentComponent.Rigidbody.velocity = new Vector3(ParentComponent.Rigidbody.velocity.x, 0, ParentComponent.Rigidbody.velocity.z);
+        // Apply the new velocity
+        ParentComponent.Rigidbody.velocity = new Vector3(newVelocity.x, vel.y, newVelocity.z);
     }
 
     private void UpdateJump()
     {
-        // Return if the jump this frame flag is false
-        if (!_isJumpThisFrame)
+        if (!canJumpWithoutPower)
             return;
-
-        // Set the jump this frame flag to false
-        _isJumpThisFrame = false;
 
         // Return if the player is not grounded
         if (!ParentComponent.IsGrounded)
+            return;
+
+        // Return if the jump grace timer is not active or is complete
+        if (!_jumpGraceTimer.IsActive || _jumpGraceTimer.IsComplete)
             return;
 
         // Jump in the direction of the movement input
@@ -288,17 +445,29 @@ public class BasicPlayerMovement : PlayerMovementScript
         // Normalize the movement input
         movementInput = movementInput.normalized;
 
-        // Get the direction of the jump relative to the transform
-        var jumpDirection =
-            (ParentComponent.Orientation.forward * movementInput.y +
-             ParentComponent.Orientation.right * movementInput.x +
-             ParentComponent.transform.up).normalized;
+        var jumpDirection = ParentComponent.transform.up.normalized;
 
-        // Add a force to the rigid body
-        ParentComponent.Rigidbody.CustomAddForce(jumpDirection * jumpForce, ForceMode.VelocityChange);
+        // Kill the vertical velocity
+        ParentComponent.Rigidbody.velocity =
+            new Vector3(ParentComponent.Rigidbody.velocity.x, 0, ParentComponent.Rigidbody.velocity.z);
+
+        ParentComponent.Rigidbody.AddForce(jumpDirection * jumpForce, ForceMode.VelocityChange);
 
         // Play the jump sound
         SoundManager.Instance.PlaySfx(jumpSound);
+
+        // Set the is trying to jump flag to true
+        IsTryingToJump = true;
+
+        // Reset the jump grace timer
+        _jumpGraceTimer.SetMaxTimeAndReset(jumpGraceTime);
+        _jumpGraceTimer.Stop();
+
+        // Set the is jump held flag to true
+        _isJumpHeld = true;
+
+        // Reset the variable jump timer
+        _variableJumpTimer.SetMaxTimeAndReset(variableJumpTime);
     }
 
     #endregion
@@ -313,8 +482,38 @@ public class BasicPlayerMovement : PlayerMovementScript
         canJumpWithoutPower = canJump;
     }
 
+    public void ResetJumpPreFire()
+    {
+        // Reset the jump grace timer
+        _jumpGraceTimer.SetMaxTimeAndReset(jumpGraceTime);
+        _jumpGraceTimer.Stop();
+    }
+
+    #region Debug
+
     public override string GetDebugText()
     {
-        return $"\tInput   : {_movementInput}\n";
+        return
+            $"\tInput   : {_movementInput}\n" +
+            $"\tJump Timer: {_jumpGraceTimer.Percentage:0.00}\n" +
+            $"\tTrying to Jump: {IsTryingToJump}";
     }
+
+    private void OnDrawGizmos()
+    {
+        const float interval = 0.125f;
+
+        if (ParentComponent == null)
+            return;
+
+        var surfaceNormal = ParentComponent.GroundHit.normal;
+
+        var surfaceForward = Vector3.ProjectOnPlane(ParentComponent.Orientation.forward, surfaceNormal).normalized;
+
+        Gizmos.color = Color.red;
+        for (var i = 0; i < 20 / interval; i++)
+            Gizmos.DrawSphere(ParentComponent.GroundHit.point + surfaceForward * (i * interval), 0.125f / 8);
+    }
+
+    #endregion
 }

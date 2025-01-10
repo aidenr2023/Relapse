@@ -182,14 +182,14 @@ public class DialogueUI : MonoBehaviour
         // Set the dialogue UI to be visible
         SetVisibility(true);
 
-        Debug.Log($"Setting the visibility to true for {gameObject.name}");
+        // Debug.Log($"Setting the visibility to true for {gameObject.name}");
     }
 
     public void NextDialogue()
     {
-        Debug.Log($"Dialogue Manager instance: {DialogueManager.Instance}");
-        Debug.Log($"DialogueUI instance: {DialogueManager.Instance.DialogueUI}");
-        Debug.Log($"Current Dialogue: {DialogueManager.Instance.DialogueUI.CurrentDialogue}");
+        // Debug.Log($"Dialogue Manager instance: {DialogueManager.Instance}");
+        // Debug.Log($"DialogueUI instance: {DialogueManager.Instance.DialogueUI}");
+        // Debug.Log($"Current Dialogue: {DialogueManager.Instance.DialogueUI.CurrentDialogue}");
 
         if (_currentDialogue is DialogueChoiceNode)
             return;

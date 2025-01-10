@@ -11,10 +11,6 @@ public class JournalUIManager : MonoBehaviour
     #region Serialized Fields
 
     // TODO: Delete
-    [SerializeField] private JournalObjective testObjective;
-    [SerializeField] private InventoryEntry testInventoryEntry;
-    [SerializeField] private PowerScriptableObject testPower;
-    [SerializeField] private MemoryScriptableObject testMemory;
     [SerializeField] private Button backButton;
 
     [Header("Header Buttons")] [SerializeField]
@@ -145,10 +141,6 @@ public class JournalUIManager : MonoBehaviour
         // Clear the content area
         foreach (Transform child in objectiveContentArea.transform)
             Destroy(child.gameObject);
-
-        // // TODO: Delete
-        // for (var i = 0; i < 10; i++)
-        //     CreateObjectiveButton(testObjective);
 
         // If the instance of the JournalObjectiveManager is null, return
         if (JournalObjectiveManager.Instance == null)
@@ -359,10 +351,6 @@ public class JournalUIManager : MonoBehaviour
         foreach (Transform child in inventoryContentArea.transform)
             Destroy(child.gameObject);
 
-        // // TODO: Delete
-        // for (var i = 0; i < 10; i++)
-        //     CreateInventoryItem(testInventoryEntry);
-
         // Return if the instance of the InventoryManager is null
         if (Player.Instance?.PlayerInventory == null)
             return;
@@ -463,9 +451,6 @@ public class JournalUIManager : MonoBehaviour
         foreach (Transform child in powersContentArea.transform)
             Destroy(child.gameObject);
 
-        // // TODO: Delete
-        // CreatePowerItem(testPower);
-
         // If the instance of the PowerManager is null, return
         if (Player.Instance?.PlayerPowerManager == null)
             return;
@@ -492,7 +477,7 @@ public class JournalUIManager : MonoBehaviour
             ? medsButton
             : drugsButton;
 
-        Debug.Log($"Setting Nav down to {subheaderButton.name}");
+        // Debug.Log($"Setting Nav down to {subheaderButton.name}");
 
         // Set the header navigation down based on the powertype
         SetHeaderNavDown(subheaderButton);

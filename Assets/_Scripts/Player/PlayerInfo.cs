@@ -4,18 +4,19 @@ using System.Collections.Generic;
 using Cinemachine;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-public class PlayerInfo : MonoBehaviour, IActor, IDamager
+public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 {
-    #region Fields
-
-    [SerializeField] private WinLose winLose; // Reference to the WinLose script
+    #region Serialized Fields
 
     [Header("Health Settings")] [SerializeField]
     private float maxHealth = 3f;
 
     [SerializeField] private float health;
+
+    [SerializeField] [Min(0)] private float invincibilityDuration = 1f;
 
     // TODO: Eventually, I might move this code to another script.
     // For now though, I'm keeping this here to make things easier
@@ -23,7 +24,7 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
     private float maxTolerance;
 
     [SerializeField] private float currentTolerance;
-    [SerializeField] private TolereanceMeter tolereanceMeter;
+    [SerializeField] private TolereanceMeter toleranceMeter;
 
     [Header("Relapse Image Overlay")] [SerializeField]
     private Image relapseImage;
@@ -31,11 +32,6 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
     [SerializeField] private AnimationCurve relapseOpacityCurve;
     [SerializeField] [Min(0.00001f)] private float relapseOpacityDuration = 1f;
     [SerializeField] private CountdownTimer relapseOpacityTimer = new(1);
-
-    /// <summary>
-    /// The number of times the player has relapsed during this level.
-    /// </summary>
-    private int _relapseCount;
 
     [Tooltip("The number of relapses the player can have before losing the level.")] [SerializeField]
     private int relapsesToLose = 3;
@@ -46,18 +42,30 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
     [Header("Relapsing Settings")] [SerializeField] [Min(0)]
     private float relapseDuration = 3;
 
-    private float _currentRelapseDuration;
-
-    private bool _isRelapsing;
-
     [SerializeField] private TMP_Text relapseText;
-
-    private InputUserHandler _inputUserHandler;
 
     // TODO: Find a better way to do this
     [SerializeField] private CinemachineVirtualCamera vCam;
 
-    #endregion Fields
+    [Header("Audio"), SerializeField] private Sound hitSound;
+    [SerializeField] private Sound deathSound;
+
+    #endregion
+
+    #region Private Fields
+
+    private CountdownTimer _invincibilityTimer;
+
+    /// <summary>
+    /// The number of times the player has relapsed during this level.
+    /// </summary>
+    private int _relapseCount;
+
+    private float _currentRelapseDuration;
+
+    private bool _isRelapsing;
+
+    #endregion
 
     #region Getters
 
@@ -77,6 +85,12 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
     public int RelapseCount => _relapseCount;
 
+    public bool IsInvincible => _invincibilityTimer.IsActive;
+
+    public CinemachineVirtualCamera VirtualCamera => vCam;
+
+    public bool IsInvincibleBecauseDamaged => _invincibilityTimer.IsActive && _invincibilityTimer.Percentage < 1;
+
     #endregion
 
     #region Events
@@ -85,12 +99,12 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
     /// An event that is called when the player relapses.
     /// Used mostly to connect to outside scripts.
     /// </summary>
-    public Action<PlayerInfo> OnRelapseStart;
+    public Action<PlayerInfo> onRelapseStart;
 
     /// <summary>
     /// An event that is called when the player's relapse ends.
     /// </summary>
-    public Action<PlayerInfo> OnRelapseEnd;
+    public Action<PlayerInfo> onRelapseEnd;
 
     public event HealthChangedEventHandler OnDamaged;
     public event HealthChangedEventHandler OnHealed;
@@ -106,19 +120,16 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
         // health = maxHealth;
 
         // Find the tolerance meter in the scene
-        if (tolereanceMeter == null)
-            tolereanceMeter = FindObjectOfType<TolereanceMeter>();
+        if (toleranceMeter == null)
+            toleranceMeter = FindObjectOfType<TolereanceMeter>();
 
         // If the tolerance meter is still null, log an error
-        if (tolereanceMeter == null)
+        if (toleranceMeter == null)
             Debug.LogError("Tolerance Meter is not assigned and could not be found.");
 
         // Hide the relapse text
         if (relapseText != null)
             relapseText.gameObject.SetActive(false);
-
-        // Initialize the input handler
-        InitializeInput();
 
         // OnHealed += (sender, args) =>
         //     Debug.Log(
@@ -126,36 +137,48 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
         // OnDamaged += (sender, args) =>
         //     Debug.Log(
         //         $"{gameObject.name} damaged: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
-        OnDeath += (sender, args) =>
-            Debug.Log($"{gameObject.name} died: {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
-
-        OnDeath += (sender, args) =>
-            Debug.Log($"{(args.DamagerObject == args.Actor ? "RELAPSE" : "DEATH")}!");
+        // OnDeath += (sender, args) =>
+        //     Debug.Log($"{gameObject.name} died: {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
+        //
+        // OnDeath += (sender, args) =>
+        //     Debug.Log($"{(args.DamagerObject == args.Actor ? "RELAPSE" : "DEATH")}!");
 
         // Disable the relapse image
         relapseImage.enabled = false;
-
         relapseOpacityTimer.OnTimerEnd += () => { relapseOpacityTimer.Reset(); };
 
         // Initialize the events
         InitializeEvents();
-    }
 
-    private void InitializeInput()
-    {
-        // Create the input handler
-        _inputUserHandler = new InputUserHandler(gameObject);
+        // Initialize the invincibility timer
+        _invincibilityTimer = new CountdownTimer(invincibilityDuration, false, false);
+        _invincibilityTimer.OnTimerEnd += () => _invincibilityTimer.Stop();
     }
 
     private void InitializeEvents()
     {
         // Subscribe to the OnRelapseStart event
         // Change the color of the relapse image
-        OnRelapseStart += StartRelapseImage;
+        onRelapseStart += StartRelapseImage;
 
         // Subscribe to the OnRelapseEnd event
         // Change the color of the relapse image
-        OnRelapseEnd += EndRelapseImage;
+        onRelapseEnd += EndRelapseImage;
+
+        // Subscribe to the OnDamaged event to play a sound
+        OnDamaged += PlaySoundOnDamaged;
+    }
+
+    private void PlaySoundOnDamaged(object sender, HealthChangedEventArgs e)
+    {
+        var cSound = (health > 0) ? hitSound : deathSound;
+
+        // Return if the sound is null
+        if (cSound == null)
+            return;
+
+        // Play the sound
+        SoundManager.Instance.PlaySfx(cSound);
     }
 
     private void StartRelapseImage(PlayerInfo obj)
@@ -190,9 +213,6 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
     private void Update()
     {
-        // Update the input users
-        _inputUserHandler.UpdateInputUsers();
-
         // Update the relapse duration
         UpdateRelapseDuration();
 
@@ -209,7 +229,10 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
         RelapseImageUpdate();
 
         if (maxTolerance > 0)
-            tolereanceMeter.UpdateToleranceUI(currentTolerance / maxTolerance); // Scale to 0-1
+            toleranceMeter.UpdateToleranceUI(currentTolerance / maxTolerance); // Scale to 0-1
+
+        // Update the invincibility timer
+        _invincibilityTimer.Update(Time.deltaTime);
     }
 
     private void UpdateRelapseDuration()
@@ -305,17 +328,11 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
     #endregion
 
-    private void OnDestroy()
-    {
-        // Remove all input
-        _inputUserHandler?.RemoveAll();
-    }
-
-    public void ChangeHealth(float amount, IActor changer, IDamager damager)
+    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position)
     {
         // If the amount is negative, the player is taking damage
         if (amount < 0)
-            TakeDamage(-amount, changer, damager);
+            TakeDamage(-amount, changer, damager, position);
 
         // If the amount is positive, the player is gaining health
         else if (amount > 0)
@@ -323,28 +340,32 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
             health = Mathf.Clamp(health + amount, 0, maxHealth);
 
             // Invoke the OnHealed event
-            var args = new HealthChangedEventArgs(this, changer, damager, amount);
+            var args = new HealthChangedEventArgs(this, changer, damager, amount, position);
             OnHealed?.Invoke(this, args);
         }
     }
 
-    private void TakeDamage(float damageAmount, IActor changer, IDamager damager)
+    private void TakeDamage(float damageAmount, IActor changer, IDamager damager, Vector3 position)
     {
+        // Return if the player is invincible
+        if (_invincibilityTimer.IsActive)
+            return;
+
         health = Mathf.Clamp(health - damageAmount, 0, maxHealth);
 
         // Invoke the OnDamaged event
-        var args = new HealthChangedEventArgs(this, changer, damager, damageAmount);
+        var args = new HealthChangedEventArgs(this, changer, damager, damageAmount, position);
         OnDamaged?.Invoke(this, args);
 
         if (health <= 0)
         {
             // Invoke the OnDeath event
             OnDeath?.Invoke(this, args);
-
-            // Trigger the lose condition
-            if (winLose != null)
-                winLose.Lose("The Player Died!");
         }
+
+        // Start the invincibility timer
+        _invincibilityTimer.SetMaxTimeAndReset(invincibilityDuration);
+        _invincibilityTimer.Start();
     }
 
     private void ClampTolerance()
@@ -355,7 +376,7 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
     public void ChangeTolerance(float amount)
     {
         currentTolerance = Mathf.Clamp(currentTolerance + amount, 0, maxTolerance);
-        tolereanceMeter.UpdateToleranceUI(currentTolerance / maxTolerance); // Scale the dial
+        toleranceMeter.UpdateToleranceUI(currentTolerance / maxTolerance); // Scale the dial
 
         // The player will relapse if the tolerance meter is too high
         if (currentTolerance >= maxTolerance)
@@ -389,7 +410,7 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
         _currentRelapseDuration = 0;
 
         // Invoke the relapse event
-        OnRelapseStart?.Invoke(this);
+        onRelapseStart?.Invoke(this);
     }
 
     private void EndRelapse()
@@ -405,16 +426,12 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
             relapseText.gameObject.SetActive(false);
 
         // Invoke the end relapse event
-        OnRelapseEnd?.Invoke(this);
+        onRelapseEnd?.Invoke(this);
     }
 
     private void DieFromRelapse()
     {
-        ChangeHealth(-maxHealth, this, this);
-
-        // Trigger the lose condition
-        if (winLose != null)
-            winLose.Lose("Player relapsed too many times!");
+        ChangeHealth(-maxHealth, this, this, transform.position);
     }
 
     public void ResetPlayer()
@@ -427,5 +444,24 @@ public class PlayerInfo : MonoBehaviour, IActor, IDamager
 
         // End the relapse
         EndRelapse();
+    }
+
+    public void SetUpHealth(float cHealth, float mHealth)
+    {
+        health = cHealth;
+        maxHealth = mHealth;
+    }
+
+    public void SetUpToxicity(float cToxicity, float mToxicity, int relapseCount, bool isRelapsing)
+    {
+        var wasRelapsing = _isRelapsing;
+
+        currentTolerance = cToxicity;
+        maxTolerance = mToxicity;
+        _relapseCount = relapseCount;
+        _isRelapsing = isRelapsing;
+
+        if (!isRelapsing && wasRelapsing)
+            EndRelapse();
     }
 }

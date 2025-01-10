@@ -587,7 +587,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6db7d14cf168478bacea0720a538d891, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  detectionOrigin: {fileID: 5567492738625143818}
   visionDistance: 30
+  autoDetectionDistance: 5
   visionAngle: 50
   patrolDetectionTimer:
     maxTime: 0.25
@@ -611,15 +613,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cc601c4836b49da97804b75a0eec5b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movementSpeed: 2
   patrolCheckpoints:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   checkpointProximityThreshold: 0.5
   animator: {fileID: 0}
-  idleAnimationName: Idle
-  walkAnimationName: Walk
-  runAnimationName: Run
   walkAnimationThreshold: 0
   runAnimationThreshold: 0
 --- !u!114 &7911376860155475657
@@ -900,6 +900,12 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 7883807693145882302}
   m_SourcePrefab: {fileID: 100100000, guid: fe619918a01194345bfdc22f26fe1c75, type: 3}
+--- !u!4 &5567492738625143818 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3456511432601972172, guid: fe619918a01194345bfdc22f26fe1c75,
+    type: 3}
+  m_PrefabInstance: {fileID: 7112393207719176646}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7295535133920972333 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: fe619918a01194345bfdc22f26fe1c75,

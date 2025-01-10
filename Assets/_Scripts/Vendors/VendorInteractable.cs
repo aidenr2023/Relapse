@@ -19,6 +19,8 @@ public class VendorInteractable : MonoBehaviour, IInteractable
 
     public HashSet<Material> OutlineMaterials { get; } = new();
 
+    public InteractionIcon InteractionIcon => InteractionIcon.Action;
+
     #endregion
 
     public void Interact(PlayerInteraction playerInteraction)

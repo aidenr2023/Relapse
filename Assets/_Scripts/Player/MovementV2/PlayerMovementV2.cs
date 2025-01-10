@@ -6,10 +6,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
-public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDebugged
+public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDebugged, IUsesInput
 {
-    private const float GROUND_VELOCITY_THRESHOLD = 0.05f;
-
     #region Serialized Fields
 
     [Header("Important Transforms")]
@@ -21,18 +19,38 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     // Reference to the player's orientation transform
     [SerializeField] private Transform orientation;
 
-    [Header("Ground Checking")]
-    // Reference to a transform used to check if the player is grounded
-    [SerializeField]
-    private Transform groundChecker;
+    //Reference to player animator
+    [SerializeField] private Animator playerAnimator;
 
-    // How far the ground checker should check for ground
-    [SerializeField] [Min(0)] private float groundCheckDistance = 0.2f;
+    [Header("Floating Controller")] [SerializeField, Min(0)]
+    private float desiredCapsuleHeightOffset = .25f;
 
-    [SerializeField] [Min(0)] private float groundCheckBoxAdjust = .25f;
+    [SerializeField, Min(1), Delayed] private float defaultPlayerHeight = 2;
 
-    [Header("Stats")] [SerializeField] [Min(0)]
-    private float movementSpeed = 10f;
+    [SerializeField] private float rideSpringStrength;
+    [SerializeField] private float rideSpringDamper;
+
+    [Space, SerializeField, Min(0.0001f)] private float downwardInterpolation = 1;
+    [SerializeField, Min(0.0001f)] private float maxForceAdjust = .25f;
+    [SerializeField, Min(0.0001f)] private float maxDownwardAngle = 35;
+    [SerializeField, Min(0.0001f)] private float velocityInterpolation = 1;
+
+    [Header("Locomotion")] [SerializeField]
+    private float maxSpeed = 10;
+
+    [SerializeField] private float acceleration = 200;
+    [SerializeField] private AnimationCurve accelerationFactorFromDot;
+
+    [SerializeField, Min(0)] private float hardSpeedLimit = 30;
+    [SerializeField, Range(0, 1)] private float hardSpeedLimitLerpAmount = .1f;
+
+    [SerializeField] private LayerMask layersToIgnore;
+
+    [Space, SerializeField] private bool staminaDrains = true;
+    [SerializeField, Min(0)] private float maxStamina = 100;
+    [SerializeField, Min(0)] private float staminaRegenRate = 20f;
+    [SerializeField, Min(0)] private float sprintStaminaDrainRate = 10f;
+    [SerializeField, Min(0)] private float staminaRegenDelay = .5f;
 
     #endregion
 
@@ -44,9 +62,24 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private InputActionMap _currentActionMap;
 
-    private bool _groundCollide;
+    private RaycastHit _floatingControllerHit;
 
-    private RaycastHit _groundCollideHitInfo;
+    private CapsuleCollider _capsuleCollider;
+
+    private bool _isSprinting;
+
+    private bool _wasPreviouslySprinting;
+
+    private bool _wasPreviouslyGrounded;
+
+    private Vector3 _landVelocity;
+
+    private float _currentPlayerHeight;
+    private float _rideHeight = .5f;
+
+    private float _currentStamina;
+
+    private CountdownTimer _staminaRegenDelayTimer;
 
     #endregion
 
@@ -62,32 +95,93 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public bool IsGrounded { get; private set; }
 
-    public bool IsSprinting { get; }
+    public RaycastHit GroundHit => _floatingControllerHit;
 
-    public float MovementSpeed => movementSpeed;
+    public AnimationCurve AccelerationFactorFromDot => accelerationFactorFromDot;
+
+    public float Acceleration => acceleration;
+
+    public bool IsSprintToggled { get; set; }
+
+    public bool IsSprinting => (_isSprinting || IsSprintToggled) && MovementInput.magnitude > 0.25f;
+
+    public float MovementSpeed => maxSpeed;
+
+    public float HardSpeedLimit => hardSpeedLimit;
+
+    public float HardSpeedLimitLerpAmount => hardSpeedLimitLerpAmount;
+
+    public float DefaultPlayerHeight => defaultPlayerHeight;
+
+    public float TargetPlayerHeight { get; set; }
 
     public PlayerMovementScript CurrentMovementScript => _movementScripts.Peek();
 
-    public PlayerWallRunning WallRunning { get; private set; }
-
-    public Vector3 GroundCollisionForward =>
-        Vector3.Cross(_groundCollideHitInfo.normal, -CameraPivot.transform.right).normalized;
-
-    public Vector3 GroundCollisionRight =>
-        Vector3.Cross(_groundCollideHitInfo.normal, CameraPivot.transform.forward).normalized;
-
     public BasicPlayerMovement BasicPlayerMovement { get; private set; }
 
+    public PlayerWallRunning WallRunning { get; private set; }
+
+    public PlayerDash Dash { get; private set; }
+
+    public PlayerSlide PlayerSlide { get; private set; }
+
+    public Vector3 GroundCollisionForward =>
+        Vector3.Cross(_floatingControllerHit.normal, -CameraPivot.transform.right).normalized;
+
+    public Vector3 GroundCollisionRight =>
+        Vector3.Cross(_floatingControllerHit.normal, CameraPivot.transform.forward).normalized;
+
+    public HashSet<InputData> InputActions { get; } = new();
+
+    public float CurrentStamina => _currentStamina;
+
+    public float MaxStamina => maxStamina;
+
+    public float StaminaRegenRate => staminaRegenRate;
+
     #endregion
+
+    public event Action OnSprintStart;
+    public event Action OnSprintEnd;
+
+    public event Action<Vector3> OnLand;
 
     protected override void CustomAwake()
     {
         // Get the components
-        GetComponents();
+        InitializeComponents();
+
+        // Initialize the input
+        InitializeInput();
+
+        TargetPlayerHeight = defaultPlayerHeight;
+        _currentPlayerHeight = defaultPlayerHeight;
+
+        // Set the current stamina to the max stamina
+        _currentStamina = maxStamina;
+
+        // Create the stamina regen delay timer
+        _staminaRegenDelayTimer = new CountdownTimer(staminaRegenDelay);
+        _staminaRegenDelayTimer.Start();
     }
 
-    private void GetComponents()
+    private void OnEnable()
     {
+        // Register this to the input manager
+        InputManager.Instance.Register(this);
+    }
+
+    private void OnDisable()
+    {
+        // Unregister this from the input manager
+        InputManager.Instance.Unregister(this);
+    }
+
+    private void InitializeComponents()
+    {
+        // Get the capsule collider
+        _capsuleCollider = GetComponent<CapsuleCollider>();
+
         // Get the rigid body
         _rigidbody = GetComponent<Rigidbody>();
 
@@ -96,6 +190,12 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         // Get the wall running component
         WallRunning = GetComponent<PlayerWallRunning>();
+
+        // Get the dash component
+        Dash = GetComponent<PlayerDash>();
+
+        // Get the slide component
+        PlayerSlide = GetComponent<PlayerSlide>();
     }
 
     private void Start()
@@ -113,78 +213,310 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         EnableTopMostInputMap();
     }
 
+    private void OnDestroy()
+    {
+        // Remove this object from the debug manager
+        DebugManager.Instance.RemoveDebuggedObject(this);
+    }
+
+    public void InitializeInput()
+    {
+        InputActions.Add(new InputData(
+            InputManager.Instance.PControls.Player.Sprint, InputType.Performed, OnSprintPerformed)
+        );
+        InputActions.Add(new InputData(
+            InputManager.Instance.PControls.Player.Sprint, InputType.Canceled, OnSprintCanceled)
+        );
+        InputActions.Add(new InputData(
+            InputManager.Instance.PControls.Player.SprintToggle, InputType.Performed,
+            OnSprintTogglePerformed)
+        );
+    }
+
     #region Update Functions
+
+    private void Update()
+    {
+        // Update the stamina
+        UpdateStamina();
+
+        if (IsSprinting && CurrentStamina <= 0)
+        {
+            _isSprinting = false;
+            IsSprintToggled = false;
+        }
+
+        // Sprint events
+        if (IsSprinting && !_wasPreviouslySprinting)
+            OnSprintStart?.Invoke();
+        else if (!IsSprinting && _wasPreviouslySprinting)
+            OnSprintEnd?.Invoke();
+    }
+
+    private void LateUpdate()
+    {
+        // Update the previous sprinting flag
+        _wasPreviouslySprinting = IsSprinting;
+    }
 
     private void FixedUpdate()
     {
-        // Update the on ground
-        UpdateOnGround();
+        // Update the ground check
+        UpdateGroundCheck();
+
+        // Update the spring force
+        UpdateSpringForce();
+
+        // Update the capsule collider height
+        UpdateCapsuleColliderHeight();
 
         // Update the current movement script
         CurrentMovementScript?.FixedMovementUpdate();
+
+        // Get the y velocity of the player
+        _landVelocity = _rigidbody.velocity;
+        // _landYVelocity = _rigidbody.velocity.y;
     }
 
-    private void UpdateOnGround()
+    private void UpdateGroundCheck()
     {
-        // Create a mask that includes everything but the 'Actor' and 'Wall' layers
-        // var mask = ~LayerMask.GetMask("Actor", "Wall");
-        var mask = ~LayerMask.GetMask("Actor");
+        // Create a layer mask that includes everything but the actor layer and NonPhysical
+        var layerMask = ~layersToIgnore;
 
-        // // Check if there is a collider below the player
-        // _groundCollide = Physics.Raycast(
-        //     groundChecker.position,
-        //     Vector3.down,
-        //     out _groundCollideHitInfo,
-        //     groundCheckDistance,
-        //     mask
-        // );
-
-        // Check if there is a collider below the player using a box cast
-        _groundCollide = Physics.BoxCast(
-            groundChecker.position + new Vector3(0, groundCheckBoxAdjust / 2, 0),
-            new Vector3(0.5f, groundCheckBoxAdjust / 2, 0.5f),
+        // Perform a raycast to check if the player is grounded
+        var hit = Physics.Raycast(
+            transform.position,
             Vector3.down,
-            out _groundCollideHitInfo,
-            Quaternion.identity,
-            groundCheckDistance,
-            mask
+            out _floatingControllerHit,
+            _rideHeight,
+            layerMask
         );
 
-        // var groundCollisions = new List<RaycastHit>();
-        //
-        // var collides = false;
-        //
-        //
-        // _groundCollide = collides;
-        //
-        // // Set the ground hit info to the item w/ the highest y value
-        // if (groundCollisions.Count > 0)
-        // {
-        //     _groundCollideHitInfo = groundCollisions[0];
-        //
-        //     foreach (var hitInfo in groundCollisions)
-        //     {
-        //         if (hitInfo.point.y > _groundCollideHitInfo.point.y)
-        //             _groundCollideHitInfo = hitInfo;
-        //     }
-        // }
+        // Reset the capsule collider height if the player is not grounded
+        if (!hit)
+            _floatingControllerHit = new RaycastHit();
 
-        // if (_groundCollide)
-        //     Debug.Log($"Collided with {hitInfo.collider.name}");
+        // Set the grounded state to the hit state
+        IsGrounded = hit;
 
-        // Check if the player's vertical velocity is less than the threshold
-        var verticalVelocityCheck = Mathf.Abs(_rigidbody.velocity.y) < GROUND_VELOCITY_THRESHOLD;
+        // Handle the code for when the player lands
+        // Invoke the on land event
+        if (IsGrounded && !_wasPreviouslyGrounded)
+            OnLand?.Invoke(_landVelocity);
 
-        // TODO: Delete this maybe?
-        verticalVelocityCheck = true;
+        // Set the was previously grounded state
+        _wasPreviouslyGrounded = IsGrounded;
+    }
 
-        // Set the on ground to true if the player is on the ground
-        // IsGrounded = _groundCollide && verticalVelocityCheck;
-        IsGrounded = _groundCollide;
+    private void UpdateSpringForce()
+    {
+        // Return if the floating controller hit is not set
+        if (!_floatingControllerHit.collider)
+            return;
+
+        // Return if the player is trying to jump
+        if (BasicPlayerMovement.IsTryingToJump)
+            return;
+
+        // Return if the player is set to jump
+        if (BasicPlayerMovement.IsSetToJump)
+            return;
+
+        // Get the current velocity of the player
+        var currentVelocity = _rigidbody.velocity;
+
+        // Get the direction of the ray
+        // var downDirection = transform.TransformDirection(Vector3.down);
+        var downDirection = Vector3.down;
+
+        // Get the velocity of the other object
+        var otherVelocity = Vector3.zero;
+
+        // Get the other rigidbody
+        var otherRigidbody = _floatingControllerHit.rigidbody;
+
+        // If there is no other rigidbody, set the other velocity to zero
+        if (otherRigidbody)
+            otherVelocity = otherRigidbody.velocity;
+
+        // Get the relative velocity
+        var rayDirectionVelocity = Vector3.Dot(downDirection, currentVelocity);
+        var otherDirectionVelocity = Vector3.Dot(downDirection, otherVelocity);
+
+        // Get the relative velocity
+        var relativeVelocity = rayDirectionVelocity - otherDirectionVelocity;
+
+        // Distance of the ray hit vs the ride height
+        var rideHeightPenetration = _floatingControllerHit.distance - _rideHeight;
+
+        var remainingHeight = _currentPlayerHeight - _capsuleCollider.height;
+        var capsuleHeightOffset = _rideHeight - remainingHeight;
+        var hitOffset = _floatingControllerHit.distance - capsuleHeightOffset;
+        var actualPenetration = remainingHeight - hitOffset;
+
+        // // Create a target velocity with the same x and z,
+        // // but enough velocity to go up by the actual penetration
+        // var targetVelocity = new Vector3(
+        //     currentVelocity.x,
+        //     actualPenetration,
+        //     currentVelocity.z
+        // );
+
+        // // This is the force required to reach the target velocity in EXACTLY one frame
+        // var targetForce = (targetVelocity - _rigidbody.velocity) / Time.fixedDeltaTime;
+
+        // Get the spring force
+        var springForce = (rideHeightPenetration * rideSpringStrength) - (relativeVelocity * rideSpringDamper);
+
+        // Debug.Log($"RHP: [{hitOffset:0.000}] [{actualPenetration:0.000}] [{targetForce.y:0.000}]");
+
+        var downwardSlopeForceAdjust = 1f;
+
+        // var groundVelocityForward = GroundCollisionForward;
+        var groundVelocityForward = (GroundCollisionForward + GroundCollisionRight).normalized;
+
+        if (Vector3.Dot(currentVelocity, groundVelocityForward) < 0)
+            groundVelocityForward *= -1;
+
+        // If the player is on a slope, and they are going down, reduce the force
+        if (groundVelocityForward.y < 0)
+        {
+            // Get the downward angle of the slope
+            // var downwardAngle = Vector3.Angle(
+            //     new Vector3(groundVelocityForward.x, 0, groundVelocityForward.z),
+            //     groundVelocityForward
+            // );
+
+            // var downwardAngle = 90 - Vector3.Angle(
+            //     new Vector3(GroundHit.normal.x, 0, GroundHit.normal.z).normalized,
+            //     new Vector3(GroundHit.normal.x, -GroundHit.normal.y, GroundHit.normal.z).normalized
+            // );
+
+            var downwardAngle = 90 - Quaternion.LookRotation(
+                new Vector3(GroundHit.normal.x, -GroundHit.normal.y, GroundHit.normal.z)
+            ).eulerAngles.x;
+
+            // Get the player's velocity in relation to the slope
+            var playerSlopeVelocity = Vector3.Dot(currentVelocity, groundVelocityForward.normalized);
+
+            const float maxVelocity = 8;
+
+            var velocityFactor = playerSlopeVelocity / maxVelocity;
+
+            var interpolation = LogarithmicInterpolation(downwardAngle / maxDownwardAngle, downwardInterpolation);
+
+            velocityFactor = LogarithmicInterpolation(velocityFactor, velocityInterpolation);
+
+            downwardSlopeForceAdjust = Mathf.Lerp(1, maxForceAdjust, interpolation * velocityFactor);
+
+            // Debug.Log(
+            //     $"DOWNWARD ANGLE: " +
+            //     $"{downwardAngle:0.00} => " +
+            //     $"{interpolation:0.00} => " +
+            //     $"{velocityFactor:0.00} => " +
+            //     $"{downwardSlopeForceAdjust:0.00}"
+            // );
+        }
+
+        // The amount of force applied to the player this frame
+        var force = springForce * downwardSlopeForceAdjust;
+
+        // // Ensure the force + the upward velocity is not more than ground hit's penetration
+        // if (force + currentVelocity.y > actualPenetration)
+        //     force = actualPenetration - currentVelocity.y;
+
+        // Add force to the player
+        _rigidbody.AddForce(downDirection * force, ForceMode.Acceleration);
+
+        // Debug.Log($"FORCE: {downDirection * springForce}");
+
+        // Add force to the other object
+        if (otherRigidbody)
+            otherRigidbody.AddForceAtPosition(-downDirection * springForce, _floatingControllerHit.point);
+        return;
+
+        float LogarithmicInterpolation(float x, float constA) => Mathf.Log(constA * Mathf.Clamp01(x) + 1, constA + 1);
+    }
+
+    private void UpdateCapsuleColliderHeight()
+    {
+        const float fixedFrameTime = 1 / 50f;
+        var frameAmount = Time.fixedDeltaTime / fixedFrameTime;
+
+        var oldPlayerHeight = _currentPlayerHeight;
+
+        // _currentPlayerHeight = Mathf.Lerp(_currentPlayerHeight, TargetPlayerHeight, frameAmount * .25f);
+        _currentPlayerHeight = Mathf.Lerp(_currentPlayerHeight, TargetPlayerHeight, frameAmount * .15f);
+
+        if (Mathf.Abs(_currentPlayerHeight - TargetPlayerHeight) < .001f)
+            _currentPlayerHeight = TargetPlayerHeight;
+
+        _rideHeight = _currentPlayerHeight / 2;
+        var desiredCapsuleHeight = _currentPlayerHeight - desiredCapsuleHeightOffset;
+
+        // Debug.Log($"_currentPlayerHeight: {_currentPlayerHeight:0.00} => {TargetPlayerHeight:0.00}");
+
+        // Return if the floating controller hit is not set
+        if (!_floatingControllerHit.collider)
+        {
+            return;
+
+            // // Reset the capsule collider height
+            // _capsuleCollider.height = desiredCapsuleHeight;
+            //
+            // // Reset the capsule collider center
+            // _capsuleCollider.center = Vector3.zero;
+            //
+            // return;
+        }
+
+        // Change the y of the transform based on the difference between the old and new player height
+        var yDifference = _currentPlayerHeight - oldPlayerHeight;
+
+        if (yDifference > 0)
+            yDifference = 0;
+
+        Rigidbody.MovePosition(Rigidbody.position + new Vector3(0, yDifference, 0));
+
+        // Get the distance from the player to the floating controller hit
+        var distance = _floatingControllerHit.distance;
+
+        var heightAdjust = desiredCapsuleHeight - ((desiredCapsuleHeight / 2) - distance);
+
+        // Set the capsule collider height based on the distance
+        var newCapsuleHeight = Mathf.Min(desiredCapsuleHeight, heightAdjust);
+        _capsuleCollider.height = Mathf.Max(newCapsuleHeight, 1);
+
+        // Set the capsule collider y position based on the distance
+        var newYPosition = (_currentPlayerHeight - newCapsuleHeight) / 2;
+        _capsuleCollider.center = new Vector3(0, newYPosition, 0);
+    }
+
+    private void UpdateStamina()
+    {
+        // Update the stamina regen delay timer
+        _staminaRegenDelayTimer.Update(Time.deltaTime);
+
+        // // If this is the active movement script, the player is on the ground, and they are sprinting,
+        // // drain the stamina
+        // if (CurrentMovementScript != BasicPlayerMovement)
+        //     return;
+
+        if (IsSprinting && ((IsGrounded && CurrentMovementScript == BasicPlayerMovement) || WallRunning.IsWallRunning))
+            ChangeStamina(-sprintStaminaDrainRate * Time.deltaTime);
+
+        // if (IsGrounded)
+        else
+        {
+            // If the player is not sprinting, regenerate the stamina
+            if (_staminaRegenDelayTimer.IsComplete)
+                ChangeStamina(StaminaRegenRate * Time.deltaTime);
+        }
+        // else if (IsSprinting)
+        //     ChangeStamina(-sprintStaminaDrainRate / 2 * Time.deltaTime);
     }
 
     #endregion
-
 
     #region Movement Script Management
 
@@ -246,7 +578,6 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     #endregion
 
-
     #region Debugging
 
     public string GetDebugText()
@@ -259,36 +590,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         sb.AppendLine($"\tPosition: {transform.position}");
         sb.AppendLine($"\tVelocity: {_rigidbody.velocity} ({lateralVelocity.magnitude:0.0000})");
         sb.AppendLine($"\tGrounded: {IsGrounded}");
-        sb.AppendLine($"\tGCollide: {_groundCollide}");
+        sb.AppendLine($"\tStamina: {_currentStamina:0.00} / {maxStamina:0.00}");
 
         sb.AppendLine($"\tAll Movement Scripts: {string.Join(", ", _movementScripts.Select(n => n.GetType().Name))}");
-
-        return sb.ToString();
-
-        // Add the current movement script's debug text
-        var movementScriptDebugText = CurrentMovementScript?.GetDebugText();
-        if (movementScriptDebugText != null)
-        {
-            sb.AppendLine($"\n");
-            sb.AppendLine($"\tCurrent Movement Script: {CurrentMovementScript.GetType().Name}");
-
-            // Split the debug text by new lines
-            var splitDebugText = movementScriptDebugText.Split('\n');
-
-            // Append an extra tab to each line
-            foreach (var text in splitDebugText)
-                sb.AppendLine($"\t{text}");
-        }
-
-        sb.AppendLine($"Movement input maps:");
-        foreach (var movementScript in GetComponents<PlayerMovementScript>())
-        {
-            string inputString = "NONE";
-            if (movementScript.InputActionMap != null)
-                inputString = movementScript.InputActionMap.enabled ? "ENABLED" : "DISABLED";
-
-            sb.AppendLine($"\t{movementScript.GetType().Name}: {inputString}");
-        }
 
         return sb.ToString();
     }
@@ -299,27 +603,90 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         Gizmos.color = Color.red;
         Gizmos.DrawRay(orientation.position, orientation.forward * 3);
 
-        // // Draw the ground check vector
-        // Gizmos.color = Color.green;
-        // Gizmos.DrawRay(groundChecker.position, Vector3.down * groundCheckDistance);
-
-        // Draw the ground check box
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireCube(
-            groundChecker.position + new Vector3(0, groundCheckBoxAdjust / 2 - groundCheckDistance, 0),
-            new Vector3(1, groundCheckBoxAdjust, 1)
+        // Draw the floating controller ray
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(
+            transform.position,
+            Vector3.down * _rideHeight
         );
 
-        // Draw the ground collision normal's forward direction
-        if (_groundCollide)
+        if (_floatingControllerHit.collider)
         {
-            var groundColor = new Color(1, .4f, 0, 1);
-
-            Gizmos.color = groundColor;
-            Gizmos.DrawRay(_groundCollideHitInfo.point, GroundCollisionForward * 10);
-            Gizmos.DrawRay(_groundCollideHitInfo.point, GroundCollisionRight * 10);
+            Gizmos.color = Color.green;
+            Gizmos.DrawSphere(_floatingControllerHit.point, .125f);
         }
     }
 
     #endregion
+
+    #region Input Functions
+
+    private void OnSprintPerformed(InputAction.CallbackContext obj)
+    {
+        // Return if the player cannot sprint
+        if (!BasicPlayerMovement.CanSprint)
+            return;
+
+        // Set the sprinting flag to true
+        _isSprinting = true;
+        //set animator isMoving to true
+
+        if (playerAnimator != null)
+            playerAnimator.SetBool("isMoving", true);
+    }
+
+    private void OnSprintCanceled(InputAction.CallbackContext obj)
+    {
+        // Set the sprinting flag to false
+        _isSprinting = false;
+
+        if (playerAnimator != null)
+            playerAnimator.SetBool("isMoving", false);
+    }
+
+
+    private void OnSprintTogglePerformed(InputAction.CallbackContext obj)
+    {
+        // Return if the player cannot sprint
+        if (!BasicPlayerMovement.CanSprint)
+        {
+            IsSprintToggled = false;
+            return;
+        }
+
+        // Set the sprinting flag to true
+        IsSprintToggled = !IsSprintToggled;
+
+        Debug.Log($"Sprint Toggle Performed: {IsSprintToggled}");
+    }
+
+    #endregion
+
+    public void ForceSetSprinting(bool sprinting)
+    {
+        _isSprinting = sprinting;
+    }
+
+    public void ChangeStamina(float amount)
+    {
+        // Don't drain the stamina if the stamina drains flag is false
+        if (!staminaDrains && amount < 0)
+        {
+            _currentStamina = maxStamina;
+            return;
+        }
+
+        _currentStamina = Mathf.Clamp(_currentStamina + amount, 0, maxStamina);
+
+
+        // Reset the stamina regen delay timer
+        if (amount < 0)
+            _staminaRegenDelayTimer.SetMaxTimeAndReset(staminaRegenDelay);
+    }
+
+    public void SetUpStamina(float cStamina, float mStamina)
+    {
+        _currentStamina = cStamina;
+        maxStamina = mStamina;
+    }
 }

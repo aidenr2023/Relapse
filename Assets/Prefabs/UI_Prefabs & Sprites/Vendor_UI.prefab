@@ -1816,7 +1816,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0.5
+  m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -2116,9 +2116,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4083257252040449543}
+  - component: {fileID: 7458954231808321458}
   - component: {fileID: 1942450077726613842}
   - component: {fileID: 3545074023880493709}
-  - component: {fileID: 14612438854615930}
   m_Layer: 0
   m_Name: Vendor_UI
   m_TagString: Untagged
@@ -2142,6 +2142,18 @@ Transform:
   - {fileID: 1325558300105099136}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!225 &7458954231808321458
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3085049939021589306}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &1942450077726613842
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2154,6 +2166,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 437af9a0f9fc4a13a4a42bc8a87f6d2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 7458954231808321458}
+  isActiveOnStart: 0
+  opacityLerpAmount: 0.25
+  isCursorRequired: 1
+  disablePlayerControls: 1
+  pausesGame: 1
   medButtons:
   - {fileID: 5188232931471337295}
   - {fileID: 2131288782006189686}
@@ -2191,45 +2209,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueUI: {fileID: 4423869734371706138}
   charactersPerSecond: 30
---- !u!114 &14612438854615930
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3085049939021589306}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f455382193294707baff09a274867734, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  OnAwakeEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  OnStartEvent:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 3085049939021589306}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  OnEnableEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  OnDisableEvent:
-    m_PersistentCalls:
-      m_Calls: []
-  OnDestroyEvent:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &3106881579096678520
 GameObject:
   m_ObjectHideFlags: 0

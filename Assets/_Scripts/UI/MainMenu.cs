@@ -1,14 +1,19 @@
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class MainMenu : MonoBehaviour
+public class MainMenu : GameMenu
 {
+    #region Serialized Fields
+
     [SerializeField] private Slider loadingBar;
 
-    private string _sceneName = "ApartmentBlockout";
+    [SerializeField] private LevelStartupSceneInfo levelStartupSceneInfo;
+
+    #endregion
+
+    #region Private Fields
 
     private AsyncOperation _loadSceneOperation;
 
@@ -16,31 +21,50 @@ public class MainMenu : MonoBehaviour
 
     private bool _clickedButton;
 
-    private void Awake()
+    #endregion
+
+    protected override void CustomAwake()
     {
     }
 
-    private void Start()
+    protected override void CustomActivate()
     {
     }
 
-    private void Update()
+    protected override void CustomDeactivate()
     {
-        // // Update the loading slider
-        // UpdateLoadingSlider();
+    }
+
+    private void OnDisable()
+    {
+        // Deactivate the main menu
+        Deactivate();
+    }
+
+    protected override void CustomUpdate()
+    {
+        // Set the loading bar's visibility based on whether the scene is loading
+        loadingBar.gameObject.SetActive(_clickedButton);
+    }
+
+    private void UpdateProgressBarPercent(float amount)
+    {
+        loadingBar.value = amount;
     }
 
     public void StartButton()
     {
-        // // Load the scene asynchronously
-        // StartCoroutine(LoadSceneAsync());
-
         // Load the scene asynchronously
         if (!_startedLoading)
-            StartCoroutine(LoadSceneAsync());
+        {
+            // StartCoroutine(LoadSceneAsync());
+            AsyncSceneManager.Instance.LoadStartupScene(
+                levelStartupSceneInfo, this, UpdateProgressBarPercent
+            );
 
-        // Set the scene to active
-        _loadSceneOperation.allowSceneActivation = true;
+            // Set the flag to true
+            _startedLoading = true;
+        }
 
         // Set the flag to true
         _clickedButton = true;
@@ -57,33 +81,21 @@ public class MainMenu : MonoBehaviour
 #endif
     }
 
-    private IEnumerator LoadSceneAsync()
+    private void DeactivateOnLoad()
     {
-        // Return if the scene is already loading
-        if (_startedLoading)
-            yield return null;
+        // Deactivate the main menu
+        Deactivate();
+    }
 
-        // Asynchronously load the scene
-        _loadSceneOperation = SceneManager.LoadSceneAsync(_sceneName, LoadSceneMode.Single);
-        _loadSceneOperation.allowSceneActivation = false;
+    public override void OnBackPressed()
+    {
+        // Do nothing for now
+        // TODO: Make the submenus recognize the back button
+    }
 
-        while (!_loadSceneOperation.isDone)
-        {
-            // Update the loading bar value
-            loadingBar.value = _loadSceneOperation.progress;
-
-            // Wait for the next frame
-            yield return null;
-        }
-
-        // Update the loading bar value
-        loadingBar.value = _loadSceneOperation.progress;
-
-        // Set the flag to true
-        _startedLoading = true;
-
-        // If the button was clicked, allow the scene to activate
-        if (_clickedButton)
-            _loadSceneOperation.allowSceneActivation = true;
+    public void ForceChangeScene(string sceneName)
+    {
+        // Load the scene singularly
+        SceneManager.LoadScene(sceneName);
     }
 }

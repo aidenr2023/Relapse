@@ -15,7 +15,7 @@ public class EnemyIdleStateHandler : StateMachineBehaviour
 
         if (stateInfo.IsName("Lesion_Attack"))
         {
-            Debug.Log("The Animator is now in the Attack State.");
+            // Debug.Log("The Animator is now in the Attack State.");
             hasTriggeredAttack = true;
         }
     }
@@ -24,7 +24,7 @@ public class EnemyIdleStateHandler : StateMachineBehaviour
     {
         // Reset the attack flag
         hasTriggeredAttack = false;
-        Debug.Log("Entered Idle State. Waiting to attack...");
+        // Debug.Log("Entered Idle State. Waiting to attack...");
     }
 
     // Called on each update frame
@@ -41,7 +41,7 @@ public class EnemyIdleStateHandler : StateMachineBehaviour
             float randomBlendValue = Random.Range(0, numberOfAttackAnimations);
             animator.SetFloat(AttackBlendHash, randomBlendValue);
 
-            Debug.Log($"Attack was triggered in prev state with blend value: {randomBlendValue}");
+            // Debug.Log($"Attack was triggered in prev state with blend value: {randomBlendValue}");
 
             // Set the flag to prevent repeated triggering
             hasTriggeredAttack = true;

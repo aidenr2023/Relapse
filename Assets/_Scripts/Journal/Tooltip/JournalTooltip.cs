@@ -37,6 +37,9 @@ public class JournalTooltip : MonoBehaviour
 
     private bool _isMarkedForDestruction;
 
+    private Func<bool> _completionCondition;
+    private bool _isIndefinite;
+
     #endregion
 
     #region Getters
@@ -67,13 +70,19 @@ public class JournalTooltip : MonoBehaviour
         _animator = GetComponent<Animator>();
     }
 
-    public void Initialize(Func<string> func, float duration)
+    public void Initialize(
+        Func<string> func, float duration,
+        bool isIndefinite = false, Func<bool> completionCondition = null
+    )
     {
         // Set the text function
         _textFunction = func;
 
         // Set up the active timer
         _activeTimer = new CountdownTimer(duration, isActive: false);
+
+        _isIndefinite = isIndefinite;
+        _completionCondition = completionCondition;
 
         // Start the outro animation when the active timer finishes
         _activeTimer.OnTimerEnd += () =>
@@ -95,6 +104,8 @@ public class JournalTooltip : MonoBehaviour
             OnOutroBegin?.Invoke();
 
             _activeTimer.Stop();
+
+            // Debug.Log($"IS IND: {_isIndefinite} - {_textFunction()}");
         };
 
         // Play the intro animation
@@ -131,12 +142,26 @@ public class JournalTooltip : MonoBehaviour
             return;
         }
 
+        // If the completion condition is met, force the completion of the tooltip
+        if ((_completionCondition?.Invoke() ?? false) && _activeTimer.Percentage < 1)
+            ForceCompletion();
+
         // Set the text to the result of the text function
         Text = _textFunction();
 
         // Update the timers
+        _activeTimer.SetActive(!_isIndefinite);
+
         _activeTimer.Update(Time.unscaledDeltaTime);
         _introTimer.Update(Time.unscaledDeltaTime);
         _outroTimer.Update(Time.unscaledDeltaTime);
+    }
+
+    public void ForceCompletion()
+    {
+        _activeTimer.Stop();
+
+        // Set the active timer to 100% completion
+        _activeTimer.ForcePercent(1);
     }
 }

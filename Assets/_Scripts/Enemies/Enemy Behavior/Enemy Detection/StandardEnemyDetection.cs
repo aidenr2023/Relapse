@@ -7,8 +7,11 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
 {
     #region Serialized Fields
 
-    [Header("Detection")] [SerializeField] [Min(0)]
-    private float visionDistance = 10f;
+    [Header("Detection")] [SerializeField] private Transform detectionOrigin;
+
+    [SerializeField] [Min(0)] private float visionDistance = 10f;
+
+    [SerializeField] [Min(0)] private float autoDetectionDistance = 5f;
 
     [SerializeField] [Min(0)] private float visionAngle = 45f;
 
@@ -16,15 +19,10 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
     [SerializeField] private CountdownTimer searchDetectionTimer;
     [SerializeField] private CountdownTimer pursuitDetectionTimer;
 
-
     [Header("Debugging")] [SerializeField] private Canvas debugCanvas;
     [SerializeField] private Slider pursuitDetectionSlider;
     [SerializeField] private TMP_Text pursuitDetectionText;
     [SerializeField] private Image pursuitDetectionColorImage;
-
-    // [SerializeField] private Color patrolDetectionColor = Color.green;
-    // [SerializeField] private Color searchDetectionColor = Color.yellow;
-    // [SerializeField] private Color pursuitDetectionColor = Color.red;
 
     #endregion
 
@@ -49,7 +47,7 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
 
     public EnemyDetectionState CurrentDetectionState { get; private set; }
 
-    public bool IsTargetDetected => CurrentDetectionState == EnemyDetectionState.Aware && Target != null;
+    public bool IsTargetDetected => Target != null && _isTargetInSight;
 
     public IActor Target { get; private set; }
 
@@ -88,11 +86,32 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         // Set the target to null
         Target = null;
 
-        // Subscribe to the enemy's death event
-        OnDetectionStateChanged += (behavior, oldState, newState) =>
-            Debug.Log($"{behavior.GameObject.name} changed detection state from {oldState} to {newState}");
+        // // Subscribe to the enemy's death event
+        // OnDetectionStateChanged += (behavior, oldState, newState) =>
+        //     Debug.Log($"{behavior.GameObject.name} changed detection state from {oldState} to {newState}");
 
         OnDetectionStateChanged += ResetTimersOnStateChange;
+
+        Enemy.EnemyInfo.OnDamaged += DetectPlayerWhenDamaged;
+    }
+
+    private void DetectPlayerWhenDamaged(object sender, HealthChangedEventArgs e)
+    {
+        // If the enemy is already aware of the player, return
+        if (CurrentDetectionState == EnemyDetectionState.Aware)
+            return;
+
+        // Set the detection state to aware
+        CurrentDetectionState = EnemyDetectionState.Aware;
+
+        // Set the target to the player
+        Target = Player.Instance.PlayerInfo;
+
+        // Set the last known player position to the player's current position
+        LastKnownTargetPosition = Player.Instance.transform.position;
+
+        // Invoke the detection state changed event
+        OnDetectionStateChanged?.Invoke(this, EnemyDetectionState.Unaware, CurrentDetectionState);
     }
 
     private void ResetTimersOnStateChange(
@@ -175,13 +194,6 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         switch (CurrentDetectionState)
         {
             case EnemyDetectionState.Unaware:
-
-                // // if tagged as "stationary" then disable movement
-                // if (gameObject.CompareTag("Stationary") && !npcMovement.canMove)
-                //     npcMovement.DisableMovement();
-                // else
-                //     npcMovement.EnableMovement();
-
                 // Update the player detection timer
                 if (_isTargetInSight)
                     patrolDetectionTimer.Update(Time.deltaTime);
@@ -260,10 +272,13 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         // If the game is not in debug mode, hide the debug canvas and return
         if (!DebugManager.Instance.IsDebugMode)
         {
+            debugCanvas.gameObject.SetActive(false);
             debugCanvas.enabled = false;
             return;
         }
 
+        // Show the debug canvas
+        debugCanvas.gameObject.SetActive(true);
         debugCanvas.enabled = true;
 
         // Get the main camera
@@ -299,11 +314,16 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
             return false;
 
         // Get the line between the enemy and the player
-        var line = player.transform.position - transform.position;
+        var line = player.transform.position - detectionOrigin.position;
 
         // Return false if the player is not within the vision distance
-        if (line.magnitude > visionDistance)
+        // and the current state is not aware
+        if (line.magnitude > visionDistance && CurrentDetectionState != EnemyDetectionState.Aware)
             return false;
+
+        // If the player is within the auto-detection distance, return true
+        if (line.magnitude <= autoDetectionDistance)
+            return true;
 
         var angle = Vector3.Angle(transform.forward, line);
 
@@ -314,11 +334,17 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         // Create a layerMask to ignore the NonPhysical layer
         var layerMask = ~(1 << LayerMask.NameToLayer("NonPhysical"));
 
+        var currentVisionDistance = visionDistance;
+
+        // If the current state is aware, increase the vision distance
+        if (CurrentDetectionState == EnemyDetectionState.Aware)
+            currentVisionDistance *= 4;
+
         var raycastHit = Physics.Raycast(
-            transform.position,
+            detectionOrigin.position,
             line,
             out var hit,
-            visionDistance,
+            currentVisionDistance,
             layerMask
         );
 
@@ -330,14 +356,12 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         if (hit.collider.gameObject != player.gameObject)
             return false;
 
-        // Debug.Log($"Player detected! Distance: {line.magnitude}, Angle: {Vector3.Angle(transform.forward, line)}");
-
         return true;
     }
 
     #region Debugging
 
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
         // Draw a line from the enemy to the player
         var undetectedColor = Color.green;
@@ -346,12 +370,12 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         if (Player.Instance != null)
         {
             // Get the line between the enemy and the player
-            var line = Player.Instance.transform.position - transform.position;
+            var line = Player.Instance.transform.position - detectionOrigin.position;
 
-            var endPosition = transform.position + line.normalized * visionDistance;
+            var endPosition = detectionOrigin.position + line.normalized * visionDistance;
 
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, endPosition);
+            Gizmos.DrawLine(detectionOrigin.position, endPosition);
         }
 
         // Draw the vision angle
@@ -362,8 +386,12 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         var right = Quaternion.Euler(0, halfAngle, 0) * forward;
 
         Gizmos.color = _isTargetInSight ? detectedColor : undetectedColor;
-        Gizmos.DrawLine(transform.position, transform.position + left * visionDistance);
-        Gizmos.DrawLine(transform.position, transform.position + right * visionDistance);
+        Gizmos.DrawLine(detectionOrigin.position, detectionOrigin.position + left * visionDistance);
+        Gizmos.DrawLine(detectionOrigin.position, detectionOrigin.position + right * visionDistance);
+
+        // Draw the auto-detection distance
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(detectionOrigin.position, autoDetectionDistance);
     }
 
     #endregion

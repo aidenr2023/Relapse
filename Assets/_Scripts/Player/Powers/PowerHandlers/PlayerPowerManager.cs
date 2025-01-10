@@ -5,17 +5,28 @@ using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
+using UnityEngine.VFX;
 
 [RequireComponent(typeof(Player))]
-public class PlayerPowerManager : MonoBehaviour, IDebugged
+public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerLoaderInfo
 {
     public static PlayerPowerManager Instance { get; private set; }
 
     #region Serialized Fields
 
-    [SerializeField] private PowerScroll powerScroll;
     [SerializeField] private PowerScriptableObject[] powers;
+
+
+    [Header("Power Charged Vignette"), SerializeField, Range(0, 1)]
+    private float chargedVignetteStrength = .25f;
+
+    [SerializeField, Range(0, 1)] private float chargedVignetteLerpAmount = .25f;
+    [SerializeField, Min(0)] private float chargedVignetteFlashesPerSecond = 1f;
+
+    [Header("Visual Effects")] [SerializeField]
+    private VisualEffect gauntletChargeVfx;
 
     #endregion
 
@@ -32,9 +43,13 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
     private int _currentPowerIndex;
     private bool _isChargingPower;
 
+    private TokenManager<float>.ManagedToken _powerChargeVignetteToken;
+
     #endregion
 
     #region Getters
+
+    public HashSet<InputData> InputActions { get; } = new();
 
     public Player Player => _player;
 
@@ -46,6 +61,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
             : null;
 
     public IReadOnlyCollection<PowerScriptableObject> Powers => powers;
+
+    public int CurrentPowerIndex => _currentPowerIndex;
 
     #endregion
 
@@ -60,19 +77,40 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
 
         // Initialize the power collections
         InitializePowerCollections();
+
+        // Initialize the input
+        InitializeInput();
     }
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         // Initialize the events
         InitializeEvents();
 
-        // Initialize the input
-        InitializeInput();
-
         // // Add this to the debug managed objects
         // DebugManager.Instance.AddDebuggedObject(this);
+
+        // Initialize the vignette token
+        _powerChargeVignetteToken = PostProcessingVolumeController.Instance.VignetteModule.Tokens.AddToken(0, -1, true);
+
+        // Add this to the debug manager
+        DebugManager.Instance.AddDebuggedObject(this);
+    }
+
+    private void OnEnable()
+    {
+        // Register this with the input manager
+        InputManager.Instance.Register(this);
+    }
+
+    private void OnDisable()
+    {
+        // Unregister this with the input manager
+        InputManager.Instance.Unregister(this);
+
+        // Remove this from the debug manager
+        DebugManager.Instance.RemoveDebuggedObject(this);
     }
 
     private void InitializeComponents()
@@ -83,19 +121,25 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
 
     private void InitializeEvents()
     {
-        _player.PlayerInfo.OnRelapseStart += OnRelapseStart;
+        _player.PlayerInfo.onRelapseStart += OnRelapseStart;
 
         // Add the event for the power used
         OnPowerUsed += PlaySoundOnUse;
-        OnPowerUsed += DisplayTooltipOnUse;
+        // OnPowerUsed += DisplayTooltipOnUse;
     }
 
-    private void InitializeInput()
+    public void InitializeInput()
     {
-        InputManager.Instance.PlayerControls.Player.Power.performed += OnPowerPerformed;
-        InputManager.Instance.PlayerControls.Player.Power.canceled += OnPowerCanceled;
+        InputActions.Add(
+            new InputData(InputManager.Instance.PControls.Player.Power, InputType.Performed, OnPowerPerformed)
+        );
+        InputActions.Add(
+            new InputData(InputManager.Instance.PControls.Player.Power, InputType.Canceled, OnPowerCanceled)
+        );
 
-        InputManager.Instance.PlayerControls.Player.ChangePower.performed += OnPowerChanged;
+        InputActions.Add(
+            new InputData(InputManager.Instance.PControls.Player.ChangePower, InputType.Performed, OnPowerChanged)
+        );
     }
 
 
@@ -148,6 +192,10 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
     {
         // Return if the current power is null
         if (CurrentPower == null)
+            return;
+
+        // Return if the current power token is null
+        if (CurrentPowerToken == null)
             return;
 
         // Return if the power is currently cooling down
@@ -208,14 +256,21 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
         // Update the cooldowns
         UpdateCooldowns();
 
-        // Update the power UI
-        UpdatePowerUI();
+        // Update the vignette token
+        UpdateVignetteToken();
+
+        // Update the gauntlet charge VFX
+        UpdateGauntletChargeVFX();
     }
 
     private void UpdateCharge()
     {
         // Skip if the current power is null
         if (CurrentPower == null)
+            return;
+
+        // Return if the current power token is null
+        if (CurrentPowerToken == null)
             return;
 
         // Skip if the power is not charging
@@ -227,12 +282,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
 
         // Call the current power's charge method
         CurrentPower.PowerLogic.Charge(this, CurrentPowerToken);
-    }
-
-    private void UpdatePowerUI()
-    {
-        if (powerScroll != null)
-            powerScroll.UpdatePowerUI(CurrentPower, CurrentPowerToken);
     }
 
     private void UpdateActivePowers()
@@ -325,8 +374,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
                 // Play the power ready sound
                 SoundManager.Instance.PlaySfx(power.PowerReadySound);
             }
-
-            powerScroll.UpdatePowerUI(CurrentPower, cToken); // Update the UI here
         }
     }
 
@@ -365,7 +412,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
             addSet.Add(power);
 
             // Add the power to the power usage tokens
-            _powerTokens.Add(power, new PowerToken(power));
+            if (!_powerTokens.ContainsKey(power))
+                _powerTokens.Add(power, new PowerToken(power));
         }
 
         // clamp the current power index to the new powers array
@@ -379,12 +427,57 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
         _currentPowerIndex = 0;
     }
 
+    private void UpdateVignetteToken()
+    {
+        var targetValue = 0f;
+
+        // If the player's power is currently fully charged, set the target value to the charged vignette strength
+        if (CurrentPowerToken != null && CurrentPowerToken.ChargePercentage >= 1)
+            targetValue = chargedVignetteStrength;
+
+        const float defaultFrameTime = 1 / 60f;
+        var frameAmount = Time.deltaTime / defaultFrameTime;
+
+        // Sine wave with a y from 0 to 1
+        var sineWave = Mathf.Sin(chargedVignetteFlashesPerSecond * Time.time * Mathf.PI * 2 + Mathf.PI / 2) / 2 + 0.5f;
+
+        // Lerp the vignette value to the target value
+        _powerChargeVignetteToken.Value = Mathf.Lerp(
+            _powerChargeVignetteToken.Value * sineWave,
+            targetValue,
+            chargedVignetteLerpAmount * frameAmount
+        );
+    }
+
+    private void UpdateGauntletChargeVFX()
+    {
+        uint chargeState = 0;
+
+        if (_isChargingPower && CurrentPower != null && CurrentPowerToken != null)
+        {
+            // If the player is currently charging power, but it is not fully complete, set the charge state to 1
+            if (CurrentPowerToken.ChargePercentage < 1)
+                chargeState = 1;
+
+            // If the player's power is currently fully charged, set the charge state to 2
+            else
+                chargeState = 2;
+        }
+
+        // Set the "ChargeState" uint property of the VFX graph
+        gauntletChargeVfx.SetUInt("ChargeState", chargeState);
+    }
+
     #endregion
 
     private bool StopCharge()
     {
         // Set the is charging power flag to false
         _isChargingPower = false;
+
+        // Return if the current power token is null
+        if (CurrentPowerToken == null)
+            return false;
 
         // Call the current power's release method
         var isChargeComplete = CurrentPowerToken.ChargePercentage >= 1;
@@ -430,12 +523,12 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
         CurrentPower.PowerLogic.StartPassiveEffect(this, CurrentPowerToken);
 
         // Change the player's tolerance
-        // _player.PlayerInfo.ChangeTolerance(CurrentPowerToken.ToleranceMeterImpact);
-        StartCoroutine(
-            AddToxicityOverTime(
-                CurrentPowerToken.ToleranceMeterImpact,
-                .5f)
-        );
+        _player.PlayerInfo.ChangeTolerance(CurrentPowerToken.ToleranceMeterImpact);
+        // StartCoroutine(
+        //     AddToxicityOverTime(
+        //         CurrentPowerToken.ToleranceMeterImpact,
+        //         .5f)
+        // );
 
         // Invoke the event for the power used
         OnPowerUsed?.Invoke(this, CurrentPowerToken);
@@ -443,8 +536,25 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
 
     public void ResetPlayer()
     {
-        // Clear the power tokens
-        _powerTokens.Clear();
+        // Reset each power token
+        foreach (var powerToken in _powerTokens.Values)
+            powerToken.Reset();
+
+        // Set the is charging power flag to false
+        _isChargingPower = false;
+    }
+
+    public void SetUpPowers(int powerIndex, PowerScriptableObject[] newPowers)
+    {
+        // Clone the powers array
+        powers = new PowerScriptableObject[newPowers.Length];
+        Array.Copy(newPowers, powers, newPowers.Length);
+
+        // Initialize the power collections
+        InitializePowerCollections();
+
+        // Set the current power index
+        _currentPowerIndex = powerIndex;
     }
 
     #region Event Functions
@@ -463,13 +573,15 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
         if (powerToken.PowerScriptableObject.ActiveEffectDuration > 0)
         {
             // The function to display the tooltip
-            string Func()
+            string TextFunction()
             {
                 var activeDurationRemaining =
                     powerToken.PowerScriptableObject.ActiveEffectDuration - powerToken.CurrentActiveDuration;
 
                 return $"{powerName}'s Active Effect: {activeDurationRemaining:0.00}s Remaining!";
             }
+
+            bool CompletionFunction() => powerToken.ActivePercentage >= 1;
 
             // Calculate how long the tooltip should be displayed
             var duration =
@@ -478,20 +590,22 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
                 - JournalTooltipManager.Instance.OutroDuration;
 
             // Add the tooltip
-            JournalTooltipManager.Instance.AddTooltip(Func, duration);
+            JournalTooltipManager.Instance.AddTooltip(TextFunction, duration, true, CompletionFunction);
         }
 
         // Display a tooltip for the passive effect (if applicable)
         if (powerToken.PowerScriptableObject.PassiveEffectDuration > 0)
         {
             // The function to display the tooltip
-            string Func()
+            string TextFunction()
             {
                 var passiveDurationRemaining =
                     powerToken.PowerScriptableObject.PassiveEffectDuration - powerToken.CurrentPassiveDuration;
 
                 return $"{powerName}'s Passive Effect: {passiveDurationRemaining:0.00}s Remaining!";
             }
+
+            bool CompletionFunction() => powerToken.PassivePercentage >= 1;
 
             // Calculate how long the tooltip should be displayed
             var duration =
@@ -500,7 +614,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
                 - JournalTooltipManager.Instance.OutroDuration;
 
             // Add the tooltip
-            JournalTooltipManager.Instance.AddTooltip(Func, duration);
+            JournalTooltipManager.Instance.AddTooltip(TextFunction, duration, true, CompletionFunction);
         }
     }
 
@@ -559,6 +673,30 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
         );
     }
 
+    private void AddPower(PowerToken powerToken)
+    {
+        // Add the power to the power tokens / replace the power token if it already exists
+        _powerTokens[powerToken.PowerScriptableObject] = powerToken;
+
+        // Add the power to the correct hash set
+        var powerSet = powerToken.PowerScriptableObject.PowerType switch
+        {
+            PowerType.Drug => _drugsSet,
+            PowerType.Medicine => _medsSet,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        // Also, add the power to the end of the powers array
+        if (powerSet.Add(powerToken.PowerScriptableObject))
+        {
+            Array.Resize(ref powers, powers.Length + 1);
+            powers[^1] = powerToken.PowerScriptableObject;
+        }
+
+        // Update the power collections
+        UpdatePowerCollections(powerToken.PowerScriptableObject);
+    }
+
     public void RemovePower(PowerScriptableObject powerScriptableObject)
     {
         // Check if the power is already in one of the hash sets
@@ -612,6 +750,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
 
     public PowerToken GetPowerToken(PowerScriptableObject powerScriptableObject)
     {
+        if (powerScriptableObject == null)
+            return null;
+
         return _powerTokens.GetValueOrDefault(powerScriptableObject);
     }
 
@@ -645,7 +786,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
             $"Tolerance: {_player.PlayerInfo.CurrentTolerance:0.00} / {_player.PlayerInfo.MaxTolerance:0.00} ({tolerancePercentage:0.00}%)\n\n");
 
         debugString.Append($"Current Power: {CurrentPower.name}\n");
-        debugString.Append($"\tPurity (Level): {CurrentPowerToken.CurrentLevel}\n");
+        // debugString.Append($"\tPurity (Level): {CurrentPowerToken.CurrentLevel}\n");
         debugString.Append($"\tTolerance Impact: {CurrentPowerToken.ToleranceMeterImpact}\n");
 
         // Charging Logic
@@ -689,6 +830,105 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged
         }
 
         return debugString.ToString();
+    }
+
+    #endregion
+
+    #region IPlayerLoaderInfo
+
+    public GameObject GameObject => gameObject;
+    public string Id => "PlayerPowerManager";
+
+    private const string POWER_LEVEL_KEY = "_powerLevel";
+    private const string ACTIVE_DURATION_KEY = "_activeDuration";
+    private const string PASSIVE_DURATION_KEY = "_passiveDuration";
+    private const string COOLDOWN_DURATION_KEY = "_cooldownDuration";
+
+    public void LoadData(PlayerLoader playerLoader, bool restore)
+    {
+        // End the passive and active effects of all the powers
+        foreach (var power in _powerTokens.Keys)
+        {
+            var powerToken = _powerTokens[power];
+
+            // End the active effect
+            if (powerToken.IsActiveEffectOn)
+                power.PowerLogic.EndActiveEffect(this, powerToken);
+
+            // End the passive effect
+            if (powerToken.IsPassiveEffectOn)
+                power.PowerLogic.EndPassiveEffect(this, powerToken);
+        }
+
+        // Clear the power tokens, the drugs set, the meds set, and the powers array
+        _powerTokens.Clear();
+        _drugsSet.Clear();
+        _medsSet.Clear();
+        powers = Array.Empty<PowerScriptableObject>();
+
+
+        // Load the power scriptable objects
+        foreach (var pso in PowerScriptableObject.PowerScriptableObjects)
+        {
+            // Check if the id is in the player loader's memory
+            if (!playerLoader.TryGetDataFromMemory(Id, pso.UniqueId, out bool _))
+                continue;
+
+            // Load in each of the power token's stats
+            if (!playerLoader.TryGetDataFromMemory(Id, $"{pso.UniqueId}{POWER_LEVEL_KEY}", out int powerLevel))
+                continue;
+
+            if (!playerLoader.TryGetDataFromMemory(Id, $"{pso.UniqueId}{ACTIVE_DURATION_KEY}",
+                    out float activeDuration))
+                continue;
+
+            if (!playerLoader.TryGetDataFromMemory(Id, $"{pso.UniqueId}{PASSIVE_DURATION_KEY}",
+                    out float passiveDuration))
+                continue;
+
+            if (!playerLoader.TryGetDataFromMemory(Id, $"{pso.UniqueId}{COOLDOWN_DURATION_KEY}",
+                    out float cooldownDuration))
+                continue;
+
+            // Create a new power token
+            var powerToken =
+                PowerToken.CreatePowerToken(pso, powerLevel, activeDuration, passiveDuration, cooldownDuration);
+
+            // Add the power token
+            AddPower(powerToken);
+        }
+    }
+
+    public void SaveData(PlayerLoader playerLoader)
+    {
+        // For each power, save the data
+        foreach (var power in _powerTokens.Keys)
+        {
+            var powerToken = _powerTokens[power];
+
+            // Save the id of the power
+            var powerIdData = new DataInfo($"{power.UniqueId}", true);
+            playerLoader.AddDataToMemory(Id, powerIdData);
+
+            // Save the power level
+            var powerLevelData = new DataInfo($"{power.UniqueId}{POWER_LEVEL_KEY}", powerToken.CurrentLevel);
+            playerLoader.AddDataToMemory(Id, powerLevelData);
+
+            // Save the power active duration
+            var activeDurationData =
+                new DataInfo($"{power.UniqueId}{ACTIVE_DURATION_KEY}", powerToken.CurrentActiveDuration);
+            playerLoader.AddDataToMemory(Id, activeDurationData);
+
+            // Save the power passive duration
+            var passiveDurationData =
+                new DataInfo($"{power.UniqueId}{PASSIVE_DURATION_KEY}", powerToken.CurrentPassiveDuration);
+            playerLoader.AddDataToMemory(Id, passiveDurationData);
+
+            // Save the power cooldown duration
+            var cooldownDurationData =
+                new DataInfo($"{power.UniqueId}{COOLDOWN_DURATION_KEY}", powerToken.CurrentCooldownDuration);
+            playerLoader.AddDataToMemory(Id, cooldownDurationData);
+        }
     }
 
     #endregion

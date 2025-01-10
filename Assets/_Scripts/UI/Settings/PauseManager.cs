@@ -11,7 +11,6 @@ public class PauseManager : MonoBehaviour
 
     #endregion
 
-
     #region Private Fields
 
     private bool _isPaused;
@@ -29,21 +28,10 @@ public class PauseManager : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
-    {
-        // InputManager.Instance.PlayerControls.Player.Pause.performed += _ => TogglePause();
-    }
-
     public void Pause()
     {
         // Set the pause state
         _isPaused = true;
-
-        // Pause the game
-        Time.timeScale = 0;
-
-        // Show the cursor & disable the player controls
-        // InputManager.Instance.SetCursorState(true);
 
         // Show the pause menu
         pauseMenu?.SetActive(true);
@@ -53,12 +41,6 @@ public class PauseManager : MonoBehaviour
     {
         // Set the pause state
         _isPaused = false;
-
-        // Resume the game
-        Time.timeScale = 1;
-
-        // Hide the cursor & enable the player controls
-        // InputManager.Instance.SetCursorState(false);
 
         // Hide the pause menu
         pauseMenu?.SetActive(false);

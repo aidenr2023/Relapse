@@ -21,10 +21,12 @@ public class Fireball : MonoBehaviour, IPower
 
     public void Charge(PlayerPowerManager powerManager, PowerToken pToken)
     {
+        powerManager.Player.PlayerVirtualCameraController.DynamicFOVModule.SetAiming(true);
     }
 
     public void Release(PlayerPowerManager powerManager, PowerToken pToken, bool isCharged)
     {
+        powerManager.Player.PlayerVirtualCameraController.DynamicFOVModule.SetAiming(false);
     }
 
     public void Use(PlayerPowerManager powerManager, PowerToken pToken)
@@ -49,75 +51,6 @@ public class Fireball : MonoBehaviour, IPower
         //
         // // Set up the projectile
         // SetUpProjectile(powerManager, projectileScript);
-    }
-
-    private ScriptExtender CreateProjectile(Vector3 pos, Vector3 forward)
-    {
-        // Create a cube primitive
-        var newProjectile = GameObject.CreatePrimitive(PrimitiveType.Cube);
-
-        // Set the position of the cube to the fire position
-        newProjectile.transform.position = pos;
-
-        // Set the forward of the cube to the forward vector
-        newProjectile.transform.forward = forward;
-
-        // Add a script extender to the projectile
-        var scriptExtender = newProjectile.AddComponent<ScriptExtender>();
-
-        // Add a rigidbody to the projectile through the script extender
-        scriptExtender.ExtenderAddComponent<Rigidbody>();
-
-        // Make the current collider a trigger
-        var projectileCollider = scriptExtender.GetComponent<Collider>();
-        projectileCollider.isTrigger = true;
-
-        // Return the script extender connected to the projectile
-        return scriptExtender;
-    }
-
-    private void SetUpProjectile(PlayerPowerManager powerManager, ScriptExtender scriptExtender)
-    {
-        // Add a function to the script extender that runs when the projectile is updated
-        scriptExtender.OnObjectFixedUpdate += FireballMovement;
-
-        // Add a function to the script extender that runs when the projectile hits something
-        scriptExtender.TriggerEnter += FireballTriggerEnter;
-
-        // Destroy the projectile after 5 seconds
-        Destroy(scriptExtender.gameObject, 5);
-
-        return;
-
-        // Create a function that runs when the projectile is updated
-        void FireballMovement(ScriptExtender obj)
-        {
-            var rb = obj.ExtenderGetComponent<Rigidbody>();
-
-            // Add force in the forward direction
-            rb.AddForce(obj.transform.forward * 10, ForceMode.Impulse);
-        }
-
-        void FireballTriggerEnter(ScriptExtender obj, Collider other)
-        {
-            // Return if the projectile hits sender of the projectile
-            if (other.gameObject == powerManager.gameObject)
-                return;
-
-            // Return if the other object is a trigger
-            if (other.isTrigger)
-                return;
-
-            // If the projectile hits something with an IActor component, deal damage
-            if (other.TryGetComponent(out IActor actor))
-                actor.ChangeHealth(-100, powerManager.Player.PlayerInfo, this);
-
-            // Destroy the projectile when it hits something
-            Debug.Log($"BOOM! {obj.name} hit {other.name}");
-            Destroy(obj.gameObject);
-
-            // TODO: Make an explosion of some sort
-        }
     }
 
     #region Active Effects

@@ -1,22 +1,110 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class StationaryEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
 {
+    #region Serialized Fields
+
+    [SerializeField, Range(0, 1)] private float rotationLerpAmount = 0.15f;
+
+    #endregion
+
+    #region Private Fields
+
+    private NavMeshAgent _navMeshAgent;
+
+    #endregion
+
+    #region Getters
+
     public Enemy Enemy { get; private set; }
     public GameObject GameObject => gameObject;
 
-    public bool IsMovementEnabled => true;
+    public HashSet<object> MovementDisableTokens { get; } = new();
+    public TokenManager<float> MovementSpeedTokens { get; } = new(false, null, 1);
 
+    #endregion
 
     private void Awake()
     {
         // Get the enemy component
         Enemy = GetComponent<Enemy>();
+
+        // Get the nav mesh agent component
+        _navMeshAgent = GetComponent<NavMeshAgent>();
     }
 
-
-    public void SetMovementEnabled(bool on)
+    private void Update()
     {
+        // Update the movement speed tokens
+        MovementSpeedTokens.Update(Time.deltaTime);
+
+        // Return if the target is null
+        if (Enemy.EnemyDetectionBehavior.Target == null)
+            return;
+
+        var oldRotation = transform.rotation;
+
+        var diff = Enemy.EnemyDetectionBehavior.LastKnownTargetPosition - transform.position;
+
+        const float defaultFrameTime = 1 / 60f;
+        var frameTime = Time.deltaTime / defaultFrameTime;
+
+        // Set the y rotation to the desired rotation's y rotation
+        // var desiredRotation = Quaternion.FromToRotation(Vector3.forward, diff.normalized);
+        var desiredRotation = Quaternion.LookRotation(diff.normalized, Vector3.up);
+
+        transform.rotation = Quaternion.Euler(
+            0,
+            Mathf.Lerp(oldRotation.eulerAngles.y, desiredRotation.eulerAngles.y, rotationLerpAmount * frameTime),
+            0
+        );
+
+        // Update the nav mesh agent
+        UpdateNavMeshAgent();
+    }
+
+    private void UpdateNavMeshAgent()
+    {
+        // Return if the nav mesh agent is null
+        if (_navMeshAgent == null)
+            return;
+
+        _navMeshAgent.enabled = false;
+
+        // _navMeshAgent.updateRotation = false;
+        // _navMeshAgent.updatePosition = false;
+
+        // Set the nav mesh agent's speed to 0
+        // _navMeshAgent.speed = 0;
+
+        // Return if the detection is unaware
+        if (Enemy.EnemyDetectionBehavior.CurrentDetectionState == EnemyDetectionState.Unaware)
+            return;
+
+        // Set the destination to the target's position
+        _navMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.LastKnownTargetPosition);
+    }
+
+    public void SetPosition(Vector3 pos)
+    {
+        // If there is a nav mesh agent, set the position
+        if (_navMeshAgent != null)
+        {
+            _navMeshAgent.Warp(pos);
+            return;
+        }
+
+        // If there is a rigidbody, set the position
+        if (TryGetComponent(out Rigidbody rb))
+        {
+            rb.MovePosition(pos);
+            return;
+        }
+
+        // Set the position
+        transform.position = pos;
     }
 }

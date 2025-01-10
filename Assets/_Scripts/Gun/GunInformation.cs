@@ -13,6 +13,8 @@ public class GunInformation : ScriptableObject
     [Header("Gun Information")] [SerializeField]
     private string gunName;
 
+    [SerializeField, Min(0)] private int cost;
+
     [SerializeField] private GunFireType gunFireType;
 
     [Header("Stats")] [SerializeField] private float baseDamage;
@@ -39,9 +41,30 @@ public class GunInformation : ScriptableObject
 
     [SerializeField] private Sound reloadSound;
 
+    [Header("Recoil Settings")] [SerializeField] [Min(0)]
+    private float horizontalRecoil;
+
+    [Tooltip("Which direction the recoil will bias towards.")] [SerializeField, Range(-1, 1)]
+    private float horizontalRecoilBias;
+
+    [SerializeField] [Min(0)] private float verticalRecoil;
+
+    [SerializeField, Range(0, 1)] private float minHorizontalRecoilPercent = 0.75f;
+    [SerializeField, Range(0, 1)] private float minVerticalRecoilPercent = 0.75f;
+
+    [SerializeField, Range(0, 1)] private float recoilLerpAmount = 0.1f;
+    [SerializeField, Range(0, 1)] private float recoveryLerpAmount = 0.1f;
+
+    [SerializeField] private DynamicNoiseModule.NoiseTokenValue recoilNoise;
+
+    [SerializeField, Min(0)] private float recoilNoiseTime = 0.25f;
+    [SerializeField, Range(0, 1)] private float recoilNoiseLerpAmount = 0.2f;
+
     #region Getters
 
     public string GunName => gunName;
+
+    public int Cost => cost;
 
     public GunFireType FireType => gunFireType;
 
@@ -57,11 +80,39 @@ public class GunInformation : ScriptableObject
 
     public float ReloadTime => reloadTime;
 
+    #region Sounds
+
     public Sound PickupSound => pickupSound;
 
     public SoundPool FireSounds => fireSounds;
 
     public Sound ReloadSound => reloadSound;
+
+    #endregion
+
+    #region Recoil
+
+    public float HorizontalRecoil => horizontalRecoil;
+
+    public float VerticalRecoil => verticalRecoil;
+
+    public float HorizontalRecoilBias => horizontalRecoilBias;
+
+    public float RecoilLerpAmount => recoilLerpAmount;
+
+    public float RecoveryLerpAmount => recoveryLerpAmount;
+
+    public float MinHorizontalRecoilPercent => minHorizontalRecoilPercent;
+
+    public float MinVerticalRecoilPercent => minVerticalRecoilPercent;
+
+    public DynamicNoiseModule.NoiseTokenValue RecoilNoise => recoilNoise;
+
+    public float RecoilNoiseTime => recoilNoiseTime;
+
+    public float RecoilNoiseLerpAmount => recoilNoiseLerpAmount;
+
+    #endregion
 
     #endregion
 

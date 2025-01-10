@@ -1,18 +1,21 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Serialization;
 
 public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebugged
 {
-    private static readonly int animatorIsMovingProperty = Animator.StringToHash("IsMoving");
-
-    private static readonly int animatorSpeedProperty = Animator.StringToHash("Speed");
-
-    private static readonly int animatorIsRunningProperty = Animator.StringToHash("IsRunning");
-    //Adding this ref here dont fight me
-    //public NPCmovement npcMovement;
+    private static readonly int AnimatorIsMovingProperty = Animator.StringToHash("IsMoving");
+    private static readonly int AnimatorSpeedProperty = Animator.StringToHash("Speed");
+    private static readonly int AnimatorIsRunningProperty = Animator.StringToHash("IsRunning");
 
     #region Serialized Fields
+
+    [SerializeField, Min(0)] private float movementSpeed = 8;
+    [SerializeField, Min(0)] private float angularSpeed = 1500f;
+
+    [SerializeField, Range(0, 1)] private float unawareMovementMultiplier = .5f;
+    [SerializeField, Range(0, 1)] private float curiousMovementMultiplier = .75f;
 
     [Header("Checkpoint Traversal")] [SerializeField] [Tooltip("The checkpoints that the enemy will traverse.")]
     private Transform[] patrolCheckpoints;
@@ -20,15 +23,15 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     [SerializeField] [Min(0)] [Tooltip("How close the enemy needs to be to the checkpoint to consider it reached.")]
     private float checkpointProximityThreshold = 0.5f;
 
+    [SerializeField, Min(0)] private float stoppingDistance = 1.5f;
+
     [Header("Animations")] [SerializeField]
     private Animator animator;
 
-    [SerializeField] private string idleAnimationName = "Idle";
-    [SerializeField] private string walkAnimationName = "Walk";
-    [SerializeField] private string runAnimationName = "Run";
-
     [SerializeField] [Min(0)] private float walkAnimationThreshold;
     [SerializeField] [Min(0)] private float runAnimationThreshold;
+
+    [SerializeField, Min(0)] private float animationSpeedCoefficient = 1;
 
     #endregion
 
@@ -36,7 +39,10 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
 
     private int _currentCheckpointIndex;
 
-    private bool _isExternallyEnabled = true;
+    private TokenManager<float>.ManagedToken _withinStoppingDistanceToken;
+    private TokenManager<float>.ManagedToken _detectionStateToken;
+
+    private float _targetVelocity;
 
     #endregion
 
@@ -45,6 +51,10 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     public Enemy Enemy { get; private set; }
 
     public GameObject GameObject => gameObject;
+
+    public HashSet<object> MovementDisableTokens { get; } = new();
+
+    public TokenManager<float> MovementSpeedTokens { get; } = new(false, null, 1);
 
     public NavMeshAgent NavMeshAgent { get; private set; }
 
@@ -61,7 +71,13 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         }
     }
 
-    public bool IsMovementEnabled => _isExternallyEnabled;
+    public bool IsMovementEnabled => this.IsMovementEnabled();
+
+    private bool IsWithinStoppingDistance =>
+        // NavMeshAgent.remainingDistance <= stoppingDistance &&
+        Enemy.EnemyDetectionBehavior.CurrentDetectionState == EnemyDetectionState.Aware &&
+        Vector3.Distance(transform.position, Enemy.EnemyDetectionBehavior.Target.GameObject.transform.position) <=
+        stoppingDistance;
 
     #endregion
 
@@ -71,6 +87,12 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     {
         // Initialize the components
         InitializeComponents();
+
+        // Create the within stopping distance token
+        _withinStoppingDistanceToken = MovementSpeedTokens.AddToken(1, -1, true);
+
+        // Create the detection state token
+        _detectionStateToken = MovementSpeedTokens.AddToken(1, -1, true);
     }
 
     private void InitializeComponents()
@@ -84,8 +106,8 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
 
     private void Start()
     {
-        // Add this to the debug manager
-        DebugManager.Instance.AddDebuggedObject(this);
+        // // Add this to the debug manager
+        // DebugManager.Instance.AddDebuggedObject(this);
 
         // Determine the closest checkpoint
         _currentCheckpointIndex = DetermineClosestCheckpoint();
@@ -103,21 +125,56 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     private void Update()
     {
         // Set the NavMeshAgent enabled state
-        NavMeshAgent.enabled = IsMovementEnabled;
+        // NavMeshAgent.enabled = IsMovementEnabled;
+        NavMeshAgent.isStopped = !IsMovementEnabled;
 
-        // Return if disabled
-        if (!IsMovementEnabled)
-            return;
+        // If the navmesh agent is enabled, check if the enemy is within stopping distance
+        if (NavMeshAgent.enabled && IsWithinStoppingDistance)
+        {
+            this.AddMovementDisableToken(this);
+            // Debug.Log($"STOPPING DISTANCE REACHED: {gameObject.name}");
+        }
+        else
+            this.RemoveMovementDisableToken(this);
 
-        // Update the destination
-        UpdateDestination();
+        // Update the detection state token
+        _detectionStateToken.Value = Enemy.EnemyDetectionBehavior.CurrentDetectionState switch
+        {
+            EnemyDetectionState.Unaware => unawareMovementMultiplier,
+            EnemyDetectionState.Curious => curiousMovementMultiplier,
+            EnemyDetectionState.Aware => 1,
+            _ => 1
+        };
+
+        var movementSpeedTokenMultiplier = this.GetMovementSpeedTokenMultiplier();
+
+        // Set the target velocity
+        _targetVelocity = movementSpeed * movementSpeedTokenMultiplier;
+
+        if (NavMeshAgent.enabled)
+        {
+            // Set the movement speed of the navmesh agent
+            NavMeshAgent.speed = _targetVelocity;
+
+            // Set the angular speed of the navmesh agent
+            NavMeshAgent.angularSpeed = angularSpeed * movementSpeedTokenMultiplier;
+        }
 
         // Update the movement animation
         UpdateMovementAnimation();
+
+        // Update the movement speed tokens
+        MovementSpeedTokens.Update(Time.deltaTime);
+
+        // Update the destination
+        UpdateDestination();
     }
 
     private void UpdateDestination()
     {
+        // Return if disabled
+        if (!IsMovementEnabled)
+            return;
         var currentDetectionState = Enemy.EnemyDetectionBehavior.CurrentDetectionState;
 
         switch (currentDetectionState)
@@ -131,24 +188,37 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
                 if (CurrentCheckpoint == null)
                     return;
 
-                // Set the destination to the current checkpoint
-                if (NavMeshAgent.destination != CurrentCheckpoint.position)
-                    NavMeshAgent.SetDestination(CurrentCheckpoint.position);
+                if (NavMeshAgent.enabled)
+                {
+                    // Set the destination to the current checkpoint
+                    if (NavMeshAgent.destination != CurrentCheckpoint.position)
+                        NavMeshAgent.SetDestination(CurrentCheckpoint.position);
+                }
 
                 break;
 
             case EnemyDetectionState.Curious:
 
-                // Set the destination to the last known player position
-                if (NavMeshAgent.destination != Enemy.EnemyDetectionBehavior.LastKnownTargetPosition)
-                    NavMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.LastKnownTargetPosition);
+                if (NavMeshAgent.enabled)
+                {
+                    // Set the destination to the last known player position
+                    if (NavMeshAgent.destination != Enemy.EnemyDetectionBehavior.LastKnownTargetPosition)
+                        NavMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.LastKnownTargetPosition);
+                }
 
                 break;
 
             case EnemyDetectionState.Aware:
 
-                // Set the destination to the player's current position
-                NavMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.Target.GameObject.transform.position);
+                if (NavMeshAgent.enabled)
+                {
+                    // Set the destination to the player's current position
+                    if (Enemy.EnemyDetectionBehavior.IsTargetDetected)
+                        NavMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.Target.GameObject.transform.position);
+                    else
+                        NavMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.LastKnownTargetPosition);
+                }
+
                 break;
 
             default:
@@ -163,34 +233,28 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         if (animator == null)
             return;
 
-        // // If the NavMeshAgent is not enabled, play the idle animation
-        // if (!NavMeshAgent.enabled)
-        // {
-        //     animator.Play(idleAnimationName);
-        //     return;
-        // }
-
         // Get the velocity of the NavMeshAgent
-        var velocity = NavMeshAgent.velocity.magnitude;
+        var velocity = _targetVelocity;
+        var isMoving = NavMeshAgent.velocity.magnitude > walkAnimationThreshold;
+        var isRunning = NavMeshAgent.velocity.magnitude >= runAnimationThreshold;
 
-        // // Determine the animation to play based on the velocity
-        // if (velocity < walkAnimationThreshold)
-        //     animator.Play(idleAnimationName);
-        // else if (velocity < runAnimationThreshold)
-        //     animator.Play(walkAnimationName);
-        // else
-        //     animator.Play(runAnimationName);
+        var speedValue = velocity * animationSpeedCoefficient;
 
-        var isMoving = velocity > walkAnimationThreshold;
-        var isRunning = velocity >= runAnimationThreshold;
+        // If the navmesh agent is disabled, set the speed value to 0
+        if (NavMeshAgent.isStopped)
+            isMoving = false;
 
-        animator.SetBool(animatorIsMovingProperty, isMoving);
-        animator.SetFloat(animatorSpeedProperty, velocity);
-        animator.SetBool(animatorIsRunningProperty, isRunning);
+        animator.SetBool(AnimatorIsMovingProperty, isMoving);
+        animator.SetFloat(AnimatorSpeedProperty, speedValue);
+        animator.SetBool(AnimatorIsRunningProperty, isRunning);
     }
 
     private void CheckCheckpoint()
     {
+        // Return if the NavMeshAgent is disabled
+        if (!NavMeshAgent.enabled)
+            return;
+
         // Get the distance to the current checkpoint
         var distanceToCheckpoint = NavMeshAgent.remainingDistance;
 
@@ -238,15 +302,30 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
 
         return closestCheckpointIndex;
     }
-
-    public void SetMovementEnabled(bool on)
+    
+    public void SetPosition(Vector3 pos)
     {
-        _isExternallyEnabled = on;
+        // If there is a nav mesh agent, set the position
+        if (NavMeshAgent != null)
+        {
+            NavMeshAgent.Warp(pos);
+            return;
+        }
+
+        // If there is a rigidbody, set the position
+        if (TryGetComponent(out Rigidbody rb))
+        {
+            rb.MovePosition(pos);
+            return;
+        }
+
+        // Set the position
+        transform.position = pos;
     }
 
     #region Debugging
 
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
         //Make sure node list is not empty
         if (patrolCheckpoints == null || patrolCheckpoints.Length == 0)
@@ -263,10 +342,16 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
             if (patrolCheckpoints[nextIndex] == null)
                 continue;
 
+            // Draw a line between the current node and the next node
             Gizmos.color = Color.red;
             Gizmos.DrawLine(patrolCheckpoints[i].position, patrolCheckpoints[nextIndex].position);
 
+            // Draw a sphere at the current node
             Gizmos.color = Color.green;
+
+            if (i == _currentCheckpointIndex)
+                Gizmos.color = Color.blue;
+
             Gizmos.DrawSphere(patrolCheckpoints[i].position, 0.1f);
         }
     }
@@ -278,9 +363,9 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         if (animator == null)
             return "UHHH";
 
-        var isMoving = animator.GetBool(animatorIsMovingProperty);
-        var speed = animator.GetFloat(animatorSpeedProperty);
-        var isRunning = animator.GetBool(animatorIsRunningProperty);
+        var isMoving = animator.GetBool(AnimatorIsMovingProperty);
+        var speed = animator.GetFloat(AnimatorSpeedProperty);
+        var isRunning = animator.GetBool(AnimatorIsRunningProperty);
 
         return
             $"ANIMATOR:\n" +

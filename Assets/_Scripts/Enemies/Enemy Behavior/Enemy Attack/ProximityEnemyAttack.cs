@@ -68,7 +68,9 @@ public class ProximityEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     public Enemy Enemy { get; private set; }
 
-    public bool IsAttackEnabled => _isExternallyEnabled;
+    public bool IsAttackEnabled => _isExternallyEnabled && this.IsAttackEnabledTokens();
+
+    public HashSet<object> AttackDisableTokens { get; } = new();
 
     #endregion
 
@@ -128,6 +130,10 @@ public class ProximityEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         // if (Vector3.Distance(transform.position, players[0].transform.position) > detectionRadius)
         //     return;
 
+        // Return if there are attack disabled tokens
+        if (!this.IsAttackEnabledTokens())
+            return;
+
         // Check if the detection mode is Aware
         if (Enemy.EnemyDetectionBehavior?.CurrentDetectionState != EnemyDetectionState.Aware)
             return;
@@ -183,6 +189,10 @@ public class ProximityEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         if (_hasExploded)
             return;
 
+        // Return if there are attack disabled tokens
+        if (!this.IsAttackEnabledTokens())
+            return;
+
         // Create the explosion particles
         CreateExplosionParticles();
 
@@ -190,7 +200,7 @@ public class ProximityEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         CreateExplosiveForce();
 
         // Kill the enemy by changing the health to 0
-        Enemy.EnemyInfo.ChangeHealth(-Enemy.EnemyInfo.MaxHealth, Enemy.EnemyInfo, this);
+        Enemy.EnemyInfo.ChangeHealth(-Enemy.EnemyInfo.MaxHealth, Enemy.EnemyInfo, this, transform.position);
     }
 
     private void CreateExplosiveForce()
@@ -206,7 +216,7 @@ public class ProximityEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
                 continue;
 
             // Change the health of the player
-            player.ChangeHealth(-explosionDamage, Enemy.EnemyInfo, this);
+            player.ChangeHealth(-explosionDamage, Enemy.EnemyInfo, this, player.transform.position);
 
             // Get the rigidbody component from the player
             if (!player.TryGetComponentInParent(out Rigidbody rb))

@@ -1,29 +1,37 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.Serialization;
 using UnityEngine.VFX;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(Rigidbody))]
 public class GenericGun : MonoBehaviour, IGun, IDebugged
 {
+    private static readonly int ShootingAnimationID = Animator.StringToHash("Shooting");
+    private static readonly int ReloadAnimationID = Animator.StringToHash("Reload");
+
     #region Serialized Fields
 
-    [SerializeField] private GunInformation gunInformation;
-    [SerializeField] private Animator animator;
+    [SerializeField] protected GunInformation gunInformation;
+    [SerializeField] protected Animator animator;
 
     [Header("Muzzle Particles")] [SerializeField]
-    private Transform muzzleLocation;
+    protected Transform muzzleLocation;
 
-    [SerializeField] private ParticleSystem muzzleParticles;
-    [SerializeField] [Range(0, 500)] private int muzzleParticlesCount = 200;
-
-    [SerializeField] private VisualEffect muzzleFlashPrefab;
+    [SerializeField] protected VisualEffect muzzleFlash;
 
     [Header("Impact Particles")] [SerializeField]
-    private ParticleSystem impactParticles;
+    protected ParticleSystem impactParticles;
 
-    [SerializeField] [Range(0, 500)] private int impactParticlesCount = 200;
+    [SerializeField] [Range(0, 500)] protected int impactParticlesCount = 200;
+
+    [SerializeField] protected LayerMask layersToIgnore;
+
+    [SerializeField] protected TrailRenderer bulletTrailRenderer;
+    [SerializeField] protected DecalProjector bulletHoleDecal;
 
     #endregion
 
@@ -32,31 +40,31 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     /// <summary>
     /// A flag to determine if the fire input is being held down.
     /// </summary>
-    private bool _isFiring;
+    protected bool isFiring;
 
     /// <summary>
     /// A flag to determine if the fire input was pressed this frame.
     /// Used to force the player to release the fire button before firing again w/ semi-automatic weapons.
     /// </summary>
-    private bool _hasFiredThisFrame;
+    protected bool hasFiredThisFrame;
 
     /// <summary>
     /// The time since the gun last fired.
     /// Used to control fire rate;
     /// </summary>
-    private float _fireDelta;
+    protected float fireDelta;
 
     /// <summary>
     /// How many bullets are remaining in the magazine.
     /// </summary>
-    private int _currentMagazineSize;
+    protected int currentMagazineSize;
 
     /// <summary>
     /// How long the player has spent reloading the gun.
     /// </summary>
-    private float _currentReloadTime;
+    protected float currentReloadTime;
 
-    private bool _isReloading;
+    protected bool isReloading;
 
     /// <summary>
     /// A reference to the weapon manager that is currently using this gun.
@@ -73,17 +81,25 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     public GameObject GameObject => gameObject;
 
-    private float TimeBetweenShots => 1 / gunInformation.FireRate;
+    protected float TimeBetweenShots => 1 / gunInformation.FireRate;
 
-    public bool IsMagazineEmpty => _currentMagazineSize <= 0;
+    public bool IsMagazineEmpty => currentMagazineSize <= 0;
 
-    public bool IsReloading => _isReloading;
+    public bool IsReloading => isReloading;
 
-    public float ReloadingPercentage => (gunInformation.ReloadTime - _currentReloadTime) / gunInformation.ReloadTime;
+    public float ReloadingPercentage => (gunInformation.ReloadTime - currentReloadTime) / gunInformation.ReloadTime;
 
     public bool HasOutline { get; set; }
 
     public HashSet<Material> OutlineMaterials { get; } = new();
+
+    public InteractionIcon InteractionIcon => InteractionIcon.Pickup;
+
+    public int CurrentAmmo
+    {
+        get => currentMagazineSize;
+        set => currentMagazineSize = value;
+    }
 
     #region IInteractable
 
@@ -93,36 +109,38 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     #endregion
 
-    private void Awake()
+    protected virtual void Awake()
     {
         // Get the collider component
         Collider = GetComponent<Collider>();
 
-        // Get the animator component from pistol4
+        // Get the animator component from pistol
         //animator = GetComponent<Animator>();
     }
 
-    private void Start()
+    protected virtual void Start()
     {
         // Set the current magazine size to the max magazine size
-        _currentMagazineSize = gunInformation.MagazineSize;
+        currentMagazineSize = gunInformation.MagazineSize;
 
         // Set the fire delta to the time between shots
-        _fireDelta = TimeBetweenShots;
+        fireDelta = TimeBetweenShots;
     }
 
     #region Update Functions
 
-    private void Update()
+    protected virtual void Update()
     {
         UpdateFireDelta();
 
         // Fire the weapon if applicable
         if (_weaponManager != null)
             Fire(_weaponManager, _weaponManager.FireTransform.position, _weaponManager.FireTransform.forward);
-
+        
+        //if weapon is empty play empty animation
+        animator.SetBool("isEmpty", IsMagazineEmpty);
         // Reset the fired this frame flag
-        _hasFiredThisFrame = false;
+        hasFiredThisFrame = false;
 
         // Update the reload time if the gun is currently reloading
         UpdateReload();
@@ -138,16 +156,16 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             return;
 
         // Update the reload time
-        _currentReloadTime = Mathf.Clamp(_currentReloadTime - Time.deltaTime, 0, gunInformation.ReloadTime);
+        currentReloadTime = Mathf.Clamp(currentReloadTime - Time.deltaTime, 0, gunInformation.ReloadTime);
 
-        if (_currentReloadTime > 0)
+        if (currentReloadTime > 0)
             return;
 
         // Set the reloading flag to false
-        _isReloading = false;
+        isReloading = false;
 
         // If the player has finished reloading, reset the magazine size
-        _currentMagazineSize = gunInformation.MagazineSize;
+        currentMagazineSize = gunInformation.MagazineSize;
     }
 
     private void UpdateFireDelta()
@@ -155,17 +173,21 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // If the player is reloading, force the fire delta to the TimeBetweenShots
         if (IsReloading)
         {
-            _fireDelta = TimeBetweenShots;
+            fireDelta = TimeBetweenShots;
             return;
         }
 
+        var fireRateMultiplier = _weaponManager != null ? _weaponManager.CurrentFireRateMultiplier : 1;
+
         // if the gun is currently firing, Update the time since the gun last fired
-        _fireDelta = Mathf.Clamp(_fireDelta + Time.deltaTime, 0, TimeBetweenShots);
+        fireDelta = Mathf.Clamp(
+            fireDelta + (Time.deltaTime * fireRateMultiplier),
+            0, TimeBetweenShots);
     }
 
     #endregion
 
-    public void OnFire(WeaponManager weaponManager)
+    public virtual void OnFire(WeaponManager weaponManager)
     {
         // Return if the gun is currently reloading
         if (IsReloading)
@@ -173,71 +195,98 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
 
         // Set the firing flag to true
-        _isFiring = true;
+        isFiring = true;
         //
         // Set the fired this frame flag to true
-        _hasFiredThisFrame = true;
+        hasFiredThisFrame = true;
     }
 
-    public void OnFireReleased()
+    public virtual void OnFireReleased()
     {
         // Set the firing flag to false
-        _isFiring = false;
+        isFiring = false;
     }
 
-    public void Fire(WeaponManager weaponManager, Vector3 startingPosition, Vector3 direction)
+    public virtual void Fire(WeaponManager weaponManager, Vector3 startingPosition, Vector3 direction)
+    {
+        // If the gun should not fire, return
+        if (!ShouldFire())
+            return;
+
+        // Determine how many times the gun should fire this frame
+        var timesToFire = (int)(fireDelta / TimeBetweenShots);
+        fireDelta %= TimeBetweenShots;
+
+        // Fire the gun
+        ShootProjectiles(weaponManager, timesToFire, startingPosition, direction);
+    }
+
+    protected virtual bool ShouldFire()
     {
         // If the gun is not firing, return
-        if (!_isFiring)
-            return;
+        if (!isFiring)
+            return false;
 
         // Return if the gun is currently reloading
         if (IsReloading)
-            return;
+            return false;
 
         // return if the magazine is empty
         if (IsMagazineEmpty)
-            return;
+            return false;
 
         // Special logic to determine if the gun should fire this frame based on the gun's fire type
         switch (gunInformation.FireType)
         {
             case GunInformation.GunFireType.SemiAutomatic:
-                if (!_hasFiredThisFrame)
-                    return;
+                if (!hasFiredThisFrame)
+                    return false;
                 break;
         }
 
         // Determine if the gun can fire based on the fire rate
-        if (_fireDelta < TimeBetweenShots)
-            return;
+        if (fireDelta < TimeBetweenShots)
+            return false;
 
-        // Determine how many times the gun should fire this frame
-        var timesToFire = (int)(_fireDelta / TimeBetweenShots);
-        _fireDelta %= TimeBetweenShots;
+        return true;
+    }
 
-        // Create a ray cast from the starting point in the direction with the specified range
-
-        // Emit the fire particles
-        // PlayParticles(muzzleParticles, muzzleLocation.position, muzzleParticlesCount);
+    protected void ShootProjectiles(
+        WeaponManager weaponManager, int pelletsToFire, Vector3 startingPosition, Vector3 direction
+    )
+    {
+        // Play shooting animation
+        animator.SetTrigger(ShootingAnimationID);
 
         // Play the muzzle flash VFX
         PlayMuzzleFlash();
 
-        // Fire the gun
-        for (var i = 0; i < timesToFire; i++)
+        // Recoil the gun
+        Recoil();
+
+        for (var i = 0; i < pelletsToFire; i++)
         {
             // break if the magazine is empty
             if (IsMagazineEmpty)
                 break;
 
             // Determine the bloom of the gun
-            var xBloom = UnityEngine.Random.Range(-gunInformation.BloomAngle / 2, gunInformation.BloomAngle / 2);
-            var yBloom = UnityEngine.Random.Range(-gunInformation.BloomAngle / 2, gunInformation.BloomAngle / 2);
-            var spreadDirection = Quaternion.Euler(xBloom, yBloom, 0) * direction;
+            var xBloom = UnityEngine.Random.Range(
+                -gunInformation.BloomAngle / 2 * 100,
+                gunInformation.BloomAngle / 2 * 100
+            ) / 100;
+            var yBloom = UnityEngine.Random.Range(
+                -gunInformation.BloomAngle / 2 * 100,
+                gunInformation.BloomAngle / 2 * 100
+            ) / 100;
+            // var spreadDirection = Quaternion.Euler(yBloom, xBloom, 0) * direction;
+            var spreadDirection =
+                Quaternion.AngleAxis(xBloom, weaponManager.Player.PlayerController.CameraPivot.transform.up) *
+                Quaternion.AngleAxis(yBloom, weaponManager.Player.PlayerController.CameraPivot.transform.right) *
+                direction;
 
             // Create a layerMask to ignore the NonPhysical layer
-            var layerMask = ~(1 << LayerMask.NameToLayer("NonPhysical"));
+            var layerMask = ~layersToIgnore;
 
             // Perform the raycast
             var hit = Physics.Raycast(
@@ -249,106 +298,158 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             );
 
             // Decrease the magazine size
-            _currentMagazineSize--;
+            currentMagazineSize--;
 
-            //Play shooting animation
-            animator.SetTrigger("Shooting");
-
-            // Play the fire sound
-            var fireSound = gunInformation.FireSounds.GetRandomSound();
-            SoundManager.Instance.PlaySfx(fireSound);
+            // Spawn a bullet trail
+            StartCoroutine(
+                SpawnBulletTrail(bulletTrailRenderer, new Ray(muzzleLocation.position, spreadDirection), hitInfo)
+            );
 
             // Continue if the raycast did not hit anything
             if (!hit)
                 continue;
 
-            // Emit the particles
-            PlayParticles(impactParticles, hitInfo.point, impactParticlesCount);
+            // // Emit the particles
+            // PlayParticles(impactParticles, hitInfo.point, impactParticlesCount);
 
             // Test if the cast hit an IActor (test the root object)
-            if (hitInfo.collider.TryGetComponentInParent(out IActor actor))
-            {
-                // continue if the actor is the player
-                if (actor is PlayerInfo info && info == weaponManager.PlayerInfo)
-                    continue;
+            if (!hitInfo.collider.TryGetComponentInParent(out IActor actor, 20))
+                continue;
 
-                // Calculate the damage falloff
-                var distance = Vector3.Distance(startingPosition, hitInfo.point);
-                var damage = gunInformation.EvaluateBaseDamage(distance) * weaponManager.CurrentDamageMultiplier;
+            // continue if the actor is the player
+            if (actor is PlayerInfo info && info == weaponManager.PlayerInfo)
+                continue;
 
-                // Debug.Log($"DAMAGE: {damage} - DISTANCE: {distance} / {gunInformation.Range}");
+            // Calculate the damage falloff
+            var distance = Vector3.Distance(startingPosition, hitInfo.point);
+            var damage = gunInformation.EvaluateBaseDamage(distance) * weaponManager.CurrentDamageMultiplier;
 
-                // Deal damage to the actor
-                actor.ChangeHealth(-damage, weaponManager.Player.PlayerInfo, this);
-            }
+            // Debug.Log($"DAMAGE: {damage} - DISTANCE: {distance} / {gunInformation.Range}");
+
+            // Deal damage to the actor
+            actor.ChangeHealth(-damage, weaponManager.Player.PlayerInfo, this, hitInfo.point);
+        }
+
+        // Play the fire sound
+        var fireSound = gunInformation.FireSounds.GetRandomSound();
+        SoundManager.Instance.PlaySfx(fireSound);
+    }
+
+    private void Recoil()
+    {
+        var playerRecoil = _weaponManager.Player.GetComponent<PlayerRecoil>();
+
+        if (playerRecoil == null)
+            return;
+
+        playerRecoil.AddRecoil(GunInformation);
+    }
+
+    private IEnumerator SpawnBulletTrail(TrailRenderer trailPrefab, Ray ray, RaycastHit hit)
+    {
+        var startPosition = ray.origin;
+
+        // Determine the end position of the bullet trail
+        var endPosition = hit.collider != null
+            ? hit.point
+            : ray.GetPoint(gunInformation.Range);
+
+        // Instantiate the prefab
+        var trail = Instantiate(trailPrefab, startPosition, Quaternion.identity);
+
+        const float trailSpeed = 250f;
+        const float variance = 0.25f;
+
+        var cSpeed = Random.Range(
+            trailSpeed - (variance * trailSpeed),
+            trailSpeed + (variance * trailSpeed)
+        );
+
+        while (Vector3.Distance(trail.transform.position, endPosition) > 0.1f)
+        {
+            trail.transform.position = Vector3.MoveTowards(
+                trail.transform.position,
+                endPosition,
+                Time.deltaTime * cSpeed
+            );
+
+            yield return null;
+        }
+
+        // Destroy the trail
+        trail.autodestruct = true;
+
+        // Instantiate the bullet hole decal
+        if (hit.collider != null)
+        {
+            var decal = Instantiate(bulletHoleDecal, hit.point, Quaternion.LookRotation(hit.normal));
+
+            // Set the parent of the decal to the object that was hit
+            decal.transform.SetParent(hit.collider.transform);
+
+            // Fix decal clipping
+            decal.transform.position += hit.normal * -0.01f;
+
+            // Set the decal to destroy itself after 10 seconds
+            Destroy(decal.gameObject, 10);
         }
     }
 
-    public void Reload()
+    public virtual void Reload()
     {
         // Return if the player is reloading
         if (IsReloading)
             return;
 
         // Return if the gun's magazine is full
-        if (_currentMagazineSize == gunInformation.MagazineSize)
+        if (currentMagazineSize == gunInformation.MagazineSize)
             return;
 
         // Force the firing flag to false
-        _isFiring = false;
-        _hasFiredThisFrame = false;
+        isFiring = false;
+        hasFiredThisFrame = false;
 
         // Set the reload time to the reload time of the gun
-        _currentReloadTime = gunInformation.ReloadTime;
+        currentReloadTime = gunInformation.ReloadTime;
 
 
         // Set the reloading flag to true
-        _isReloading = true;
+        isReloading = true;
 
         // set animation param trigger to reload
-        animator.SetTrigger("Reload");
+        animator.SetTrigger(ReloadAnimationID);
 
         // Play the reload sound
-        Debug.Log($"Sound Settings: {gunInformation.ReloadSound.Clip.name}");
+        // Debug.Log($"Sound Settings: {gunInformation.ReloadSound.Clip.name}");
         SoundManager.Instance.PlaySfx(gunInformation.ReloadSound);
     }
 
-    public void OnEquip(WeaponManager weaponManager)
+    public void OnEquipToPlayer(WeaponManager weaponManager)
     {
         // Set the weapon manager
-        _weaponManager = weaponManager;
+        this._weaponManager = weaponManager;
 
         // Add to debug manager
         DebugManager.Instance.AddDebuggedObject(this);
+
+        // Get the interactable materials of the gun
+        this.GetOutlineMaterials(weaponManager.Player.PlayerInteraction.OutlineMaterial.shader);
     }
 
-    public void OnRemoval(WeaponManager weaponManager)
+    public void OnRemovalFromPlayer(WeaponManager weaponManager)
     {
         // Remove from debug manager
         DebugManager.Instance.RemoveDebuggedObject(this);
 
         // Clear the weapon manager
-        _weaponManager = null;
+        this._weaponManager = null;
 
         // Add the outline to the weapon manager
         foreach (var mat in OutlineMaterials)
             weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, false, true);
     }
 
-    public string GetDebugText()
-    {
-        return $"Equipped Generic Gun: {gunInformation.GunName}\n" +
-               $"\tFire Type: {gunInformation.FireType}\n" +
-               $"\tDamage: {gunInformation.BaseDamage}\n" +
-               $"\tFire Rate: {gunInformation.FireRate}\t ({TimeBetweenShots}) \tDelta: {_fireDelta}\n" +
-               $"\tEquipped: {(_weaponManager != null ? _weaponManager.gameObject.name : "NONE")}\n" +
-               $"\tFiring?: {_isFiring} - {_hasFiredThisFrame}\n" +
-               $"\tMagazine: {_currentMagazineSize} / {gunInformation.MagazineSize}\n" +
-               $"\tReloading: {_currentReloadTime} / {gunInformation.ReloadTime}" +
-               $"\n";
-    }
-
-    private static void PlayParticles(ParticleSystem system, Vector3 position, int count)
+    protected static void PlayParticles(ParticleSystem system, Vector3 position, int count)
     {
         if (system == null)
             return;
@@ -364,22 +465,39 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         system.Emit(emitParams, count);
     }
 
-    private void PlayMuzzleFlash()
+    protected void PlayMuzzleFlash()
     {
-        // Instantiate the muzzle flash VFX
-        var muzzleFlashInstance = Instantiate(muzzleFlashPrefab, muzzleLocation.position, muzzleLocation.rotation);
+        // Return if the muzzle flash is null
+        if (muzzleFlash == null)
+            return;
 
-        // Get the max lifetime of the muzzle flash
-        var maxLifetime = muzzleFlashInstance.GetFloat("MaxLifetime");
+        // // Instantiate the muzzle flash VFX
+        // var muzzleFlashInstance = Instantiate(muzzleFlash, muzzleLocation.position, muzzleLocation.rotation);
 
-        // Destroy the muzzle flash after the max lifetime
-        Destroy(muzzleFlashInstance.gameObject, maxLifetime);
+        // Set the layer of the muzzle flash to the same layer as the gun
+        muzzleFlash.gameObject.layer = gameObject.layer;
+
+        // Set the layer of all the children of the muzzle flash to the same layer as the gun
+        foreach (Transform child in muzzleFlash.transform)
+            child.gameObject.layer = gameObject.layer;
+
+        // // Get the max lifetime of the muzzle flash
+        // var maxLifetime = 5;
+
+        // // Destroy the muzzle flash after the max lifetime
+        // Destroy(muzzleFlash.gameObject, maxLifetime);
+
+        // Disable and re-enable the muzzle flash to reset the particles
+        muzzleFlash.gameObject.SetActive(false);
+        muzzleFlash.gameObject.SetActive(true);
 
         // Play the muzzle flash
-        muzzleFlashInstance.Play();
+        muzzleFlash.Play();
 
-        // Set the particles to be a child of the gun
-        muzzleFlashInstance.transform.SetParent(muzzleLocation);
+        // // Set the particles to be a child of the gun
+        // muzzleFlash.transform.SetParent(muzzleLocation);
+
+        // Debug.Log($"MUZZLE FLASH: {muzzleFlash.culled}, {muzzleFlash.gameObject.activeInHierarchy}, {muzzleFlash.playRate}, {muzzleFlash.HasAnySystemAwake()}");;
     }
 
     public void Interact(PlayerInteraction playerInteraction)
@@ -390,7 +508,6 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)
     {
-        Debug.Log($"Looking at {gunInformation.GunName}");
     }
 
     public string InteractText(PlayerInteraction playerInteraction)
@@ -406,5 +523,18 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Remove the outline from the previous weapon manager
         foreach (var mat in OutlineMaterials)
             _weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, false, false);
+    }
+
+    public string GetDebugText()
+    {
+        return $"Equipped Generic Gun: {gunInformation.GunName}\n" +
+               $"\tFire Type: {gunInformation.FireType}\n" +
+               $"\tDamage: {gunInformation.BaseDamage}\n" +
+               $"\tFire Rate: {gunInformation.FireRate}\t ({TimeBetweenShots}) \tDelta: {fireDelta}\n" +
+               $"\tEquipped: {(_weaponManager != null ? _weaponManager.gameObject.name : "NONE")}\n" +
+               $"\tFiring?: {isFiring} - {hasFiredThisFrame}\n" +
+               $"\tMagazine: {currentMagazineSize} / {gunInformation.MagazineSize}\n" +
+               $"\tReloading: {currentReloadTime} / {gunInformation.ReloadTime}" +
+               $"\n";
     }
 }

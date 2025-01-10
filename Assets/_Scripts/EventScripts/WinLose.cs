@@ -77,7 +77,6 @@ public class WinLose : MonoBehaviour
             loseScreen.SetActive(true);
 
         // Optional: Freeze the game
-        Time.timeScale = 0f;
 
         // Set the remaining time to the restart delay
         _loseTimeRemaining = restartDelay;
@@ -119,7 +118,6 @@ public class WinLose : MonoBehaviour
     private void Restart()
     {
         // Reset the time scale
-        Time.timeScale = 1f;
 
         // Reload the current scene to restart the game
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);

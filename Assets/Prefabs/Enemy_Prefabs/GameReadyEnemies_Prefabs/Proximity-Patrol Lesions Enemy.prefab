@@ -444,6 +444,7 @@ GameObject:
   - component: {fileID: 5555316134646248105}
   - component: {fileID: 396274727325348810}
   - component: {fileID: 8784981969918071950}
+  - component: {fileID: 7833135371815138931}
   - component: {fileID: 8932513790679332165}
   - component: {fileID: 5830201516360384326}
   - component: {fileID: 1321240230866553819}
@@ -546,6 +547,19 @@ NavMeshAgent:
   m_BaseOffset: 1.4
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &7833135371815138931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8754773797763522373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f5f533b130e40eca5347083903f3682, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  uniqueId: 
 --- !u!114 &8932513790679332165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -570,9 +584,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1f2f7014adf46a88a0579b47084cca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 12
-  currentHealth: 12
+  maxHealth: 100
+  currentHealth: 100
   moneyReward: 50
+  animator: {fileID: 0}
+  enemyHitEffect: {fileID: 0}
+  minVFXRangeDamage: 10
+  maxVFXRangeDamage: 50
+  minVFXDamage: 10
+  enemyHitSound:
+    clip: {fileID: 0}
+    soundType: 1
+    volume: 0.0625
+    isPersistent: 0
+  enemyDeathSound:
+    clip: {fileID: 0}
+    soundType: 1
+    volume: 0.0625
+    isPersistent: 0
 --- !u!114 &1321240230866553819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -585,7 +614,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6db7d14cf168478bacea0720a538d891, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  detectionOrigin: {fileID: 4035413799650271227}
   visionDistance: 30
+  autoDetectionDistance: 5
   visionAngle: 50
   patrolDetectionTimer:
     maxTime: 0.25
@@ -609,14 +640,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cc601c4836b49da97804b75a0eec5b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  movementSpeed: 2
+  angularSpeed: 1500
+  unawareMovementMultiplier: 0.5
+  curiousMovementMultiplier: 0.75
   patrolCheckpoints: []
   checkpointProximityThreshold: 0.5
+  stoppingDistance: 1.5
   animator: {fileID: 0}
-  idleAnimationName: Idle
-  walkAnimationName: Walk
-  runAnimationName: Run
   walkAnimationThreshold: 0
   runAnimationThreshold: 0
+  animationSpeedCoefficient: 1
 --- !u!114 &1645904041578154685
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3111,6 +3145,12 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!4 &4035413799650271227 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 309828020610003086, guid: db6e6372cdff8b147bb69cbf2c06927e,
+    type: 3}
+  m_PrefabInstance: {fileID: 4344867020953022325}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4307315861339474078 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: db6e6372cdff8b147bb69cbf2c06927e,

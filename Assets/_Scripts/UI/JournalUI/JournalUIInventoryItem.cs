@@ -43,10 +43,10 @@ public class JournalUIInventoryItem : MonoBehaviour
         if (inventoryEntry.Quantity > 1)
             countText = $" x{inventoryEntry.Quantity}";
 
-        itemNameText.text = $"{inventoryEntry.InventoryObject.Name}{countText}";
+        itemNameText.text = $"{inventoryEntry.InventoryObject.ItemName}{countText}";
 
         if (inventoryEntry.InventoryObject == Player.Instance.PlayerInventory.MoneyObject)
-            itemNameText.text = $"{inventoryEntry.InventoryObject.Name}: ${inventoryEntry.Quantity}";
+            itemNameText.text = $"{inventoryEntry.InventoryObject.ItemName}: ${inventoryEntry.Quantity}";
     }
 
 

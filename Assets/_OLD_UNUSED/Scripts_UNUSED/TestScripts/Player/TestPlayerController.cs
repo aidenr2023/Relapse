@@ -28,6 +28,9 @@ public class TestPlayerController : MonoBehaviour, IPlayerController
 
     public Vector2 MovementInput => _movementInput;
     public GameObject CameraPivot => cameraPivot;
+
+    public Transform Orientation => gameObject.transform;
+
     public bool IsGrounded => _characterController.isGrounded;
     public bool IsSprinting => false;
 
@@ -57,10 +60,10 @@ public class TestPlayerController : MonoBehaviour, IPlayerController
     private void InitializeInputs()
     {
         // Movement
-        InputManager.Instance.PlayerControls.PlayerMovementBasic.Move.performed += OnMovePerformed;
-        InputManager.Instance.PlayerControls.PlayerMovementBasic.Move.canceled += OnMoveCanceled;
+        InputManager.Instance.PControls.PlayerMovementBasic.Move.performed += OnMovePerformed;
+        InputManager.Instance.PControls.PlayerMovementBasic.Move.canceled += OnMoveCanceled;
 
-        InputManager.Instance.PlayerControls.Player.LookMouse.performed += OnLookPerformed;
+        InputManager.Instance.PControls.Player.LookMouse.performed += OnLookPerformed;
     }
 
     #endregion

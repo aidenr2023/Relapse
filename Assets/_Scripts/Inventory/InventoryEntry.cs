@@ -13,6 +13,10 @@ public class InventoryEntry
     public event Action<InventoryEntry, int> OnQuantityChanged;
     public event Action<InventoryEntry, int> OnEmpty;
 
+    public InventoryEntry()
+    {
+    }
+
     public InventoryEntry(InventoryObject inventoryObject, int quantity = 1)
     {
         this.inventoryObject = inventoryObject;
@@ -34,5 +38,21 @@ public class InventoryEntry
 
         if (quantity <= 0)
             OnEmpty?.Invoke(this, value);
+    }
+
+    public void SetQuantity(int value)
+    {
+        // If the value is the same as the current quantity, return
+        if (value == quantity)
+            return;
+
+        // If the value is less 0, set the value to 0
+        if (value < 0)
+            value = 0;
+
+        if (value < quantity)
+            RemoveQuantity(quantity - value);
+        else
+            AddQuantity(value - quantity);
     }
 }

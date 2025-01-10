@@ -6,7 +6,7 @@ using Object = UnityEngine.Object;
 [Serializable]
 public class JournalTooltipManager
 {
-    public static JournalTooltipManager Instance => Journal.Instance.JournalTooltipManager;
+    public static JournalTooltipManager Instance => Journal.Instance?.JournalTooltipManager;
 
     #region Serialized Fields
 
@@ -16,7 +16,13 @@ public class JournalTooltipManager
 
     [SerializeField] private float tooltipSpacing = -100;
 
-    [SerializeField] private float tooltipDuration = 3;
+    [Header("Durations")] [SerializeField, Min(0)]
+    private float generalTooltipDuration = 3;
+
+    [SerializeField, Min(0)] private float objectiveTooltipDuration = 10;
+    [SerializeField, Min(0)] private float tutorialTooltipDuration = 3;
+    [SerializeField, Min(0)] private float moneyTooltipDuration = 3;
+    [SerializeField, Min(0)] private float debugTooltipDuration = 3;
 
     #endregion
 
@@ -50,10 +56,18 @@ public class JournalTooltipManager
 
     public void AddTooltip(string text)
     {
-        AddTooltip(text, tooltipDuration);
+        // Create basic tooltip info
+        var tooltipInfo = new BasicJournalTooltipInfo(text, JournalTooltipType.General);
+
+        // Add the tooltip
+        AddTooltip(tooltipInfo);
+
+        // AddTooltip(text, generalTooltipDuration);
     }
 
-    public void AddTooltip(Func<string> text, float duration)
+    public void AddTooltip(
+        Func<string> text, float duration, bool isIndefinite = false,
+        Func<bool> completionCondition = null)
     {
         // Instantiate a new tooltip
         var tooltip = Object.Instantiate(tooltipPrefab, tooltipParent);
@@ -69,14 +83,29 @@ public class JournalTooltipManager
             _tooltipYAdjustments.Remove(tooltip);
         };
 
-
         // Initialize the tooltip
-        tooltip.Initialize(text, duration);
+        tooltip.Initialize(text, duration, isIndefinite, completionCondition);
     }
 
     public void AddTooltip(Func<string> text)
     {
-        AddTooltip(text, tooltipDuration);
+        AddTooltip(text, generalTooltipDuration);
+    }
+
+    public void AddTooltip(IJournalTooltipInfo tooltipInfo)
+    {
+        // Determine the duration of the tooltip based on the tooltip type
+        var duration = tooltipInfo.TooltipType switch
+        {
+            JournalTooltipType.General => generalTooltipDuration,
+            JournalTooltipType.Objective => objectiveTooltipDuration,
+            JournalTooltipType.Tutorial => tutorialTooltipDuration,
+            JournalTooltipType.Money => moneyTooltipDuration,
+            JournalTooltipType.Debug => debugTooltipDuration,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        AddTooltip(tooltipInfo.Text, duration);
     }
 
     public void Update()

@@ -51,7 +51,7 @@ public class Regeneration : MonoBehaviour, IPower
     {
     }
 
-    public void StartPassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
+    private void CreateEffectToken(PlayerPowerManager powerManager, PowerToken pToken)
     {
         // Instantiate the regeneration particles
         var particles = Instantiate(regenerationParticles, powerManager.transform);
@@ -66,12 +66,28 @@ public class Regeneration : MonoBehaviour, IPower
         pToken.AddData(REGENERATION_KEY, particles);
     }
 
+    public void StartPassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
+    {
+        CreateEffectToken(powerManager, pToken);
+    }
+
     public void UpdatePassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
+        // Return if the player's health is less than or equal to 0
+        if (powerManager.Player.PlayerInfo.CurrentHealth <= 0)
+            return;
+
+        var hasData = pToken.TryGetData<ParticleSystem>(REGENERATION_KEY, out var particles);
+
+        // Ensure the player has the regeneration particles
+        if (!hasData)
+            CreateEffectToken(powerManager, pToken);
+
         powerManager.Player.PlayerInfo.ChangeHealth(
             regenerationAmount / PowerScriptableObject.PassiveEffectDuration * Time.deltaTime,
             powerManager.Player.PlayerInfo,
-            this
+            this,
+            powerManager.Player.transform.position
         );
     }
 
@@ -79,7 +95,7 @@ public class Regeneration : MonoBehaviour, IPower
     {
         // Get the particles from the power token's data dictionary
         // Remove the particles from the power token's data dictionary
-        var particles = pToken.RemoveData<ParticleSystem>(REGENERATION_KEY);
+        _ = pToken.RemoveData<ParticleSystem>(REGENERATION_KEY, out var particles);
 
         // Stop the particle system
         particles.Stop();

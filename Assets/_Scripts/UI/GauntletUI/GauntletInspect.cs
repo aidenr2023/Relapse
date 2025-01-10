@@ -1,13 +1,13 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class GauntletInspectController : MonoBehaviour
+public class GauntletInspectController : MonoBehaviour, IUsesInput
 {
     #region Serialized Fields
 
     [SerializeField] private Player player;
-
-
 
     #endregion
 
@@ -22,7 +22,11 @@ public class GauntletInspectController : MonoBehaviour
     // Flag to ensure PauseAnimation is only called once per event
     private bool _hasPaused;
 
+    private bool _isInspectHeld;
+
     #endregion
+
+    public HashSet<InputData> InputActions { get; } = new();
 
     private void Awake()
     {
@@ -39,26 +43,49 @@ public class GauntletInspectController : MonoBehaviour
 
         // Assert that the player is not null
         Debug.Assert(player != null, "GauntletInspectController: Player is null.");
+
+        // Initialize the input
+        InitializeInput();
     }
 
-    private void Update()
+    private void OnEnable()
     {
-        HandleInput();
+        // Register the input
+        InputManager.Instance.Register(this);
     }
 
-    /// <summary>
-    /// Handles user input for pressing and releasing the "I" key.
-    /// </summary>
-    private void HandleInput()
+    private void OnDisable()
     {
-        // Detect when the "I" key is pressed down
-        if (Input.GetKeyDown(KeyCode.I))
-            TriggerGauntletInspect();
+        // Unregister the input
+        InputManager.Instance.Unregister(this);
+    }
 
-        // Detect when the "I" key is released
-        if (Input.GetKeyUp(KeyCode.I))
-            if (_isPaused)
-                ResumeAnimation();
+    public void InitializeInput()
+    {
+        // Set up input actions
+        InputActions.Add(
+            new InputData(InputManager.Instance.PControls.Player.Inspect, InputType.Performed, OnInspectPerformed)
+        );
+        InputActions.Add(
+            new InputData(InputManager.Instance.PControls.Player.Inspect, InputType.Canceled, OnInspectCanceled)
+        );
+    }
+
+    private void OnInspectPerformed(InputAction.CallbackContext context)
+    {
+        TriggerGauntletInspect();
+
+        // Set the flag to true
+        _isInspectHeld = true;
+    }
+
+    private void OnInspectCanceled(InputAction.CallbackContext context)
+    {
+        // Set the flag to false
+        _isInspectHeld = false;
+
+        if (_isPaused)
+            ResumeAnimation();
     }
 
     /// <summary>
@@ -85,7 +112,7 @@ public class GauntletInspectController : MonoBehaviour
             return;
 
         // Ensure the Animator exists and the "I" key is being held
-        if (Input.GetKey(KeyCode.I))
+        if (_isInspectHeld)
         {
             if (!_hasPaused)
             {
@@ -112,9 +139,12 @@ public class GauntletInspectController : MonoBehaviour
             return;
         }
 
-        _animator.speed = 1f; // Resume the animation
+        // Resume the animation
+        _animator.speed = 1f;
         _isPaused = false;
-        _hasPaused = false; // Reset for potential future pauses
+
+        // Reset for potential future pauses
+        _hasPaused = false;
         Debug.Log("GauntletInspectController: Animation resumed after releasing 'I' key.");
     }
 }

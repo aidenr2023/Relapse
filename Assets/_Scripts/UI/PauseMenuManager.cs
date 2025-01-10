@@ -1,16 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using TMPro;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
-public class PauseMenuManager : MonoBehaviour
+public class PauseMenuManager : GameMenu, IUsesInput
 {
-    public static PauseMenuManager Instance { get; private set; }
-
     #region Serialized Fields
 
     [SerializeField] private GameObject pauseMenuParent;
@@ -25,8 +25,9 @@ public class PauseMenuManager : MonoBehaviour
     [SerializeField] private Color clickColor = Color.red;
 
 
-    [Header("Navigation Control")]
-    [SerializeField] private GameObject firstSelectedButton;
+    [Header("Navigation Control")] [SerializeField]
+    private GameObject firstSelectedButton;
+
     [SerializeField] private GameObject settingsFirstSelected;
     [SerializeField] private GameObject journalFirstSelected;
 
@@ -34,14 +35,17 @@ public class PauseMenuManager : MonoBehaviour
 
     #region Private Fields
 
-    private float _tempTimeScale;
-    private float _fixedDeltaTime;
-
     private readonly Stack<GameObject> _menuStack = new();
+
+    private bool _isInputRegistered;
+
+    private bool _inputtedThisFrame;
 
     #endregion
 
     #region Getters
+
+    public HashSet<InputData> InputActions { get; } = new();
 
     public bool IsPaused { get; private set; }
 
@@ -51,43 +55,103 @@ public class PauseMenuManager : MonoBehaviour
     /// Changes the text color of the TextMeshPro to the hover color.
     /// Attach this to the PointerEnter event.
     /// </summary>
-    private void Awake()
+    protected override void CustomAwake()
     {
-        // Set the instance to this object
-        Instance = this;
+        // Initialize the input
+        InitializeInput();
     }
 
-    private void Start()
+    public void InitializeInput()
     {
-        // Connect to input system
-        InputManager.Instance.PlayerControls.Player.Pause.performed += _ => TogglePause();
+        // // Connect to input system
+        // InputActions.Add(
+        //     new InputData(InputManager.Instance.DefaultInputActions.UI.Cancel, InputType.Performed, OnBackPerformed)
+        // );
 
-        // Hide the pause menu at the start
-        pauseMenuParent.SetActive(false);
+        InputActions.Add(
+            new InputData(InputManager.Instance.PControls.Player.Pause, InputType.Performed, OnPausePerformed)
+        );
     }
 
     private void OnEnable()
+    {
+        if (!_isInputRegistered)
+        {
+            // Register the input user
+            InputManager.Instance.Register(this);
+
+            // Set the input registered flag to true
+            _isInputRegistered = true;
+        }
+    }
+
+    protected override void CustomActivate()
     {
         // Set the event system's selected object to the first button
         SetSelectedButton(firstSelectedButton);
     }
 
+    protected override void CustomDeactivate()
+    {
+    }
+
+    private void OnDestroy()
+    {
+        // Unregister the input user
+        InputManager.Instance.Unregister(this);
+
+        // Deactivate the menu
+        Deactivate();
+    }
+
+    private void OnPausePerformed(InputAction.CallbackContext context)
+    {
+        // Return if inputted this frame
+        if (_inputtedThisFrame)
+            return;
+
+        _inputtedThisFrame = true;
+
+        Debug.Log($"Pause Button Pressed!");
+
+        TogglePause();
+    }
+
+
+    private void OnBackPerformed(InputAction.CallbackContext obj)
+    {
+        // Return if inputted this frame
+        if (_inputtedThisFrame)
+            return;
+
+        // If the game is not paused, return
+        if (!IsPaused)
+            return;
+
+        _inputtedThisFrame = true;
+
+        // Check if the menu stack has more than one item
+        // If it does, go back to the previous menu
+        if (_menuStack.Count > 1)
+            GoBack();
+
+        // Resume the game
+        else
+            Resume(pauseMenuPanel.transform.GetChild(0).gameObject);
+    }
+
     private void TogglePause()
     {
+        // If there are any other active menus, don't toggle the pause menu
+        if (MenuManager.Instance.ActiveMenus.Any(n => n != this))
+            return;
+
         if (!IsPaused)
             Pause();
 
+        // Resume the game
         else
-        {
-            // Check if the menu stack has more than one item
-            // If it does, go back to the previous menu
-            if (_menuStack.Count > 1)
-                Back();
-
-            // Resume the game
-            else
-                Resume(pauseMenuPanel.transform.GetChild(0).gameObject);
-        }
+            Resume(pauseMenuPanel.transform.GetChild(0).gameObject);
     }
 
 
@@ -115,6 +179,11 @@ public class PauseMenuManager : MonoBehaviour
             tmpText.color = normalColor;
     }
 
+    protected override void CustomUpdate()
+    {
+        // Reset the inputted this frame flag
+        _inputtedThisFrame = false;
+    }
 
     /// <summary>
     /// Changes the color of the TextMeshPro text to the click color.
@@ -128,14 +197,6 @@ public class PauseMenuManager : MonoBehaviour
 
         if (tmpText != null)
             tmpText.color = clickColor;
-    }
-
-
-    private void FixPhysics()
-    {
-        return;
-
-        Time.fixedDeltaTime = _fixedDeltaTime * Time.timeScale;
     }
 
     private void IsolateMenu(GameObject obj)
@@ -169,29 +230,24 @@ public class PauseMenuManager : MonoBehaviour
         // Add your Resume logic here
         Debug.Log("Resume game");
 
-        Time.timeScale = _tempTimeScale;
-        FixPhysics();
+        // Hide menu
+        // pauseMenuParent.SetActive(false);
+        Deactivate();
 
-        //Hide menu
-        pauseMenuParent.SetActive(false);
-
-        //Set pause to false
+        // Set pause to false
         IsPaused = false;
+
+        // Clear the menu stack
+        _menuStack.Clear();
     }
 
     public void Pause()
     {
-        _fixedDeltaTime = Time.fixedDeltaTime;
+        Debug.Log($"Pause!");
 
         // Un-hide the pause menu
-        pauseMenuParent.SetActive(true);
-
-        // Save the current timescale
-        _tempTimeScale = Time.timeScale;
-
-        //Pause the game
-        Time.timeScale = 0;
-        FixPhysics();
+        // pauseMenuParent.SetActive(true);
+        Activate();
 
         // Set pause to true
         IsPaused = true;
@@ -219,9 +275,6 @@ public class PauseMenuManager : MonoBehaviour
         // Isolate the journal panel
         IsolateMenu(_menuStack.Peek());
 
-        // Add your Journal logic here
-        Debug.Log("Open Journal");
-
         // Set the event system's selected object to the first button
         SetSelectedButton(journalFirstSelected);
     }
@@ -240,9 +293,6 @@ public class PauseMenuManager : MonoBehaviour
         // Isolate the settings panel
         IsolateMenu(_menuStack.Peek());
 
-        // Add your Settings logic here
-        Debug.Log("Open Settings");
-
         // Set the event system's selected object to the first button
         SetSelectedButton(settingsFirstSelected);
     }
@@ -252,17 +302,14 @@ public class PauseMenuManager : MonoBehaviour
     /// </summary>
     public void Exit(GameObject textObject)
     {
-        // Resume the game
-        Time.timeScale = _tempTimeScale;
-        FixPhysics();
-
         ChangeClickColor(textObject);
 
         // Go back to main menu
+        // TODO: Use a scene field
         SceneManager.LoadScene("MainMenu");
     }
 
-    public void Back()
+    public void GoBack()
     {
         // Pop the current menu off the stack
         _menuStack.Pop();
@@ -282,5 +329,27 @@ public class PauseMenuManager : MonoBehaviour
     public void SetSelectedButton(GameObject button)
     {
         EventSystem.current.SetSelectedGameObject(button);
+    }
+
+    public override void OnBackPressed()
+    {
+        // Return if inputted this frame
+        if (_inputtedThisFrame)
+            return;
+
+        // If the game is not paused, return
+        if (!IsPaused)
+            return;
+
+        _inputtedThisFrame = true;
+
+        // Check if the menu stack has more than one item
+        // If it does, go back to the previous menu
+        if (_menuStack.Count > 1)
+            GoBack();
+
+        // Resume the game
+        else
+            Resume(pauseMenuPanel.transform.GetChild(0).gameObject);
     }
 }

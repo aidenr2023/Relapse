@@ -35,6 +35,8 @@ public class VendorScript : MonoBehaviour, IInteractable
 
     public HashSet<Material> OutlineMaterials { get; } = new();
 
+    public InteractionIcon InteractionIcon => InteractionIcon.Action;
+
     #endregion
 
     private void Awake()

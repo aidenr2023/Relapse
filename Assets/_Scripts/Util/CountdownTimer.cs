@@ -16,7 +16,9 @@ public class CountdownTimer
 
     public bool IsActive { get; private set; }
 
-    public bool IsTicking => TimeLeft > 0;
+    public bool IsNotComplete => TimeLeft > 0;
+
+    public bool IsComplete => TimeLeft <= 0;
 
     public event Action OnTimerEnd;
 

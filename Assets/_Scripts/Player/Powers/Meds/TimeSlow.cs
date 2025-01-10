@@ -4,30 +4,24 @@ using UnityEngine;
 
 public class TimeSlow : MonoBehaviour, IPower
 {
-    //Time scale variables
-    [SerializeField][Range(0.01f, 1)] private float timeScaleAdjust = 1;
-    private int defaultTime = 1;
-    private float fixedDeltaTime;
+    private const string TIME_TOKEN_DATA_KEY = "TimeSlow";
 
-    //Fancy animation crap
-    [SerializeField] private int secondsBetweenFrames = 1;
+    #region Serialized Fields
+
+    [SerializeField] [Range(0.01f, 1)] private float timeScaleAdjust = 1;
+
+    #endregion
+
+    #region Getters
 
     public GameObject GameObject => gameObject;
 
     public PowerScriptableObject PowerScriptableObject { get; set; }
 
-    void Start()
-    {
+    #endregion
 
-    }
     void Awake()
     {
-        this.fixedDeltaTime = Time.fixedDeltaTime;
-    }
-
-    void Update()
-    {
-    
     }
 
     public string PassiveEffectDebugText(PlayerPowerManager powerManager, PowerToken pToken)
@@ -45,12 +39,10 @@ public class TimeSlow : MonoBehaviour, IPower
 
     public void Release(PlayerPowerManager powerManager, PowerToken pToken, bool isCharged)
     {
-        
     }
 
     public void Use(PlayerPowerManager powerManager, PowerToken pToken)
     {
-       
     }
 
     public void StartActiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
@@ -65,55 +57,42 @@ public class TimeSlow : MonoBehaviour, IPower
     {
     }
 
+    private void CreateEffectToken(PlayerPowerManager powerManager, PowerToken pToken)
+    {
+        // Begin time slow
+        // Set the timeScale to the adjusted timeScale from the inspector
+        var timeToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(timeScaleAdjust, -1, true);
+
+        // Add the time token to the power token's data
+        pToken.AddData(TIME_TOKEN_DATA_KEY, timeToken);
+
+        // // Do this to make sure the physics don't break
+        // Time.fixedDeltaTime = this._fixedDeltaTime * Time.timeScale;
+    }
+
     public void StartPassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
-        //Begin timeslow
-        Debug.Log("Time Slow");
-
-        //Set the time scale to the adjusted time scale from the inspector
-        Time.timeScale = timeScaleAdjust;
-
-        //Do this to make sure the physics don't break
-        Time.fixedDeltaTime = this.fixedDeltaTime * Time.timeScale;
-
-
-
-        //Fancy animate crap
-        
-        
-            //StartCoroutine(Example());
-
-        
-
+        CreateEffectToken(powerManager, pToken);
     }
-    /*IEnumerator Example()
-    {
-        float timeA = Time.time;
-        Debug.Log("Initial: " + (timeA));
-
-        yield return new WaitForSecondsRealtime(secondsBetweenFrames);
-        float timeB = Time.time;
-        Debug.Log("Final: " + (timeB));
-        
-        float timedif = timeB - timeA;
-        Debug.Log("Time Difference: " + timedif);
-
-    }
-    */
 
     public void UpdatePassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
+        var hasData = pToken.TryGetData<TokenManager<float>.ManagedToken>(TIME_TOKEN_DATA_KEY, out var timeToken);
+
+        // Ensure the player has the time token
+        if (!hasData && !TimeScaleManager.Instance.TimeScaleTokenManager.HasToken(timeToken))
+            CreateEffectToken(powerManager, pToken);
     }
 
     public void EndPassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
-        Debug.Log("Time Slow Done");
+        // Retrieve the time token from the power token's data
+        _ = pToken.RemoveData<TokenManager<float>.ManagedToken>(TIME_TOKEN_DATA_KEY, out var timeToken);
 
-        //Set timescale back to default (should be 1)
-        Time.timeScale = defaultTime;
+        // Remove the time token from the timeScale manager
+        TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(timeToken);
 
-        //Do this to make sure the physics don't break
-        Time.fixedDeltaTime = fixedDeltaTime * Time.timeScale;
-
+        // // Do this to make sure the physics don't break
+        // Time.fixedDeltaTime = _fixedDeltaTime * Time.timeScale;
     }
 }

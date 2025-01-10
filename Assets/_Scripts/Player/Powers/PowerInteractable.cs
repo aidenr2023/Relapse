@@ -26,6 +26,8 @@ public class PowerInteractable : MonoBehaviour, IInteractable
 
     public HashSet<Material> OutlineMaterials { get; } = new();
 
+    public InteractionIcon InteractionIcon => InteractionIcon.Pickup;
+
     #endregion
 
     private void Update()
