@@ -22,6 +22,8 @@ public class PlayerDeathController : ComponentScript<Player>
 
     #endregion
 
+    public Action<PlayerDeathController> onRespawn;
+
     protected override void CustomAwake()
     {
         base.CustomAwake();
@@ -122,5 +124,8 @@ public class PlayerDeathController : ComponentScript<Player>
 
         // Reset the player's information when they respawn
         ParentComponent.PlayerInfo.ResetPlayer();
+
+        // Invoke the onRespawn event
+        onRespawn?.Invoke(this);
     }
 }

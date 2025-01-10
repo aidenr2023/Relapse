@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Video;
 
-public class TutorialScreen : GameMenu
+public class TutorialScreen : GameMenu, IUsesInput
 {
     public static TutorialScreen Instance { get; private set; }
 
@@ -39,16 +40,24 @@ public class TutorialScreen : GameMenu
     {
         // Set the instance to this
         Instance = this;
+
+        // Initialize the input
+        InitializeInput();
     }
 
     protected override void CustomActivate()
     {
+        // Register the input
+        InputManager.Instance.Register(this);
     }
 
     protected override void CustomDeactivate()
     {
         // Stop the video
         videoPlayer.Stop();
+
+        // Unregister the input
+        InputManager.Instance.Unregister(this);
     }
 
     protected override void CustomUpdate()
@@ -56,13 +65,13 @@ public class TutorialScreen : GameMenu
         if (Input.GetKeyDown(KeyCode.T))
             PlayTutorial(debugTutorial);
 
-        if (IsActive)
-        {
-            if (Input.GetKeyDown(KeyCode.RightArrow))
-                NextPage();
-            else if (Input.GetKeyDown(KeyCode.LeftArrow))
-                PreviousPage();
-        }
+        // if (IsActive)
+        // {
+        //     if (Input.GetKeyDown(KeyCode.RightArrow))
+        //         NextPage();
+        //     else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        //         PreviousPage();
+        // }
     }
 
     public override void OnBackPressed()
@@ -163,6 +172,10 @@ public class TutorialScreen : GameMenu
 
     public void PlayTutorial(Tutorial tutorial)
     {
+        // Return if the tutorial is null
+        if (tutorial == null)
+            return;
+
         ChangeTutorial(tutorial);
         Activate();
 
@@ -170,5 +183,33 @@ public class TutorialScreen : GameMenu
         Player.Instance.PlayerTutorialManager.CompleteTutorial(tutorial);
     }
 
+    #region IUsesInput
 
+    public HashSet<InputData> InputActions { get; } = new();
+
+    public void InitializeInput()
+    {
+        InputActions.Add(
+            new InputData(InputManager.Instance.DefaultInputActions.UI.Navigate, InputType.Performed,
+                OnNavigatePerformed)
+        );
+    }
+
+    private void OnNavigatePerformed(InputAction.CallbackContext obj)
+    {
+        // Return if not active
+        if (!IsActive)
+            return;
+
+        var value = obj.ReadValue<Vector2>();
+
+        const float threshold = 0.5f;
+
+        if (value.x > threshold)
+            NextPage();
+        else if (value.x < -threshold)
+            PreviousPage();
+    }
+
+    #endregion
 }

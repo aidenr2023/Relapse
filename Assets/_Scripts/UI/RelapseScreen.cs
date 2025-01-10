@@ -65,6 +65,12 @@ public class RelapseScreen : GameMenu
         loadingBar.gameObject.SetActive(_respawnButtonClicked);
     }
 
+    private void OnDisable()
+    {
+        // Deactivate the menu
+        Deactivate();
+    }
+
     private void SetBackgroundImage(Sprite sprite)
     {
         // Set the background image sprite

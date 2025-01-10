@@ -17,8 +17,8 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     [SerializeField] [Range(0, 90)] private float wallAngleTolerance = 45f;
 
-    [SerializeField] [Min(0)] private float maxFallSpeed;
-    [SerializeField] [Min(0)] private float fallAcceleration;
+    [SerializeField] private float maxFallSpeed;
+    [SerializeField] private float fallAcceleration;
     [SerializeField] [Min(0)] private float stationaryFallSpeedMultiplier = 4f;
     [SerializeField] [Min(0)] private float stationaryFallAccelerationMultiplier = 2f;
 
