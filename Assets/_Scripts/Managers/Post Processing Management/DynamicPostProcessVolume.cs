@@ -13,6 +13,7 @@ public class DynamicPostProcessVolume : MonoBehaviour
 
     [Header("Modules"), SerializeField] private DynamicVignetteModule vignetteModule;
     [SerializeField] private DynamicChromaticAberrationModule chromaticAberrationModule;
+    [SerializeField] private DynamicLiftGammaGainModule liftGammaGainModule;
 
     #endregion
 
@@ -45,6 +46,9 @@ public class DynamicPostProcessVolume : MonoBehaviour
 
         // Initialize the dynamic chromatic aberration module
         chromaticAberrationModule.Initialize(this);
+        
+        // Initialize the dynamic lift gamma gain module
+        liftGammaGainModule.Initialize(this);
     }
 
     private void Start()

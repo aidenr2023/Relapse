@@ -109,7 +109,8 @@ public class AsyncSceneManager : IDebugged
 
         // TODO: Delete this
         // Add a tooltip to the scene field
-        JournalTooltipManager.Instance?.AddTooltip($"Loading {scene.SceneName}...");
+        if (DebugManager.Instance.IsDebugMode)
+            JournalTooltipManager.Instance?.AddTooltip($"Loading {scene.SceneName}...");
 
         // If there is NOT a record already for the scene, make one
         var operation = SceneManager.LoadSceneAsync(scene, LoadSceneMode.Additive);
@@ -122,7 +123,8 @@ public class AsyncSceneManager : IDebugged
         {
             _asyncSceneRecords[scene.SceneName].State = AsyncSceneState.Loaded;
             _asyncSceneRecords[scene.SceneName].Scene = SceneManager.GetSceneByName(scene);
-            JournalTooltipManager.Instance.AddTooltip($"Done Loading {scene.SceneName}!");
+            if (DebugManager.Instance.IsDebugMode)
+                JournalTooltipManager.Instance.AddTooltip($"Done Loading {scene.SceneName}!");
 
             // Debug.Log($"After loading scene {scene.SceneName} - {_asyncSceneRecords[scene.SceneName].Scene.name}");
         };
@@ -645,7 +647,6 @@ public class AsyncSceneManager : IDebugged
 
                     // Unload the scene
                     UnloadSceneAsync(sceneUnloadField, () => isSectionUnloadComplete = true);
-
                 }
 
                 // If the scene is already loaded, unload it and wait for the operation to be complete
