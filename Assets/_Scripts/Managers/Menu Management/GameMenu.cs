@@ -101,11 +101,19 @@ public abstract class GameMenu : MonoBehaviour
         CustomDeactivate();
     }
 
-    private void OnDestroy()
+    protected void OnDestroy()
     {
+        // Deactivate the menu
+        Deactivate();
+
         // Un manage this menu
         MenuManager.Instance.UnManageMenu(this);
+
+        // Custom Destroy
+        CustomDestroy();
     }
+
+    protected abstract void CustomDestroy();
 
     protected abstract void CustomActivate();
     protected abstract void CustomDeactivate();

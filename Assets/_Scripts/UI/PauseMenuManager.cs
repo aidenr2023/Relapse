@@ -95,7 +95,7 @@ public class PauseMenuManager : GameMenu, IUsesInput
     {
     }
 
-    private void OnDestroy()
+    protected override void CustomDestroy()
     {
         // Unregister the input user
         InputManager.Instance.Unregister(this);

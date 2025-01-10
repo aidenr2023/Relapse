@@ -74,6 +74,10 @@ public class TutorialScreen : GameMenu, IUsesInput
         // }
     }
 
+    protected override void CustomDestroy()
+    {
+    }
+
     public override void OnBackPressed()
     {
         Deactivate();

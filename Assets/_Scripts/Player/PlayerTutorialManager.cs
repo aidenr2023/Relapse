@@ -46,9 +46,8 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
 
     private void InitializeTutorialEvents()
     {
-        ParentComponent.WeaponManager.OnGunEquipped += OnGunEquipped;
-
-        ParentComponent.PlayerDeathController.onRespawn += OnRespawn;
+        // ParentComponent.WeaponManager.OnGunEquipped += OnGunEquipped;
+        // ParentComponent.PlayerDeathController.onRespawn += OnRespawn;
     }
 
     private void OnRespawn(PlayerDeathController obj)
