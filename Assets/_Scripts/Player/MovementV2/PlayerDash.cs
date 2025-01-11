@@ -244,13 +244,4 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
                $"Dash Cooldown: {dashCooldown.TimeLeft}\n" +
                $"Remaining Dashes: {_remainingDashesInAir}";
     }
-
-    private void OnDrawGizmos()
-    {
-        const float interval = 0.5f;
-
-        Gizmos.color = Color.red;
-        for (int i = 0; i < 20; i++)
-            Gizmos.DrawSphere(transform.position + _tmpDashVelocity.normalized * (i * interval), 0.125f);
-    }
 }
