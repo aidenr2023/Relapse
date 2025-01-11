@@ -15,24 +15,25 @@ public class PlayerLook : MonoBehaviour, IUsesInput
 
     [SerializeField] [Range(0, 90)] private float upDownAngleLimit = 5;
 
+    [SerializeField, Range(0, 1)] private float wallRunLookLockLerpAmount = 1f;
+
     #endregion
 
     #region Private Fields
 
     private Player _player;
 
-    // // Current rotation around the X axis
-    // private float _xRotation;
-    //
-    // // Current rotation around the Y axis
-    // private float _yRotation;
-
     private Vector2 _lookInput;
 
     private Vector2 _currentSens;
 
-    // // Current rotation around the X and Y axis
-    private Vector2 _lookRotation;
+    // Current rotation around the X and Y axis
+    private Quaternion _lookRotation;
+
+    private bool _isHorizontalLookLocked;
+
+    private float _leftLookLockAngle;
+    private float _rightLookLockAngle;
 
     #endregion
 
@@ -99,6 +100,33 @@ public class PlayerLook : MonoBehaviour, IUsesInput
 
     #endregion
 
+    private void Start()
+    {
+        // Get the rotation of the player's transform, apply that rotation to the camera pivot & orientation
+        var playerRotation = _player.Rigidbody.rotation;
+        _player.Rigidbody.rotation = Quaternion.Euler(0, 0, 0);
+        ApplyRotation(playerRotation);
+
+        // Connect to the wall running script
+        if (_player.PlayerController is PlayerMovementV2 movementV2)
+        {
+            movementV2.WallRunning.OnWallSlideStart += OnWallSlideStart;
+            movementV2.WallRunning.OnWallRunEnd += OnWallRunEnd;
+        }
+    }
+
+    private void OnWallSlideStart(PlayerWallRunning obj)
+    {
+        // Set the look lock to true
+        _isHorizontalLookLocked = true;
+    }
+
+    private void OnWallRunEnd(PlayerWallRunning obj)
+    {
+        // Set the look lock to false
+        _isHorizontalLookLocked = false;
+    }
+
     private void OnEnable()
     {
         // Register the input
@@ -113,36 +141,126 @@ public class PlayerLook : MonoBehaviour, IUsesInput
 
     private void Update()
     {
-        // Run the look update
-        LookUpdate();
+        // TODO: Handle calculations for the wall lock rotations so that I can hard clamp the player's rotation
+        // WHILE they are moving the mouse around. This way, I don't have to worry about the player's rotation
+        // accidentally going out of bounds while they are moving the mouse around (Especially at high sensitivities)
+
+        var desiredLookRotation = LookUpdate();
+
+        desiredLookRotation = WallRunningUpdate(desiredLookRotation);
+
+        // Set the look rotation to the desired look rotation
+        ApplyRotation(desiredLookRotation);
     }
 
-    private void LookUpdate()
+    private Quaternion LookUpdate()
     {
         // Calculate the constant sensitivity multiplier that does not
         // depend on x or y sensitivity / input
         var constantSense = sensitivityMultiplier * Time.deltaTime;
 
+        var desiredLookRotation = _lookRotation;
+
         // Adjust rotation based on mouse input
-        // _yRotation += _lookInput.x * _currentSens.x * constantSense;
-        // _xRotation -= _lookInput.y * _currentSens.y * constantSense;
-        _lookRotation += new Vector2(
-            -_lookInput.y * _currentSens.y * constantSense,
-            _lookInput.x * _currentSens.x * constantSense
+        desiredLookRotation = Quaternion.Euler(
+            desiredLookRotation.eulerAngles.x - _lookInput.y * _currentSens.y * constantSense,
+            desiredLookRotation.eulerAngles.y + _lookInput.x * _currentSens.x * constantSense,
+            desiredLookRotation.eulerAngles.z
         );
 
         // Clamp the X rotation to prevent over-rotation
-        // _xRotation = Mathf.Clamp(_xRotation, -90f + upDownAngleLimit, 90f - upDownAngleLimit);
-
-        _lookRotation = new Vector2(
-            Mathf.Clamp(_lookRotation.x, -90f + upDownAngleLimit, 90f - upDownAngleLimit),
-            _lookRotation.y
+        desiredLookRotation = Quaternion.Euler(
+            desiredLookRotation.eulerAngles.x > 180
+                ? Mathf.Clamp(desiredLookRotation.eulerAngles.x, 360 - (90 - upDownAngleLimit), 360)
+                : Mathf.Clamp(desiredLookRotation.eulerAngles.x, 0, (90 - upDownAngleLimit)),
+            desiredLookRotation.eulerAngles.y,
+            desiredLookRotation.eulerAngles.z
         );
 
-        // Rotate the player's orientation first
-        _player.PlayerController.Orientation.eulerAngles = new(0f, _lookRotation.y, 0f);
+        return desiredLookRotation;
+    }
 
+    private Quaternion WallRunningUpdate(Quaternion desiredLookRotation)
+    {
+        var movementV2 = _player.PlayerController as PlayerMovementV2;
+
+        if (!_isHorizontalLookLocked ||
+            movementV2 == null ||
+            !movementV2.WallRunning.IsWallSliding ||
+            movementV2.WallRunning.IsCurrentlyJumping
+           )
+            return desiredLookRotation;
+
+        // Get the current contact info from the wall running script
+        var contactInfo = movementV2.WallRunning.ContactInfo;
+
+        // Get the forward of the current wall
+        var wallForward = movementV2.WallRunning.IsWallRunningLeft
+            ? Vector3.Cross(contactInfo.normal, Vector3.up)
+            : Vector3.Cross(Vector3.up, contactInfo.normal);
+
+        // Based on the wall forward, create a float that represents what the player's
+        // horizontal look angle would be if they were looking in the same direction as the wall forward
+        var wallForwardAngle = -Vector3.SignedAngle(wallForward, Vector3.forward, Vector3.up);
+
+        // Debug.Log($"Wall Forward Angle: {wallForwardAngle}");
+
+        // Create a forward vector that has the same rotation as the desired look rotation
+        var desiredForward = Quaternion.Euler(0, desiredLookRotation.eulerAngles.y, 0) * Vector3.forward;
+
+        // Get the angle of the player in relation to the wall forward
+        var playerAngle = Vector3.SignedAngle(wallForward, desiredForward, Vector3.up);
+
+        var leftAngleTolerance = movementV2.WallRunning.InwardLookLockAngle;
+        var rightAngleTolerance = movementV2.WallRunning.OutwardLookLockAngle;
+
+        if (movementV2.WallRunning.IsWallRunningRight)
+            (leftAngleTolerance, rightAngleTolerance) = (rightAngleTolerance, leftAngleTolerance);
+
+        leftAngleTolerance = -leftAngleTolerance + wallForwardAngle;
+        rightAngleTolerance += wallForwardAngle;
+
+        playerAngle += wallForwardAngle;
+
+        // Debug.Log(
+        //     $"Player Angle: {playerAngle:0.00}, {leftAngleTolerance:0.00}, {rightAngleTolerance:0.00} - {wallForwardAngle:0.00}");
+
+        // Clamp the player angle to the left and right look lock angles
+        playerAngle = Mathf.Clamp(
+            playerAngle,
+            leftAngleTolerance,
+            rightAngleTolerance
+        );
+
+        // Combine the player angle rotation with the desired look rotation
+        var acceptedRotation = Quaternion.Euler(
+            desiredLookRotation.eulerAngles.x,
+            playerAngle,
+            desiredLookRotation.eulerAngles.z
+        );
+
+        // Debug.Log($"Player Angle: {acceptedRotation.eulerAngles.y:0.00}, {leftAngleTolerance:0.00}, {rightAngleTolerance:0.00}");
+
+        const float defaultFrameTime = 1 / 60f;
+        var frameAmount = Time.deltaTime / defaultFrameTime;
+
+        // Lerp the desired look rotation to the accepted rotation
+        // desiredLookRotation = Quaternion.Lerp(desiredLookRotation, acceptedRotation, lerpAmount * frameAmount);
+        desiredLookRotation =
+            Quaternion.Slerp(desiredLookRotation, acceptedRotation, wallRunLookLockLerpAmount * frameAmount);
+        // desiredLookRotation = acceptedRotation;
+
+        return desiredLookRotation;
+    }
+
+    private void ApplyRotation(Quaternion rotation)
+    {
+        // Set the look rotation to the desired look rotation
+        _lookRotation = rotation;
+
+        // Rotate the player's orientation first
         // Then rotate the camera pivot (which is a child of the orientation)
-        _player.PlayerController.CameraPivot.transform.localEulerAngles = new(_lookRotation.x, 0f, 0f);
+        _player.PlayerController.Orientation.transform.localEulerAngles = new(0f, _lookRotation.eulerAngles.y, 0f);
+        _player.PlayerController.CameraPivot.transform.localEulerAngles = new(_lookRotation.eulerAngles.x, 0f, 0f);
     }
 }

@@ -12,6 +12,8 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
 
     #region Getters
 
+    public Rigidbody Rigidbody { get; private set; }
+    
     public PlayerInfo PlayerInfo { get; private set; }
 
     public IPlayerController PlayerController { get; private set; }
@@ -47,6 +49,9 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
 
     private void InitializeComponents()
     {
+        // Get the Rigidbody component
+        Rigidbody = GetComponent<Rigidbody>();
+        
         // Get the Player Info component
         PlayerInfo = GetComponent<PlayerInfo>();
 

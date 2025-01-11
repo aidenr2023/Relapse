@@ -906,27 +906,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f220fffecabb47649091accdac1b8e0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerData:
-    position: {x: 0, y: 0, z: 0}
-    rotation: {x: 0, y: 0, z: 0, w: 0}
-    velocity: {x: 0, y: 0, z: 0}
-    currentHealth: 0
-    maxHealth: 0
-    currentToxicity: 0
-    maxToxicity: 0
-    relapseCount: 0
-    isRelapsing: 0
-    currentPowerIndex: 0
-    equippedPowers: []
-    equippedGun: {fileID: 0}
-    currentAmmo: 0
-    inventoryEntries: []
-    currentStamina: 0
-    maxStamina: 0
-    canSprint: 0
-    canJump: 0
-    canWallRun: 0
-    canSlide: 0
 --- !u!114 &8740482916909296334
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -986,6 +965,9 @@ MonoBehaviour:
   toleranceRelapsePercent: 0.5
   relapseDuration: 10
   relapseText: {fileID: 0}
+  passiveRegenCap: 50
+  passiveRegenRate: 5
+  passiveRegenDelay: 10
   vCam: {fileID: 0}
   hitSound:
     clip: {fileID: 8300000, guid: 0333d0f3b492ef74e93a3c58ea0cb7c6, type: 3}
@@ -1011,6 +993,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sensitivityMultiplier: 15
   upDownAngleLimit: 5
+  wallRunLookLockLerpAmount: 1
 --- !u!114 &-3493750139394126392
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1197,14 +1180,14 @@ MonoBehaviour:
   wallLayer:
     serializedVersion: 2
     m_Bits: 64
-  wallAngleTolerance: 45
+  wallAngleTolerance: 87.5
   maxFallSpeed: 0.5
   fallAcceleration: 0.075
   stationaryFallSpeedMultiplier: 16
   stationaryFallAccelerationMultiplier: 3
   wallRunSpeedThreshold: 3
   wallRunningDetectionDistance: 1
-  rayCount: 16
+  rayCount: 32
   wallJumpForce: 15
   wallJumpAngle: 40
   autoWallJumpForce: 0.5
@@ -1225,6 +1208,8 @@ MonoBehaviour:
     soundType: 1
     volume: 0.125
     isPersistent: 0
+  inwardLookLockAngle: 15
+  outwardLookLockAngle: 80
 --- !u!114 &7032570368268033865
 MonoBehaviour:
   m_ObjectHideFlags: 0
