@@ -362,7 +362,18 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             // If the current hit distance is less than the closest hit distance, update the closest hit info
             if (hitInfo.HitInfo.distance >= closestHitDistance)
                 continue;
+            
+            // Get the normal of the wall the ray is hitting
+            var wallNormal = hitInfo.HitInfo.normal;
+            
+            // Get the angle between the wall normal and the player's forward vector
+            var wallAngle = Vector3.Angle(wallNormal, ParentComponent.Orientation.forward) - 90;
 
+            // TODO: Replace with actual angle checks
+            const float tmpAngle = 180;
+            if (wallAngle > tmpAngle || wallAngle < -tmpAngle)
+                continue;
+            
             // Set the wall sliding flag to true
             _isWallSliding = true;
 
@@ -409,29 +420,13 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     private void UpdateDetectWallRunning()
     {
-        // var leftVelocityAboveThreshold =
-        //     _wallRunHitInfos[_leftRay]?.IsAboveWallRunSpeedThreshold(wallRunSpeedThreshold) ?? false;
-        // var rightVelocityAboveThreshold =
-        //     _wallRunHitInfos[_rightRay]?.IsAboveWallRunSpeedThreshold(wallRunSpeedThreshold) ?? false;
-        //
-        // var leftAngleWithinTolerance =
-        //     _wallRunHitInfos[_leftRay]?.IsWithinLeftAngleTolerance(wallAngleTolerance) ?? false;
-        // var rightAngleWithinTolerance =
-        //     _wallRunHitInfos[_rightRay]?.IsWithinRightAngleTolerance(wallAngleTolerance) ?? false;
-        //
-        // var leftHit = _wallRunHitInfos[_leftRay]?.IsHit ?? false;
-        // var rightHit = _wallRunHitInfos[_rightRay]?.IsHit ?? false;
-        //
-        // var leftHitInfo = _wallRunHitInfos[_leftRay]?.HitInfo ?? default;
-        // var rightHitInfo = _wallRunHitInfos[_rightRay]?.HitInfo ?? default;
-
+        // Get the current wall running hit info
         var containsCurrentRay = _wallRunHitInfos.ContainsKey(_currentRay);
-
         var currentWallRunHitInfo = containsCurrentRay ? _wallRunHitInfos[_currentRay] : null;
         var currentRayHit = containsCurrentRay && currentWallRunHitInfo.IsHit;
 
+        // Determine if the angle is within the tolerance
         var angleWithinTolerance = false;
-
         if (currentWallRunHitInfo != null)
         {
             if (currentWallRunHitInfo.LeftRayAngle < currentWallRunHitInfo.RightRayAngle)
@@ -447,39 +442,15 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         _isWallRunningLeft = false;
         _isWallRunningRight = false;
 
-        // if (leftHit && rightHit && !ParentComponent.IsGrounded && leftAngleWithinTolerance && rightAngleWithinTolerance
-        //     // && leftVelocityAboveThreshold && rightVelocityAboveThreshold
-        //    )
+        // Determine if the player is wall running.
+        // If not, return
         if (currentRayHit && !ParentComponent.IsGrounded && angleWithinTolerance)
         {
-            // currentHitInfo =
-            //     leftHitInfo.distance < rightHitInfo.distance
-            //         ? leftHitInfo
-            //         : rightHitInfo;
-
             currentHitInfo = _wallRunHitInfos[_currentRay].HitInfo;
 
-            // _isWallRunningLeft = leftHitInfo.distance < rightHitInfo.distance;
             _isWallRunningLeft = Vector3.Dot(_leftRay.direction, _currentRay.direction) > 0;
             _isWallRunningRight = !_isWallRunningLeft;
         }
-        // else if (leftHit && !ParentComponent.IsGrounded && leftAngleWithinTolerance
-        //          // && leftVelocityAboveThreshold
-        //         )
-        // {
-        //     currentHitInfo = leftHitInfo;
-        //
-        //     _isWallRunningLeft = true;
-        // }
-        // else if (rightHit && !ParentComponent.IsGrounded && rightAngleWithinTolerance
-        //          // && rightVelocityAboveThreshold
-        //         )
-        // {
-        //     currentHitInfo = rightHitInfo;
-        //
-        //     _isWallRunningRight = true;
-        // }
-
         else
         {
             // Not wall running
@@ -500,12 +471,6 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         // If the previous wall is null, invoke the on wall run start event
         if (_previousWall == null)
             OnWallRunStart?.Invoke(this);
-
-        // var currentAngle = _isWallRunningLeft
-        //     ? leftHitAngle
-        //     : rightHitAngle;
-
-        // Debug.Log($"Currently Colliding with {_currentWall.name} ({currentAngle:0.00}°)");
     }
 
     private void UpdateMovement()
