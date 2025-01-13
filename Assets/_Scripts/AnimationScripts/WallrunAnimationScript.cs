@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class WallrunAnimationScript : MonoBehaviour
 {
-    //reference to PlayerWallrunning
+    //reference to Player Wallrunning
     public PlayerWallRunning playerWallRunning;
+    
     //reference to the PlayerPowerManager
     public PlayerPowerManager playerPowerManager;
     public Animator playerAnimator;
