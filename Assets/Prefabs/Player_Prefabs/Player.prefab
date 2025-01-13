@@ -356,13 +356,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 360827176506690469}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: -0.77419937, w: 0.63294184}
-  m_LocalPosition: {x: -0.406, y: 0.594, z: 0.777}
-  m_LocalScale: {x: 10.38, y: 2.16, z: 2.43}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3246313359914083766}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -101.465}
+  m_Father: {fileID: 1481313708076204363}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!108 &3617912156600525360
 Light:
   m_ObjectHideFlags: 0
@@ -375,8 +375,8 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 12.66
-  m_Range: 14.28
+  m_Intensity: 10
+  m_Range: 150
   m_SpotAngle: 83.86573
   m_InnerSpotAngle: 75.667816
   m_CookieSize: 10
@@ -1106,7 +1106,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvasGroup: {fileID: 2050773229755027470}
-  opacity: 1
+  maxOpacity: 1
   opacityLerpAmount: 0.075
   positionLerpAmount: 0.75
   offset: {x: -0.125, y: 0.2, z: -0.125}
@@ -1423,7 +1423,6 @@ MonoBehaviour:
   gunHolder: {fileID: 3521940892017555348}
   animator: {fileID: 7900118521712679377}
   initialGunPrefab: {fileID: 0}
-  reloadText: {fileID: 0}
 --- !u!114 &-6734510740079581843
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2453,7 +2452,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8480050136402181675}
-  - {fileID: 8339177754913005640}
   m_Father: {fileID: 5244302159661097867}
   m_LocalEulerAnglesHint: {x: 7.5, y: 12.87, z: -2.65}
 --- !u!1 &6634430721347846543
@@ -2484,7 +2482,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 8339177754913005640}
   m_Father: {fileID: 5244302159661097867}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6666740773335312836
