@@ -16,6 +16,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     #region Serialized Fields
 
     [SerializeField] protected GunInformation gunInformation;
+    [SerializeField] protected GunModelType gunModelType;
     [SerializeField] protected Animator animator;
 
     [Header("Muzzle Particles")] [SerializeField]
@@ -76,6 +77,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     #region Getters
 
     public GunInformation GunInformation => gunInformation;
+
+    public GunModelType GunModelType => gunModelType;
 
     public Collider Collider { get; private set; }
 
@@ -142,8 +145,19 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         if (_weaponManager != null)
             Fire(_weaponManager, _weaponManager.FireTransform.position, _weaponManager.FireTransform.forward);
 
-        //if weapon is empty play empty animation
-        animator.SetBool("isEmpty", IsMagazineEmpty);
+        // Update the PLAYER's animator based on the gun model type
+        if (_weaponManager != null)
+        {
+            var movementV2 = _weaponManager.Player.PlayerController as PlayerMovementV2;
+
+            if (movementV2 != null)
+                movementV2.PlayerAnimator.SetInteger("modelType", (int)gunModelType);
+        }
+
+
+        if (animator != null)
+            animator.SetInteger("modelType", (int)gunModelType);
+
         // Reset the fired this frame flag
         hasFiredThisFrame = false;
 

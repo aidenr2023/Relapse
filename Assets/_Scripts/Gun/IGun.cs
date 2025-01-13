@@ -7,6 +7,8 @@ public interface IGun : IInteractable, IDamager
 {
     public GunInformation GunInformation { get; }
 
+    public GunModelType GunModelType { get; }
+
     public Collider Collider { get; }
 
     public float ReloadingPercentage { get; }
