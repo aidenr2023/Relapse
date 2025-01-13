@@ -142,6 +142,13 @@ public class InteractText : MonoBehaviour
                 transform.position = _previousPosition;
                 _resetPosition = false;
             }
+
+            const float scaleDistance = 2;
+            var scaleAmount = _playerInteraction.InteractionHitInfo.distance / scaleDistance;
+
+            // If the player is within a certain range, the offset needs to be scaled down
+            if (_playerInteraction.InteractionHitInfo.distance < 2)
+                calculatedOffset *= Mathf.Min(scaleAmount, 1);
         }
 
         var sinePosition = Mathf.Sin(Mathf.PI * floatingBobFrequency * Time.unscaledTime) * floatingBobAmount;
