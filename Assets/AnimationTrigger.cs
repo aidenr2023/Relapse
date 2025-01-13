@@ -12,7 +12,7 @@ public class TriggerPlayTwoAnimators : MonoBehaviour
     public string secondAnimationName;   // The state name in the second Animator
 
     [Header("Timing")]
-    public float delayBetweenAnimations = 1f;  // The delay after the first animation finishes
+    public float delayBetweenAnimations = 0f;  // The delay after the first animation finishes
 
     private bool hasTriggered = false;   // Prevent multiple triggers
 
