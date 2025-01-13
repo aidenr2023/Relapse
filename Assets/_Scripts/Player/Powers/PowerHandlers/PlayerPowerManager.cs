@@ -16,6 +16,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     #region Serialized Fields
 
+    [SerializeField] private Transform powerFirePoint;
+
     [SerializeField] private PowerScriptableObject[] powers;
 
 
@@ -45,6 +47,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     private TokenManager<float>.ManagedToken _powerChargeVignetteToken;
 
+    private bool _isPowerAimHitting;
+    private RaycastHit _powerAimHit;
+
     #endregion
 
     #region Getters
@@ -52,6 +57,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     public HashSet<InputData> InputActions { get; } = new();
 
     public Player Player => _player;
+
+    public Transform PowerFirePoint => powerFirePoint;
 
     public PowerScriptableObject CurrentPower => powers.Length > 0 ? powers[_currentPowerIndex] : null;
 
@@ -67,6 +74,11 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     public bool IsChargingPower => _isChargingPower;
 
     public bool WasPowerJustUsed { get; private set; }
+
+    public Vector3 PowerAimHitPoint => _isPowerAimHitting
+        ? _powerAimHit.point
+        : Player.PlayerController.CameraPivot.transform.position +
+          Player.PlayerController.CameraPivot.transform.forward * 1000;
 
     #endregion
 
@@ -486,6 +498,26 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     {
         // Reset the was power just used flag
         WasPowerJustUsed = false;
+    }
+
+    private void FixedUpdate()
+    {
+        // Update the power aim hit
+        UpdatePowerAimHit();
+    }
+
+    private void UpdatePowerAimHit()
+    {
+        _isPowerAimHitting = Physics.Raycast(
+            _player.PlayerController.CameraPivot.transform.position,
+            _player.PlayerController.CameraPivot.transform.forward,
+            out var hit,
+            Mathf.Infinity
+        );
+
+        // Fire a raycast from the camera pivot to the camera forward
+        if (_isPowerAimHitting)
+            _powerAimHit = hit;
     }
 
     #endregion
