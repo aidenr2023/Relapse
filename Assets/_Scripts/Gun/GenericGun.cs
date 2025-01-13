@@ -101,6 +101,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         set => currentMagazineSize = value;
     }
 
+    public Animator Animator => animator;
+
     #region IInteractable
 
     public bool IsInteractable => true;
@@ -109,13 +111,16 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     #endregion
 
+    public Action<IGun> OnReloadStart { get; set; }
+    public Action<IGun> OnReloadStop { get; set; }
+
     protected virtual void Awake()
     {
         // Get the collider component
         Collider = GetComponent<Collider>();
 
         // Get the animator component from pistol
-        //animator = GetComponent<Animator>();
+        // animator = GetComponent<Animator>();
     }
 
     protected virtual void Start()
@@ -136,7 +141,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Fire the weapon if applicable
         if (_weaponManager != null)
             Fire(_weaponManager, _weaponManager.FireTransform.position, _weaponManager.FireTransform.forward);
-        
+
         //if weapon is empty play empty animation
         animator.SetBool("isEmpty", IsMagazineEmpty);
         // Reset the fired this frame flag
@@ -166,6 +171,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // If the player has finished reloading, reset the magazine size
         currentMagazineSize = gunInformation.MagazineSize;
+
+        // end the reload event
+        OnReloadStop?.Invoke(this);
     }
 
     private void UpdateFireDelta()
@@ -412,7 +420,6 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Set the reload time to the reload time of the gun
         currentReloadTime = gunInformation.ReloadTime;
 
-
         // Set the reloading flag to true
         isReloading = true;
 
@@ -422,6 +429,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Play the reload sound
         // Debug.Log($"Sound Settings: {gunInformation.ReloadSound.Clip.name}");
         SoundManager.Instance.PlaySfx(gunInformation.ReloadSound);
+
+        // Start the reload event
+        OnReloadStart?.Invoke(this);
     }
 
     public void OnEquipToPlayer(WeaponManager weaponManager)

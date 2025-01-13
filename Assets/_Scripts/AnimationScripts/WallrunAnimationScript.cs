@@ -4,13 +4,17 @@ using UnityEngine;
 
 public class WallrunAnimationScript : MonoBehaviour
 {
-    //reference to PlayerWallrunning
+    //reference to Player Wallrunning
     public PlayerWallRunning playerWallRunning;
+    
+    //reference to the PlayerPowerManager
+    public PlayerPowerManager playerPowerManager;
     public Animator playerAnimator;
     
     private void Update()
     {
         WallrunAnimation();
+        PowerAnimation();
     }
     public void WallrunAnimation()
     {
@@ -31,6 +35,18 @@ public class WallrunAnimationScript : MonoBehaviour
             playerAnimator.SetBool("isWallrunLeft", false);
             playerAnimator.SetBool("isWallrunRight", false);
         }
+    }
+    
+    public void PowerAnimation()
+    {
+        //set the trigger for the power animation
+        if(playerPowerManager.WasPowerJustUsed)
+        {
+            playerAnimator.SetTrigger("wasPowerJustUsed");
+        }
+        
+        playerAnimator.SetBool("Charging",    playerPowerManager.IsChargingPower);
+        
     }
     
   

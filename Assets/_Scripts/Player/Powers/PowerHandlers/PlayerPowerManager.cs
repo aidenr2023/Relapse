@@ -64,6 +64,10 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     public int CurrentPowerIndex => _currentPowerIndex;
 
+    public bool IsChargingPower => _isChargingPower;
+
+    public bool WasPowerJustUsed { get; private set; }
+
     #endregion
 
     #region Initialization Functions
@@ -96,6 +100,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Add this to the debug manager
         DebugManager.Instance.AddDebuggedObject(this);
+
+        if (CurrentPowerToken?.IsCharging == true)
+            _isChargingPower = true;
     }
 
     private void OnEnable()
@@ -125,7 +132,14 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Add the event for the power used
         OnPowerUsed += PlaySoundOnUse;
+        OnPowerUsed += OnPowerJustUsedOnUse;
         // OnPowerUsed += DisplayTooltipOnUse;
+    }
+
+    private void OnPowerJustUsedOnUse(PlayerPowerManager arg1, PowerToken arg2)
+    {
+        // Set the was power just used flag to true
+        WasPowerJustUsed = true;
     }
 
     public void InitializeInput()
@@ -466,6 +480,12 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Set the "ChargeState" uint property of the VFX graph
         gauntletChargeVfx.SetUInt("ChargeState", chargeState);
+    }
+
+    private void LateUpdate()
+    {
+        // Reset the was power just used flag
+        WasPowerJustUsed = false;
     }
 
     #endregion
