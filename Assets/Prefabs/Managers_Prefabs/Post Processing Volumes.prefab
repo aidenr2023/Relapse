@@ -73,6 +73,9 @@ MonoBehaviour:
     relapseRange: 0.6
   liftGammaGainModule:
     gammaSetting: 0
+  lensDistortionModule:
+    dashDistortion: -0.75
+    dashDistortionLerpAmount: 0.25
 --- !u!1 &1975117196189454205
 GameObject:
   m_ObjectHideFlags: 0
@@ -146,6 +149,9 @@ MonoBehaviour:
     relapseRange: 0.25
   liftGammaGainModule:
     gammaSetting: 0
+  lensDistortionModule:
+    dashDistortion: -1
+    dashDistortionLerpAmount: 0.25
 --- !u!1 &2709872129352186455
 GameObject:
   m_ObjectHideFlags: 0
