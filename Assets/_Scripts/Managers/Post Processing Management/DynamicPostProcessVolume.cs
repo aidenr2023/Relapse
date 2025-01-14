@@ -30,6 +30,8 @@ public class DynamicPostProcessVolume : MonoBehaviour
     public VolumeProfile Profile => profile;
 
     public DynamicVignetteModule VignetteModule => vignetteModule;
+    
+    public DynamicChromaticAberrationModule ChromaticAberrationModule => chromaticAberrationModule;
 
     #endregion
 

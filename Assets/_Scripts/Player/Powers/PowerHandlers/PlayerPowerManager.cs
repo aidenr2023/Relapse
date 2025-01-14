@@ -97,7 +97,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Initialize the input
         InitializeInput();
-        
+
         // Set the power audio source to permanent
         powerAudioSource.SetPermanent(true);
     }
@@ -149,7 +149,22 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         // Add the event for the power used
         OnPowerUsed += PlaySoundOnUse;
         OnPowerUsed += OnPowerJustUsedOnUse;
+        OnPowerUsed += ChromaticAberrationOnPowerUsed;
         // OnPowerUsed += DisplayTooltipOnUse;
+    }
+
+    private void ChromaticAberrationOnPowerUsed(PlayerPowerManager arg1, PowerToken arg2)
+    {
+        // Return if the current power token is not a drug
+        if (arg2.PowerScriptableObject.PowerType != PowerType.Drug)
+            return;
+        
+        // Get the dynamic chromatic aberration module
+        var dynamicChromaticAberrationModule =
+            PostProcessingVolumeController.Instance.ScreenVolume.ChromaticAberrationModule;
+
+        // Add a power token
+        dynamicChromaticAberrationModule.AddPowerToken(1, 1);
     }
 
     private void OnPowerJustUsedOnUse(PlayerPowerManager arg1, PowerToken arg2)
@@ -264,7 +279,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Stop the power charge sound
         StopSound();
-        
+
         // If the charge is complete
         if (isChargeComplete)
             UsePower();
