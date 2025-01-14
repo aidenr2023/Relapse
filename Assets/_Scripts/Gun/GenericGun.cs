@@ -119,6 +119,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     public Action<IGun> OnReloadStart { get; set; }
     public Action<IGun> OnReloadStop { get; set; }
 
+    public Action<IGun> OnShoot { get; set; }
+
     protected virtual void Awake()
     {
         // Get the collider component
@@ -219,7 +221,6 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         if (IsReloading)
             return;
 
-
         // Set the firing flag to true
         isFiring = true;
         //
@@ -281,9 +282,12 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         WeaponManager weaponManager, int pelletsToFire, Vector3 startingPosition, Vector3 direction
     )
     {
+        // Invoke the on shoot event
+        OnShoot?.Invoke(this);
+        
         // Play shooting animation
         animator.SetTrigger(ShootingAnimationID);
-
+        
         // Play the muzzle flash VFX
         PlayMuzzleFlash();
 
