@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using TMPro;
@@ -20,7 +19,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     [SerializeField] private PowerScriptableObject[] powers;
 
-
     [Header("Power Charged Vignette"), SerializeField, Range(0, 1)]
     private float chargedVignetteStrength = .25f;
 
@@ -29,6 +27,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     [Header("Visual Effects")] [SerializeField]
     private VisualEffect gauntletChargeVfx;
+
+    [Header("Sound Effects")] [SerializeField]
+    private ManagedAudioSource powerAudioSource;
 
     #endregion
 
@@ -96,6 +97,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Initialize the input
         InitializeInput();
+
+        // Set the power audio source to permanent
+        powerAudioSource.SetPermanent(true);
     }
 
     // Start is called before the first frame update
@@ -145,7 +149,21 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         // Add the event for the power used
         OnPowerUsed += PlaySoundOnUse;
         OnPowerUsed += OnPowerJustUsedOnUse;
-        // OnPowerUsed += DisplayTooltipOnUse;
+        OnPowerUsed += ChromaticAberrationOnPowerUsed;
+    }
+
+    private void ChromaticAberrationOnPowerUsed(PlayerPowerManager arg1, PowerToken arg2)
+    {
+        // Return if the current power token is not a drug
+        if (arg2.PowerScriptableObject.PowerType != PowerType.Drug)
+            return;
+
+        // Get the dynamic chromatic aberration module
+        var dynamicChromaticAberrationModule =
+            PostProcessingVolumeController.Instance.ScreenVolume.ChromaticAberrationModule;
+
+        // Add a power token
+        dynamicChromaticAberrationModule.AddPowerToken(1, 1);
     }
 
     private void OnPowerJustUsedOnUse(PlayerPowerManager arg1, PowerToken arg2)
@@ -246,8 +264,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         // Set the charging flag to true
         CurrentPowerToken.SetChargingFlag(true);
 
-        // Play the charge start sound
-        SoundManager.Instance.PlaySfx(CurrentPower.ChargeStartSound);
+        // Play the power charge sound
+        PlaySound(CurrentPower.ChargeStartSound);
     }
 
     private void OnPowerCanceled(InputAction.CallbackContext obj)
@@ -257,6 +275,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
             return;
 
         var isChargeComplete = StopCharge();
+
+        // Stop the power charge sound
+        StopSound();
 
         // If the charge is complete
         if (isChargeComplete)
@@ -613,89 +634,14 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     private static void PlaySoundOnUse(PlayerPowerManager powerManager, PowerToken powerToken)
     {
+        // // Kill the current sound
+        // powerManager.powerAudioSource.Stop();
+
         // Play the power use sound
-        SoundManager.Instance.PlaySfx(powerToken.PowerScriptableObject.PowerUseSound);
-    }
-
-    private static void DisplayTooltipOnUse(PlayerPowerManager powerManager, PowerToken powerToken)
-    {
-        var powerName = powerToken.PowerScriptableObject.PowerName;
-
-        // Display a tooltip for the active effect (if applicable)
-        if (powerToken.PowerScriptableObject.ActiveEffectDuration > 0)
-        {
-            // The function to display the tooltip
-            string TextFunction()
-            {
-                var activeDurationRemaining =
-                    powerToken.PowerScriptableObject.ActiveEffectDuration - powerToken.CurrentActiveDuration;
-
-                return $"{powerName}'s Active Effect: {activeDurationRemaining:0.00}s Remaining!";
-            }
-
-            bool CompletionFunction() => powerToken.ActivePercentage >= 1;
-
-            // Calculate how long the tooltip should be displayed
-            var duration =
-                powerToken.PowerScriptableObject.ActiveEffectDuration
-                - JournalTooltipManager.Instance.IntroDuration
-                - JournalTooltipManager.Instance.OutroDuration;
-
-            // Add the tooltip
-            JournalTooltipManager.Instance.AddTooltip(TextFunction, duration, true, CompletionFunction);
-        }
-
-        // Display a tooltip for the passive effect (if applicable)
-        if (powerToken.PowerScriptableObject.PassiveEffectDuration > 0)
-        {
-            // The function to display the tooltip
-            string TextFunction()
-            {
-                var passiveDurationRemaining =
-                    powerToken.PowerScriptableObject.PassiveEffectDuration - powerToken.CurrentPassiveDuration;
-
-                return $"{powerName}'s Passive Effect: {passiveDurationRemaining:0.00}s Remaining!";
-            }
-
-            bool CompletionFunction() => powerToken.PassivePercentage >= 1;
-
-            // Calculate how long the tooltip should be displayed
-            var duration =
-                powerToken.PowerScriptableObject.PassiveEffectDuration
-                - JournalTooltipManager.Instance.IntroDuration
-                - JournalTooltipManager.Instance.OutroDuration;
-
-            // Add the tooltip
-            JournalTooltipManager.Instance.AddTooltip(TextFunction, duration, true, CompletionFunction);
-        }
+        powerManager.PlaySound(powerToken.PowerScriptableObject.PowerUseSound);
     }
 
     #endregion
-
-    private IEnumerator AddToxicityOverTime(float amount, float duration)
-    {
-        // Calculate the amount to add each frame
-        var amountPerSecond = amount / duration;
-
-        var totalAdded = 0f;
-
-        // Loop through the duration
-        for (var i = 0f; i < duration; i += Time.deltaTime)
-        {
-            // Add the toxicity
-            _player.PlayerInfo.ChangeTolerance(amountPerSecond * Time.deltaTime);
-
-            totalAdded += amountPerSecond * Time.deltaTime;
-
-            // Wait for the next frame
-            yield return null;
-        }
-
-        var amountRemaining = amount - totalAdded;
-
-        // Add the remaining toxicity
-        _player.PlayerInfo.ChangeTolerance(amountRemaining);
-    }
 
     #region Public Methods
 
@@ -819,6 +765,33 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Set the power level
         powerToken.SetPowerLevel(level);
+    }
+
+    public void PlaySound(Sound sound)
+    {
+        // Return if the sound is null
+        if (sound == null)
+            return;
+
+        // Return if the audio source is null
+        if (powerAudioSource == null)
+            return;
+
+        // Set the audio source to permanent
+        powerAudioSource.SetPermanent(true);
+
+        // Play the sound on the audio source
+        powerAudioSource.Play(sound);
+    }
+
+    public void StopSound()
+    {
+        // Return if the audio source is null
+        if (powerAudioSource == null)
+            return;
+
+        // Stop the audio source
+        powerAudioSource.Stop();
     }
 
     public string GetDebugText()

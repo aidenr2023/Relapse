@@ -18,6 +18,10 @@ public class DynamicChromaticAberrationModule : DynamicPostProcessingModule
 
     private TokenManager<float>.ManagedToken _relapseToken;
 
+    private TokenManager<float>.ManagedToken _powerToken;
+    private float _maxPowerTokenValue;
+    private CountdownTimer _powerTokenTimer;
+
     #endregion
 
     #region Getters
@@ -34,12 +38,22 @@ public class DynamicChromaticAberrationModule : DynamicPostProcessingModule
     {
         // Add the relapse token
         _relapseToken = _tokens.AddToken(0, -1, true);
+
+        // Add the power token
+        _powerToken = _tokens.AddToken(0, -1, true);
+        
+        // Initialize the power token timer
+        _powerTokenTimer = new CountdownTimer(0);
+        _powerTokenTimer.OnTimerEnd += () => _powerTokenTimer.Stop();
     }
 
     public override void Update()
     {
         // Update the relapse token
         UpdateRelapseToken();
+
+        // Update the power token
+        UpdatePowerToken();
 
         // Get the actual screen chromatic aberration component
         dynamicVolume.GetActualComponent(out ChromaticAberration actualChromaticAberration);
@@ -85,6 +99,25 @@ public class DynamicChromaticAberrationModule : DynamicPostProcessingModule
         _relapseToken.Value = Mathf.Lerp(_relapseToken.Value, relapseValue, relapseLerpAmount * frameAmount);
     }
 
+    private void UpdatePowerToken()
+    {
+        // Update the power token timer
+        _powerTokenTimer.Update(Time.deltaTime);
+        
+        // Calculate the powerTokenValue
+        var powerTokenValue = _maxPowerTokenValue * (1 - _powerTokenTimer.Percentage);
+        
+        // Add some randomness to the power token value
+        powerTokenValue += UnityEngine.Random.Range(-.1f, .1f);
+        
+        // If the power token timer is not running, set the power token value to 0
+        if (_powerTokenTimer.IsComplete || !_powerTokenTimer.IsActive)
+            powerTokenValue = 0;
+        
+        // Set the power token value
+        _powerToken.Value = powerTokenValue;
+    }
+
     private float CurrentTokenValue()
     {
         var value = 0f;
@@ -93,5 +126,16 @@ public class DynamicChromaticAberrationModule : DynamicPostProcessingModule
             value += token.Value;
 
         return value;
+    }
+
+    public void AddPowerToken(float value, float time)
+    {
+        _maxPowerTokenValue = Mathf.Max(_maxPowerTokenValue, value);
+
+        // Reset the power token timer
+        _powerTokenTimer.SetMaxTimeAndReset(time);
+        _powerTokenTimer.Start();
+        
+        Debug.Log($"Added power token");
     }
 }

@@ -14,6 +14,7 @@ public class DynamicPostProcessVolume : MonoBehaviour
     [Header("Modules"), SerializeField] private DynamicVignetteModule vignetteModule;
     [SerializeField] private DynamicChromaticAberrationModule chromaticAberrationModule;
     [SerializeField] private DynamicLiftGammaGainModule liftGammaGainModule;
+    [SerializeField] private DynamicLensDistortionModule lensDistortionModule;
 
     #endregion
 
@@ -31,6 +32,8 @@ public class DynamicPostProcessVolume : MonoBehaviour
 
     public DynamicVignetteModule VignetteModule => vignetteModule;
 
+    public DynamicChromaticAberrationModule ChromaticAberrationModule => chromaticAberrationModule;
+
     #endregion
 
     private void Awake()
@@ -46,9 +49,12 @@ public class DynamicPostProcessVolume : MonoBehaviour
 
         // Initialize the dynamic chromatic aberration module
         chromaticAberrationModule.Initialize(this);
-        
+
         // Initialize the dynamic lift gamma gain module
         liftGammaGainModule.Initialize(this);
+
+        // Initialize the dynamic lens distortion module
+        lensDistortionModule.Initialize(this);
     }
 
     private void Start()
