@@ -28,7 +28,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     [Header("Visual Effects")] [SerializeField]
     private VisualEffect gauntletChargeVfx;
 
-    [Header("Sound Things")] [SerializeField]
+    [Header("Sound Effects")] [SerializeField]
     private ManagedAudioSource powerAudioSource;
 
     #endregion
@@ -150,7 +150,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         OnPowerUsed += PlaySoundOnUse;
         OnPowerUsed += OnPowerJustUsedOnUse;
         OnPowerUsed += ChromaticAberrationOnPowerUsed;
-        // OnPowerUsed += DisplayTooltipOnUse;
     }
 
     private void ChromaticAberrationOnPowerUsed(PlayerPowerManager arg1, PowerToken arg2)
@@ -158,7 +157,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         // Return if the current power token is not a drug
         if (arg2.PowerScriptableObject.PowerType != PowerType.Drug)
             return;
-        
+
         // Get the dynamic chromatic aberration module
         var dynamicChromaticAberrationModule =
             PostProcessingVolumeController.Instance.ScreenVolume.ChromaticAberrationModule;
