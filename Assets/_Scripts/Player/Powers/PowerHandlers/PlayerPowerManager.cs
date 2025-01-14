@@ -20,7 +20,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     [SerializeField] private PowerScriptableObject[] powers;
 
-
     [Header("Power Charged Vignette"), SerializeField, Range(0, 1)]
     private float chargedVignetteStrength = .25f;
 
@@ -29,6 +28,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     [Header("Visual Effects")] [SerializeField]
     private VisualEffect gauntletChargeVfx;
+
+    [Header("Sound Things")] [SerializeField]
+    private ManagedAudioSource powerAudioSource;
 
     #endregion
 
@@ -96,6 +98,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Initialize the input
         InitializeInput();
+        
+        // Set the power audio source to permanent
+        powerAudioSource.SetPermanent(true);
     }
 
     // Start is called before the first frame update
@@ -246,8 +251,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         // Set the charging flag to true
         CurrentPowerToken.SetChargingFlag(true);
 
-        // Play the charge start sound
-        SoundManager.Instance.PlaySfx(CurrentPower.ChargeStartSound);
+        // Play the power charge sound
+        PlaySound(CurrentPower.ChargeStartSound);
     }
 
     private void OnPowerCanceled(InputAction.CallbackContext obj)
@@ -258,6 +263,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         var isChargeComplete = StopCharge();
 
+        // Stop the power charge sound
+        StopSound();
+        
         // If the charge is complete
         if (isChargeComplete)
             UsePower();
@@ -613,8 +621,11 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     private static void PlaySoundOnUse(PlayerPowerManager powerManager, PowerToken powerToken)
     {
+        // // Kill the current sound
+        // powerManager.powerAudioSource.Stop();
+
         // Play the power use sound
-        SoundManager.Instance.PlaySfx(powerToken.PowerScriptableObject.PowerUseSound);
+        powerManager.PlaySound(powerToken.PowerScriptableObject.PowerUseSound);
     }
 
     private static void DisplayTooltipOnUse(PlayerPowerManager powerManager, PowerToken powerToken)
@@ -819,6 +830,33 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Set the power level
         powerToken.SetPowerLevel(level);
+    }
+
+    public void PlaySound(Sound sound)
+    {
+        // Return if the sound is null
+        if (sound == null)
+            return;
+
+        // Return if the audio source is null
+        if (powerAudioSource == null)
+            return;
+
+        // Set the audio source to permanent
+        powerAudioSource.SetPermanent(true);
+
+        // Play the sound on the audio source
+        powerAudioSource.Play(sound);
+    }
+
+    public void StopSound()
+    {
+        // Return if the audio source is null
+        if (powerAudioSource == null)
+            return;
+
+        // Stop the audio source
+        powerAudioSource.Stop();
     }
 
     public string GetDebugText()
