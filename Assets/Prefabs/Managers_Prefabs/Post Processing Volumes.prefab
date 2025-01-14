@@ -64,9 +64,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   volume: {fileID: 6102431351981507991}
   profile: {fileID: 11400000, guid: 89f42c3483fbf354189538aae075723c, type: 2}
+  vignetteModule:
+    speedVignetteMaxValue: 0.3
+    speedVignetteMaxSpeed: 30
+    speedVignetteLerpAmount: 0
   chromaticAberrationModule:
     relapseLerpAmount: 0.9
     relapseRange: 0.6
+  liftGammaGainModule:
+    gammaSetting: 0
 --- !u!1 &1975117196189454205
 GameObject:
   m_ObjectHideFlags: 0
@@ -131,9 +137,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   volume: {fileID: 2269752985584772197}
   profile: {fileID: 11400000, guid: c844869c4749b4e4799aff62b97c2a6f, type: 2}
+  vignetteModule:
+    speedVignetteMaxValue: 0.5
+    speedVignetteMaxSpeed: 20
+    speedVignetteLerpAmount: 0.5
   chromaticAberrationModule:
     relapseLerpAmount: 0.8
     relapseRange: 0.25
+  liftGammaGainModule:
+    gammaSetting: 0
 --- !u!1 &2709872129352186455
 GameObject:
   m_ObjectHideFlags: 0

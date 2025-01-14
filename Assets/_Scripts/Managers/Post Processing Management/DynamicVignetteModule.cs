@@ -7,11 +7,17 @@ public class DynamicVignetteModule : DynamicPostProcessingModule
 {
     #region Serialized Fields
 
+    [SerializeField, Min(0)] private float speedVignetteMaxValue = 0.5f;
+    [SerializeField, Min(0)] private float speedVignetteMaxSpeed = 20;
+    [SerializeField, Range(0, 1)] private float speedVignetteLerpAmount = 0.5f;
+
     #endregion
 
     #region Private Fields
 
     private readonly TokenManager<float> _tokens = new(false, null, 0);
+
+    private TokenManager<float>.ManagedToken _speedVignetteToken;
 
     #endregion
 
@@ -27,10 +33,15 @@ public class DynamicVignetteModule : DynamicPostProcessingModule
 
     public override void Start()
     {
+        // Create the speed vignette token
+        _speedVignetteToken = _tokens.AddToken(0, -1, true);
     }
 
     public override void Update()
     {
+        // Update the speed vignette
+        UpdateSpeedVignette();
+
         // Get the actual screen vignette component
         dynamicVolume.GetActualComponent(out Vignette actualVignette);
 
@@ -43,6 +54,26 @@ public class DynamicVignetteModule : DynamicPostProcessingModule
 
         // Set the vignette intensity on the screen volume
         actualVignette.intensity.value = vignetteSettings.intensity.value + CurrentTokenValue();
+    }
+
+    private void UpdateSpeedVignette()
+    {
+        // Get the instance of the player
+        var player = Player.Instance;
+
+        var targetValue = 0f;
+
+        if (player != null)
+            targetValue = Mathf.Lerp(0,
+                speedVignetteMaxValue,
+                player.Rigidbody.velocity.magnitude / speedVignetteMaxSpeed
+            );
+
+        const float defaultFrameTime = 1 / 60f;
+        var frameTime = Time.deltaTime / defaultFrameTime;
+
+        // Lerp the speed vignette token to the target value
+        _speedVignetteToken.Value = Mathf.Lerp(_speedVignetteToken.Value, targetValue, speedVignetteLerpAmount * frameTime);
     }
 
     private float CurrentTokenValue()
