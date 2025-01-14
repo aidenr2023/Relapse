@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using TMPro;
@@ -628,85 +627,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         powerManager.PlaySound(powerToken.PowerScriptableObject.PowerUseSound);
     }
 
-    private static void DisplayTooltipOnUse(PlayerPowerManager powerManager, PowerToken powerToken)
-    {
-        var powerName = powerToken.PowerScriptableObject.PowerName;
-
-        // Display a tooltip for the active effect (if applicable)
-        if (powerToken.PowerScriptableObject.ActiveEffectDuration > 0)
-        {
-            // The function to display the tooltip
-            string TextFunction()
-            {
-                var activeDurationRemaining =
-                    powerToken.PowerScriptableObject.ActiveEffectDuration - powerToken.CurrentActiveDuration;
-
-                return $"{powerName}'s Active Effect: {activeDurationRemaining:0.00}s Remaining!";
-            }
-
-            bool CompletionFunction() => powerToken.ActivePercentage >= 1;
-
-            // Calculate how long the tooltip should be displayed
-            var duration =
-                powerToken.PowerScriptableObject.ActiveEffectDuration
-                - JournalTooltipManager.Instance.IntroDuration
-                - JournalTooltipManager.Instance.OutroDuration;
-
-            // Add the tooltip
-            JournalTooltipManager.Instance.AddTooltip(TextFunction, duration, true, CompletionFunction);
-        }
-
-        // Display a tooltip for the passive effect (if applicable)
-        if (powerToken.PowerScriptableObject.PassiveEffectDuration > 0)
-        {
-            // The function to display the tooltip
-            string TextFunction()
-            {
-                var passiveDurationRemaining =
-                    powerToken.PowerScriptableObject.PassiveEffectDuration - powerToken.CurrentPassiveDuration;
-
-                return $"{powerName}'s Passive Effect: {passiveDurationRemaining:0.00}s Remaining!";
-            }
-
-            bool CompletionFunction() => powerToken.PassivePercentage >= 1;
-
-            // Calculate how long the tooltip should be displayed
-            var duration =
-                powerToken.PowerScriptableObject.PassiveEffectDuration
-                - JournalTooltipManager.Instance.IntroDuration
-                - JournalTooltipManager.Instance.OutroDuration;
-
-            // Add the tooltip
-            JournalTooltipManager.Instance.AddTooltip(TextFunction, duration, true, CompletionFunction);
-        }
-    }
-
     #endregion
-
-    private IEnumerator AddToxicityOverTime(float amount, float duration)
-    {
-        // Calculate the amount to add each frame
-        var amountPerSecond = amount / duration;
-
-        var totalAdded = 0f;
-
-        // Loop through the duration
-        for (var i = 0f; i < duration; i += Time.deltaTime)
-        {
-            // Add the toxicity
-            _player.PlayerInfo.ChangeTolerance(amountPerSecond * Time.deltaTime);
-
-            totalAdded += amountPerSecond * Time.deltaTime;
-
-            // Wait for the next frame
-            yield return null;
-        }
-
-        var amountRemaining = amount - totalAdded;
-
-        // Add the remaining toxicity
-        _player.PlayerInfo.ChangeTolerance(amountRemaining);
-    }
 
     #region Public Methods
 
