@@ -415,7 +415,7 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
             // Get the angle of the slope
             var slopeAngle = Vector3.Angle(Vector3.up, ParentComponent.GroundHit.normal);
 
-            Debug.Log($"Sliding On A Slope: {slopeAngle:0.00}!");
+            // Debug.Log($"Sliding On A Slope: {slopeAngle:0.00}!");
 
             float slopeInverseLerp;
             float slopeSpeedMult;
@@ -434,7 +434,7 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
 
             var targetSlopeSpeed = ParentComponent.MovementSpeed * slopeSpeedMult;
 
-            Debug.Log($"Target Slope Speed: {targetSlopeSpeed:0.0000}");
+            // Debug.Log($"Target Slope Speed: {targetSlopeSpeed:0.0000}");
 
             // Recalculate the target velocity
             targetVelocity = slopeDirection * (targetSlopeSpeed) +

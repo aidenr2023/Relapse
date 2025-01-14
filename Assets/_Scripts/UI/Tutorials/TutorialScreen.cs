@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Video;
 
-public class TutorialScreen : GameMenu
+public class TutorialScreen : GameMenu, IUsesInput
 {
     public static TutorialScreen Instance { get; private set; }
 
@@ -39,33 +40,42 @@ public class TutorialScreen : GameMenu
     {
         // Set the instance to this
         Instance = this;
+
+        // Initialize the input
+        InitializeInput();
     }
 
     protected override void CustomActivate()
     {
+        // Register the input
+        InputManager.Instance.Register(this);
     }
 
     protected override void CustomDeactivate()
     {
         // Stop the video
         videoPlayer.Stop();
+
+        // Unregister the input
+        InputManager.Instance.Unregister(this);
     }
 
     protected override void CustomUpdate()
     {
         if (Input.GetKeyDown(KeyCode.T))
-        {
-            ChangeTutorial(debugTutorial);
-            Activate();
-        }
+            PlayTutorial(debugTutorial);
 
-        if (IsActive)
-        {
-            if (Input.GetKeyDown(KeyCode.RightArrow))
-                NextPage();
-            else if (Input.GetKeyDown(KeyCode.LeftArrow))
-                PreviousPage();
-        }
+        // if (IsActive)
+        // {
+        //     if (Input.GetKeyDown(KeyCode.RightArrow))
+        //         NextPage();
+        //     else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        //         PreviousPage();
+        // }
+    }
+
+    protected override void CustomDestroy()
+    {
     }
 
     public override void OnBackPressed()
@@ -164,26 +174,46 @@ public class TutorialScreen : GameMenu
         SetTutorialPage(_currentTutorialPage - 1);
     }
 
-    [CreateAssetMenu(fileName = "Tutorial", menuName = "New Tutorial")]
-    public class Tutorial : ScriptableObject
+    public void PlayTutorial(Tutorial tutorial)
     {
-        [SerializeField] private string tutorialName;
-        [SerializeField] private TutorialPage[] tutorialPages;
+        // Return if the tutorial is null
+        if (tutorial == null)
+            return;
 
-        public string TutorialName => tutorialName;
-        public IReadOnlyList<TutorialPage> TutorialPages => tutorialPages;
-        public int TotalPages => tutorialPages.Length;
+        ChangeTutorial(tutorial);
+        Activate();
+
+        // Get the instance of the player tutorial manager & complete the tutorial
+        Player.Instance.PlayerTutorialManager.CompleteTutorial(tutorial);
     }
 
-    [Serializable]
-    public struct TutorialPage
-    {
-        [SerializeField] private string subTitle;
-        [SerializeField] private VideoClip videoClip;
-        [SerializeField, TextArea] private string description;
+    #region IUsesInput
 
-        public string SubTitle => subTitle;
-        public VideoClip VideoClip => videoClip;
-        public string Description => description;
+    public HashSet<InputData> InputActions { get; } = new();
+
+    public void InitializeInput()
+    {
+        InputActions.Add(
+            new InputData(InputManager.Instance.DefaultInputActions.UI.Navigate, InputType.Performed,
+                OnNavigatePerformed)
+        );
     }
+
+    private void OnNavigatePerformed(InputAction.CallbackContext obj)
+    {
+        // Return if not active
+        if (!IsActive)
+            return;
+
+        var value = obj.ReadValue<Vector2>();
+
+        const float threshold = 0.5f;
+
+        if (value.x > threshold)
+            NextPage();
+        else if (value.x < -threshold)
+            PreviousPage();
+    }
+
+    #endregion
 }

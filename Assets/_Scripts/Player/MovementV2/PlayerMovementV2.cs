@@ -98,6 +98,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     public RaycastHit GroundHit => _floatingControllerHit;
 
     public AnimationCurve AccelerationFactorFromDot => accelerationFactorFromDot;
+    
+    public Animator PlayerAnimator => playerAnimator;
 
     public float Acceleration => acceleration;
 

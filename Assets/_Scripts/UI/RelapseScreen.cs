@@ -59,10 +59,20 @@ public class RelapseScreen : GameMenu
     {
     }
 
+    protected override void CustomDestroy()
+    {
+    }
+
     protected override void CustomUpdate()
     {
         // Set the loading bar's visibility based on whether the scene is loading
         loadingBar.gameObject.SetActive(_respawnButtonClicked);
+    }
+
+    private void OnDisable()
+    {
+        // Deactivate the menu
+        Deactivate();
     }
 
     private void SetBackgroundImage(Sprite sprite)

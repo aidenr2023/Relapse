@@ -16,6 +16,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     #region Serialized Fields
 
     [SerializeField] protected GunInformation gunInformation;
+    [SerializeField] protected GunModelType gunModelType;
     [SerializeField] protected Animator animator;
 
     [Header("Muzzle Particles")] [SerializeField]
@@ -77,6 +78,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     public GunInformation GunInformation => gunInformation;
 
+    public GunModelType GunModelType => gunModelType;
+
     public Collider Collider { get; private set; }
 
     public GameObject GameObject => gameObject;
@@ -101,6 +104,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         set => currentMagazineSize = value;
     }
 
+    public Animator Animator => animator;
+
     #region IInteractable
 
     public bool IsInteractable => true;
@@ -109,13 +114,16 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     #endregion
 
+    public Action<IGun> OnReloadStart { get; set; }
+    public Action<IGun> OnReloadStop { get; set; }
+
     protected virtual void Awake()
     {
         // Get the collider component
         Collider = GetComponent<Collider>();
 
         // Get the animator component from pistol
-        //animator = GetComponent<Animator>();
+        // animator = GetComponent<Animator>();
     }
 
     protected virtual void Start()
@@ -136,9 +144,20 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Fire the weapon if applicable
         if (_weaponManager != null)
             Fire(_weaponManager, _weaponManager.FireTransform.position, _weaponManager.FireTransform.forward);
-        
-        //if weapon is empty play empty animation
-        animator.SetBool("isEmpty", IsMagazineEmpty);
+
+        // Update the PLAYER's animator based on the gun model type
+        if (_weaponManager != null)
+        {
+            var movementV2 = _weaponManager.Player.PlayerController as PlayerMovementV2;
+
+            if (movementV2 != null)
+                movementV2.PlayerAnimator.SetInteger("modelType", (int)gunModelType);
+        }
+
+
+        if (animator != null)
+            animator.SetInteger("modelType", (int)gunModelType);
+
         // Reset the fired this frame flag
         hasFiredThisFrame = false;
 
@@ -166,6 +185,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // If the player has finished reloading, reset the magazine size
         currentMagazineSize = gunInformation.MagazineSize;
+
+        // end the reload event
+        OnReloadStop?.Invoke(this);
     }
 
     private void UpdateFireDelta()
@@ -412,7 +434,6 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Set the reload time to the reload time of the gun
         currentReloadTime = gunInformation.ReloadTime;
 
-
         // Set the reloading flag to true
         isReloading = true;
 
@@ -422,6 +443,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Play the reload sound
         // Debug.Log($"Sound Settings: {gunInformation.ReloadSound.Clip.name}");
         SoundManager.Instance.PlaySfx(gunInformation.ReloadSound);
+
+        // Start the reload event
+        OnReloadStart?.Invoke(this);
     }
 
     public void OnEquipToPlayer(WeaponManager weaponManager)

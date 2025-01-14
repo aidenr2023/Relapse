@@ -44,6 +44,12 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     [SerializeField] private TMP_Text relapseText;
 
+    [Header("Passive Regeneration")] [SerializeField, Min(0)]
+    private float passiveRegenCap = 50;
+
+    [SerializeField, Min(0)] private float passiveRegenRate = 5;
+    [SerializeField, Min(0)] private float passiveRegenDelay = 10;
+
     // TODO: Find a better way to do this
     [SerializeField] private CinemachineVirtualCamera vCam;
 
@@ -64,6 +70,8 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     private float _currentRelapseDuration;
 
     private bool _isRelapsing;
+
+    private CountdownTimer _passiveRegenTimer;
 
     #endregion
 
@@ -153,6 +161,10 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         // Initialize the invincibility timer
         _invincibilityTimer = new CountdownTimer(invincibilityDuration, false, false);
         _invincibilityTimer.OnTimerEnd += () => _invincibilityTimer.Stop();
+
+        // Initialize the passive regen timer
+        _passiveRegenTimer = new CountdownTimer(passiveRegenDelay, true, false);
+        _passiveRegenTimer.Start();
     }
 
     private void InitializeEvents()
@@ -232,7 +244,11 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
             toleranceMeter.UpdateToleranceUI(currentTolerance / maxTolerance); // Scale to 0-1
 
         // Update the invincibility timer
+        _invincibilityTimer.SetMaxTime(invincibilityDuration);
         _invincibilityTimer.Update(Time.deltaTime);
+
+        // Update the passive regeneration
+        UpdatePassiveRegeneration();
     }
 
     private void UpdateRelapseDuration()
@@ -283,23 +299,13 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     private void UpdateRelapseEffects()
     {
-        float vCamDampening;
-
-        switch (_relapseCount)
+        var vCamDampening = _relapseCount switch
         {
-            case 0:
-                vCamDampening = 0.0f;
-                break;
-            case 1:
-                vCamDampening = 0.2f;
-                break;
-            case 2:
-                vCamDampening = 0.4f;
-                break;
-            default:
-                vCamDampening = 0.5f;
-                break;
-        }
+            0 => 0.0f,
+            1 => 0.2f,
+            2 => 0.4f,
+            _ => 0.5f
+        };
 
         // Apply the dampening to the virtual camera's aim
         vCam.GetCinemachineComponent<CinemachineSameAsFollowTarget>().m_Damping = vCamDampening;
@@ -324,6 +330,33 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
             relapseImage.color.b,
             opacity
         );
+    }
+
+    private void UpdatePassiveRegeneration()
+    {
+        // Update the passive regeneration timer
+        _passiveRegenTimer.SetMaxTime(passiveRegenRate);
+        _passiveRegenTimer.Update(Time.deltaTime);
+        _passiveRegenTimer.SetActive(true);
+
+        // Return if the player is relapsing
+        if (_isRelapsing)
+            return;
+
+        // Return if the player is at max health
+        if (health >= maxHealth)
+            return;
+
+        // Return if the passive regen timer is not complete
+        if (_passiveRegenTimer.IsNotComplete)
+            return;
+
+        // Increment the player's health
+        var regenAmount = passiveRegenRate * Time.deltaTime;
+        if (health + regenAmount >= passiveRegenCap)
+            ChangeHealth(passiveRegenCap - health, this, this, transform.position);
+        else
+            ChangeHealth(regenAmount, this, this, transform.position);
     }
 
     #endregion
@@ -366,6 +399,10 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         // Start the invincibility timer
         _invincibilityTimer.SetMaxTimeAndReset(invincibilityDuration);
         _invincibilityTimer.Start();
+
+        // Reset the passive regen timer
+        _passiveRegenTimer.SetMaxTimeAndReset(passiveRegenDelay);
+        _passiveRegenTimer.Start();
     }
 
     private void ClampTolerance()

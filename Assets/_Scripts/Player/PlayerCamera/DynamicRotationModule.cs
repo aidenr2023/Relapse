@@ -133,9 +133,12 @@ public sealed class DynamicRotationModule : DynamicVCamModule
 
         // Determine the wall running direction
         var wallRunning = (playerVCamController.ParentComponent.PlayerController as PlayerMovementV2)?.WallRunning;
+
         if (wallRunning != null)
         {
-            if (wallRunning.IsWallRunningLeft)
+            if (!wallRunning.IsWallRunning)
+                _wallRunningDirection = 0;
+            else if (wallRunning.IsWallRunningLeft)
                 _wallRunningDirection = -1;
             else if (wallRunning.IsWallRunningRight)
                 _wallRunningDirection = 1;

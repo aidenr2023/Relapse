@@ -20,8 +20,6 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
     /// </summary>
     [SerializeField] private GameObject initialGunPrefab;
 
-    [SerializeField] private TMP_Text reloadText;
-
     #endregion
 
     #region Private Fields
@@ -79,6 +77,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
 
     public TokenManager<float> FireRateMultiplierTokens => _fireRateMultiplierTokens;
 
+    public Transform GunHolder => gunHolder;
+        
     #endregion
 
     public Action<WeaponManager, IGun> OnGunEquipped { get; set; }
@@ -201,29 +201,11 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
 
     private void Update()
     {
-        // TODO: Remove this and replace it with a bar or something
-        UpdateReloadText();
-
         // Update the damage multipliers
         UpdateDamageMultipliers();
 
         // Update the fire rate multipliers
         UpdateFireRateMultipliers();
-    }
-
-    private void UpdateReloadText()
-    {
-        reloadText.text = "";
-
-        if (_equippedGun == null)
-            return;
-
-        if (_equippedGun.IsReloading)
-            reloadText.text = $"Reloading: {_equippedGun.ReloadingPercentage * 100:0}%";
-
-        // Tell the player to reload
-        else if (_equippedGun.IsMagazineEmpty)
-            reloadText.text = "You need to reload!";
     }
 
     public void EquipGun(IGun gun)

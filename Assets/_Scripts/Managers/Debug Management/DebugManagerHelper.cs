@@ -140,6 +140,11 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
         // Update the tolerance and health
         UpdateToleranceAndHealth();
+
+        if (Input.GetKeyDown(KeyCode.Comma))
+            UserSettings.Instance.SetGamma(UserSettings.Instance.Gamma - 0.1f);
+        if (Input.GetKeyDown(KeyCode.Period))
+            UserSettings.Instance.SetGamma(UserSettings.Instance.Gamma + 0.1f);
     }
 
     private void UpdateToleranceAndHealth()

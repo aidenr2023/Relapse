@@ -77,6 +77,11 @@ public class VendorMenu : GameMenu
     {
     }
 
+    protected override void CustomDestroy()
+    {
+        
+    }
+
     private void Start()
     {
         // Isolate the initial menu

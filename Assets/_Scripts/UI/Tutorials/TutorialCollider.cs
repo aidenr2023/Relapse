@@ -2,7 +2,7 @@
 
 public class TutorialCollider : MonoBehaviour
 {
-    [SerializeField] private TutorialScreen.Tutorial tutorial;
+    [SerializeField] private Tutorial tutorial;
 
     [SerializeField] private bool activateOnce = true;
 
@@ -18,8 +18,7 @@ public class TutorialCollider : MonoBehaviour
             return;
 
         // Add the tutorial to the tutorial screen
-        TutorialScreen.Instance.ChangeTutorial(tutorial);
-        TutorialScreen.Instance.Activate();
+        TutorialScreen.Instance.PlayTutorial(tutorial);
 
         // Set the has already activated flag to true
         if (activateOnce)

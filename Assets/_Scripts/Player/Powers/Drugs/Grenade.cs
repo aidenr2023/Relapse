@@ -10,14 +10,6 @@ public class Grenade : MonoBehaviour, IPower
 
     public PowerScriptableObject PowerScriptableObject { get; set; }
 
-    void Start()
-    {
-    }
-
-    void Update()
-    {
-    }
-
     public string PassiveEffectDebugText(PlayerPowerManager powerManager, PowerToken pToken)
     {
         return "";
@@ -44,10 +36,18 @@ public class Grenade : MonoBehaviour, IPower
 
         var grenadeProjectile = grenade.GetComponent<GrenadeProjectile>();
 
+        // Create the position of the projectile
+        var firePosition = powerManager.PowerFirePoint.position;
+     
+        // Create a vector that points forward from the camera pivot
+        var aimTargetPoint = powerManager.PowerAimHitPoint;
+        var fireForward = (aimTargetPoint - firePosition).normalized;
+        
         grenadeProjectile.Shoot(
             this, powerManager, pToken,
-            powerManager.Player.WeaponManager.FireTransform.position,
-            powerManager.Player.WeaponManager.FireTransform.forward
+            // powerManager.Player.WeaponManager.FireTransform.position,
+            // powerManager.Player.WeaponManager.FireTransform.forward
+            firePosition, fireForward
         );
     }
 

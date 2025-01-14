@@ -34,12 +34,13 @@ public class ExplosiveMine : MonoBehaviour, IPower
 
     public void Use(PlayerPowerManager powerManager, PowerToken pToken)
     {
-        // Create a vector that points forward from the camera pivot
-        var fireForward = powerManager.Player.PlayerController.CameraPivot.transform.forward;
-
         // Create the position of the projectile
-        var firePosition = powerManager.Player.PlayerController.CameraPivot.transform.position + fireForward * 1;
-
+        var firePosition = powerManager.PowerFirePoint.position;
+     
+        // Create a vector that points forward from the camera pivot
+        var aimTargetPoint = powerManager.PowerAimHitPoint;
+        var fireForward = (aimTargetPoint - firePosition).normalized;
+        
         // Instantiate the projectile prefab
         var projectile = Instantiate(explosiveMineProjectilePrefab, firePosition, Quaternion.identity);
 

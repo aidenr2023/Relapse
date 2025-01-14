@@ -16,6 +16,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     #region Serialized Fields
 
+    [SerializeField] private Transform powerFirePoint;
+
     [SerializeField] private PowerScriptableObject[] powers;
 
 
@@ -45,6 +47,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     private TokenManager<float>.ManagedToken _powerChargeVignetteToken;
 
+    private bool _isPowerAimHitting;
+    private RaycastHit _powerAimHit;
+
     #endregion
 
     #region Getters
@@ -52,6 +57,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     public HashSet<InputData> InputActions { get; } = new();
 
     public Player Player => _player;
+
+    public Transform PowerFirePoint => powerFirePoint;
 
     public PowerScriptableObject CurrentPower => powers.Length > 0 ? powers[_currentPowerIndex] : null;
 
@@ -63,6 +70,15 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     public IReadOnlyCollection<PowerScriptableObject> Powers => powers;
 
     public int CurrentPowerIndex => _currentPowerIndex;
+
+    public bool IsChargingPower => _isChargingPower;
+
+    public bool WasPowerJustUsed { get; private set; }
+
+    public Vector3 PowerAimHitPoint => _isPowerAimHitting
+        ? _powerAimHit.point
+        : Player.PlayerController.CameraPivot.transform.position +
+          Player.PlayerController.CameraPivot.transform.forward * 1000;
 
     #endregion
 
@@ -96,6 +112,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Add this to the debug manager
         DebugManager.Instance.AddDebuggedObject(this);
+
+        if (CurrentPowerToken?.IsCharging == true)
+            _isChargingPower = true;
     }
 
     private void OnEnable()
@@ -125,7 +144,14 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Add the event for the power used
         OnPowerUsed += PlaySoundOnUse;
+        OnPowerUsed += OnPowerJustUsedOnUse;
         // OnPowerUsed += DisplayTooltipOnUse;
+    }
+
+    private void OnPowerJustUsedOnUse(PlayerPowerManager arg1, PowerToken arg2)
+    {
+        // Set the was power just used flag to true
+        WasPowerJustUsed = true;
     }
 
     public void InitializeInput()
@@ -466,6 +492,32 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Set the "ChargeState" uint property of the VFX graph
         gauntletChargeVfx.SetUInt("ChargeState", chargeState);
+    }
+
+    private void LateUpdate()
+    {
+        // Reset the was power just used flag
+        WasPowerJustUsed = false;
+    }
+
+    private void FixedUpdate()
+    {
+        // Update the power aim hit
+        UpdatePowerAimHit();
+    }
+
+    private void UpdatePowerAimHit()
+    {
+        _isPowerAimHitting = Physics.Raycast(
+            _player.PlayerController.CameraPivot.transform.position,
+            _player.PlayerController.CameraPivot.transform.forward,
+            out var hit,
+            Mathf.Infinity
+        );
+
+        // Fire a raycast from the camera pivot to the camera forward
+        if (_isPowerAimHitting)
+            _powerAimHit = hit;
     }
 
     #endregion
