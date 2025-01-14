@@ -204,10 +204,10 @@ public class PowerUIController : MonoBehaviour
         );
 
         // Remove the previous offset from the icon group's position
-        powerIconsCanvasGroup.transform.position -= previousPowerIconsOffset;
+        powerIconsCanvasGroup.transform.localPosition -= previousPowerIconsOffset;
 
         // Add the current offset to the icon group's position
-        powerIconsCanvasGroup.transform.position += _currentPowerIconsOffset;
+        powerIconsCanvasGroup.transform.localPosition += _currentPowerIconsOffset;
     }
 
     private void UpdatePowerNameText()
