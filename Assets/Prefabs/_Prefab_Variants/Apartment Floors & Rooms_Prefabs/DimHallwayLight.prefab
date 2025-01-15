@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 4179837177104071502}
   serializedVersion: 2
   m_LocalRotation: {x: 0.00000011920929, y: 0.00000011920929, z: -0.70710653, w: -0.7071071}
-  m_LocalPosition: {x: 0.0001, y: -0.0004119941, z: 0.00758485}
+  m_LocalPosition: {x: 0, y: -0.0004019941, z: 0.00758485}
   m_LocalScale: {x: 0.016488777, y: 0.016488777, z: 0.016488777}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -46,9 +46,9 @@ Light:
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 2
-  m_Range: 10
+  m_Range: 15
   m_SpotAngle: 179
-  m_InnerSpotAngle: 150.7415
+  m_InnerSpotAngle: 162.02516
   m_CookieSize: 10
   m_Shadows:
     m_Type: 2
@@ -76,7 +76,7 @@ Light:
       e32: 0
       e33: 1
     m_UseCullingMatrixOverride: 0
-  m_Cookie: {fileID: 0}
+  m_Cookie: {fileID: 2800000, guid: a9b6ba39d216fa04d8217679e74aeaaf, type: 3}
   m_DrawHalo: 0
   m_Flare: {fileID: 0}
   m_RenderMode: 0
@@ -130,7 +130,7 @@ GameObject:
   - component: {fileID: 510117809490398927}
   - component: {fileID: 7495540183734363322}
   m_Layer: 0
-  m_Name: Point Light
+  m_Name: AreaLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -144,13 +144,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8002740500231113254}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0.7071068, w: -0.7071068}
-  m_LocalPosition: {x: -0.00044272406, y: -0.00038759696, z: 0.024615563}
+  m_LocalRotation: {x: -0.7071031, y: 0.7071106, z: -0.0000023146442, w: -0.0000016888064}
+  m_LocalPosition: {x: 0, y: 0, z: 0.008}
   m_LocalScale: {x: 0.01648878, y: 0.016488781, z: 0.016488783}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2590690657606889053}
-  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 180, y: 0, z: 90.001}
 --- !u!108 &510117809490398927
 Light:
   m_ObjectHideFlags: 0
@@ -160,11 +160,11 @@ Light:
   m_GameObject: {fileID: 8002740500231113254}
   m_Enabled: 1
   serializedVersion: 10
-  m_Type: 2
+  m_Type: 3
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 0.1
-  m_Range: 8
+  m_Intensity: 0.05
+  m_Range: 1
   m_SpotAngle: 86.61802
   m_InnerSpotAngle: 78.42008
   m_CookieSize: 10
@@ -204,7 +204,7 @@ Light:
   m_RenderingLayerMask: 1
   m_Lightmapping: 2
   m_LightShadowCasterMode: 0
-  m_AreaSize: {x: 1, y: 1}
+  m_AreaSize: {x: 3, y: 1}
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
