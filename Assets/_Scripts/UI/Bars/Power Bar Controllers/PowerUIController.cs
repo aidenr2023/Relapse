@@ -84,10 +84,7 @@ public class PowerUIController : MonoBehaviour
 
         // If there are no powers, hide the canvas group
         if (powers.Length == 0)
-        {
             canvasGroup.alpha = powerIconsMinOpacity;
-            return;
-        }
 
         // Show the canvas group
         canvasGroup.alpha = 1;

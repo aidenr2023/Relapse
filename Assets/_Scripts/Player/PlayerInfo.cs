@@ -339,8 +339,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         _passiveRegenTimer.Update(Time.deltaTime);
         _passiveRegenTimer.SetActive(true);
 
-        return;
-        
         // Return if the player is relapsing
         if (_isRelapsing)
             return;
@@ -349,6 +347,10 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         if (health >= maxHealth)
             return;
 
+        // Return if health is at the passive regen cap
+        if (health >= passiveRegenCap)
+            return;
+        
         // Return if the passive regen timer is not complete
         if (_passiveRegenTimer.IsNotComplete)
             return;
