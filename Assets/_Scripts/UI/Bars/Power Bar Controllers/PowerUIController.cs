@@ -13,6 +13,7 @@ public class PowerUIController : MonoBehaviour
 
     [Space, SerializeField] private CanvasGroup powerIconsCanvasGroup;
     [SerializeField] private PowerIconController[] powerImages;
+    [SerializeField, Range(0, 1)] private float powerIconsMinOpacity = .75f;
     [SerializeField] private float powerIconsOpacityLerpAmount = .1f;
     [SerializeField] private float powerIconsStayOnScreenTime = .5f;
     [SerializeField] private TMP_Text powerNameText;
@@ -46,7 +47,7 @@ public class PowerUIController : MonoBehaviour
         _powerIconsStayOnScreenTimer.Start();
 
         // Set the opacity of the power icons canvas group to 0
-        powerIconsCanvasGroup.alpha = 0;
+        powerIconsCanvasGroup.alpha = powerIconsMinOpacity;
     }
 
     private void Start()
@@ -66,6 +67,9 @@ public class PowerUIController : MonoBehaviour
         // Update the power icons offset
         UpdatePowerIconsOffset();
 
+        // Update the power icon size
+        UpdatePowerIconSize();
+        
         // Update the power name text
         UpdatePowerNameText();
     }
@@ -81,7 +85,7 @@ public class PowerUIController : MonoBehaviour
         // If there are no powers, hide the canvas group
         if (powers.Length == 0)
         {
-            canvasGroup.alpha = 0;
+            canvasGroup.alpha = powerIconsMinOpacity;
             return;
         }
 
@@ -166,14 +170,14 @@ public class PowerUIController : MonoBehaviour
         if (currentPowerIndex != _previousPowerIndex)
             _powerIconsStayOnScreenTimer?.Reset();
 
-        var desiredOpacity = 1;
+        var desiredOpacity = 1f;
 
         _isFadingIn = true;
 
         // If the stay on screen timer is complete, set the desired opacity to 0
         if (_powerIconsStayOnScreenTimer?.IsComplete ?? false)
         {
-            desiredOpacity = 0;
+            desiredOpacity = powerIconsMinOpacity;
             _isFadingIn = false;
         }
 
@@ -195,7 +199,8 @@ public class PowerUIController : MonoBehaviour
     {
         var previousPowerIconsOffset = _currentPowerIconsOffset;
 
-        var direction = _isFadingIn ? 1 : -1;
+        // var direction = _isFadingIn ? 1 : -1;
+        var direction = 1;
 
         _currentPowerIconsOffset = Vector3.Lerp(
             powerIconFadeInOffset * direction,
@@ -208,6 +213,35 @@ public class PowerUIController : MonoBehaviour
 
         // Add the current offset to the icon group's position
         powerIconsCanvasGroup.transform.localPosition += _currentPowerIconsOffset;
+    }
+
+    private void UpdatePowerIconSize()
+    {
+        // Get the current power
+        var currentPower = _player.PlayerPowerManager.CurrentPower;
+
+        // Return if the current power is null
+        if (currentPower == null)
+            return;
+
+        // Get the power token
+        var powerToken = _player.PlayerPowerManager.CurrentPowerToken;
+
+        // Return if the power token is null
+        if (powerToken == null)
+            return;
+
+        // Set the scale of the current power image
+        for (var i = 0; i < powerImages.Length; i++)
+        {
+            var targetScale = 1f;
+
+            if (i == _player.PlayerPowerManager.CurrentPowerIndex)
+                targetScale = 1.5f;
+
+            // Lerp the scale of the power image
+            powerImages[i].LerpScale(targetScale, powerIconsOpacityLerpAmount);
+        }
     }
 
     private void UpdatePowerNameText()

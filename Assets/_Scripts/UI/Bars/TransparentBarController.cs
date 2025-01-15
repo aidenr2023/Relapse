@@ -98,12 +98,14 @@ public abstract class TransparentBarController : MonoBehaviour
         var isValueJustNowFull = percentage >= 1 && PreviousValue < CurrentValue;
         var isValueEmpty = percentage <= 0 && PreviousValue > CurrentValue;
         var isValueFull = percentage >= 1;
+        var isValueNotFull = percentage < 1;
 
         if ((isValueIncreasing && _transparentBar.ShowWhenIncreasing) ||
             (isValueDecreasing && _transparentBar.ShowWhenDecreasing) |
             (isValueJustNowFull && _transparentBar.ShowWhenFull) ||
             (isValueEmpty && _transparentBar.ShowWhenEmpty) ||
-            (isValueFull && _transparentBar.AlwaysShowWhileFull)
+            (isValueFull && _transparentBar.AlwaysShowWhileFull) ||
+            (isValueNotFull && _transparentBar.AlwaysShowWhileNotFull)
            )
         {
             // Set the desired opacity to 1

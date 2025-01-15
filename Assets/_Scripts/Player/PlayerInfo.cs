@@ -339,6 +339,8 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         _passiveRegenTimer.Update(Time.deltaTime);
         _passiveRegenTimer.SetActive(true);
 
+        return;
+        
         // Return if the player is relapsing
         if (_isRelapsing)
             return;

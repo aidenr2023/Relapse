@@ -8,6 +8,7 @@ public class PowerIconController : MonoBehaviour
 
     [SerializeField] private CanvasGroup canvasGroup;
 
+    [SerializeField] private GameObject parentObject;
     [SerializeField] private Image bgImage;
     [SerializeField] private Image fgImage;
 
@@ -66,5 +67,18 @@ public class PowerIconController : MonoBehaviour
     {
         // Set the target color
         _targetColor = new Color(color.r, color.g, color.b, bgImage.color.a);
+    }
+
+    public void LerpScale(float scale, float lerpSpeed)
+    {
+        // Lerp the scale
+        const float defaultFrameTime = 1 / 60f;
+        var frameAmount = Time.unscaledDeltaTime / defaultFrameTime;
+        
+        transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * scale, lerpSpeed * frameAmount);
+
+        // If the scale is within a certain range, set scale to the scale
+        if (Mathf.Abs(transform.localScale.x - scale) < .01f)
+            transform.localScale = Vector3.one * scale;
     }
 }

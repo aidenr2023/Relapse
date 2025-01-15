@@ -8,7 +8,7 @@ public class WorldSpaceUICameraScaler : MonoBehaviour
     [SerializeField] private CinemachineVirtualCamera vCam;
     [SerializeField] private Canvas canvas;
 
-    [SerializeField, Readonly] private Vector3 originalScale;
+    [SerializeField] private Vector3 originalScale;
     [SerializeField, Readonly] private float originalFov;
 
     // Canvas scaling based on screen size

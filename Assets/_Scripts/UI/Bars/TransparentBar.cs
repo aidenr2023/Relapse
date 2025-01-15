@@ -23,6 +23,7 @@ public class TransparentBar : MonoBehaviour
     [SerializeField] private bool showWhenFull = true;
     [SerializeField] private bool showWhenEmpty = true;
     [SerializeField] private bool alwaysShowWhileFull = false;
+    [SerializeField] private bool alwaysShowWhileNotFull = false;
 
     #endregion
 
@@ -55,6 +56,8 @@ public class TransparentBar : MonoBehaviour
     public bool ShowWhenEmpty => showWhenEmpty;
 
     public bool AlwaysShowWhileFull => alwaysShowWhileFull;
+
+    public bool AlwaysShowWhileNotFull => alwaysShowWhileNotFull;
 
     #endregion
 }
