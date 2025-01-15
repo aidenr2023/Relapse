@@ -10,6 +10,7 @@ public class WallrunAnimationScript : MonoBehaviour
     //reference to the PlayerPowerManager
     public PlayerPowerManager playerPowerManager;
     public Animator playerAnimator;
+    public SyncMag7Fire syncMag7Fire;
     
     private void Update()
     {
@@ -48,6 +49,19 @@ public class WallrunAnimationScript : MonoBehaviour
         playerAnimator.SetBool("Charging",    playerPowerManager.IsChargingPower);
         
     }
+    //based on the flag in sync mag7 fire, play the trigger
+    public void PlayTriggerOnShoot(GameObject obj)
+    {
+        //on shoot invoke this method
+        
+        // Find the Animator in the children of the GameObject
+        Animator Mag7animator = obj.GetComponentInChildren<Animator>();
+        // Set the trigger
+        //Mag7animator.SetTrigger("Shooting");
+        playerAnimator.SetTrigger("Cocking");
+       
+    }
+    
     
   
 }

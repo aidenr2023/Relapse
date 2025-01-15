@@ -245,7 +245,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
         SoundManager.Instance.PlaySfx(gun.GunInformation.PickupSound);
 
         //get animator set isArmed to true
-        animator.SetBool("isArmed", true);
+//        animator.SetBool("isArmed", true);
 
         // // TODO: DELETE THIS EVENTUALLY
         // // Get all the renderers in the gun
