@@ -20,6 +20,16 @@ public class ReloadText : MonoBehaviour
     [SerializeField] private float floatingBobAmount = 0.1f;
     [SerializeField, Min(0)] private float floatingBobFrequency = 1;
 
+    [SerializeField] private TMP_Text text;
+    [SerializeField, Range(0, 1)] private float lowAmmoPercentage = 0.25f;
+    [SerializeField] private Gradient lowAmmoGradient;
+    [SerializeField] private float lowAmmoBlinkFrequency = 1;
+    [SerializeField] private float lowAmmoGradientStop = 0.1f;
+    [SerializeField] private Color reloadColor = Color.red;
+
+    [SerializeField] private string lowAmmoText = "LOW AMMO!";
+    [SerializeField] private string reloadText = "RELOAD!";
+
     #endregion
 
     #region Private Fields
@@ -45,6 +55,12 @@ public class ReloadText : MonoBehaviour
 
         // Update the desired opacity
         UpdateDesiredOpacity();
+
+        // Update the color of the reload text
+        UpdateColor();
+
+        // Update the text of the reload text
+        UpdateText();
 
         // Update the position of the reload text
         UpdatePosition();
@@ -94,7 +110,25 @@ public class ReloadText : MonoBehaviour
 
         // Set the desired opacity to 0 if the weapon manager's weapon is not out of ammo
         else if (_weaponManager.EquippedGun.CurrentAmmo > 0)
-            _desiredOpacity = 0;
+        {
+            // Get the ammo percentage
+            var ammoPercentage = _weaponManager.EquippedGun.CurrentAmmo /
+                                 (float)_weaponManager.EquippedGun.GunInformation.MagazineSize;
+
+            // If the ammo percentage is less than or equal to the low ammo percentage,
+            // set the desired opacity to 1
+            if (ammoPercentage <= lowAmmoPercentage)
+            {
+                // Make the opacity blink
+                var blinkAmount = Mathf.Sin(Time.time * lowAmmoBlinkFrequency) * 0.5f + 0.5f;
+
+                // Set the desired opacity to the blink amount
+                _desiredOpacity = blinkAmount;
+            }
+
+            else
+                _desiredOpacity = 0;
+        }
 
         // Lerp the alpha of the canvas group's alpha to the desired opacity
         const float defaultFrameTime = 1 / 60f;
@@ -104,6 +138,68 @@ public class ReloadText : MonoBehaviour
         // Set the alpha of the canvas group to the desired opacity if the difference between the two is less than the threshold
         if (Mathf.Abs(canvasGroup.alpha - _desiredOpacity) < LERP_THRESHOLD)
             canvasGroup.alpha = _desiredOpacity;
+    }
+
+    private void UpdateColor()
+    {
+        // Set the desired opacity to 0 if the weapon manager is null
+        // Set the color of the reload text to white
+        if (_weaponManager == null || _weaponManager.EquippedGun == null)
+        {
+            SetColor(Color.white);
+            return;
+        }
+
+        // Get the ammo percentage
+        var ammoPercentage = _weaponManager.EquippedGun.CurrentAmmo /
+                             (float)_weaponManager.EquippedGun.GunInformation.MagazineSize;
+
+        // Set the color of the reload text to the reload color
+        if (_weaponManager.EquippedGun.CurrentAmmo == 0)
+            SetColor(reloadColor);
+
+        // If the ammo percentage is less than or equal to the low ammo percentage,
+        // set the color of the reload text to the low ammo gradient
+        else if (ammoPercentage <= lowAmmoPercentage)
+        {
+            // express the ammo percentage in terms of the low ammo gradient
+            var gradientAmount = (ammoPercentage - lowAmmoGradientStop) / (lowAmmoPercentage - lowAmmoGradientStop);
+
+            // Set the color of the reload text to the blink amount
+            SetColor(lowAmmoGradient.Evaluate(gradientAmount));
+        }
+    }
+
+    private void UpdateText()
+    {
+        // Return if there is no gun equipped
+        if (_weaponManager == null || _weaponManager.EquippedGun == null)
+            return;
+
+        // Return if there is no tmp text component
+        if (text == null)
+            return;
+
+        // Get the ammo percentage
+        var ammoPercentage = _weaponManager.EquippedGun.CurrentAmmo /
+                             (float)_weaponManager.EquippedGun.GunInformation.MagazineSize;
+
+        // Set the text of the reload text to the low ammo text
+        if (ammoPercentage <= lowAmmoPercentage)
+            text.text = lowAmmoText;
+
+        // Set the text of the reload text to the reload text
+        if (_weaponManager.EquippedGun.CurrentAmmo == 0)
+            text.text = reloadText;
+    }
+
+    private void SetColor(Color color)
+    {
+        const float defaultFrameTime = 1 / 60f;
+        var frameAmount = Time.unscaledDeltaTime / defaultFrameTime;
+
+        // Lerp the color
+        text.color = Color.Lerp(text.color, color, 0.2f * frameAmount);
     }
 
     private void UpdatePosition()
@@ -120,12 +216,12 @@ public class ReloadText : MonoBehaviour
             return;
 
         // Bob the reload text
-        var bobAmount = Mathf.Sin(Time.time * floatingBobFrequency) * floatingBobAmount;
+        var bobAmount = Mathf.Sin(Time.time * Mathf.PI * floatingBobFrequency) * floatingBobAmount;
         var bobOffset = new Vector3(0, bobAmount, 0);
 
         // Put the offset in terms of the gun holder's local space
         var relativeOffset = gunHolderTransform.TransformDirection(offset);
-        
+
         // Debug.Log($"Offset: {offset} - Relative Offset: {relativeOffset}");
 
         // Set the position of the reload text to the gun holder's position
