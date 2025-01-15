@@ -88,24 +88,9 @@ public class ManagedAudioSource : MonoBehaviour
         // If the sound is persistent, set the priority to the max
         if (sound.IsPersistent)
             _audioSource.priority = 256;
-        
-        // If the sound is looping, set the loop flag to true
-        _audioSource.loop = sound.IsLooping;
 
         // Play the sound
         _audioSource.Play();
-    }
-
-    public void Stop()
-    {
-        // Stop the audio source
-        _audioSource.Stop();
-        
-        // Set the clip to null
-        _audioSource.clip = null;
-        
-        // Set the is paused flag to false
-        _isPaused = false;
     }
 
     public void Kill()

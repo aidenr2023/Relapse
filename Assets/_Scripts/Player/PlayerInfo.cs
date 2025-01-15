@@ -299,16 +299,16 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     private void UpdateRelapseEffects()
     {
-        // var vCamDampening = _relapseCount switch
-        // {
-        //     0 => 0.0f,
-        //     1 => 0.2f,
-        //     2 => 0.4f,
-        //     _ => 0.5f
-        // };
-        //
-        // // Apply the dampening to the virtual camera's aim
-        // vCam.GetCinemachineComponent<CinemachineSameAsFollowTarget>().m_Damping = vCamDampening;
+        var vCamDampening = _relapseCount switch
+        {
+            0 => 0.0f,
+            1 => 0.2f,
+            2 => 0.4f,
+            _ => 0.5f
+        };
+
+        // Apply the dampening to the virtual camera's aim
+        vCam.GetCinemachineComponent<CinemachineSameAsFollowTarget>().m_Damping = vCamDampening;
     }
 
     private void RelapseImageUpdate()
@@ -432,12 +432,12 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         // Increase the relapse count
         _relapseCount++;
 
-        // if (_relapseCount >= relapsesToLose)
-        // {
-        //     // The player dies / restarts the level from relapsing too many times!
-        //     DieFromRelapse();
-        //     return;
-        // }
+        if (_relapseCount >= relapsesToLose)
+        {
+            // The player dies / restarts the level from relapsing too many times!
+            DieFromRelapse();
+            return;
+        }
 
         // Enable the relapse text
         if (relapseText != null)

@@ -16,9 +16,7 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
     [SerializeField, Min(0)] private float groundShakeTime;
     [SerializeField, Min(0)] private float groundShakeVelocityThreshold = 10f;
 
-    [Space, SerializeField] private NoiseTokenValue relapseNoise;
-    [SerializeField] private NoiseTokenValue powerChargeNoise;
-    [SerializeField, Range(0, 1)] private float powerChargeLerpAmount = 0.2f;
+    [Header("Relapse"), SerializeField] private NoiseTokenValue relapseNoise;
 
     #endregion
 
@@ -31,7 +29,6 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
     private TokenManager<NoiseTokenValue>.ManagedToken _recoilToken;
     private TokenManager<NoiseTokenValue>.ManagedToken _relapseToken;
     private TokenManager<NoiseTokenValue>.ManagedToken _groundCheckToken;
-    private TokenManager<NoiseTokenValue>.ManagedToken _powerChargeToken;
 
     private CountdownTimer _recoilShakeTimer;
     private CountdownTimer _groundShakeTimer;
@@ -55,7 +52,6 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
         _recoilToken = _noiseTokens.AddToken(default, -1, true);
         _relapseToken = _noiseTokens.AddToken(default, -1, true);
         _groundCheckToken = _noiseTokens.AddToken(default, -1, true);
-        _powerChargeToken = _noiseTokens.AddToken(default, -1, true);
 
         // Create the shake timers
         _recoilShakeTimer = new CountdownTimer(0);
@@ -96,9 +92,6 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
 
         // Update the ground check token
         UpdateGroundCheckToken();
-
-        // Update the power charge token
-        UpdatePowerChargeToken();
 
         // Update the noise tokens
         _noiseTokens.Update(Time.deltaTime);
@@ -153,19 +146,6 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
 
         _groundCheckToken.Value =
             NoiseTokenValue.Lerp(_groundCheckToken.Value, default, groundCheckLerpAmount * frameAmount);
-    }
-
-    private void UpdatePowerChargeToken()
-    {
-        var desiredValue = default(NoiseTokenValue);
-
-        if (playerVCamController.ParentComponent.PlayerPowerManager.IsChargingPower)
-            desiredValue = powerChargeNoise;
-
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.deltaTime / defaultFrameTime;
-
-        _powerChargeToken.Value = NoiseTokenValue.Lerp(_powerChargeToken.Value, desiredValue, powerChargeLerpAmount * frameAmount);
     }
 
     public void SetRecoilShake(NoiseTokenValue noiseToken, float lerpAmount, float time)

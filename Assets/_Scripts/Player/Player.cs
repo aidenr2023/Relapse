@@ -13,12 +13,10 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
     #region Getters
 
     public Rigidbody Rigidbody { get; private set; }
-
+    
     public PlayerInfo PlayerInfo { get; private set; }
 
     public IPlayerController PlayerController { get; private set; }
-
-    public PlayerDash PlayerDash { get; private set; }
 
     public PlayerLook PlayerLook { get; private set; }
 
@@ -53,15 +51,12 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
     {
         // Get the Rigidbody component
         Rigidbody = GetComponent<Rigidbody>();
-
+        
         // Get the Player Info component
         PlayerInfo = GetComponent<PlayerInfo>();
 
         // Get the TestPlayerController component
         PlayerController = GetComponent<IPlayerController>();
-
-        // Get the PlayerDash component
-        PlayerDash = GetComponent<PlayerDash>();
 
         // Get the PlayerLook component
         PlayerLook = GetComponent<PlayerLook>();

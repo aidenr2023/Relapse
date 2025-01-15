@@ -12,7 +12,6 @@ public class Sound
 
     [SerializeField] [Range(0, 1)] private float volume = 1;
     [SerializeField] private bool isPersistent;
-    [SerializeField] private bool isLooping;
 
     #endregion
 
@@ -26,8 +25,6 @@ public class Sound
     public bool IsPersistent => isPersistent;
 
     public float Volume => volume;
-
-    public bool IsLooping => isLooping;
 
     #endregion
 
