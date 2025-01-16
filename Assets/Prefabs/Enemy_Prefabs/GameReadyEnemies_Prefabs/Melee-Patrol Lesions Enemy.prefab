@@ -26,12 +26,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1480055229891285975}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.35017487, y: -0.05327185, z: 0.39445445, w: -0.8479065}
-  m_LocalPosition: {x: 4.6446066, y: 0.17480445, z: -2.7635632}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 8056197416062624302}
+  m_Father: {fileID: 2309259081695103580}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!82 &8764520935052496402
 AudioSource:
@@ -90,7 +90,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -232,7 +232,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -374,7 +374,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -1018,11 +1018,11 @@ MonoBehaviour:
   moanSounds:
   - clip: {fileID: 8300000, guid: fb282b04bff6174458bff6d8ec3924d2, type: 3}
     soundType: 2
-    volume: 0.125
+    volume: 0.35
     isPersistent: 0
     isLooping: 0
-    pitch: 1
-  moanSoundChance: 0.25
+    pitch: 0.8
+  moanSoundChance: 0.4
   moanSoundMinCooldown: 8
   moanSoundMaxCooldown: 15
 --- !u!114 &1321240230866553819
@@ -1432,7 +1432,7 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2525307520814892645}
-    - targetCorrespondingSourceObject: {fileID: 7472745592379130156, guid: d5ec369d78f59024f80f42e0d141d0f8,
+    - targetCorrespondingSourceObject: {fileID: 2915509827386141022, guid: d5ec369d78f59024f80f42e0d141d0f8,
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 7674463894426731916}
