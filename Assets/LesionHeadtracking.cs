@@ -27,12 +27,7 @@ public class LesionHeadtracking : MonoBehaviour
 
     private void Update()
     {
-        // If the detection state has changed, update the weight
-        if (lastState != enemyDetection.CurrentDetectionState)
-        {
-            SetWeight();
-            lastState = enemyDetection.CurrentDetectionState;
-        }
+        SetWeight();
     }
 
     private void FindPlayer()
