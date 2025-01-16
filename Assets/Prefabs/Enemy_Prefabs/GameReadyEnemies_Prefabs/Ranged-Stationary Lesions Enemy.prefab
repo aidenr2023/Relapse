@@ -85,7 +85,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f5f533b130e40eca5347083903f3682, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uniqueId: 
+  uniqueId: c8195be0-b7e7-4743-b3c6-f5ae6a9b7a7c
   originalScene: Ranged-Stationary Lesions Enemy
 --- !u!114 &5888956271656719663
 MonoBehaviour:
@@ -137,13 +137,13 @@ MonoBehaviour:
   moanSounds:
   - clip: {fileID: 8300000, guid: fb282b04bff6174458bff6d8ec3924d2, type: 3}
     soundType: 2
-    volume: 0.25
+    volume: 0.35
     isPersistent: 0
     isLooping: 0
-    pitch: 1
-  moanSoundChance: 1
-  moanSoundMinCooldown: 5
-  moanSoundMaxCooldown: 10
+    pitch: 0.8
+  moanSoundChance: 0.4
+  moanSoundMinCooldown: 8
+  moanSoundMaxCooldown: 15
 --- !u!114 &2774274488318970656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -543,7 +543,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
