@@ -5846,7 +5846,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 32, y: -32}
-  m_SizeDelta: {x: 256, y: 256}
+  m_SizeDelta: {x: 256, y: 16}
   m_Pivot: {x: 0, y: 1}
 --- !u!225 &2750342726316362332
 CanvasGroup:
@@ -5878,7 +5878,7 @@ MonoBehaviour:
   sliderLerpAmount: 0.1
   backgroundSliderLerpMultiplier: 0.25
   stayOnScreenTime: 1
-  minOpacity: 0.25
+  minOpacity: 0.125
   maxOpacity: 1
   opacityLerpAmount: 0.05
   showWhenDecreasing: 1
