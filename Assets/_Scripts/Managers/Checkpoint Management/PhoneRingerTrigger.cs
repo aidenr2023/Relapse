@@ -9,9 +9,9 @@ public class PhoneRingerTrigger : MonoBehaviour
 
     [SerializeField] private Sound ringSound;
     [SerializeField] private float ringInterval;
-    
+
     [SerializeField] private Sound beepSound;
-    
+
     #endregion
 
     #region Private Fields
@@ -21,6 +21,8 @@ public class PhoneRingerTrigger : MonoBehaviour
     private CountdownTimer _ringTimer;
 
     private ManagedAudioSource _audioSource;
+
+    private bool _wasInteractedLastFrame;
 
     #endregion
 
@@ -57,15 +59,20 @@ public class PhoneRingerTrigger : MonoBehaviour
         // Update the ring timer
         _ringTimer.Update(Time.deltaTime);
 
-        // If the current audio source is not null & the audio source is still playing, stop it
-        if (_audioSource != null && checkpointInteractable.HasBeenCollected)
+        if (!_wasInteractedLastFrame && checkpointInteractable.HasBeenCollected)
         {
-            _audioSource.Kill();
-            _audioSource = null;
-            
-            // Play the beep sound at the checkpointInteractable's position
+            // If the current audio source is not null & the audio source is still playing, stop it
+            if (_audioSource != null)
+            {
+                _audioSource.Kill();
+                _audioSource = null;
+            }
+
             SoundManager.Instance.PlaySfxAtPoint(beepSound, checkpointInteractable.transform.position);
         }
+
+        // If the checkpointInteractable has been interacted with, stop the ring sound
+        _wasInteractedLastFrame = checkpointInteractable.HasBeenCollected;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -103,7 +110,6 @@ public class PhoneRingerTrigger : MonoBehaviour
             return;
 
         // Play the ring SFX from the checkpointInteractable
-        // SoundManager_OLD.Instance.PlaySfxAtPoint(ringSound, checkpointInteractable.transform.position);
         _audioSource = SoundManager.Instance.PlaySfxAtPoint(ringSound, checkpointInteractable.transform.position);
     }
 }
