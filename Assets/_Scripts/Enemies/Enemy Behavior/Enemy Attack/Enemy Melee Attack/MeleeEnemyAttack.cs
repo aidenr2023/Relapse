@@ -43,6 +43,8 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     public HashSet<object> AttackDisableTokens { get; } = new();
 
+    public IReadOnlyList<MeleeAttackHitbox> MeleeAttackHitboxes => meleeAttackHitboxes;
+
     #endregion
 
     #region Initializiation Functions

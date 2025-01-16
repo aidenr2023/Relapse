@@ -6,6 +6,8 @@ public class MeleeAttackHitbox : MonoBehaviour
     #region Serialized Fields
 
     [SerializeField] private MeleeEnemyAttack meleeEnemyAttack;
+    [SerializeField] private ManagedAudioSource attackSound;
+    [SerializeField] private Sound attackSoundClip;
 
     #endregion
 
@@ -19,6 +21,9 @@ public class MeleeAttackHitbox : MonoBehaviour
     {
         // Assert that the meleeEnemyAttack is not null
         Debug.Assert(meleeEnemyAttack != null, "The meleeEnemyAttack is null.");
+        
+        // Set the attack sound to be permanent
+        attackSound.SetPermanent(true);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -57,5 +62,11 @@ public class MeleeAttackHitbox : MonoBehaviour
 
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(transform.position, 1f);
+    }
+    
+    public void PlayAttackSound()
+    {
+        attackSound.SetPermanent(true);
+        attackSound.Play(attackSoundClip);
     }
 }

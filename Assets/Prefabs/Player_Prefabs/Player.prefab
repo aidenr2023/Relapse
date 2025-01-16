@@ -710,17 +710,19 @@ MonoBehaviour:
   passiveRegenDelay: 10
   vCam: {fileID: 0}
   hitSound:
-    clip: {fileID: 8300000, guid: 0333d0f3b492ef74e93a3c58ea0cb7c6, type: 3}
+    clip: {fileID: 8300000, guid: a07d4a0a361f338429c6b98e1d8a4499, type: 3}
     soundType: 1
     volume: 0.125
     isPersistent: 0
     isLooping: 0
+    pitch: 0.75
   deathSound:
-    clip: {fileID: 8300000, guid: 0333d0f3b492ef74e93a3c58ea0cb7c6, type: 3}
+    clip: {fileID: 8300000, guid: a07d4a0a361f338429c6b98e1d8a4499, type: 3}
     soundType: 1
     volume: 0.125
     isPersistent: 0
     isLooping: 0
+    pitch: 0.75
 --- !u!114 &5203053287727495698
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -896,11 +898,13 @@ MonoBehaviour:
       volume: 0.0625
       isPersistent: 0
       isLooping: 0
+      pitch: 1
     - clip: {fileID: 8300000, guid: 5aa5e09256a042147921c24a52b741ae, type: 3}
       soundType: 1
       volume: 0.0625
       isPersistent: 0
       isLooping: 0
+      pitch: 1
   walkingFootstepInterval: 0.35
   sprintingFootstepInterval: 0.25
   jumpSound:
@@ -909,6 +913,7 @@ MonoBehaviour:
     volume: 0.125
     isPersistent: 0
     isLooping: 0
+    pitch: 1
   player_Animator: {fileID: 0}
 --- !u!114 &-2300652163101954379
 MonoBehaviour:
@@ -944,11 +949,13 @@ MonoBehaviour:
       volume: 0.0625
       isPersistent: 0
       isLooping: 0
+      pitch: 1
     - clip: {fileID: 8300000, guid: 5aa5e09256a042147921c24a52b741ae, type: 3}
       soundType: 1
       volume: 0.0625
       isPersistent: 0
       isLooping: 0
+      pitch: 1
   walkingFootstepInterval: 0.35
   sprintingFootstepInterval: 0.25
   jumpSound:
@@ -957,6 +964,7 @@ MonoBehaviour:
     volume: 0.125
     isPersistent: 0
     isLooping: 0
+    pitch: 1
   inwardLookLockAngle: 15
   outwardLookLockAngle: 80
 --- !u!114 &7032570368268033865
@@ -985,6 +993,7 @@ MonoBehaviour:
     volume: 0.6
     isPersistent: 1
     isLooping: 0
+    pitch: 1
 --- !u!114 &936152737596805865
 MonoBehaviour:
   m_ObjectHideFlags: 0
