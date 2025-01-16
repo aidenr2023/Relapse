@@ -8,9 +8,10 @@ public class PhoneRingerTrigger : MonoBehaviour
     [SerializeField] private CheckpointInteractable checkpointInteractable;
 
     [SerializeField] private Sound ringSound;
-
     [SerializeField] private float ringInterval;
-
+    
+    [SerializeField] private Sound beepSound;
+    
     #endregion
 
     #region Private Fields
@@ -22,7 +23,6 @@ public class PhoneRingerTrigger : MonoBehaviour
     private ManagedAudioSource _audioSource;
 
     #endregion
-
 
     private void Awake()
     {
@@ -62,6 +62,9 @@ public class PhoneRingerTrigger : MonoBehaviour
         {
             _audioSource.Kill();
             _audioSource = null;
+            
+            // Play the beep sound at the checkpointInteractable's position
+            SoundManager.Instance.PlaySfxAtPoint(beepSound, checkpointInteractable.transform.position);
         }
     }
 

@@ -101,9 +101,18 @@ MonoBehaviour:
   ringSound:
     clip: {fileID: 8300000, guid: 6445fa4616bf4fa4cbe26f7c08ff975e, type: 3}
     soundType: 3
-    volume: 0.25
+    volume: 0.0625
     isPersistent: 0
+    isLooping: 0
+    pitch: 1
   ringInterval: 8
+  beepSound:
+    clip: {fileID: 8300000, guid: 0333d0f3b492ef74e93a3c58ea0cb7c6, type: 3}
+    soundType: 3
+    volume: 0.0625
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
 --- !u!65 &5529714268988689315
 BoxCollider:
   m_ObjectHideFlags: 0

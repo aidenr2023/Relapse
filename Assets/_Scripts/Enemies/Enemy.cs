@@ -33,10 +33,6 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
         InitializeComponents();
     }
 
-    private void Start()
-    {
-    }
-
     private void InitializeComponents()
     {
         // Get the EnemyInfo component

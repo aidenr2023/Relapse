@@ -25,6 +25,12 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
     [Space, SerializeField] private Sound enemyHitSound;
     [SerializeField] private Sound enemyDeathSound;
 
+    [SerializeField] private ManagedAudioSource enemyMoanSource;
+    [SerializeField] private Sound[] moanSounds;
+    [SerializeField, Range(0, 1)] private float moanSoundChance = 1f;
+    [SerializeField, Min(0)] private float moanSoundMinCooldown = 5f;
+    [SerializeField, Min(0)] private float moanSoundMaxCooldown = 10f;
+
     #endregion
 
     #region Private Fields
@@ -36,6 +42,8 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
     private bool _hasPlayedHitVFX;
 
     private bool _hasPlayedHitSoundThisFrame;
+
+    private CountdownTimer _moanSoundTimer;
 
     #endregion
 
@@ -71,6 +79,18 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         // Activate the animator's hit trigger
         OnDamaged += (_, args) => animator?.SetTrigger(HitAnimationID);
 
+        // Set up the cooldown timer for the moan sound
+        _moanSoundTimer = new CountdownTimer(UnityEngine.Random.Range(moanSoundMinCooldown, moanSoundMaxCooldown));
+        _moanSoundTimer.OnTimerEnd += () =>
+        {
+            PlayMoanSound();
+            _moanSoundTimer.SetMaxTimeAndReset(UnityEngine.Random.Range(moanSoundMinCooldown, moanSoundMaxCooldown));
+        };
+        _moanSoundTimer.Start();
+
+        // Set the moan sound source to be permanent
+        enemyMoanSource.SetPermanent(true);
+
         return;
 
         void LogOnHealed(object _, HealthChangedEventArgs args)
@@ -89,6 +109,17 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         {
             Debug.Log($"{gameObject.name} died: {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
         }
+    }
+
+    private void PlayMoanSound()
+    {
+        // Random chance to play the moan sound
+        if (UnityEngine.Random.value > moanSoundChance)
+            return;
+
+        // Play a random moan sound
+        var randomSound = moanSounds[UnityEngine.Random.Range(0, moanSounds.Length)];
+        enemyMoanSource.Play(randomSound);
     }
 
     private void SetDamagePositionOnDamaged(object sender, HealthChangedEventArgs args)
@@ -141,6 +172,9 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
     private void Update()
     {
+        // Update the moan sound timer
+        _moanSoundTimer.Update(Time.deltaTime);
+
         // If the enemy took damage this frame, play the visual effect
         PlayVFXAfterDamage();
     }
