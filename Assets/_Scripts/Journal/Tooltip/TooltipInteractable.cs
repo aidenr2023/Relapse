@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Serialization;
 
 public class TooltipInteractable : MonoBehaviour, IInteractable
@@ -8,6 +9,7 @@ public class TooltipInteractable : MonoBehaviour, IInteractable
 
     [SerializeField] private string interactText;
     [SerializeField] [TextArea(1, 8)] private string tooltipText;
+    [SerializeField] private UnityEvent onInteraction;
 
     #endregion
 
@@ -23,11 +25,16 @@ public class TooltipInteractable : MonoBehaviour, IInteractable
 
     public InteractionIcon InteractionIcon => InteractionIcon.Action;
 
+    public UnityEvent OnInteraction => onInteraction;
+    
     #endregion
 
     public void Interact(PlayerInteraction playerInteraction)
     {
         JournalTooltipManager.Instance.AddTooltip(tooltipText);
+        
+        // Invoke the on interaction event
+        onInteraction.Invoke();
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)

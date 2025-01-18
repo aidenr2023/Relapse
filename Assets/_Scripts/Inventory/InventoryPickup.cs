@@ -31,6 +31,8 @@ public class InventoryPickup : MonoBehaviour, IInteractable, ILevelLoaderInfo
     public HashSet<Material> OutlineMaterials { get; } = new();
 
     public InteractionIcon InteractionIcon => InteractionIcon.Pickup;
+    
+    public UnityEvent OnInteraction => onInteract;
 
     #endregion
 

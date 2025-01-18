@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PowerInteractable : MonoBehaviour, IInteractable
 {
@@ -12,6 +13,8 @@ public class PowerInteractable : MonoBehaviour, IInteractable
 
     [SerializeField] private bool destroyOnInteract = true;
 
+    [SerializeField] private UnityEvent onInteraction;
+    
     #endregion
 
     private bool _isMarkedForDestruction;
@@ -27,6 +30,8 @@ public class PowerInteractable : MonoBehaviour, IInteractable
     public HashSet<Material> OutlineMaterials { get; } = new();
 
     public InteractionIcon InteractionIcon => InteractionIcon.Pickup;
+    
+    public UnityEvent OnInteraction => onInteraction;
 
     #endregion
 
@@ -58,6 +63,9 @@ public class PowerInteractable : MonoBehaviour, IInteractable
         // Destroy the object if it is marked for destruction
         if (destroyOnInteract)
             _isMarkedForDestruction = true;
+        
+        // Invoke the onInteraction event
+        onInteraction.Invoke();
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)

@@ -42,6 +42,8 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
     public HashSet<Material> OutlineMaterials { get; } = new();
 
     public InteractionIcon InteractionIcon => InteractionIcon.Pickup;
+    
+    public UnityEvent OnInteraction => onPurchase;
 
     #endregion
 

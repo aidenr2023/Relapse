@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 [ExecuteAlways]
@@ -19,6 +20,8 @@ public class VendorScript : MonoBehaviour, IInteractable
     [SerializeField] private Image powerImage;
     [SerializeField] private TMP_Text powerNameText;
 
+    [SerializeField] private UnityEvent onInteraction;
+    
     /// <summary>
     /// A variable to determine the interaction mode of the vendor.
     /// </summary>
@@ -36,12 +39,10 @@ public class VendorScript : MonoBehaviour, IInteractable
     public HashSet<Material> OutlineMaterials { get; } = new();
 
     public InteractionIcon InteractionIcon => InteractionIcon.Action;
+    
+    public UnityEvent OnInteraction => onInteraction;
 
     #endregion
-
-    private void Awake()
-    {
-    }
 
     private void Update()
     {
@@ -133,6 +134,9 @@ public class VendorScript : MonoBehaviour, IInteractable
             default:
                 throw new ArgumentOutOfRangeException();
         }
+        
+        // Invoke the on interaction event
+        OnInteraction.Invoke();
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)

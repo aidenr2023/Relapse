@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class CheckpointInteractable : MonoBehaviour, IInteractable
 {
@@ -11,6 +12,8 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
 
     [SerializeField] private SceneLoaderInformation sceneLoaderInformation;
 
+    [SerializeField] private UnityEvent onInteraction;
+    
     #endregion
 
     #region Getters
@@ -29,6 +32,8 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
     public SceneLoaderInformation SceneLoaderInformation => sceneLoaderInformation;
 
     public InteractionIcon InteractionIcon => InteractionIcon.Action;
+    
+    public UnityEvent OnInteraction => onInteraction;
 
     #endregion
 
@@ -71,6 +76,9 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
 
             Debug.Log("Checkpoint saved the player data to memory and disk.");
         }
+        
+        // Invoke the event
+        onInteraction.Invoke();
     }
 
     public string InteractText(PlayerInteraction playerInteraction)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ApartmentAbilityRestorer : MonoBehaviour, IInteractable
 {
@@ -8,10 +9,12 @@ public class ApartmentAbilityRestorer : MonoBehaviour, IInteractable
 
     [SerializeField] private string interactText = "<i>Restore Abilities</i>";
 
-    [SerializeField] private string[] tooltipTexts = new[]
+    [SerializeField] private string[] tooltipTexts =
     {
         "You can now sprint and jump!"
     };
+
+    [SerializeField] private UnityEvent onInteraction;
 
     #endregion
 
@@ -32,6 +35,8 @@ public class ApartmentAbilityRestorer : MonoBehaviour, IInteractable
     public HashSet<Material> OutlineMaterials { get; } = new();
 
     public InteractionIcon InteractionIcon => InteractionIcon.Pickup;
+
+    public UnityEvent OnInteraction => onInteraction;
 
     #endregion
 
@@ -71,6 +76,8 @@ public class ApartmentAbilityRestorer : MonoBehaviour, IInteractable
 
         // Set is interactable to false
         IsInteractable = false;
+        
+        onInteraction.Invoke();
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class MemoryPickup : MonoBehaviour, IInteractable
 {
@@ -8,6 +9,8 @@ public class MemoryPickup : MonoBehaviour, IInteractable
 
     [SerializeField] private MemoryScriptableObject memory;
 
+    [SerializeField] private UnityEvent onInteraction;
+        
     #endregion
 
     #region Private Fields
@@ -26,6 +29,8 @@ public class MemoryPickup : MonoBehaviour, IInteractable
     public HashSet<Material> OutlineMaterials { get; } = new();
 
     public InteractionIcon InteractionIcon => InteractionIcon.Pickup;
+    
+    public UnityEvent OnInteraction => onInteraction;
 
     #endregion
 
@@ -43,6 +48,9 @@ public class MemoryPickup : MonoBehaviour, IInteractable
         MemoryManager.Instance.AddMemory(memory);
 
         _isMarkedForDestruction = true;
+        
+        // Invoke the onInteraction event
+        onInteraction.Invoke();
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)

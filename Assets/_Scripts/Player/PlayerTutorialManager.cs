@@ -89,6 +89,11 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
         // Add the tutorial to the completed tutorials
         _completedTutorials.Add(tutorial);
     }
+    
+    public bool HasCompletedTutorial(Tutorial tutorial)
+    {
+        return _completedTutorials.Contains(tutorial);
+    }
 
     #region Saving and Loading
 

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 /// <summary>
 /// An interface that defines an object that can be interacted with.
@@ -21,6 +22,8 @@ public interface IInteractable : IInterfacedObject
     /// The icon the reticle changes to when looking at the object.
     /// </summary>
     public InteractionIcon InteractionIcon { get; }
+    
+    public UnityEvent OnInteraction { get; }
 
     /// <summary>
     /// The function that is called when the player interacts with the object.

@@ -24,6 +24,8 @@ public class CustomInteraction : MonoBehaviour, IInteractable
     public HashSet<Material> OutlineMaterials { get; } = new();
 
     public InteractionIcon InteractionIcon => interactionIcon;
+    
+    public UnityEvent OnInteraction => OnInteract;
 
     #endregion
 

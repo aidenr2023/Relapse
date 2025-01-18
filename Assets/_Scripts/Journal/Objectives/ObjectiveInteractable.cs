@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ObjectiveInteractable : MonoBehaviour, IInteractable
 {
@@ -11,6 +12,8 @@ public class ObjectiveInteractable : MonoBehaviour, IInteractable
     [SerializeField] private JournalObjectiveMode objectiveMode;
     [SerializeField] private JournalObjective objective;
 
+    [SerializeField] private UnityEvent onInteraction;
+    
     #endregion
 
     #region Getters
@@ -24,6 +27,8 @@ public class ObjectiveInteractable : MonoBehaviour, IInteractable
     public HashSet<Material> OutlineMaterials { get; } = new();
 
     public InteractionIcon InteractionIcon => InteractionIcon.Action;
+    
+    public UnityEvent OnInteraction => onInteraction;
 
     #endregion
 
@@ -42,6 +47,9 @@ public class ObjectiveInteractable : MonoBehaviour, IInteractable
             default:
                 throw new ArgumentOutOfRangeException();
         }
+        
+        // Invoke the on interaction event
+        onInteraction.Invoke();
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)

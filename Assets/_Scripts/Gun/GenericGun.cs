@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.Serialization;
 using UnityEngine.VFX;
@@ -35,6 +36,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     [SerializeField] protected TrailRenderer bulletTrailRenderer;
     [SerializeField] protected DecalProjector bulletHoleDecal;
+
+    [SerializeField] private UnityEvent onInteract;
 
     #endregion
 
@@ -99,6 +102,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     public HashSet<Material> OutlineMaterials { get; } = new();
 
     public InteractionIcon InteractionIcon => InteractionIcon.Pickup;
+
+    public UnityEvent OnInteraction => onInteract;
 
     public int CurrentAmmo
     {
@@ -284,10 +289,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     {
         // Invoke the on shoot event
         OnShoot?.Invoke(this);
-        
+
         // Play shooting animation
         animator.SetTrigger(ShootingAnimationID);
-        
+
         // Play the muzzle flash VFX
         PlayMuzzleFlash();
 
@@ -536,6 +541,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     {
         // Equip the gun
         playerInteraction.Player.WeaponManager.EquipGun(this);
+
+        // Invoke the on interaction event
+        onInteract.Invoke();
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)

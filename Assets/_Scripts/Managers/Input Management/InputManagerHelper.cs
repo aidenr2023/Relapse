@@ -27,9 +27,8 @@ public class InputManagerHelper : MonoBehaviour
         // Enable / disable the player controls based on the controls state
         SetPlayerControlsState(!InputManager.Instance.IsControlsDisabled);
         
-        // Get the current control scheme
+        // Set the current control scheme
         InputManager.Instance.SetCurrentControlScheme(_playerInput.currentControlScheme);
-        Debug.Log($"Current Control Scheme: {InputManager.Instance.CurrentControlScheme}");
     }
 
     /// <summary>

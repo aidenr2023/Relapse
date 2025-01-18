@@ -62,16 +62,6 @@ public class TutorialScreen : GameMenu, IUsesInput
 
     protected override void CustomUpdate()
     {
-        if (Input.GetKeyDown(KeyCode.T))
-            PlayTutorial(debugTutorial);
-
-        // if (IsActive)
-        // {
-        //     if (Input.GetKeyDown(KeyCode.RightArrow))
-        //         NextPage();
-        //     else if (Input.GetKeyDown(KeyCode.LeftArrow))
-        //         PreviousPage();
-        // }
     }
 
     protected override void CustomDestroy()
@@ -174,10 +164,14 @@ public class TutorialScreen : GameMenu, IUsesInput
         SetTutorialPage(_currentTutorialPage - 1);
     }
 
-    public void PlayTutorial(Tutorial tutorial)
+    public void PlayTutorial(Tutorial tutorial, bool replay = true)
     {
         // Return if the tutorial is null
         if (tutorial == null)
+            return;
+        
+        // Return if the tutorial has already been completed and we are not replaying it
+        if (Player.Instance.PlayerTutorialManager.HasCompletedTutorial(tutorial) && !replay)
             return;
 
         ChangeTutorial(tutorial);

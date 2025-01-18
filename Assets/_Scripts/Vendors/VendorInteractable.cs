@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(UniqueId))]
 public class VendorInteractable : MonoBehaviour, IInteractable, ILevelLoaderInfo
@@ -7,6 +8,8 @@ public class VendorInteractable : MonoBehaviour, IInteractable, ILevelLoaderInfo
     #region Serialized Fields
 
     [SerializeField] private VendorScriptableObject vendorInformation;
+
+    [SerializeField] private UnityEvent onInteraction;
 
     #endregion
 
@@ -22,13 +25,17 @@ public class VendorInteractable : MonoBehaviour, IInteractable, ILevelLoaderInfo
 
     public InteractionIcon InteractionIcon => InteractionIcon.Action;
 
+    public UnityEvent OnInteraction => onInteraction;
+
     #endregion
 
     public void Interact(PlayerInteraction playerInteraction)
     {
         // Get the vendor menu instance & activate the shop
         VendorMenu.Instance.StartVendor(vendorInformation);
-        Debug.Log($"Starting vendor with information: {vendorInformation.VendorName}");
+        
+        // Invoke the on interaction event
+        onInteraction.Invoke();
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)

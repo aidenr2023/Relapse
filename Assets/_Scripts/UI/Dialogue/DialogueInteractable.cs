@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Serialization;
 
 public class DialogueInteractable : MonoBehaviour, IInteractable
@@ -10,6 +11,8 @@ public class DialogueInteractable : MonoBehaviour, IInteractable
     [FormerlySerializedAs("dialogueObject")] [SerializeField]
     private DialogueNode dialogueNode;
 
+    [SerializeField] private UnityEvent onInteraction;
+    
     #endregion
 
     #region Getters
@@ -24,11 +27,16 @@ public class DialogueInteractable : MonoBehaviour, IInteractable
 
     public InteractionIcon InteractionIcon => InteractionIcon.Action;
 
+    public UnityEvent OnInteraction => onInteraction;
+    
     #endregion
 
     public void Interact(PlayerInteraction playerInteraction)
     {
         StartDialogue(dialogueNode);
+        
+        // Invoke the on interaction event
+        onInteraction.Invoke();
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)
