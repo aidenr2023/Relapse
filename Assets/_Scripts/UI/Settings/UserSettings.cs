@@ -24,7 +24,7 @@ public class UserSettings
     public Vector2 MouseSens { get; private set; } = new(.5f, .5f);
     public Vector2 ControllerSens { get; private set; } = new(.5f, .5f);
 
-    public float Gamma { get; private set; } = .5f;
+    public float Gamma { get; private set; }
 
     #region Public Methods
 
