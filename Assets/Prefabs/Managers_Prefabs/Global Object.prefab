@@ -1017,6 +1017,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6751824976234669261}
+  - component: {fileID: 6577641299963530304}
   - component: {fileID: 2142100140924324662}
   - component: {fileID: 7461741275535498135}
   - component: {fileID: 7238507424579392411}
@@ -1052,6 +1053,125 @@ Transform:
   - {fileID: 4196904793783182304}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6577641299963530304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6471966129962626125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: -944628639613478452, guid: fef3e71d3ba4bea4ab090fa5e57d402e,
+    type: 3}
+  m_NotificationBehavior: 2
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents:
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 62432341-c7d6-40b3-94da-69878361d376
+    m_ActionName: GamePlay/Brand[/Keyboard/p]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: ce540ce4-701b-4b85-b118-2dbba3d29cd4
+    m_ActionName: GamePlay/Objectives[/Keyboard/o]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 3d9555a7-ec1f-4ef3-ae65-abe5a9b56308
+    m_ActionName: Debug/ToggleDebug[/Keyboard/f1]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: ccad3cd4-a4e2-4b56-a8fd-ddc913947bc9
+    m_ActionName: Debug/DebugTolerance[/Keyboard/k,/Keyboard/l]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 1735a8c4-c41f-41b3-807a-e2b4e804e3f5
+    m_ActionName: Debug/DebugHealth[/Keyboard/n,/Keyboard/m]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 71557573-d948-4ef3-bc13-725c7604aae7
+    m_ActionName: Debug/Flashlight[/Keyboard/f2]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 8b61366a-4e7f-472e-ac5e-b2e50a863445
+    m_ActionName: Player/LookMouse[/Mouse/delta]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 67113feb-c323-4384-b4fa-0bbf241de12a
+    m_ActionName: Player/LookController[/DualSenseGamepadHID/rightStick]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 95437391-734a-4c9b-a0d6-c083c5b51f87
+    m_ActionName: Player/Attack[/Mouse/leftButton,/DualSenseGamepadHID/rightTrigger]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 96d6eaab-73e1-4d76-a50c-6f08e2a56f55
+    m_ActionName: Player/Interact[/Keyboard/e,/DualSenseGamepadHID/buttonNorth]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: fdc7d90b-f872-455e-9083-0839ea70a444
+    m_ActionName: Player/Power[/Mouse/rightButton,/DualSenseGamepadHID/leftTrigger]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: fe8196be-73a4-4885-b642-89a507ba80e4
+    m_ActionName: Player/ChangePower[/Mouse/scroll/up,/Mouse/scroll/down,/DualSenseGamepadHID/rightShoulder,/DualSenseGamepadHID/leftShoulder]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: df832e2f-31c8-41fc-9cb0-13378cfadf88
+    m_ActionName: Player/Reload[/Keyboard/r,/DualSenseGamepadHID/buttonWest]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 13a32e3d-9614-4068-b876-1c6560228e13
+    m_ActionName: Player/Pause[/DualSenseGamepadHID/start,/Keyboard/escape]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: df08003b-fa13-4424-b5aa-29bc11e777d4
+    m_ActionName: Player/Inspect[/Keyboard/i,/DualSenseGamepadHID/dpad/right]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 8c5bc08a-9ee6-4596-99f7-5bbfcfdff3e1
+    m_ActionName: Player/SprintToggle[/DualSenseGamepadHID/leftStickPress]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 20ff1ee6-d891-4c72-a9dd-57221785b766
+    m_ActionName: Player/Sprint[/Keyboard/shift]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 6db2077b-6932-4895-a29b-c8088485eec6
+    m_ActionName: PlayerMovementBasic/Move[/Keyboard/w,/Keyboard/s,/Keyboard/a,/Keyboard/d,/DualSenseGamepadHID/leftStick]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 1594ef06-c7ce-4b0d-aa75-a2ff55d82a36
+    m_ActionName: PlayerMovementBasic/Jump[/Keyboard/space,/DualSenseGamepadHID/buttonSouth]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 1ecce11a-f668-4cdd-915e-61c361559818
+    m_ActionName: PlayerMovementBasic/Dash[/Keyboard/f,/DualSenseGamepadHID/buttonEast]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 818cbf01-522f-4cb2-b09a-3862ff9be2e7
+    m_ActionName: PlayerMovementBasic/Slide[/Keyboard/c,/DualSenseGamepadHID/buttonEast]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 94003cd4-f3fa-42d9-8aa6-e72aca44f054
+    m_ActionName: PlayerMovementWallRunning/Jump[/Keyboard/space,/DualSenseGamepadHID/buttonSouth]
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: KB n M
+  m_DefaultActionMap: GamePlay
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!114 &2142100140924324662
 MonoBehaviour:
   m_ObjectHideFlags: 0

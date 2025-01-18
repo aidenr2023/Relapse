@@ -1,8 +1,18 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(PlayerInput))]
 public class InputManagerHelper : MonoBehaviour
 {
+    private PlayerInput _playerInput;
+
+    private void Awake()
+    {
+        // Get the PlayerInput component
+        _playerInput = GetComponent<PlayerInput>();
+    }
+
     private void Start()
     {
         // Start Function
@@ -16,6 +26,10 @@ public class InputManagerHelper : MonoBehaviour
 
         // Enable / disable the player controls based on the controls state
         SetPlayerControlsState(!InputManager.Instance.IsControlsDisabled);
+        
+        // Get the current control scheme
+        InputManager.Instance.SetCurrentControlScheme(_playerInput.currentControlScheme);
+        Debug.Log($"Current Control Scheme: {InputManager.Instance.CurrentControlScheme}");
     }
 
     /// <summary>

@@ -22,6 +22,12 @@ public class InteractText : MonoBehaviour
     [SerializeField] private float floatingBobAmount = 0.1f;
     [SerializeField, Min(0)] private float floatingBobFrequency = 1;
 
+    [Header("Controls")] [SerializeField] private GameObject pcControls;
+    [SerializeField] private string keyboardSchemeName;
+
+    [SerializeField] private GameObject gamepadControls;
+    [SerializeField] private string gamepadSchemeName;
+
     #endregion
 
     #region Private Fields
@@ -63,6 +69,9 @@ public class InteractText : MonoBehaviour
 
         // Update the position of this game object
         UpdatePosition();
+
+        // Update the current controls text
+        UpdateCurrentControlsText();
 
         // Update the desired opacity
         _desiredOpacity = UpdateDesiredOpacity();
@@ -195,5 +204,18 @@ public class InteractText : MonoBehaviour
 
         // Set the text of the interact text to the current interactable's interact text
         interactText.text = _currentInteractable.InteractText(_playerInteraction);
+    }
+
+    private void UpdateCurrentControlsText()
+    {
+        // Disable all the controls text
+        pcControls?.SetActive(false);
+        gamepadControls?.SetActive(false);
+
+        // Set the current controls text based on the current control scheme
+        if (InputManager.Instance.CurrentControlScheme == gamepadSchemeName)
+            gamepadControls?.SetActive(true);
+        else
+            pcControls?.SetActive(true);
     }
 }

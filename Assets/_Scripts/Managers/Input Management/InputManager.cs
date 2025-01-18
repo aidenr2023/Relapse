@@ -29,6 +29,8 @@ public class InputManager
 
     private bool _hasStarted;
 
+    private string _currentControlScheme;
+
     #endregion
 
     #region Getters
@@ -40,6 +42,8 @@ public class InputManager
     public bool IsCursorActive => MenuManager.Instance.IsCursorActiveInMenus;
 
     public bool IsControlsDisabled => MenuManager.Instance.IsControlsDisabledInMenus;
+
+    public string CurrentControlScheme => _currentControlScheme;
 
     #endregion
 
@@ -145,6 +149,11 @@ public class InputManager
                     throw new ArgumentOutOfRangeException();
             }
         }
+    }
+
+    public void SetCurrentControlScheme(string controlScheme)
+    {
+        _currentControlScheme = controlScheme;
     }
 
     #endregion
