@@ -94,7 +94,8 @@ public class ManagedAudioSource : MonoBehaviour
         _audioSource.loop = sound.IsLooping;
 
         // Play the sound
-        _audioSource.Play();
+        // _audioSource.Play();
+        _audioSource.PlayOneShot(sound.Clip);
     }
 
     public void Stop()
