@@ -225,7 +225,7 @@ GameObject:
   - component: {fileID: 1918272760405463657}
   - component: {fileID: 7048755238963445446}
   - component: {fileID: 8005581950380459526}
-  m_Layer: 14
+  m_Layer: 17
   m_Name: Interact Text Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -378,7 +378,7 @@ GameObject:
   - component: {fileID: 7988197294620195028}
   - component: {fileID: 5318151063231698672}
   - component: {fileID: 2961497164567875604}
-  m_Layer: 14
+  m_Layer: 17
   m_Name: BG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -588,7 +588,7 @@ GameObject:
   - component: {fileID: 416269190862470611}
   - component: {fileID: 6449567758979409813}
   - component: {fileID: 3325763774827833850}
-  m_Layer: 14
+  m_Layer: 17
   m_Name: 'PC: Image'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1370,7 +1370,7 @@ GameObject:
   - component: {fileID: 4203784572051877106}
   - component: {fileID: 6282626516432142331}
   - component: {fileID: 2632157939730852141}
-  m_Layer: 14
+  m_Layer: 17
   m_Name: Gamepad Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1502,7 +1502,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4035526925653415338}
-  m_Layer: 14
+  m_Layer: 17
   m_Name: KB n M Group
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1674,7 +1674,7 @@ GameObject:
   - component: {fileID: 4649906299668396951}
   - component: {fileID: 6824473248042764512}
   - component: {fileID: 1013012200019126831}
-  m_Layer: 14
+  m_Layer: 17
   m_Name: FG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2040,7 +2040,7 @@ GameObject:
   - component: {fileID: 1604353599240204637}
   - component: {fileID: 6864361863502504945}
   - component: {fileID: 8898270186615622077}
-  m_Layer: 14
+  m_Layer: 17
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2709,7 +2709,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1186985677239229637}
-  m_Layer: 14
+  m_Layer: 17
   m_Name: Gamepad Group
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2769,8 +2769,8 @@ Transform:
   - {fileID: 2417040351326486353}
   - {fileID: 1805469316477523537}
   - {fileID: 9116961295648900497}
-  - {fileID: 3262058182816545672}
   - {fileID: 3169552447753383500}
+  - {fileID: 3262058182816545672}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2424330854356093014
@@ -4214,6 +4214,26 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3262058182816545672}
     m_Modifications:
+    - target: {fileID: 79998746185839798, guid: f25daf5a5e66cc043b737c2765ac5a28,
+        type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 976417729571878011, guid: f25daf5a5e66cc043b737c2765ac5a28,
+        type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 981021770548968414, guid: f25daf5a5e66cc043b737c2765ac5a28,
+        type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 1798244343225591170, guid: f25daf5a5e66cc043b737c2765ac5a28,
+        type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
     - target: {fileID: 2252164812194594633, guid: f25daf5a5e66cc043b737c2765ac5a28,
         type: 3}
       propertyPath: m_PresetInfoIsWorld
@@ -4334,6 +4354,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3948469617165504753, guid: f25daf5a5e66cc043b737c2765ac5a28,
+        type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 5406953003022174168, guid: f25daf5a5e66cc043b737c2765ac5a28,
+        type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 6239901097821699345, guid: f25daf5a5e66cc043b737c2765ac5a28,
+        type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 8442629782838931620, guid: f25daf5a5e66cc043b737c2765ac5a28,
+        type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
     - target: {fileID: 8579293281947482803, guid: f25daf5a5e66cc043b737c2765ac5a28,
         type: 3}
       propertyPath: m_AnchorMax.y
@@ -4343,6 +4383,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Death Screen
+      objectReference: {fileID: 0}
+    - target: {fileID: 8742230972636916065, guid: f25daf5a5e66cc043b737c2765ac5a28,
+        type: 3}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 8975907316365624530, guid: f25daf5a5e66cc043b737c2765ac5a28,
+        type: 3}
+      propertyPath: m_Layer
+      value: 17
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
