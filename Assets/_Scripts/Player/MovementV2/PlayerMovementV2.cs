@@ -81,6 +81,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private CountdownTimer _staminaRegenDelayTimer;
 
+    private float _midAirTime;
+
     #endregion
 
     #region Getters
@@ -98,7 +100,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     public RaycastHit GroundHit => _floatingControllerHit;
 
     public AnimationCurve AccelerationFactorFromDot => accelerationFactorFromDot;
-    
+
     public Animator PlayerAnimator => playerAnimator;
 
     public float Acceleration => acceleration;
@@ -140,6 +142,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     public float MaxStamina => maxStamina;
 
     public float StaminaRegenRate => staminaRegenRate;
+
+    public float MidAirTime => _midAirTime;
 
     #endregion
 
@@ -278,6 +282,11 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Get the y velocity of the player
         _landVelocity = _rigidbody.velocity;
         // _landYVelocity = _rigidbody.velocity.y;
+
+        if (!IsGrounded)
+            _midAirTime += Time.fixedDeltaTime;
+        else
+            _midAirTime = 0;
     }
 
     private void UpdateGroundCheck()

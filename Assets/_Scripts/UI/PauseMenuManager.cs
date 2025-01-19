@@ -112,8 +112,6 @@ public class PauseMenuManager : GameMenu, IUsesInput
 
         _inputtedThisFrame = true;
 
-        Debug.Log($"Pause Button Pressed!");
-
         TogglePause();
     }
 
@@ -227,9 +225,6 @@ public class PauseMenuManager : GameMenu, IUsesInput
     {
         ChangeClickColor(textObject);
 
-        // Add your Resume logic here
-        Debug.Log("Resume game");
-
         // Hide menu
         // pauseMenuParent.SetActive(false);
         Deactivate();
@@ -243,8 +238,6 @@ public class PauseMenuManager : GameMenu, IUsesInput
 
     public void Pause()
     {
-        Debug.Log($"Pause!");
-
         // Un-hide the pause menu
         // pauseMenuParent.SetActive(true);
         Activate();

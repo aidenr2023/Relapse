@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
-
 public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 {
     #region Serialized Fields
@@ -27,6 +26,9 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     [SerializeField] [Min(0)] private float wallRunningDetectionDistance = 0.75f;
 
     [SerializeField] [Min(8)] private int rayCount = 8;
+
+    [SerializeField, Min(0)] private float wallRunStartMinimumSpeed;
+    [SerializeField, Min(0)] private float wallRunStartMinimumAirTime = .5f;
 
     [Header("Wall Jump")] [SerializeField] [Min(0)]
     private float wallJumpForce = 10f;
@@ -362,10 +364,10 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             // If the current hit distance is less than the closest hit distance, update the closest hit info
             if (hitInfo.HitInfo.distance >= closestHitDistance)
                 continue;
-            
+
             // Get the normal of the wall the ray is hitting
             var wallNormal = hitInfo.HitInfo.normal;
-            
+
             // Get the angle between the wall normal and the player's forward vector
             var wallAngle = Vector3.Angle(wallNormal, ParentComponent.Orientation.forward) - 90;
 
@@ -373,7 +375,37 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             const float tmpAngle = 180;
             if (wallAngle > tmpAngle || wallAngle < -tmpAngle)
                 continue;
-            
+
+            var isInBasicMovement = ParentComponent.CurrentMovementScript is BasicPlayerMovement;
+
+            if (isInBasicMovement)
+            {
+                // Get the player's velocity vector
+                var velocityVector = ParentComponent.Rigidbody.velocity;
+                
+                // Get the player's input vector in relation to their camera pivot's orientation
+                var inputVector = ParentComponent.MovementInput.y * ParentComponent.CameraPivot.transform.forward +
+                                  ParentComponent.MovementInput.x * ParentComponent.CameraPivot.transform.right;
+                inputVector *= ParentComponent.MovementSpeed;
+
+                var totalVector = velocityVector + inputVector;
+                
+                // Get the dot product of the player's velocity and the wall normal
+                var dotProduct = Vector3.Dot(-totalVector, wallNormal);
+
+                // Log the dot product
+                Debug.Log($"Wall dot product: {dotProduct}");
+
+                // If the dot product is less than the wall run start minimum speed, continue
+                if (dotProduct < wallRunStartMinimumSpeed)
+                    continue;
+                
+                // Get the time the player has been in the air
+                // If it is less than the wall run start minimum air time, continue
+                if (ParentComponent.MidAirTime < wallRunStartMinimumAirTime)
+                    continue;
+            }
+
             // Set the wall sliding flag to true
             _isWallSliding = true;
 
