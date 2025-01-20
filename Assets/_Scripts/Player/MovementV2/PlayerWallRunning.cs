@@ -32,6 +32,8 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     [SerializeField, Min(0)] private float desiredWallDistance = 0.25f;
     [SerializeField, Min(0)] private float desiredWallDistanceForce = 1;
+    
+    [SerializeField, Range(0, 180)] private float impossibleWallAngle = 150;
 
     [Header("Wall Jump")] [SerializeField] [Min(0)]
     private float wallJumpForce = 10f;
@@ -50,6 +52,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     [Header("Wall Climb")] [SerializeField, Min(0)]
     private float wallClimbAngle;
 
+    [SerializeField, Min(0)] private float wallClimbStayAngle;
     [SerializeField, Min(0)] private float wallRunningInputSpeed = 0.5f;
     [SerializeField, Min(0)] private float wallClimbStartVelocity = 4f;
     [SerializeField, Range(0, 1)] private float wallClimbStartVelocityTransfer = 0.75f;
@@ -432,9 +435,9 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             // If the ray is OUTSIDE the wall climb angle, but normal of the wall is 
             // damn near the opposite of the player's orientation forward, continue
             var normalOrientationAngle = Vector3.Angle(wallNormal, ParentComponent.Orientation.forward);
-            if (rayAngle > wallClimbAngle && normalOrientationAngle > 150)
+            if (rayAngle > wallClimbAngle && normalOrientationAngle > impossibleWallAngle)
                 continue;
-            
+
             // Set the wall sliding flag to true
             _isWallSliding = true;
 
@@ -477,7 +480,12 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         // Get the angle of the current ray in relation to the orientation's forward vector
         // If the angle is withing the wall climbing angle, set the flag to true
         var currentRayAngle = Vector3.Angle(_currentRay.direction, ParentComponent.Orientation.forward);
-        _isWallClimbing = currentRayAngle <= wallClimbAngle && !_isWallRunning;
+
+        var wallClimbAngleSatisfied = (_previouslyWallClimbing)
+            ? currentRayAngle <= wallClimbStayAngle
+            : currentRayAngle <= wallClimbAngle;
+
+        _isWallClimbing = wallClimbAngleSatisfied && !_isWallRunning;
 
         // If the previous wall is null, invoke the on wall slide start event
         if (_previousWall == null)

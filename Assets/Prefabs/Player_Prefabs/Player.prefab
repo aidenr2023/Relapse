@@ -938,6 +938,7 @@ MonoBehaviour:
   wallRunStartMinimumAirTime: 0.25
   desiredWallDistance: 0.25
   desiredWallDistanceForce: 8
+  impossibleWallAngle: 120
   wallJumpForce: 15
   wallJumpAngle: 40
   autoWallJumpForce: 0.5
@@ -950,7 +951,8 @@ MonoBehaviour:
     pitch: 1
   inwardLookLockAngle: 15
   outwardLookLockAngle: 80
-  wallClimbAngle: 25
+  wallClimbAngle: 6.25
+  wallClimbStayAngle: 40
   wallRunningInputSpeed: 0.00390625
   wallClimbStartVelocity: 2
   wallClimbStartVelocityTransfer: 0.6
