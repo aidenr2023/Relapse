@@ -932,9 +932,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   wallAngleTolerance: 87.5
-  maxFallSpeed: 0.5
+  maxFallSpeed: 0.25
   fallAcceleration: 0.075
-  stationaryFallSpeedMultiplier: 16
+  stationaryFallSpeedMultiplier: 256
   stationaryFallAccelerationMultiplier: 3
   wallRunSpeedThreshold: 3
   wallRunningDetectionDistance: 1
@@ -944,22 +944,6 @@ MonoBehaviour:
   wallJumpForce: 15
   wallJumpAngle: 40
   autoWallJumpForce: 0.5
-  footstepSoundPool:
-    sounds:
-    - clip: {fileID: 8300000, guid: 81def98cd06884940b95459db1a841f7, type: 3}
-      soundType: 1
-      volume: 0.0625
-      isPersistent: 0
-      isLooping: 0
-      pitch: 1
-    - clip: {fileID: 8300000, guid: 5aa5e09256a042147921c24a52b741ae, type: 3}
-      soundType: 1
-      volume: 0.0625
-      isPersistent: 0
-      isLooping: 0
-      pitch: 1
-  walkingFootstepInterval: 0.35
-  sprintingFootstepInterval: 0.25
   jumpSound:
     clip: {fileID: 8300000, guid: 5aa5e09256a042147921c24a52b741ae, type: 3}
     soundType: 1
@@ -969,6 +953,11 @@ MonoBehaviour:
     pitch: 1
   inwardLookLockAngle: 15
   outwardLookLockAngle: 80
+  wallClimbAngle: 25
+  wallRunningInputSpeed: 0.00390625
+  wallClimbStartVelocity: 2
+  wallClimbStartVelocityTransfer: 0.6
+  maxWallClimbStartVelocity: 12
 --- !u!114 &7032570368268033865
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1073,6 +1062,7 @@ MonoBehaviour:
   dynamicRotationModule:
     defaultRotation: {x: 0, y: 0, z: 0}
     wallRunRotation: {x: 0, y: 0, z: 15}
+    wallClimbRotation: {x: -45, y: 0, z: 0}
     wallRunLerpAmount: 0.2
     flinchRotation: {x: 0, y: 10, z: 15}
     flinchLerpAmount: 0.2

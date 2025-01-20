@@ -110,12 +110,12 @@ public class PlayerLook : MonoBehaviour, IUsesInput
         // Connect to the wall running script
         if (_player.PlayerController is PlayerMovementV2 movementV2)
         {
-            movementV2.WallRunning.OnWallSlideStart += OnWallSlideStart;
+            movementV2.WallRunning.OnWallRunStart += OnWallRunStart;
             movementV2.WallRunning.OnWallRunEnd += OnWallRunEnd;
         }
     }
 
-    private void OnWallSlideStart(PlayerWallRunning obj)
+    private void OnWallRunStart(PlayerWallRunning obj)
     {
         // Set the look lock to true
         _isHorizontalLookLocked = true;

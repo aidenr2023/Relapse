@@ -37,17 +37,20 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     [SerializeField] [Min(0)] private float autoWallJumpForce = .5f;
 
-    [Header("Sounds")] [SerializeField] private SoundPool footstepSoundPool;
-
-    [SerializeField] private float walkingFootstepInterval = 0.35f;
-    [SerializeField] private float sprintingFootstepInterval = 0.25f;
-
     [SerializeField] private Sound jumpSound;
 
     [Header("Looking While on Walls")] [SerializeField]
     private float inwardLookLockAngle = 15;
 
     [SerializeField] private float outwardLookLockAngle = 60;
+
+    [Header("Wall Climb")] [SerializeField, Min(0)]
+    private float wallClimbAngle;
+
+    [SerializeField, Min(0)] private float wallRunningInputSpeed = 0.5f;
+    [SerializeField, Min(0)] private float wallClimbStartVelocity = 4f;
+    [SerializeField, Range(0, 1)] private float wallClimbStartVelocityTransfer = 0.75f;
+    [SerializeField, Min(0)] private float maxWallClimbStartVelocity = 12f;
 
     #endregion
 
@@ -71,11 +74,14 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     private RaycastHit _contactInfo;
 
     // Arrays of rays
-    private Ray[] _rays;
+    private List<Ray> _rays;
     private Ray _leftRay, _rightRay;
     private Ray _currentRay;
 
     private readonly Dictionary<Ray, WallRunHitInfo> _wallRunHitInfos = new();
+
+    private bool _isWallClimbing;
+    private bool _previouslyWallClimbing;
 
     #endregion
 
@@ -84,6 +90,10 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     public event Action<PlayerWallRunning> OnWallRunEnd;
 
     public event Action<PlayerWallRunning> OnWallSlideStart;
+
+    public event Action<PlayerWallRunning> OnWallClimbStart;
+
+    public event Action<PlayerWallRunning> OnWallClimbEnd;
 
     #region Getters
 
@@ -115,15 +125,14 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     public bool IsCurrentlyJumping => _isCurrentlyJumping;
 
+    public bool IsWallClimbing => _isWallClimbing;
+
     #endregion
 
     #region Initialization Functions
 
     protected override void CustomAwake()
     {
-        // // Initialize the wall running objects
-        // _wallRunningObjects = new HashSet<GameObject>();
-
         // Initialize the input
         InitializeInput();
     }
@@ -132,9 +141,6 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     {
         // Initialize the events
         InitializeEvents();
-
-        // Initialize the footstep sounds
-        InitializeFootsteps();
 
         // Update the rays
         UpdateRays();
@@ -161,6 +167,8 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         OnWallSlideStart += GravityOnWallRunStart;
         OnWallSlideStart += TransferVelocityOnWallRunStart;
 
+        OnWallRunStart += KillVelocityOnWallRunStart;
+
         // Add the on wall run end event
         OnWallRunEnd += AutoWallJump;
         OnWallRunEnd += RemoveControls;
@@ -168,6 +176,23 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         OnWallRunEnd += UnregisterOnWallRunEnd;
         OnWallRunEnd += RestartReattachTimer;
         OnWallRunEnd += ResetJumpOnWallRunEnd;
+
+        // Add the on wall climb start event
+        OnWallClimbStart += TransferVelocityOnWallClimbStart;
+    }
+
+    private void KillVelocityOnWallRunStart(PlayerWallRunning obj)
+    {
+        // Get the current rigidbody velocity
+        var velocity = ParentComponent.Rigidbody.velocity;
+
+        ParentComponent.Rigidbody.velocity = new Vector3(
+            velocity.x,
+            Mathf.Min(0, velocity.y),
+            velocity.z
+        );
+
+        Debug.Log($"Killed Velocity: {ParentComponent.Rigidbody.velocity}");
     }
 
     private void ResetJumpOnWallRunEnd(PlayerWallRunning obj)
@@ -192,21 +217,6 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         );
     }
 
-    private void InitializeFootsteps()
-    {
-        // Set up the footstep timer
-        _footstepTimer.OnTimerEnd += PlayFootstepSound;
-    }
-
-    private void PlayFootstepSound()
-    {
-        // Play the footstep sound
-        SoundManager.Instance.PlaySfx(footstepSoundPool.GetRandomSound());
-
-        // Reset the timer
-        _footstepTimer.Reset();
-    }
-
     #endregion
 
     #region Input Functions
@@ -221,21 +231,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     private void Update()
     {
-        // Update the footstep sounds
-        UpdateFootsteps();
-
         _reattachTimer.Update(Time.deltaTime);
-    }
-
-    private void UpdateFootsteps()
-    {
-        // Update the footstep timer
-        _footstepTimer.SetMaxTime(walkingFootstepInterval);
-        _footstepTimer.Update(Time.deltaTime);
-
-        // If this is NOT the active movement script, disable the footstep timer
-        if (ParentComponent.CurrentMovementScript != this)
-            _footstepTimer.SetActive(false);
     }
 
     protected override void FixedUpdate()
@@ -258,7 +254,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     private void UpdateRays()
     {
         // Create an array of rays that go around the player
-        _rays = new Ray[rayCount];
+        _rays = new List<Ray>(rayCount);
 
         // Populate the array of rays
         for (var i = 0; i < rayCount; i++)
@@ -272,7 +268,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             // Rotate the forward vector by the angle to get the direction of the ray
             var direction = Quaternion.Euler(0, angle, 0) * forwardVector;
 
-            _rays[i] = new Ray(transform.position, direction);
+            _rays.Add(new Ray(transform.position, direction));
         }
 
         // Get the left ray from the array of rays
@@ -334,6 +330,11 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         // Reset the wall sliding flag
         _isWallSliding = false;
 
+        _previouslyWallClimbing = _isWallClimbing;
+
+        // Reset the wall climbing flag
+        _isWallClimbing = false;
+
         // Store the previous wall
         _previousWall = _currentWall;
 
@@ -346,6 +347,8 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         var closestHitInfo = new RaycastHit();
         var closestHitDistance = float.MaxValue;
         var closestRay = default(Ray);
+
+        var isInBasicMovement = ParentComponent.CurrentMovementScript is BasicPlayerMovement;
 
         // Check each ray in the dictionary
         foreach (var keyPair in _wallRunHitInfos)
@@ -376,33 +379,33 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             if (wallAngle > tmpAngle || wallAngle < -tmpAngle)
                 continue;
 
-            var isInBasicMovement = ParentComponent.CurrentMovementScript is BasicPlayerMovement;
-
+            // If the player is in basic movement,
+            // check if they are moving fast enough and have been in the air long enough
             if (isInBasicMovement)
             {
                 // Get the player's velocity vector
                 var velocityVector = ParentComponent.Rigidbody.velocity;
-                
+
                 // Get the player's input vector in relation to their camera pivot's orientation
                 var inputVector = ParentComponent.MovementInput.y * ParentComponent.CameraPivot.transform.forward +
                                   ParentComponent.MovementInput.x * ParentComponent.CameraPivot.transform.right;
                 inputVector *= ParentComponent.MovementSpeed;
 
                 var totalVector = velocityVector + inputVector;
-                
+
                 // Get the dot product of the player's velocity and the wall normal
                 var dotProduct = Vector3.Dot(-totalVector, wallNormal);
-
-                // Log the dot product
-                Debug.Log($"Wall dot product: {dotProduct}");
 
                 // If the dot product is less than the wall run start minimum speed, continue
                 if (dotProduct < wallRunStartMinimumSpeed)
                     continue;
-                
+
+                // Get the ray's angle in relation to the player's orientation forward
+                var rayAngle = Vector3.Angle(cRay.direction, ParentComponent.Orientation.forward);
+
                 // Get the time the player has been in the air
                 // If it is less than the wall run start minimum air time, continue
-                if (ParentComponent.MidAirTime < wallRunStartMinimumAirTime)
+                if (ParentComponent.MidAirTime < wallRunStartMinimumAirTime && rayAngle > wallClimbAngle)
                     continue;
             }
 
@@ -429,6 +432,10 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             if (_previousWall != _currentWall)
                 OnWallChanged?.Invoke(this);
 
+            // If the player was previously wall climbing, invoke the on wall climb end event
+            if (_previouslyWallClimbing && !_isWallClimbing)
+                OnWallClimbEnd?.Invoke(this);
+
             return;
         }
 
@@ -441,6 +448,11 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         // Set the current ray
         _currentRay = closestRay;
 
+        // Get the angle of the current ray in relation to the orientation's forward vector
+        // If the angle is withing the wall climbing angle, set the flag to true
+        var currentRayAngle = Vector3.Angle(_currentRay.direction, ParentComponent.Orientation.forward);
+        _isWallClimbing = currentRayAngle <= wallClimbAngle && !_isWallRunning;
+
         // If the previous wall is null, invoke the on wall slide start event
         if (_previousWall == null)
             OnWallSlideStart?.Invoke(this);
@@ -448,6 +460,14 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         // If the previous wall is not the current wall, invoke the on wall changed event
         if (_previousWall != _currentWall)
             OnWallChanged?.Invoke(this);
+
+        // If the player is wall climbing, invoke the on wall climb start event
+        if (_isWallClimbing && !_previouslyWallClimbing)
+            OnWallClimbStart?.Invoke(this);
+
+        // If the player was previously wall climbing, invoke the on wall climb end event
+        if (_previouslyWallClimbing && !_isWallClimbing)
+            OnWallClimbEnd?.Invoke(this);
     }
 
     private void UpdateDetectWallRunning()
@@ -476,7 +496,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
         // Determine if the player is wall running.
         // If not, return
-        if (currentRayHit && !ParentComponent.IsGrounded && angleWithinTolerance)
+        if (currentRayHit && !ParentComponent.IsGrounded && angleWithinTolerance && !_isWallClimbing)
         {
             currentHitInfo = _wallRunHitInfos[_currentRay].HitInfo;
 
@@ -501,7 +521,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         _currentWall = currentHitInfo.collider.gameObject;
 
         // If the previous wall is null, invoke the on wall run start event
-        if (_previousWall == null)
+        if (_previousWall == null || (_previouslyWallClimbing))
             OnWallRunStart?.Invoke(this);
     }
 
@@ -528,7 +548,10 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         }
 
         // Update the wall running movement
-        UpdateWallRunningMovement();
+        if (!_isWallClimbing)
+            UpdateWallRunningMovement();
+        else
+            UpdateWallClimbingMovement();
     }
 
     private void UpdateWallRunningMovement()
@@ -536,7 +559,6 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         // return if the player is not wall running or wall sliding
         if (!_isWallRunning && !_isWallSliding)
             return;
-
 
         // Get the current move multiplier
         var currentMoveMult = ParentComponent.IsSprinting
@@ -576,7 +598,8 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             var lerpAmount = 1 - Mathf.InverseLerp(0, wallRunSpeedThreshold, forwardVelocityDot);
 
             // Set the max fall speed to the stationary fall speed multiplier
-            currentMaxFallSpeed = Mathf.Lerp(maxFallSpeed, maxFallSpeed * stationaryFallSpeedMultiplier, lerpAmount);
+            currentMaxFallSpeed =
+                Mathf.Lerp(maxFallSpeed, maxFallSpeed * stationaryFallSpeedMultiplier, lerpAmount);
 
             // Set the fall acceleration to the stationary fall acceleration multiplier
             currentFallAcceleration = Mathf.Lerp(fallAcceleration,
@@ -587,6 +610,106 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         // var moveVector = (forwardDirection + upwardMovement).normalized;
         // var moveVector = forwardMovement + upwardMovement + (Vector3.up * updatedYVelocity);
         var moveVector = forwardMovement + upwardMovement;
+
+        // Normalize the move vector
+        if (moveVector.magnitude > 1)
+            moveVector.Normalize();
+
+        // Create a target velocity vector before fall
+        var targetVelocityBeforeFall = moveVector * (ParentComponent.MovementSpeed * currentMoveMult) +
+                                       new Vector3(0, ParentComponent.Rigidbody.velocity.y, 0);
+
+        // Create the target velocity after fall
+        var targetVelocityAfterFall =
+            new Vector3(targetVelocityBeforeFall.x, -currentMaxFallSpeed, targetVelocityBeforeFall.z);
+
+        // Create a target velocity vector
+        var targetVelocity = Vector3.MoveTowards(
+            targetVelocityBeforeFall,
+            targetVelocityAfterFall,
+            currentFallAcceleration
+        );
+
+        // This is the force required to reach the target velocity in EXACTLY one frame
+        var targetForce = (targetVelocity - ParentComponent.Rigidbody.velocity) / Time.fixedDeltaTime;
+
+        // Calculate the force that is going to be applied to the player THIS frame
+        var force = targetForce.normalized * ParentComponent.Acceleration;
+
+        // If the player only needs to move a little bit, just set the force to the target force
+        if (targetForce.magnitude < ParentComponent.Acceleration)
+            force = targetForce;
+
+        // If the force is greater than the target force, clamp it
+        if (force.magnitude > targetForce.magnitude)
+            force = targetForce;
+
+        // Apply the force to the rigidbody
+        ParentComponent.Rigidbody.AddForce(force, ForceMode.Acceleration);
+
+        // Activate the footstep timer
+        _footstepTimer.SetActive(true);
+    }
+
+    private void UpdateWallClimbingMovement()
+    {
+        // return if the player is not wall climbing
+        if (!_isWallClimbing)
+            return;
+
+        // Get the current move multiplier
+        var currentMoveMult = ParentComponent.IsSprinting
+            ? ParentComponent.BasicPlayerMovement.SprintMultiplier
+            : 1;
+
+        // Get the wall running forward direction
+        // var rightDirection = _isWallRunningLeft
+        //     ? Vector3.Cross(_contactInfo.normal, Vector3.up)
+        //     : Vector3.Cross(Vector3.up, _contactInfo.normal);
+        var rightDirection = Vector3.Cross(_contactInfo.normal, Vector3.up);
+
+        var rightVelocityDot = Vector3.Dot(ParentComponent.Rigidbody.velocity, rightDirection);
+
+        // Get the wall running upward direction
+        // var upwardDirection = _isWallRunningLeft
+        //     ? Vector3.Cross(rightDirection, _contactInfo.normal)
+        //     : Vector3.Cross(_contactInfo.normal, rightDirection);
+        var upwardDirection = Vector3.Cross(rightDirection, _contactInfo.normal);
+
+        var upwardMovement = upwardDirection * (Mathf.Max(0, ParentComponent.MovementInput.y) * wallRunningInputSpeed);
+
+        // upwardMovement *= 0;
+
+        // Get the forward movement based on the input
+        var rightMovement = rightDirection * ParentComponent.MovementInput.x;
+
+        var currentMaxFallSpeed = maxFallSpeed;
+        var currentFallAcceleration = fallAcceleration;
+
+        // // If the player is not moving fast enough, their max fall speed increases
+        // // If the player is not moving fast enough, their fall acceleration increases
+        // if (rightVelocityDot < wallRunSpeedThreshold)
+        {
+            // Reverse interpolate the max fall speed based on the player's forward velocity in relation to the threshold
+            var lerpAmount = 1 - Mathf.InverseLerp(0, wallRunSpeedThreshold, rightVelocityDot);
+
+            // Set the max fall speed to the stationary fall speed multiplier
+            currentMaxFallSpeed = Mathf.Lerp(
+                maxFallSpeed,
+                maxFallSpeed * stationaryFallSpeedMultiplier,
+                lerpAmount
+            );
+
+            // Set the fall acceleration to the stationary fall acceleration multiplier
+            currentFallAcceleration = Mathf.Lerp(
+                fallAcceleration,
+                fallAcceleration * stationaryFallAccelerationMultiplier,
+                lerpAmount
+            );
+        }
+
+        // Get the move vector
+        var moveVector = rightMovement + upwardMovement;
 
         // Normalize the move vector
         if (moveVector.magnitude > 1)
@@ -712,6 +835,10 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     private void TransferVelocityOnWallRunStart(PlayerWallRunning obj)
     {
+        // Return if the player is wall climbing
+        if (_isWallClimbing)
+            return;
+
         // Store the player's velocity
         var previousVelocity = ParentComponent.Rigidbody.velocity;
 
@@ -738,6 +865,37 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             new Vector3(ParentComponent.Rigidbody.velocity.x, 0, ParentComponent.Rigidbody.velocity.z);
     }
 
+    private void TransferVelocityOnWallClimbStart(PlayerWallRunning obj)
+    {
+        // Store the player's velocity
+        var previousVelocity = ParentComponent.Rigidbody.velocity;
+
+        // Get the sideways vector along the wall
+        // Normalize the forward vector
+        var rightVector = Vector3.Cross(_contactInfo.normal, Vector3.up).normalized;
+
+        // Get the upward vector along the wall
+        var upwardVector = Vector3.Cross(rightVector, _contactInfo.normal).normalized;
+
+        // Get the dot product of the player's velocity and the normal vector
+        // This will be the player's speed as they start wall running
+        var dotProduct = Vector3.Dot(previousVelocity, -_contactInfo.normal);
+
+        // Transfer the player's velocity
+        dotProduct *= wallClimbStartVelocityTransfer;
+
+        // Clamp the dot product
+        dotProduct = Mathf.Clamp(dotProduct + wallClimbStartVelocity, 0, maxWallClimbStartVelocity);
+
+        // Kill the player's velocity
+        ParentComponent.Rigidbody.velocity = Vector3.zero;
+
+        // Add the player's speed along the wall
+        ParentComponent.Rigidbody.AddForce(upwardVector * dotProduct, ForceMode.VelocityChange);
+
+        // Debug.Log($"Transferring Velocity: {upwardVector * dotProduct}");
+    }
+
     #endregion
 
     #region Debugging
@@ -747,6 +905,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         var sb = new StringBuilder();
 
         sb.AppendLine($"Wall Running: {_isWallRunning}");
+        sb.AppendLine($"Wall Climbing: {_isWallClimbing}");
 
         if (!_isWallRunning)
             return sb.ToString();
@@ -773,12 +932,20 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
         var rayLength = wallRunningDetectionDistance;
 
-        // // Draw the rays
-        // for (var i = 0; i < rayCount; i++)
-        // {
-        //     Gizmos.color = Color.yellow;
-        //     Gizmos.DrawRay(transform.position, _rays[i].direction * rayLength);
-        // }
+        // Draw the rays
+        foreach (var ray in _rays)
+        {
+            Gizmos.color = Color.yellow;
+
+            // Get the angle of the ray in relation to the orientation's forward vector
+            var angle = Vector3.Angle(ray.direction, ParentComponent.Orientation.forward);
+
+            // If the angle is withing the wall climbing angle, draw the ray in blue
+            if (angle < wallClimbAngle)
+                Gizmos.color = Color.blue;
+
+            Gizmos.DrawRay(transform.position, ray.direction * rayLength);
+        }
 
         // Draw the left and right rays
         Gizmos.color = Color.magenta;

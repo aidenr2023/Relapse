@@ -11,6 +11,8 @@ public sealed class DynamicRotationModule : DynamicVCamModule
     [Header("Wall Running"), SerializeField]
     private Vector3 wallRunRotation = new(0, 0, 10);
 
+    [SerializeField] private Vector3 wallClimbRotation = new(-10, 0, 0);
+
     [SerializeField, Range(0, 1)] private float wallRunLerpAmount = 0.2f;
 
     [Header("Flinching"), SerializeField] private Vector3 flinchRotation = new(0, 0, 10);
@@ -25,10 +27,14 @@ public sealed class DynamicRotationModule : DynamicVCamModule
     private TokenManager<Vector3> _rotationTokens;
 
     private TokenManager<Vector3>.ManagedToken _wallRunToken;
+    private TokenManager<Vector3>.ManagedToken _wallClimbToken;
     private TokenManager<Vector3>.ManagedToken _flinchToken;
 
     private bool _wallRunStart;
     private bool _wallRunEnd = true;
+
+    private bool _wallClimbStart;
+    private bool _wallClimbEnd = true;
 
     private CinemachineRecomposer _recomposer;
 
@@ -51,6 +57,7 @@ public sealed class DynamicRotationModule : DynamicVCamModule
 
         // Create the tokens
         _wallRunToken = _rotationTokens.AddToken(Vector3.zero, -1, true);
+        _wallClimbToken = _rotationTokens.AddToken(Vector3.zero, -1, true);
         _flinchToken = _rotationTokens.AddToken(Vector3.zero, -1, true);
     }
 
@@ -64,6 +71,10 @@ public sealed class DynamicRotationModule : DynamicVCamModule
         {
             movementV2.WallRunning.OnWallSlideStart += OnWallRunStart;
             movementV2.WallRunning.OnWallRunEnd += OnWallRunEnd;
+
+            // Add the wall climb event
+            movementV2.WallRunning.OnWallClimbStart += OnWallClimbStart;
+            movementV2.WallRunning.OnWallClimbEnd += OnWallClimbEnd;
         }
 
         // Add the flinch event
@@ -104,12 +115,29 @@ public sealed class DynamicRotationModule : DynamicVCamModule
         _wallRunEnd = true;
     }
 
+    private void OnWallClimbStart(PlayerWallRunning obj)
+    {
+        // Update the flags
+        _wallClimbStart = true;
+        _wallClimbEnd = false;
+    }
+
+    private void OnWallClimbEnd(PlayerWallRunning obj)
+    {
+        // Update the flags
+        _wallClimbStart = false;
+        _wallClimbEnd = true;
+    }
+
     #endregion
 
     public override void Update()
     {
         // Update the wall run rotation
         UpdateWallRunToken();
+
+        // Update the wall climb rotation
+        UpdateWallClimbToken();
 
         // Update the flinch rotation
         UpdateFlinchToken();
@@ -155,6 +183,24 @@ public sealed class DynamicRotationModule : DynamicVCamModule
 
         // Set the wall run token value
         _wallRunToken.Value = Vector3.Lerp(_wallRunToken.Value, targetValue, wallRunLerpAmount * frameAmount);
+    }
+
+    private void UpdateWallClimbToken()
+    {
+        // Get the target value
+        var targetValue = _wallClimbToken.Value;
+
+        // Set the target value
+        if (_wallClimbStart)
+            targetValue = wallClimbRotation;
+        else if (_wallClimbEnd)
+            targetValue = Vector3.zero;
+
+        const float defaultFrameTime = 1 / 60f;
+        var frameAmount = Time.deltaTime / defaultFrameTime;
+
+        // Set the wall run token value
+        _wallClimbToken.Value = Vector3.Lerp(_wallClimbToken.Value, targetValue, wallRunLerpAmount * frameAmount);
     }
 
     private void UpdateFlinchToken()
