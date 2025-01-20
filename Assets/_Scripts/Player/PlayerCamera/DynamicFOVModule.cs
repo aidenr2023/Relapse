@@ -16,7 +16,8 @@ public sealed class DynamicFOVModule : DynamicVCamModule
     [Space, SerializeField, Min(0)] private float dashFOVMultiplier = 1.5f;
     [SerializeField, Range(0, 1)] private float dashRunLerpAmount = 0.1f;
 
-    [Space, SerializeField, Min(0)] private float aimFOVMultiplier = 0.75f;
+    [Space, SerializeField, Min(0)] private float aimInFovMultiplier = 0.75f;
+    [Space, SerializeField, Min(0)] private float aimOutFovMultiplier = 1.25f;
     [SerializeField, Min(0)] private float aimLerpAmount = 0.2f;
 
     #endregion
@@ -152,7 +153,38 @@ public sealed class DynamicFOVModule : DynamicVCamModule
 
     private void UpdateAimToken()
     {
-        var targetValue = _isAiming ? aimFOVMultiplier : 1f;
+        var currentFovMultiplier = 1f;
+
+        var powerManager = Player.Instance?.PlayerPowerManager;
+
+        // Get the power manager from the player
+        if (powerManager != null)
+        {
+            if (powerManager.CurrentPower != null)
+            {
+                // Set the aiming flag
+                if (powerManager.CurrentPowerToken != null)
+                    SetAiming(powerManager.CurrentPowerToken.ChargePercentage > 0);
+
+                switch (powerManager.CurrentPower.FovZoomBehavior)
+                {
+                    default:
+                    case PowerScriptableObject.PowerFovZoomBehavior.None:
+                        currentFovMultiplier = 1f;
+                        break;
+
+                    case PowerScriptableObject.PowerFovZoomBehavior.In:
+                        currentFovMultiplier = aimInFovMultiplier;
+                        break;
+
+                    case PowerScriptableObject.PowerFovZoomBehavior.Out:
+                        currentFovMultiplier = aimOutFovMultiplier;
+                        break;
+                }
+            }
+        }
+
+        var targetValue = _isAiming ? currentFovMultiplier : 1f;
 
         const float defaultFrameTime = 1 / 60f;
         var frameAmount = Time.deltaTime / defaultFrameTime;

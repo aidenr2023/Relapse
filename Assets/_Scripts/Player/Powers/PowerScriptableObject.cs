@@ -16,6 +16,7 @@ public class PowerScriptableObject : ScriptableObject
     [SerializeField] private PowerType powerType;
     [SerializeField] private Sprite icon;
     [SerializeField] [TextArea(3, 10)] private string description;
+    [SerializeField] private PowerFovZoomBehavior fovZoomBehavior;
 
     [Header("Stats")] [SerializeField] private float chargeDuration;
     [SerializeField] private float activeEffectDuration;
@@ -32,8 +33,7 @@ public class PowerScriptableObject : ScriptableObject
 
     #region Sounds
 
-    [Header("Sounds")]
-    [SerializeField] private Sound chargeStartSound;
+    [Header("Sounds")] [SerializeField] private Sound chargeStartSound;
 
     [SerializeField] private Sound powerUseSound;
 
@@ -47,6 +47,8 @@ public class PowerScriptableObject : ScriptableObject
     public PowerType PowerType => powerType;
     public Sprite Icon => icon;
     public string Description => description;
+
+    public PowerFovZoomBehavior FovZoomBehavior => fovZoomBehavior;
     public float ChargeDuration => chargeDuration;
     public float Cooldown => cooldown;
     public float ActiveEffectDuration => activeEffectDuration;
@@ -112,5 +114,12 @@ public class PowerScriptableObject : ScriptableObject
 
         // Initialize the components
         InitializeComponents();
+    }
+
+    public enum PowerFovZoomBehavior
+    {
+        None,
+        In,
+        Out
     }
 }

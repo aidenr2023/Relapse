@@ -21,12 +21,10 @@ public class Fireball : MonoBehaviour, IPower
 
     public void Charge(PlayerPowerManager powerManager, PowerToken pToken)
     {
-        powerManager.Player.PlayerVirtualCameraController.DynamicFOVModule.SetAiming(true);
     }
 
     public void Release(PlayerPowerManager powerManager, PowerToken pToken, bool isCharged)
     {
-        powerManager.Player.PlayerVirtualCameraController.DynamicFOVModule.SetAiming(false);
     }
 
     public void Use(PlayerPowerManager powerManager, PowerToken pToken)

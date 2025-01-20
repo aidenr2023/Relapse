@@ -1057,8 +1057,9 @@ MonoBehaviour:
     sprintLerpAmount: 0.2
     dashFOVMultiplier: 1.25
     dashRunLerpAmount: 0.25
-    aimFOVMultiplier: 0.75
-    aimLerpAmount: 0.2
+    aimInFovMultiplier: 0.75
+    aimOutFovMultiplier: 1.25
+    aimLerpAmount: 0.1
   dynamicRotationModule:
     defaultRotation: {x: 0, y: 0, z: 0}
     wallRunRotation: {x: 0, y: 0, z: 15}
