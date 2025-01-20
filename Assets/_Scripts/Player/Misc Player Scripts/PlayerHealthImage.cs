@@ -6,7 +6,7 @@ public class PlayerHealthImage : MonoBehaviour, IDebugged
 {
     [SerializeField] private Player player;
 
-    [SerializeField] private Image healthImage;
+    // [SerializeField] private Image healthImage;
 
     [SerializeField] private float minFlashTime = 0.1f;
     [SerializeField] private float maxFlashTime = 0.5f;
@@ -77,7 +77,8 @@ public class PlayerHealthImage : MonoBehaviour, IDebugged
         // If the player's health is above the max flashing health, set the opacity to max
         if (player.PlayerInfo.CurrentHealth >= healthForMaxFlashing)
         {
-            healthImage.color = new Color(healthImage.color.r, healthImage.color.g, healthImage.color.b, 0);
+            // healthImage.color = new Color(healthImage.color.r, healthImage.color.g, healthImage.color.b, 0);
+            HealthOverlayUI.Instance.CanvasGroup.alpha = 0;
             return;
         }
 
@@ -91,7 +92,8 @@ public class PlayerHealthImage : MonoBehaviour, IDebugged
         var opacity = (sinAmount * maxOpacity * healthPercentage);
 
         // Set the opacity
-        healthImage.color = new Color(healthImage.color.r, healthImage.color.g, healthImage.color.b, opacity);
+        // healthImage.color = new Color(healthImage.color.r, healthImage.color.g, healthImage.color.b, opacity);
+        HealthOverlayUI.Instance.CanvasGroup.alpha = opacity;
     }
 
     public string GetDebugText()

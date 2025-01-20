@@ -12,6 +12,7 @@ public struct TutorialPage
 
     public string SubTitle => subTitle;
     public VideoClip VideoClip => videoClip;
+    public TutorialButton Button => button;
     public string Description => description;
 
 
@@ -32,5 +33,6 @@ public struct TutorialPage
         Slide,
 
         Pause,
+        Journal,
     }
 }

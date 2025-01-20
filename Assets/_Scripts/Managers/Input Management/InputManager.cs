@@ -29,7 +29,7 @@ public class InputManager
 
     private bool _hasStarted;
 
-    private string _currentControlScheme;
+    private ControlSchemeType _currentControlScheme;
 
     #endregion
 
@@ -39,11 +39,11 @@ public class InputManager
 
     public DefaultInputActions DefaultInputActions { get; }
 
-    public bool IsCursorActive => MenuManager.Instance.IsCursorActiveInMenus;
+    public bool IsCursorActive => MenuManager.Instance.IsCursorActiveInMenus && CurrentControlScheme == ControlSchemeType.Keyboard;
 
     public bool IsControlsDisabled => MenuManager.Instance.IsControlsDisabledInMenus;
 
-    public string CurrentControlScheme => _currentControlScheme;
+    public ControlSchemeType CurrentControlScheme => _currentControlScheme;
 
     #endregion
 
@@ -151,10 +151,16 @@ public class InputManager
         }
     }
 
-    public void SetCurrentControlScheme(string controlScheme)
+    public void SetCurrentControlScheme(ControlSchemeType controlScheme)
     {
         _currentControlScheme = controlScheme;
     }
 
     #endregion
+    
+    public enum ControlSchemeType
+    {
+        Keyboard,
+        Gamepad
+    }
 }

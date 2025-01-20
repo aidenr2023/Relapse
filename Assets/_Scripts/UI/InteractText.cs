@@ -213,7 +213,7 @@ public class InteractText : MonoBehaviour
         gamepadControls?.SetActive(false);
 
         // Set the current controls text based on the current control scheme
-        if (InputManager.Instance.CurrentControlScheme == gamepadSchemeName)
+        if (InputManager.Instance.CurrentControlScheme == InputManager.ControlSchemeType.Gamepad)
             gamepadControls?.SetActive(true);
         else
             pcControls?.SetActive(true);

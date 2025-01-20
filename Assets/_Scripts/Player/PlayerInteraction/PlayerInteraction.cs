@@ -17,8 +17,6 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
 
     [SerializeField] [Min(0)] private float interactDistance = 5;
 
-    [SerializeField] private TMP_Text interactText;
-
     [SerializeField] private Material outlineMaterial;
     [SerializeField] [Min(0)] private float outlineScale = 1.1f;
 
@@ -112,9 +110,6 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
     {
         // Update the interactable if it is being looked at
         _selectedInteractable?.LookAtUpdate(this);
-
-        // Update the interact text
-        UpdateInteractText();
     }
 
     private void FixedUpdate()
@@ -169,38 +164,6 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
 
             if (_selectedInteractable != null)
                 OnLookAtInteractable?.Invoke(_selectedInteractable);
-        }
-    }
-
-    private void UpdateInteractText()
-    {
-        return;
-
-        // If the player is not looking at an interactable, hide the interact text
-        if (_selectedInteractable == null)
-        {
-            interactText.gameObject.SetActive(false);
-            return;
-        }
-
-        // Show the interact text
-        interactText.gameObject.SetActive(true);
-
-        // Get the object's interact text
-        var interactTextString = _selectedInteractable.InteractText(this);
-
-        // If the interact text is empty,
-        // set the interact text to the default interact text
-        if (interactTextString == string.Empty)
-        {
-            // interactText.text = "Press E to interact";
-            interactText.text = "";
-        }
-
-        // Set the interact text to the interactable's interact text
-        else
-        {
-            interactText.text = $"{interactTextString}";
         }
     }
 

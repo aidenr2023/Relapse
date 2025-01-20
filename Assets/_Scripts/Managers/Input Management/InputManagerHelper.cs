@@ -5,10 +5,15 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerInput))]
 public class InputManagerHelper : MonoBehaviour
 {
+    public static InputManagerHelper Instance { get; private set; }
+
     private PlayerInput _playerInput;
 
     private void Awake()
     {
+        // Set the instance to this
+        Instance = this;
+
         // Get the PlayerInput component
         _playerInput = GetComponent<PlayerInput>();
     }
@@ -26,9 +31,12 @@ public class InputManagerHelper : MonoBehaviour
 
         // Enable / disable the player controls based on the controls state
         SetPlayerControlsState(!InputManager.Instance.IsControlsDisabled);
-        
+
         // Set the current control scheme
-        InputManager.Instance.SetCurrentControlScheme(_playerInput.currentControlScheme);
+        if (_playerInput.currentControlScheme == "Gamepad")
+            InputManager.Instance.SetCurrentControlScheme(InputManager.ControlSchemeType.Gamepad);
+        else
+            InputManager.Instance.SetCurrentControlScheme(InputManager.ControlSchemeType.Keyboard);
     }
 
     /// <summary>

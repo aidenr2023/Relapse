@@ -19,6 +19,22 @@ public class TutorialScreen : GameMenu, IUsesInput
 
     [SerializeField] private Tutorial debugTutorial;
 
+    [Header("Tutorial Buttons")] [SerializeField]
+    private TutorialButtonManager shootButton;
+
+    [SerializeField] private TutorialButtonManager reloadButton;
+    [SerializeField] private TutorialButtonManager interactButton;
+    [SerializeField] private TutorialButtonManager usePowerButton;
+    [SerializeField] private TutorialButtonManager changePowerButton;
+
+    [SerializeField] private TutorialButtonManager moveButton;
+    [SerializeField] private TutorialButtonManager sprintButton;
+    [SerializeField] private TutorialButtonManager jumpButton;
+    [SerializeField] private TutorialButtonManager slideButton;
+
+    [SerializeField] private TutorialButtonManager pauseButton;
+    [SerializeField] private TutorialButtonManager journalButton;
+
     #endregion
 
     #region Private Fields
@@ -62,6 +78,9 @@ public class TutorialScreen : GameMenu, IUsesInput
 
     protected override void CustomUpdate()
     {
+        // Set the button image to the current tutorial page
+        if (CurrentTutorial != null)
+            SetButtonImage(CurrentTutorial.TutorialPages[_currentTutorialPage].Button);
     }
 
     protected override void CustomDestroy()
@@ -124,6 +143,77 @@ public class TutorialScreen : GameMenu, IUsesInput
         pageText.text = $"Page {page + 1} / {totalPages}";
     }
 
+    private void SetButtonImage(TutorialPage.TutorialButton tutorialButton)
+    {
+        // Set all the images to inactive
+        shootButton.HideImages();
+        reloadButton.HideImages();
+        interactButton.HideImages();
+        usePowerButton.HideImages();
+        changePowerButton.HideImages();
+        moveButton.HideImages();
+        sprintButton.HideImages();
+        jumpButton.HideImages();
+        slideButton.HideImages();
+        pauseButton.HideImages();
+        journalButton.HideImages();
+
+        var isKeyboard = InputManager.Instance.CurrentControlScheme == InputManager.ControlSchemeType.Keyboard;
+
+        switch (tutorialButton)
+        {
+            case TutorialPage.TutorialButton.None:
+                break;
+
+            case TutorialPage.TutorialButton.Shoot:
+                shootButton.SetActiveButton(isKeyboard);
+                break;
+
+            case TutorialPage.TutorialButton.Reload:
+                reloadButton.SetActiveButton(isKeyboard);
+                break;
+
+            case TutorialPage.TutorialButton.Interact:
+                interactButton.SetActiveButton(isKeyboard);
+                break;
+
+            case TutorialPage.TutorialButton.UsePower:
+                usePowerButton.SetActiveButton(isKeyboard);
+                break;
+
+            case TutorialPage.TutorialButton.ChangePower:
+                changePowerButton.SetActiveButton(isKeyboard);
+                break;
+
+            case TutorialPage.TutorialButton.Move:
+                moveButton.SetActiveButton(isKeyboard);
+                break;
+
+            case TutorialPage.TutorialButton.Sprint:
+                sprintButton.SetActiveButton(isKeyboard);
+                break;
+
+            case TutorialPage.TutorialButton.Jump:
+                jumpButton.SetActiveButton(isKeyboard);
+                break;
+
+            case TutorialPage.TutorialButton.Slide:
+                slideButton.SetActiveButton(isKeyboard);
+                break;
+
+            case TutorialPage.TutorialButton.Pause:
+                pauseButton.SetActiveButton(isKeyboard);
+                break;
+
+            case TutorialPage.TutorialButton.Journal:
+                journalButton.SetActiveButton(isKeyboard);
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException(nameof(tutorialButton), tutorialButton, null);
+        }
+    }
+
     private void SetTutorialPage(int index)
     {
         _currentTutorialPage = index;
@@ -142,6 +232,9 @@ public class TutorialScreen : GameMenu, IUsesInput
 
         // Set the page text
         SetPageText(index, CurrentTutorial.TotalPages);
+
+        // Set the button image
+        SetButtonImage(CurrentTutorial.TutorialPages[index].Button);
     }
 
     public void NextPage()
@@ -169,7 +262,7 @@ public class TutorialScreen : GameMenu, IUsesInput
         // Return if the tutorial is null
         if (tutorial == null)
             return;
-        
+
         // Return if the tutorial has already been completed and we are not replaying it
         if (Player.Instance.PlayerTutorialManager.HasCompletedTutorial(tutorial) && !replay)
             return;

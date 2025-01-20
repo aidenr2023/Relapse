@@ -24,10 +24,9 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     private float maxTolerance;
 
     [SerializeField] private float currentTolerance;
-    [SerializeField] private TolereanceMeter toleranceMeter;
 
-    [Header("Relapse Image Overlay")] [SerializeField]
-    private Image relapseImage;
+    [Header("Relapse Image Overlay")] 
+    // [SerializeField] private Image relapseImage;
 
     [SerializeField] private AnimationCurve relapseOpacityCurve;
     [SerializeField] [Min(0.00001f)] private float relapseOpacityDuration = 1f;
@@ -41,8 +40,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     [Header("Relapsing Settings")] [SerializeField] [Min(0)]
     private float relapseDuration = 3;
-
-    [SerializeField] private TMP_Text relapseText;
 
     [Header("Passive Regeneration")] [SerializeField, Min(0)]
     private float passiveRegenCap = 50;
@@ -127,18 +124,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         // Set the player's health to the max health
         // health = maxHealth;
 
-        // Find the tolerance meter in the scene
-        if (toleranceMeter == null)
-            toleranceMeter = FindObjectOfType<TolereanceMeter>();
-
-        // If the tolerance meter is still null, log an error
-        if (toleranceMeter == null)
-            Debug.LogError("Tolerance Meter is not assigned and could not be found.");
-
-        // Hide the relapse text
-        if (relapseText != null)
-            relapseText.gameObject.SetActive(false);
-
         // OnHealed += (sender, args) =>
         //     Debug.Log(
         //         $"{gameObject.name} healed: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
@@ -152,7 +137,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         //     Debug.Log($"{(args.DamagerObject == args.Actor ? "RELAPSE" : "DEATH")}!");
 
         // Disable the relapse image
-        relapseImage.enabled = false;
+        // relapseImage.enabled = false;
         relapseOpacityTimer.OnTimerEnd += () => { relapseOpacityTimer.Reset(); };
 
         // Initialize the events
@@ -195,8 +180,8 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     private void StartRelapseImage(PlayerInfo obj)
     {
-        // Enable the relapse image
-        relapseImage.enabled = true;
+        // // Enable the relapse image
+        // relapseImage.enabled = true;
 
         // Reset the relapse opacity timer
         relapseOpacityTimer.Reset();
@@ -209,8 +194,8 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     private void EndRelapseImage(PlayerInfo obj)
     {
-        // Disable the relapse image
-        relapseImage.enabled = false;
+        // // Disable the relapse image
+        // relapseImage.enabled = false;
 
         // Stop the relapse opacity timer
         relapseOpacityTimer.Stop();
@@ -231,17 +216,11 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         // Update the relapse effects
         UpdateRelapseEffects();
 
-        // Update the relapse text
-        UpdateRelapseText();
-
         // Prevent the tolerance from going below 0 or above the max value
         ClampTolerance();
 
         // Update the Relapse Image update
         RelapseImageUpdate();
-
-        if (maxTolerance > 0)
-            toleranceMeter.UpdateToleranceUI(currentTolerance / maxTolerance); // Scale to 0-1
 
         // Update the invincibility timer
         _invincibilityTimer.SetMaxTime(invincibilityDuration);
@@ -271,32 +250,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
             EndRelapse();
     }
 
-    private void UpdateRelapseText()
-    {
-        // Return if the relapse text is null
-        if (relapseText == null)
-            return;
-
-        var timeOrTimes = _relapseCount == 1 ? "time" : "times";
-
-        // Update the relapse text
-        var newText = $"Relapsing...\n" +
-                      $"{relapseDuration - _currentRelapseDuration:0.00}s remaining!\n" +
-                      $"The player has relapsed {_relapseCount} {timeOrTimes}!";
-
-        relapseText.text = newText;
-
-        // Update the opacity of the relapse text
-        var opacity = Mathf.Sin(Time.time * 4) / 2 + 0.5f;
-
-        relapseText.color = new Color(
-            relapseText.color.r,
-            relapseText.color.g,
-            relapseText.color.b,
-            opacity
-        );
-    }
-
     private void UpdateRelapseEffects()
     {
         // var vCamDampening = _relapseCount switch
@@ -316,20 +269,24 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         // Update the relapse opacity timer
         relapseOpacityTimer.Update(Time.deltaTime);
 
-        // Return if the relapse image is not enabled
-        if (relapseImage == null || !relapseImage.enabled)
-            return;
+        // // Return if the relapse image is not enabled
+        // if (relapseImage == null || !relapseImage.enabled)
+        //     return;
 
         // Update the relapse image's opacity
         var opacity = relapseOpacityCurve.Evaluate(relapseOpacityTimer.OutputValue);
 
+        if (!_isRelapsing)
+            opacity = 0;
+        
         // Set the opacity of the relapse image
-        relapseImage.color = new Color(
-            relapseImage.color.r,
-            relapseImage.color.g,
-            relapseImage.color.b,
-            opacity
-        );
+        // relapseImage.color = new Color(
+        //     relapseImage.color.r,
+        //     relapseImage.color.g,
+        //     relapseImage.color.b,
+        //     opacity
+        // );
+        RelapseOverlayUI.Instance.CanvasGroup.alpha = opacity;
     }
 
     private void UpdatePassiveRegeneration()
@@ -417,7 +374,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     public void ChangeTolerance(float amount)
     {
         currentTolerance = Mathf.Clamp(currentTolerance + amount, 0, maxTolerance);
-        toleranceMeter.UpdateToleranceUI(currentTolerance / maxTolerance); // Scale the dial
 
         // The player will relapse if the tolerance meter is too high
         if (currentTolerance >= maxTolerance)
@@ -443,10 +399,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         //     return;
         // }
 
-        // Enable the relapse text
-        if (relapseText != null)
-            relapseText.gameObject.SetActive(true);
-
         // Reset the relapse duration
         _currentRelapseDuration = 0;
 
@@ -461,10 +413,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
         // Reset the relapse duration
         _currentRelapseDuration = 0;
-
-        // Disable the relapse text
-        if (relapseText != null)
-            relapseText.gameObject.SetActive(false);
 
         // Invoke the end relapse event
         onRelapseEnd?.Invoke(this);
