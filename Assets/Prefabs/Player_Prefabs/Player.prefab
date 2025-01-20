@@ -663,8 +663,6 @@ MonoBehaviour:
   invincibilityDuration: 1
   maxTolerance: 100
   currentTolerance: 0
-  toleranceMeter: {fileID: 0}
-  relapseImage: {fileID: 0}
   relapseOpacityCurve:
     serializedVersion: 2
     m_Curve:
@@ -704,7 +702,6 @@ MonoBehaviour:
   relapsesToLose: 3
   toleranceRelapsePercent: 0
   relapseDuration: 10
-  relapseText: {fileID: 0}
   passiveRegenCap: 50
   passiveRegenRate: 5
   passiveRegenDelay: 10
@@ -752,7 +749,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cam: {fileID: 0}
   interactDistance: 3
-  interactText: {fileID: 0}
   outlineMaterial: {fileID: 2100000, guid: 22dd4d8cd8751df479a26194e0f34955, type: 2}
   outlineScale: 1.1
 --- !u!114 &27674651915690864
@@ -792,7 +788,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fireTransform: {fileID: 1481313708076204363}
   gunHolder: {fileID: 3521940892017555348}
-  animator: {fileID: 0}
   initialGunPrefab: {fileID: 0}
 --- !u!114 &-6734510740079581843
 MonoBehaviour:
@@ -817,8 +812,8 @@ MonoBehaviour:
   maxForceAdjust: 0.25
   maxDownwardAngle: 35
   velocityInterpolation: 10
-  maxSpeed: 10
-  acceleration: 40
+  maxSpeed: 12
+  acceleration: 24
   accelerationFactorFromDot:
     serializedVersion: 2
     m_Curve:
@@ -958,6 +953,7 @@ MonoBehaviour:
   wallClimbStartVelocity: 2
   wallClimbStartVelocityTransfer: 0.6
   maxWallClimbStartVelocity: 12
+  minimumWallClimbGroundedVelocity: 6
 --- !u!114 &7032570368268033865
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1141,7 +1137,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 3845154698197607556}
-  healthImage: {fileID: 0}
   minFlashTime: 0.25
   maxFlashTime: 1
   healthForMaxFlashing: 75
