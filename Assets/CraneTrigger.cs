@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CraneTrigger : MonoBehaviour
 {
-    public Animation anim;
+    public Animator anim;
     // Start is called before the first frame update
     void Awake()
     {
