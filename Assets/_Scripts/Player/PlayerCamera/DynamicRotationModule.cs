@@ -12,6 +12,7 @@ public sealed class DynamicRotationModule : DynamicVCamModule
     private Vector3 wallRunRotation = new(0, 0, 10);
 
     [SerializeField] private Vector3 wallClimbRotation = new(-10, 0, 0);
+    [SerializeField] private Vector3 downwardWallClimbRotation = new(10, 0, 0);
 
     [SerializeField, Range(0, 1)] private float wallRunLerpAmount = 0.2f;
 
@@ -192,7 +193,16 @@ public sealed class DynamicRotationModule : DynamicVCamModule
 
         // Set the target value
         if (_wallClimbStart)
+        {
             targetValue = wallClimbRotation;
+            
+            // If the player is falling, invert the rotation
+            if (playerVCamController.ParentComponent.PlayerController is PlayerMovementV2 movementV2)
+            {
+                if (movementV2.Rigidbody.velocity.y < 0)
+                    targetValue = downwardWallClimbRotation;
+            }
+        }
         else if (_wallClimbEnd)
             targetValue = Vector3.zero;
 
