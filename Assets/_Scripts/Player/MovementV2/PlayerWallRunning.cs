@@ -356,12 +356,15 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             var cRay = keyPair.Key;
             var hitInfo = keyPair.Value;
 
+            // Get the ray's angle in relation to the player's orientation forward
+            var rayAngle = Vector3.Angle(cRay.direction, ParentComponent.Orientation.forward);
+            
             // Skip the ray if it did not hit anything
             if (!hitInfo.IsHit)
                 continue;
 
             // Skip if the player is grounded
-            if (ParentComponent.IsGrounded)
+            if (ParentComponent.IsGrounded && rayAngle > wallClimbAngle)
                 continue;
 
             // If the current hit distance is less than the closest hit distance, update the closest hit info
@@ -399,9 +402,6 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
                 // If the dot product is less than the wall run start minimum speed, continue
                 if (dotProduct < wallRunStartMinimumSpeed)
                     continue;
-
-                // Get the ray's angle in relation to the player's orientation forward
-                var rayAngle = Vector3.Angle(cRay.direction, ParentComponent.Orientation.forward);
 
                 // Get the time the player has been in the air
                 // If it is less than the wall run start minimum air time, continue
