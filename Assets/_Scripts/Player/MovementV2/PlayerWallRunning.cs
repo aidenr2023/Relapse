@@ -429,6 +429,12 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             if (ParentComponent.IsGrounded && isInWallRunningMovement && ParentComponent.Rigidbody.velocity.y <= 0)
                 continue;
 
+            // If the ray is OUTSIDE the wall climb angle, but normal of the wall is 
+            // damn near the opposite of the player's orientation forward, continue
+            var normalOrientationAngle = Vector3.Angle(wallNormal, ParentComponent.Orientation.forward);
+            if (rayAngle > wallClimbAngle && normalOrientationAngle > 150)
+                continue;
+            
             // Set the wall sliding flag to true
             _isWallSliding = true;
 
