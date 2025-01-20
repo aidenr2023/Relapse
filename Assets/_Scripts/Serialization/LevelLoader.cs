@@ -476,5 +476,13 @@ public class LevelLoader : MonoBehaviour
 
     #endregion
 
+    public void ClearData()
+    {
+        // Wipe the data dictionary
+        _data.Clear();
+        _objectToScene.Clear();
 
+        // Save the data to the disk
+        SaveDataMemoryToDisk();
+    }
 }
