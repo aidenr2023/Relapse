@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class TutorialAnimation : MonoBehaviour
+public class CheckEnemiesPlayAnimation : MonoBehaviour
 {
     public GameObject[] enemies;
 
