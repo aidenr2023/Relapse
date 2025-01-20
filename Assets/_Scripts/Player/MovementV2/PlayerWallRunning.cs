@@ -358,7 +358,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
             // Get the ray's angle in relation to the player's orientation forward
             var rayAngle = Vector3.Angle(cRay.direction, ParentComponent.Orientation.forward);
-            
+
             // Skip the ray if it did not hit anything
             if (!hitInfo.IsHit)
                 continue;
@@ -785,6 +785,13 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         _isWallRunning = false;
         _isWallRunningLeft = false;
         _isWallRunningRight = false;
+
+        // Reset the y velocity
+        ParentComponent.Rigidbody.velocity = new Vector3(
+            ParentComponent.Rigidbody.velocity.x,
+            0,
+            ParentComponent.Rigidbody.velocity.z
+        );
 
         // Add a force to the rigid body
         ParentComponent.Rigidbody.AddForce(wallJumpForceVector, ForceMode.VelocityChange);
