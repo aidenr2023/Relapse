@@ -30,6 +30,9 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     [SerializeField, Min(0)] private float wallRunStartMinimumSpeed;
     [SerializeField, Min(0)] private float wallRunStartMinimumAirTime = .5f;
 
+    [SerializeField, Min(0)] private float desiredWallDistance = 0.25f;
+    [SerializeField, Min(0)] private float desiredWallDistanceForce = 1;
+
     [Header("Wall Jump")] [SerializeField] [Min(0)]
     private float wallJumpForce = 10f;
 
@@ -569,6 +572,9 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             UpdateWallRunningMovement();
         else
             UpdateWallClimbingMovement();
+
+        // Move the player closer to the wall
+        UpdateWallDistance();
     }
 
     private void UpdateWallRunningMovement()
@@ -766,6 +772,26 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
         // Activate the footstep timer
         _footstepTimer.SetActive(true);
+    }
+
+    private void UpdateWallDistance()
+    {
+        // Return if the player is not wall sliding / wall climbing
+        if (!_isWallSliding && !_isWallClimbing)
+            return;
+
+        // Return if there is no current wall
+        if (_currentWall == null)
+            return;
+
+        // Get the distance between the player and the wall
+        var distance = _contactInfo.distance;
+
+        // Apply a force to the player to move them closer to the wall
+        var force = -_contactInfo.normal * ((distance - desiredWallDistance) * desiredWallDistanceForce);
+
+        // Apply the force to the player
+        ParentComponent.Rigidbody.AddForce(force, ForceMode.Acceleration);
     }
 
     private void WallJump()
