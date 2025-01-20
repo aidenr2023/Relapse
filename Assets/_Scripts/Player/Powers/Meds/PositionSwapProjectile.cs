@@ -1,15 +1,13 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.VFX;
 
-[RequireComponent(typeof(Rigidbody))]
-public class FireballProjectile : MonoBehaviour, IPowerProjectile
+public class PositionSwapProjectile : MonoBehaviour, IPowerProjectile
 {
     private Vector3 _forward;
 
     private Rigidbody _rigidbody;
 
-    private Fireball _fireball;
+    private PositionSwap _fireball;
     private PlayerPowerManager _powerManager;
     private PowerToken _pToken;
 
@@ -41,7 +39,7 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
         Vector3 position, Vector3 forward
     )
     {
-        _fireball = (Fireball)power;
+        _fireball = (PositionSwap)power;
         _powerManager = powerManager;
         _pToken = pToken;
 
@@ -50,7 +48,7 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
 
         // Set the forward of the game object to the forward parameter
         transform.forward = _forward = forward;
-        
+
         // Set the projectile to explode in 10 seconds
         Invoke(nameof(Explode), lifetime);
 
@@ -85,10 +83,28 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
 
         // If the projectile hits something with an IActor component, deal damage
         if (other.TryGetComponentInParent(out IActor actor))
-            actor.ChangeHealth(-damage, _powerManager.Player.PlayerInfo, _fireball, transform.position);
+        {
+            // actor.ChangeHealth(-damage, _powerManager.Player.PlayerInfo, _fireball, transform.position);
 
-        // Destroy the projectile when it hits something
-        // Debug.Log($"BOOM! {gameObject.name} hit {other.name}");
+            // Get the position of the shooter
+            var shooterPosition = _powerManager.Player.PlayerInfo.transform.position;
+
+            // Get the position of the actor
+            var actorPosition = actor.GameObject.transform.position;
+
+            // Swap the positions of the shooter and the actor
+            if (actor is EnemyInfo enemyInfo)
+            {
+                // Get the enemy controller
+                var enemyMovement = enemyInfo.ParentComponent.EnemyMovementBehavior;
+
+                // Swap the positions of the shooter and the actor
+                enemyMovement.SetPosition(shooterPosition);
+            }
+
+            // Set the position of the actor to the shooter's position
+            _powerManager.Player.PlayerInfo.transform.position = actorPosition;
+        }
 
         // Explode the projectile
         Explode();
