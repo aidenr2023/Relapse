@@ -51,6 +51,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     [SerializeField, Min(0)] private float wallClimbStartVelocity = 4f;
     [SerializeField, Range(0, 1)] private float wallClimbStartVelocityTransfer = 0.75f;
     [SerializeField, Min(0)] private float maxWallClimbStartVelocity = 12f;
+    [SerializeField, Min(0)] private float minimumWallClimbGroundedVelocity = 6f;
 
     #endregion
 
@@ -349,6 +350,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         var closestRay = default(Ray);
 
         var isInBasicMovement = ParentComponent.CurrentMovementScript is BasicPlayerMovement;
+        var isInWallRunningMovement = ParentComponent.CurrentMovementScript is PlayerWallRunning;
 
         // Check each ray in the dictionary
         foreach (var keyPair in _wallRunHitInfos)
@@ -407,7 +409,22 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
                 // If it is less than the wall run start minimum air time, continue
                 if (ParentComponent.MidAirTime < wallRunStartMinimumAirTime && rayAngle > wallClimbAngle)
                     continue;
+
+                // Get the lateral velocity of the player
+                var lateralVelocity = new Vector3(ParentComponent.Rigidbody.velocity.x, 0,
+                    ParentComponent.Rigidbody.velocity.z);
+
+                // Get the dot product between the lateral velocity and the wall normal
+                var lateralDotProduct = Vector3.Dot(lateralVelocity, -wallNormal);
+
+                // If the player is grounded AND their velocity is less than the minimum wall climb grounded velocity, continue
+                if (ParentComponent.IsGrounded && lateralDotProduct < minimumWallClimbGroundedVelocity)
+                    continue;
             }
+
+            // If the player is grounded AND they are in wall running movement, continue
+            if (ParentComponent.IsGrounded && isInWallRunningMovement && ParentComponent.Rigidbody.velocity.y <= 0)
+                continue;
 
             // Set the wall sliding flag to true
             _isWallSliding = true;
