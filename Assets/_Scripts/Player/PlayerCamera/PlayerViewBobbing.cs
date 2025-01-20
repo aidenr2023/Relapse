@@ -9,8 +9,8 @@ public class PlayerViewBobbing : ComponentScript<PlayerVirtualCameraController>
     [SerializeField, Min(0)] private float sprintStrengthMultiplier = 1.5f;
 
     // How smooth the lerping on the bob is.
-    [Space, SerializeField, Range(0, 1)] private float bobSmoothness = 0.95f;
-    [SerializeField, Range(0, 1)] private float stopMovingSmoothness = 0.95f;
+    [Space, SerializeField, Min(0)] private float bobSmoothness = 0.95f;
+    [SerializeField, Min(0)] private float stopMovingSmoothness = 0.95f;
 
 
     // how dramatic the bob is.
@@ -74,6 +74,9 @@ public class PlayerViewBobbing : ComponentScript<PlayerVirtualCameraController>
 
     private void Update()
     {
+        const float defaultFrameTime = 1 / 60f;
+        var frameTime = Time.deltaTime / defaultFrameTime;
+        
         if (IsViewBobbingActive)
         {
             // Make the bob faster if the player is sprinting
@@ -105,7 +108,7 @@ public class PlayerViewBobbing : ComponentScript<PlayerVirtualCameraController>
 
             // Lerp the current offset with the previous offset.
             // This is so we have a smooth transition from  stopping to walking.
-            var currentOffset = Vector3.Lerp(_viewBobbingToken.Value, desiredOffset, bobSmoothness);
+            var currentOffset = Vector3.Lerp(_viewBobbingToken.Value, desiredOffset, bobSmoothness * frameTime);
 
             // Set the virtual cam offset
             _viewBobbingToken.Value = currentOffset;
@@ -116,7 +119,7 @@ public class PlayerViewBobbing : ComponentScript<PlayerVirtualCameraController>
             _timer = Mathf.PI / 2;
 
             // transition smoothly from walking to stopping.
-            _viewBobbingToken.Value = Vector3.Lerp(_viewBobbingToken.Value, Vector3.zero, stopMovingSmoothness);
+            _viewBobbingToken.Value = Vector3.Lerp(_viewBobbingToken.Value, Vector3.zero, stopMovingSmoothness * frameTime);
         }
 
         // Avoid timer bloat
