@@ -492,6 +492,7 @@ GameObject:
   - component: {fileID: 3845154698197607556}
   - component: {fileID: 8740482916909296334}
   - component: {fileID: 5203053287727495698}
+  - component: {fileID: 3702472085182245376}
   - component: {fileID: -3493750139394126392}
   - component: {fileID: 27674651915690864}
   - component: {fileID: -7043807009064224948}
@@ -735,6 +736,24 @@ MonoBehaviour:
   sensitivityMultiplier: 15
   upDownAngleLimit: 5
   wallRunLookLockLerpAmount: 1
+--- !u!114 &3702472085182245376
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3703685084401515452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5488ce25ea9545c09c2c6a9899e017cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  originalScreenSize: {x: 1920, y: 1080}
+  aimSquareSize: 128
+  maxDistance: 100
+  enemyLayerMask:
+    serializedVersion: 2
+    m_Bits: 512
 --- !u!114 &-3493750139394126392
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7903629047514364045}
-  - component: {fileID: -8782152528045991205}
+  - component: {fileID: -3247991602436095368}
   m_Layer: 0
-  m_Name: Position Swap Logic
+  m_Name: Chain Lightning Logic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-8782152528045991205
+--- !u!114 &-3247991602436095368
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,11 +41,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 3058926612469710390}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec0343c655114e8391b80b5e646a12f2, type: 3}
+  m_Script: {fileID: 11500000, guid: 79ebbed26bbd4271943a1eb9e1e7807d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectilePrefab: {fileID: 1506447455235105880, guid: 8db1cea914ae65a4d905756c334b6dae,
+  projectilePrefab: {fileID: 1506447455235105880, guid: aec0d233054ee374f827a17f89817988,
     type: 3}
-  layersToHit:
-    serializedVersion: 2
-    m_Bits: 512

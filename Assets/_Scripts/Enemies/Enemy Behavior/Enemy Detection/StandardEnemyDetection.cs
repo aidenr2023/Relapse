@@ -53,6 +53,8 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
 
     public Vector3 LastKnownTargetPosition { get; private set; }
 
+    public Transform DetectionOrigin => detectionOrigin;
+
     #endregion
 
     #region Initialization Functions

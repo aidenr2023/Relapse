@@ -22,6 +22,8 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
 
     public PlayerLook PlayerLook { get; private set; }
 
+    public PlayerEnemySelect PlayerEnemySelect { get; private set; }
+
     public PlayerInteraction PlayerInteraction { get; private set; }
 
     public PlayerPowerManager PlayerPowerManager { get; private set; }
@@ -65,6 +67,9 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
 
         // Get the PlayerLook component
         PlayerLook = GetComponent<PlayerLook>();
+        
+        // Get the PlayerEnemySelect component
+        PlayerEnemySelect = GetComponent<PlayerEnemySelect>();
 
         // Get the PlayerInteraction component
         PlayerInteraction = GetComponent<PlayerInteraction>();

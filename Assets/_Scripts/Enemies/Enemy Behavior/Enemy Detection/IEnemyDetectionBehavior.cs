@@ -17,6 +17,8 @@ public interface IEnemyDetectionBehavior : IEnemyBehavior
     public IActor Target { get; }
 
     public Vector3 LastKnownTargetPosition { get; }
+    
+    public Transform DetectionOrigin { get; }
 
     public void SetDetectionEnabled(bool on);
 }
