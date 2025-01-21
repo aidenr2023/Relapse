@@ -1,9 +1,16 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class ChainLightning : MonoBehaviour, IPower
 {
     // a field for a projectile prefab
-    [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private TrailRenderer trailPrefab;
+
+    [SerializeField, Min(0)] private float damage = 30f;
+    [SerializeField, Min(0)] private int maxChainCount = 3;
+    [SerializeField, Min(0)] private float maxChainDistance = 10f;
+    [SerializeField, Min(0)] private float chainDelayTime = .25f;
 
     public GameObject GameObject => gameObject;
     public PowerScriptableObject PowerScriptableObject { get; set; }
@@ -26,27 +33,89 @@ public class ChainLightning : MonoBehaviour, IPower
 
     public void Use(PlayerPowerManager powerManager, PowerToken pToken)
     {
-        // Create the position of the projectile
-        var firePosition = powerManager.PowerFirePoint.position;
+        // Start the chain lightning coroutine
+        StartCoroutine(ChainLightningCoroutine(powerManager, pToken));
+    }
 
-        // Create a vector that points forward from the camera pivot
-        var aimTargetPoint = powerManager.PowerAimHitPoint;
-        var fireForward = (aimTargetPoint - firePosition).normalized;
+    private IEnumerator ChainLightningCoroutine(
+        PlayerPowerManager powerManager,
+        PowerToken pToken
+    )
+    {
+        var currentEnemy = powerManager.Player.PlayerEnemySelect.SelectedEnemy;
 
-        // Instantiate the projectile prefab
-        var projectile = Instantiate(projectilePrefab, firePosition, Quaternion.identity);
+        if (currentEnemy == null)
+            yield break;
 
-        // Get the IPowerProjectile component from the projectile
-        var powerProjectile = projectile.GetComponent<IPowerProjectile>();
+        // Instantiate the trail prefab
+        var trail = Instantiate(trailPrefab, powerManager.Player.Rigidbody.position, Quaternion.identity);
 
-        // Shoot the projectile
-        powerProjectile.Shoot(this, powerManager, pToken, firePosition, fireForward);
+        // Create a hash set of all the enemies
+        var remainingEnemies = new HashSet<Enemy>();
 
-        // // Create the projectile
-        // var projectileScript = CreateProjectile(firePosition, fireForward);
-        //
-        // // Set up the projectile
-        // SetUpProjectile(powerManager, projectileScript);
+        foreach (var enemy in Enemy.Enemies)
+            remainingEnemies.Add(enemy);
+
+        // Wait for 1 frame
+        yield return null;
+
+        var remainingChainCount = maxChainCount;
+
+        // Keep shooting the projectile at the current enemy
+        while (remainingChainCount > 0)
+        {
+            // Remove the current enemy from the remaining enemies
+            remainingEnemies.Remove(currentEnemy);
+
+            // Get the position of the current enemy
+            var enemyPosition = currentEnemy.transform.position;
+
+            // Move the trail to the current enemy
+            trail.transform.position = enemyPosition;
+
+            // TODO: Do more stuff here. Spawn a VFX, play a sound, etc.
+
+            // Damage the current enemy
+            currentEnemy.EnemyInfo.ChangeHealth(-damage, powerManager.Player.PlayerInfo, this, enemyPosition);
+
+            // Decrement the remaining chain count
+            remainingChainCount--;
+
+            // Wait for the chain delay time
+            yield return new WaitForSeconds(chainDelayTime);
+
+            // Find the closest enemy to the current enemy
+            if (remainingChainCount > 0)
+                currentEnemy = GetClosestEnemy(enemyPosition, remainingEnemies);
+        }
+
+        // Destroy the trail
+        Destroy(trail.gameObject);
+    }
+
+    private Enemy GetClosestEnemy(Vector3 currentPosition, HashSet<Enemy> remainingEnemies)
+    {
+        // Get the closest enemy to the current enemy
+        Enemy closestEnemy = null;
+        var closestDistance = float.MaxValue;
+
+        foreach (var enemy in remainingEnemies)
+        {
+            var distance = Vector3.Distance(currentPosition,
+                enemy.EnemyInfo.ParentComponent.transform.position);
+
+            // Continue if the distance is greater than the max chain distance
+            if (distance > maxChainDistance)
+                continue;
+
+            if (distance < closestDistance)
+            {
+                closestEnemy = enemy;
+                closestDistance = distance;
+            }
+        }
+
+        return closestEnemy;
     }
 
     #region Active Effects

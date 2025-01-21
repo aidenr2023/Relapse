@@ -52,6 +52,8 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
 
     public InteractionIcon CurrentInteractionIcon => _selectedInteractable?.InteractionIcon ?? InteractionIcon.None;
 
+    public Camera Camera => cam;
+        
     #endregion
 
     private void Awake()

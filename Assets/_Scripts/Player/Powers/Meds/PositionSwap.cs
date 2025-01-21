@@ -58,47 +58,6 @@ public class PositionSwap : MonoBehaviour, IPower
 
         // ====================================
 
-        // // Create the position of the projectile
-        // var firePosition = powerManager.PowerFirePoint.position;
-        //
-        // // Create a vector that points forward from the camera pivot
-        // var aimTargetPoint = powerManager.PowerAimHitPoint;
-        // var fireForward = (aimTargetPoint - firePosition).normalized;
-        //
-        // // Fire a raycast from the fire position to the aim target point
-        // var ray = new Ray(firePosition, fireForward);
-        // var rayDistance = Vector3.Distance(firePosition, aimTargetPoint);
-        //
-        // var hit = Physics.Raycast(ray, out var hitInfo, rayDistance, layersToHit);
-        //
-        // if (!hit)
-        //     return;
-        //
-        // // If the projectile hits something with an IActor component, deal damage
-        // if (hitInfo.collider.TryGetComponentInParent(out IActor actor))
-        // {
-        //     // Get the position of the shooter
-        //     var shooterPosition = firePosition;
-        //
-        //     // Get the position of the actor
-        //     var actorPosition = actor.GameObject.transform.position;
-        //
-        //     // Swap the positions of the shooter and the actor
-        //     if (actor is EnemyInfo enemyInfo)
-        //     {
-        //         // Get the enemy controller
-        //         var enemyMovement = enemyInfo.ParentComponent.EnemyMovementBehavior;
-        //
-        //         // Swap the positions of the shooter and the actor
-        //         enemyMovement.SetPosition(shooterPosition);
-        //     }
-        //
-        //     // Set the position of the actor to the shooter's position
-        //     powerManager.Player.Rigidbody.MovePosition(actorPosition);
-        // }
-
-        // ====================================
-
         // // Instantiate the projectile prefab
         // var projectile = Instantiate(projectilePrefab, firePosition, Quaternion.identity);
         //
