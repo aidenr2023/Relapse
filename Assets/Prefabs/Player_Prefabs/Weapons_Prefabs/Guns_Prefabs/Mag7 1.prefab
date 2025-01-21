@@ -132,7 +132,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gunInformation: {fileID: 11400000, guid: d0439bcafb503804c8d86771a3be5290, type: 2}
-  gunModelType: 1
+  gunModelType: 3
   animator: {fileID: 891329805443514385}
   muzzleLocation: {fileID: 9081700793990647355}
   muzzleFlash: {fileID: 3124696455069095509}
@@ -806,6 +806,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 4.2588463
       objectReference: {fileID: 0}
+    - target: {fileID: -5662795820495939040, guid: decc7618b9e86f3469b3b6d037c075f6,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 5744b3a7050c97e4eb221324742c5dea, type: 2}
+    - target: {fileID: -10154523735117276, guid: decc7618b9e86f3469b3b6d037c075f6,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 5744b3a7050c97e4eb221324742c5dea, type: 2}
     - target: {fileID: 919132149155446097, guid: decc7618b9e86f3469b3b6d037c075f6,
         type: 3}
       propertyPath: m_Name

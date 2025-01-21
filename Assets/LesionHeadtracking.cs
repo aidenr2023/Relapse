@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 
@@ -11,64 +10,62 @@ public class LesionHeadtracking : MonoBehaviour
     [SerializeField] private StandardEnemyDetection enemyDetection;
     [Range(0, 1)] [SerializeField] private float weight = 1;
 
-    private EnemyDetectionState lastState;
-
-    private void Awake()
+    private void Start()
     {
-        if (headConstraint == null || hipConstraint == null)
+        // Start a coroutine to find the Player and assign constraints once it's ready
+        StartCoroutine(WaitForPlayerAndAssignConstraints());
+    }
+
+    private IEnumerator WaitForPlayerAndAssignConstraints()
+    {
+        // Wait for the Player object to be present in the scene
+        GameObject player = null;
+        while (player == null)
         {
-            Debug.LogError("Constraints or EnemyDetection are not assigned!", this);
-            enabled = false;
-            return;
+            player = GameObject.FindWithTag("Player");
+            if (player == null)
+            {
+                Debug.LogWarning("Player not found. Retrying...");
+                yield return null; // Wait one frame before retrying
+            }
         }
 
-        FindPlayer();
+        Debug.Log("Player found. Assigning constraints.");
+
+        // Assign the Player transform to the head constraint
+        var headSources = headConstraint.data.sourceObjects;
+        headSources.SetTransform(0, player.transform);
+        headSources.SetWeight(0, 1f);
+        headConstraint.data.sourceObjects = headSources;
+
+        // Assign the Player transform to the hip constraint
+        var hipSources = hipConstraint.data.sourceObjects;
+        hipSources.SetTransform(0, player.transform);
+        hipSources.SetWeight(0, 1f);
+        hipConstraint.data.sourceObjects = hipSources;
+
+        Debug.Log("Constraints assigned successfully.");
     }
 
     private void Update()
     {
+        // Continuously update the constraint weights based on the enemy detection state
         SetWeight();
-    }
-
-    private void FindPlayer()
-    {
-        var player = GameObject.FindWithTag("Player");
-        if (player)
-        {
-            Debug.Log("Player found. Assigning constraints.");
-            var sourceObjects = headConstraint.data.sourceObjects;
-            sourceObjects.SetTransform(0, player.transform);
-            headConstraint.data.sourceObjects = sourceObjects;
-
-            sourceObjects = hipConstraint.data.sourceObjects;
-            sourceObjects.SetTransform(0, player.transform);
-            hipConstraint.data.sourceObjects = sourceObjects;
-        }
-        else
-        {
-            Debug.LogError("Player not found in the scene!");
-        }
     }
 
     private void SetWeight()
     {
+        // If the enemy is aware, smoothly transition constraints to 'weight' (e.g., 1.0)
         if (enemyDetection.CurrentDetectionState == EnemyDetectionState.Aware)
         {
-        //lerp the weight to Weight variable
             headConstraint.weight = Mathf.Lerp(headConstraint.weight, weight, Time.deltaTime);
             hipConstraint.weight = Mathf.Lerp(hipConstraint.weight, weight, Time.deltaTime);
-        
         }
-        // else if (enemyDetection.CurrentDetectionState == EnemyDetectionState.Curious)
-        // {
-        //     headConstraint.weight = Mathf.Lerp(headConstraint.weight, weight / 2, Time.deltaTime);
-        //     hipConstraint.weight = Mathf.Lerp(hipConstraint.weight, weight / 2, Time.deltaTime);
-       // }
+        // Otherwise, smoothly transition constraints back to 0
         else
         {
-            headConstraint.weight = Mathf.Lerp(headConstraint.weight, 0, Time.deltaTime);
-            hipConstraint.weight = Mathf.Lerp(hipConstraint.weight, 0, Time.deltaTime);
-            
+            headConstraint.weight = Mathf.Lerp(headConstraint.weight, 0f, Time.deltaTime);
+            hipConstraint.weight = Mathf.Lerp(hipConstraint.weight, 0f, Time.deltaTime);
         }
     }
 }
