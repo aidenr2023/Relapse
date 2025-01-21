@@ -15,6 +15,7 @@ public class PowerScriptableObject : ScriptableObject
 
     [SerializeField] private PowerType powerType;
     [SerializeField] private Sprite icon;
+    [SerializeField] private bool usesReticle;
     [SerializeField] [TextArea(3, 10)] private string description;
     [SerializeField] private PowerFovZoomBehavior fovZoomBehavior;
 
@@ -46,6 +47,7 @@ public class PowerScriptableObject : ScriptableObject
     public string PowerName => powerName;
     public PowerType PowerType => powerType;
     public Sprite Icon => icon;
+    public bool UsesReticle => usesReticle;
     public string Description => description;
 
     public PowerFovZoomBehavior FovZoomBehavior => fovZoomBehavior;

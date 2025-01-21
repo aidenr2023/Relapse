@@ -67,6 +67,10 @@ public class ChainLightning : MonoBehaviour, IPower
             // Remove the current enemy from the remaining enemies
             remainingEnemies.Remove(currentEnemy);
 
+            // If the current enemy is null, break
+            if (currentEnemy == null)
+                break;
+            
             // Get the position of the current enemy
             var enemyPosition = currentEnemy.transform.position;
 

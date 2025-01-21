@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerEnemySelect : ComponentScript<Player>
 {
+    #region Serialized Fields
+
     [SerializeField] private Vector2 originalScreenSize = new Vector2(1920, 1080);
     [SerializeField] private float aimSquareSize = 400;
     [SerializeField] private float maxDistance = 100;
@@ -12,10 +14,27 @@ public class PlayerEnemySelect : ComponentScript<Player>
 
     [SerializeField] private bool showDebug;
 
+    #endregion
+
+    #region Private Fields
+
+    private Vector3 _enemyPosition;
+
+    #endregion
+
+    #region Getters
+
+    public float MaxDistance => maxDistance;
+
     private float ActualAimSquareSize => aimSquareSize * (Screen.width / originalScreenSize.x);
 
     public Enemy SelectedEnemy { get; private set; }
-    private Vector3 _enemyPosition;
+
+    public Vector3 EnemyPosition => _enemyPosition;
+
+    public Vector2 EnemyScreenPosition { get; private set; }
+
+    #endregion
 
     private void FixedUpdate()
     {
@@ -23,8 +42,14 @@ public class PlayerEnemySelect : ComponentScript<Player>
         var mainCam = ParentComponent.PlayerInteraction.Camera;
 
         // If the main camera is null, return
-        if (mainCam == null)
+        if (mainCam == null ||
+            ParentComponent.PlayerPowerManager.CurrentPower == null ||
+            !ParentComponent.PlayerPowerManager.CurrentPower.UsesReticle
+           )
+        {
+            SelectedEnemy = null;
             return;
+        }
 
         // Get the screen dimensions
         var screenDimensions = new Vector2(Screen.width, Screen.height);
@@ -65,15 +90,21 @@ public class PlayerEnemySelect : ComponentScript<Player>
                )
                 continue;
 
-            // Get the distance between the enemy's position and the player's position
-            var distance = Vector2.Distance(screenPoint, screenDimensions / 2);
+            // Get the distance between the enemy's screen position and the center of the screen
+            var screenDistance = Vector2.Distance(screenPoint, screenDimensions / 2);
+
+            // get the distance between the enemy and the player
+            var distance = Vector3.Distance(
+                ParentComponent.transform.position,
+                _enemyPosition
+            );
 
             // If the distance is too far away, continue
             if (distance > maxDistance)
                 continue;
 
             // If the current enemy is closer than the previous enemy, set the current enemy to the current enemy
-            if (cEnemy != null && distance >= cDistance)
+            if (cEnemy != null && screenDistance >= cDistance)
                 continue;
 
             // Perform a raycast from the camera to the enemy, checking if the enemy is visible
@@ -81,29 +112,24 @@ public class PlayerEnemySelect : ComponentScript<Player>
                 ParentComponent.WeaponManager.FireTransform.position,
                 _enemyPosition - ParentComponent.WeaponManager.FireTransform.position,
                 out var hitInfo,
-                maxDistance,
+                distance,
                 ~enemyLayerMask
             );
-            
+
             // If the raycast hits anything, continue
             if (hit)
                 continue;
-            
-            // // If the hit object is not the enemy, continue
-            // if (!hitInfo.collider.TryGetComponentInParent(out Enemy hitEnemy) || hitEnemy != enemy)
-            //     continue;
 
             // Set the current enemy to the current enemy
             cEnemy = enemy;
-            cDistance = distance;
+            cDistance = screenDistance;
             selectedCenter = center;
+            EnemyScreenPosition = screenPoint;
         }
 
         // Set the selected enemy to the current enemy
         SelectedEnemy = cEnemy;
         _enemyPosition = selectedCenter;
-
-        Debug.Log(SelectedEnemy);
     }
 
     private void OnGUI()
@@ -127,7 +153,7 @@ public class PlayerEnemySelect : ComponentScript<Player>
         // Draw a red box at the selected enemy's position
         if (SelectedEnemy != null)
         {
-            var screenPoint = Camera.main.WorldToScreenPoint(_enemyPosition);
+            var screenPoint = ParentComponent.PlayerInteraction.Camera.WorldToScreenPoint(_enemyPosition);
             GUI.Box(
                 new Rect(
                     screenPoint.x - squareSize / 2f,
