@@ -131,6 +131,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gunInformation: {fileID: 11400000, guid: 9a27354ce30dd004391ccfe4abca4674, type: 2}
+  gunModelType: 0
   animator: {fileID: 8826869260550202994}
   muzzleLocation: {fileID: 7482864326830443544}
   muzzleFlash: {fileID: 2159859379508086130}
@@ -143,6 +144,9 @@ MonoBehaviour:
     type: 3}
   bulletHoleDecal: {fileID: 897063514554204210, guid: 7858f0785a3edd24a9d8daf6a699cf72,
     type: 3}
+  onInteract:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &1133895146079915244
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -717,7 +721,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: aec80b660814ace4c8ac683aaed4dbae, type: 2}
+      objectReference: {fileID: 2100000, guid: 05183a90776929840b701614338e8ff6, type: 2}
     - target: {fileID: -9156295447175353106, guid: b160d5512de38844d9425add0872f548,
         type: 3}
       propertyPath: m_Materials.Array.data[1]
@@ -787,7 +791,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: aec80b660814ace4c8ac683aaed4dbae, type: 2}
+      objectReference: {fileID: 2100000, guid: 05183a90776929840b701614338e8ff6, type: 2}
     - target: {fileID: -3644467237300200172, guid: b160d5512de38844d9425add0872f548,
         type: 3}
       propertyPath: m_Materials.Array.data[1]
@@ -802,7 +806,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: aec80b660814ace4c8ac683aaed4dbae, type: 2}
+      objectReference: {fileID: 2100000, guid: 05183a90776929840b701614338e8ff6, type: 2}
     - target: {fileID: -3111029086884251759, guid: b160d5512de38844d9425add0872f548,
         type: 3}
       propertyPath: m_Materials.Array.data[1]
@@ -822,7 +826,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: aec80b660814ace4c8ac683aaed4dbae, type: 2}
+      objectReference: {fileID: 2100000, guid: 05183a90776929840b701614338e8ff6, type: 2}
     - target: {fileID: 4561304716834361031, guid: b160d5512de38844d9425add0872f548,
         type: 3}
       propertyPath: m_Materials.Array.data[1]
