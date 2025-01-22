@@ -23,27 +23,27 @@ public class SceneField
         return sceneField.SceneName;
     }
 
-    public static bool operator ==(SceneField a, object b)
-    {
-        // If A is null, but not B, return if the scene asset is null or the scene name is null or empty
-        if (!ReferenceEquals(a, null) && ReferenceEquals(b, null))
-        {
-            return a.sceneAsset == null || a.sceneAsset.Equals(null) || a.sceneName == null ||
-                   a.sceneName.Equals(null) || a.sceneName.Equals("");
-        }
-        
-        // If A is null and B is not null, call the function again with the parameters reversed
-        if (ReferenceEquals(a, null) && !ReferenceEquals(b, null))
-            return b == a;
-        
-        // If A is not null and B is not null, return if the scene asset is not null and the scene asset equals B
-        return a.sceneAsset != null && a.Equals(b);
-    }
-
-    public static bool operator !=(SceneField a, object b)
-    {
-        return !(a == b);
-    }
+    // public static bool operator ==(SceneField a, object b)
+    // {
+    //     // If A is null, but not B, return if the scene asset is null or the scene name is null or empty
+    //     if (!ReferenceEquals(a, null) && ReferenceEquals(b, null))
+    //     {
+    //         return a.sceneAsset == null || a.sceneAsset.Equals(null) || a.sceneName == null ||
+    //                a.sceneName.Equals(null) || a.sceneName.Equals("");
+    //     }
+    //     
+    //     // If A is null and B is not null, call the function again with the parameters reversed
+    //     if (ReferenceEquals(a, null) && !ReferenceEquals(b, null))
+    //         return b == a;
+    //     
+    //     // If A is not null and B is not null, return if the scene asset is not null and the scene asset equals B
+    //     return a.sceneAsset != null && a.Equals(b);
+    // }
+    //
+    // public static bool operator !=(SceneField a, object b)
+    // {
+    //     return !(a == b);
+    // }
 }
 
 #if UNITY_EDITOR
