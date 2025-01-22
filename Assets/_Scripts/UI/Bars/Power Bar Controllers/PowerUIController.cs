@@ -69,7 +69,7 @@ public class PowerUIController : MonoBehaviour
 
         // Update the power icon size
         UpdatePowerIconSize();
-        
+
         // Update the power name text
         UpdatePowerNameText();
     }
@@ -252,10 +252,10 @@ public class PowerUIController : MonoBehaviour
 
         // Return if the current power is null
         if (currentPower == null)
-            return;
-
+            powerNameText.text = "";
         // Set the text of the power name text
-        powerNameText.text = currentPower.PowerName;
+        else
+            powerNameText.text = currentPower.PowerName;
 
         // Set the opacity of the power name text
         powerNameText.alpha = powerIconsCanvasGroup.alpha;

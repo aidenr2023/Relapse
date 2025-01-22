@@ -536,7 +536,7 @@ public class AsyncSceneManager : IDebugged
         }
 
         // Load the player data scene
-        if (startupSceneInfo.PlayerDataScene != null)
+        if (startupSceneInfo.PlayerDataScene != null && startupSceneInfo.PlayerDataScene.SceneName.Trim() != "")
         {
             var operation = LoadSceneAsync(startupSceneInfo.PlayerDataScene);
 

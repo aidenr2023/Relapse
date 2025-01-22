@@ -11,6 +11,7 @@ public class ChainLightning : MonoBehaviour, IPower
     [SerializeField, Min(0)] private int maxChainCount = 3;
     [SerializeField, Min(0)] private float maxChainDistance = 10f;
     [SerializeField, Min(0)] private float chainDelayTime = .25f;
+    [SerializeField, Min(0)] private int chainStepCount = 3;
 
     public GameObject GameObject => gameObject;
     public PowerScriptableObject PowerScriptableObject { get; set; }
@@ -61,6 +62,8 @@ public class ChainLightning : MonoBehaviour, IPower
 
         var remainingChainCount = maxChainCount;
 
+        var previousPosition = powerManager.Player.Rigidbody.position;
+
         // Keep shooting the projectile at the current enemy
         while (remainingChainCount > 0)
         {
@@ -70,27 +73,41 @@ public class ChainLightning : MonoBehaviour, IPower
             // If the current enemy is null, break
             if (currentEnemy == null)
                 break;
-            
+
             // Get the position of the current enemy
             var enemyPosition = currentEnemy.transform.position;
 
-            // Move the trail to the current enemy
-            trail.transform.position = enemyPosition;
-
             // TODO: Do more stuff here. Spawn a VFX, play a sound, etc.
 
+            var remainingStepCount = chainStepCount;
+            while (remainingStepCount > 0)
+            {
+                remainingStepCount--;
+
+                // Lerp the position of the trail to the enemy position
+                var trailPosition = Vector3.Lerp(previousPosition, enemyPosition,
+                    1f - (remainingStepCount / (float)chainStepCount));
+
+                // Set the position of the trail
+                trail.transform.position = trailPosition;
+
+                // Wait for the step delay time
+                yield return new WaitForSeconds(chainDelayTime / chainStepCount);
+            }
+
             // Damage the current enemy
-            currentEnemy.EnemyInfo.ChangeHealth(-damage, powerManager.Player.PlayerInfo, this, enemyPosition);
+            if (currentEnemy != null)
+                currentEnemy.EnemyInfo.ChangeHealth(-damage, powerManager.Player.PlayerInfo, this, enemyPosition);
 
             // Decrement the remaining chain count
             remainingChainCount--;
 
-            // Wait for the chain delay time
-            yield return new WaitForSeconds(chainDelayTime);
-
             // Find the closest enemy to the current enemy
             if (remainingChainCount > 0)
                 currentEnemy = GetClosestEnemy(enemyPosition, remainingEnemies);
+
+            // Set the previous position to the current enemy position
+            previousPosition = enemyPosition;
         }
 
         // Destroy the trail
