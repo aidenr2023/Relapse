@@ -493,7 +493,7 @@ public class AsyncSceneManager : IDebugged
         foreach (var section in startupSceneInfo.StartupSections)
         {
             // Load the section scene
-            if (section.SectionScene != null)
+            if (section.SectionScene != null && section.SectionScene.SceneName.Trim() != "")
             {
                 var operation = LoadSceneAsync(section.SectionScene);
 
@@ -509,7 +509,7 @@ public class AsyncSceneManager : IDebugged
             }
 
             // Load the section persistent data
-            if (section.SectionPersistentData != null)
+            if (section.SectionPersistentData != null && section.SectionPersistentData.SceneName.Trim() != "")
             {
                 var operation = LoadSceneAsync(section.SectionPersistentData);
 
