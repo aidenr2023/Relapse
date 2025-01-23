@@ -56,7 +56,7 @@ public class LesionHeadtracking : MonoBehaviour
         headConstraint.weight = Mathf.Lerp(headConstraint.weight, targetWeight, Time.deltaTime);
         hipConstraint.weight = Mathf.Lerp(hipConstraint.weight, targetWeight, Time.deltaTime);
 
-        Debug.Log($"Set to target: {Player.Instance}");
+        // Debug.Log($"Set to target: {Player.Instance}");
     }
 
     private void SetSourceWeight(MultiAimConstraint constraint, Transform targetTransform)

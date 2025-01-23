@@ -184,6 +184,44 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         InputActions.Add(
             new InputData(InputManager.Instance.PControls.Player.ChangePower, InputType.Performed, OnPowerChanged)
         );
+
+        // Add the inputs for 1, 2, 3, 4
+        InputActions.Add(
+            new InputData(InputManager.Instance.PControls.Player.Power1, InputType.Performed, OnPower1)
+        );
+        InputActions.Add(
+            new InputData(InputManager.Instance.PControls.Player.Power2, InputType.Performed, OnPower2)
+        );
+        InputActions.Add(
+            new InputData(InputManager.Instance.PControls.Player.Power3, InputType.Performed, OnPower3)
+        );
+        InputActions.Add(
+            new InputData(InputManager.Instance.PControls.Player.Power4, InputType.Performed, OnPower4)
+        );
+    }
+
+    private void OnPower1(InputAction.CallbackContext obj)
+    {
+        // Set the current power to the first power
+        ChangePower(0);
+    }
+
+    private void OnPower2(InputAction.CallbackContext obj)
+    {
+        // Set the current power to the first power
+        ChangePower(1);
+    }
+
+    private void OnPower3(InputAction.CallbackContext obj)
+    {
+        // Set the current power to the first power
+        ChangePower(2);
+    }
+
+    private void OnPower4(InputAction.CallbackContext obj)
+    {
+        // Set the current power to the first power
+        ChangePower(3);
     }
 
 
@@ -208,6 +246,18 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     private void OnPowerChanged(InputAction.CallbackContext obj)
     {
+        // Get the float value of the change power input
+        var changePowerValue = obj.ReadValue<float>();
+
+        // Scroll up or down based on the input
+        var direction = changePowerValue > 0 ? 1 : -1;
+
+        // Set the current power index to the next power
+        ChangePower(_currentPowerIndex + direction);
+    }
+
+    private void ChangePower(int index)
+    {
         // Return if the powers array is empty
         if (powers.Length == 0)
             return;
@@ -220,14 +270,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         if (_isChargingPower)
             StopCharge();
 
-        // Get the float value of the change power input
-        var changePowerValue = obj.ReadValue<float>();
-
-        // Scroll up or down based on the input
-        var direction = changePowerValue > 0 ? 1 : -1;
-
-        // Set the current power index to the next power
-        _currentPowerIndex = (_currentPowerIndex + direction) % powers.Length;
+        _currentPowerIndex = (index) % powers.Length;
         if (_currentPowerIndex < 0)
             _currentPowerIndex += powers.Length;
     }

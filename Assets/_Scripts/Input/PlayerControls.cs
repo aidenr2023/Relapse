@@ -305,6 +305,42 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Power1"",
+                    ""type"": ""Button"",
+                    ""id"": ""1bf070aa-0b6f-4e03-bfde-2f3b16d9f556"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Power2"",
+                    ""type"": ""Button"",
+                    ""id"": ""e5d93213-1f2e-49c0-90e0-10c1f4636981"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Power3"",
+                    ""type"": ""Button"",
+                    ""id"": ""bab8001d-2e6b-4b69-a4bb-b97288101c41"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Power4"",
+                    ""type"": ""Button"",
+                    ""id"": ""46b01b24-ffd0-4543-85ed-bf5593829ec7"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -547,6 +583,50 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": ""KB n M"",
                     ""action"": ""Sprint"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4d8af2a5-0313-48b8-8c49-9a24d933bca3"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KB n M"",
+                    ""action"": ""Power1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c9815412-67fa-44bc-b30d-da4a398b0cdf"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KB n M"",
+                    ""action"": ""Power2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4df20afc-3482-4453-bdb2-9f9ece013186"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KB n M"",
+                    ""action"": ""Power3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3a525343-b415-47da-a3ee-f922d7f67c99"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KB n M"",
+                    ""action"": ""Power4"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -821,6 +901,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Inspect = m_Player.FindAction("Inspect", throwIfNotFound: true);
         m_Player_SprintToggle = m_Player.FindAction("SprintToggle", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
+        m_Player_Power1 = m_Player.FindAction("Power1", throwIfNotFound: true);
+        m_Player_Power2 = m_Player.FindAction("Power2", throwIfNotFound: true);
+        m_Player_Power3 = m_Player.FindAction("Power3", throwIfNotFound: true);
+        m_Player_Power4 = m_Player.FindAction("Power4", throwIfNotFound: true);
         // PlayerMovementBasic
         m_PlayerMovementBasic = asset.FindActionMap("PlayerMovementBasic", throwIfNotFound: true);
         m_PlayerMovementBasic_Move = m_PlayerMovementBasic.FindAction("Move", throwIfNotFound: true);
@@ -1026,6 +1110,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Inspect;
     private readonly InputAction m_Player_SprintToggle;
     private readonly InputAction m_Player_Sprint;
+    private readonly InputAction m_Player_Power1;
+    private readonly InputAction m_Player_Power2;
+    private readonly InputAction m_Player_Power3;
+    private readonly InputAction m_Player_Power4;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -1041,6 +1129,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Inspect => m_Wrapper.m_Player_Inspect;
         public InputAction @SprintToggle => m_Wrapper.m_Player_SprintToggle;
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
+        public InputAction @Power1 => m_Wrapper.m_Player_Power1;
+        public InputAction @Power2 => m_Wrapper.m_Player_Power2;
+        public InputAction @Power3 => m_Wrapper.m_Player_Power3;
+        public InputAction @Power4 => m_Wrapper.m_Player_Power4;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1083,6 +1175,18 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Sprint.started += instance.OnSprint;
             @Sprint.performed += instance.OnSprint;
             @Sprint.canceled += instance.OnSprint;
+            @Power1.started += instance.OnPower1;
+            @Power1.performed += instance.OnPower1;
+            @Power1.canceled += instance.OnPower1;
+            @Power2.started += instance.OnPower2;
+            @Power2.performed += instance.OnPower2;
+            @Power2.canceled += instance.OnPower2;
+            @Power3.started += instance.OnPower3;
+            @Power3.performed += instance.OnPower3;
+            @Power3.canceled += instance.OnPower3;
+            @Power4.started += instance.OnPower4;
+            @Power4.performed += instance.OnPower4;
+            @Power4.canceled += instance.OnPower4;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1120,6 +1224,18 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Sprint.started -= instance.OnSprint;
             @Sprint.performed -= instance.OnSprint;
             @Sprint.canceled -= instance.OnSprint;
+            @Power1.started -= instance.OnPower1;
+            @Power1.performed -= instance.OnPower1;
+            @Power1.canceled -= instance.OnPower1;
+            @Power2.started -= instance.OnPower2;
+            @Power2.performed -= instance.OnPower2;
+            @Power2.canceled -= instance.OnPower2;
+            @Power3.started -= instance.OnPower3;
+            @Power3.performed -= instance.OnPower3;
+            @Power3.canceled -= instance.OnPower3;
+            @Power4.started -= instance.OnPower4;
+            @Power4.performed -= instance.OnPower4;
+            @Power4.canceled -= instance.OnPower4;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1296,6 +1412,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnInspect(InputAction.CallbackContext context);
         void OnSprintToggle(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
+        void OnPower1(InputAction.CallbackContext context);
+        void OnPower2(InputAction.CallbackContext context);
+        void OnPower3(InputAction.CallbackContext context);
+        void OnPower4(InputAction.CallbackContext context);
     }
     public interface IPlayerMovementBasicActions
     {
