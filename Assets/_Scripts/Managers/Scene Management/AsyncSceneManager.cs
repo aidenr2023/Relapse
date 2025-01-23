@@ -236,6 +236,13 @@ public class AsyncSceneManager : IDebugged
         // If the scene is already loaded, return
         if (_asyncSceneRecords.TryGetValue(scene, out var sceneRecord))
             return;
+        
+        // Return if the scene name is empty
+        if (scene.SceneName.Trim() == "")
+        {
+            Debug.LogWarning("Scene name is empty!");
+            return;
+        }
 
         // Load the scene
         SceneManager.LoadScene(scene, LoadSceneMode.Additive);

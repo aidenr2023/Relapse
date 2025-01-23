@@ -5,7 +5,7 @@ using UnityEngine;
 public class ChainLightning : MonoBehaviour, IPower
 {
     // a field for a projectile prefab
-    [SerializeField] private TrailRenderer trailPrefab;
+    [SerializeField] private GameObject trailPrefab;
 
     [SerializeField, Min(0)] private float damage = 30f;
     [SerializeField, Min(0)] private int maxChainCount = 3;

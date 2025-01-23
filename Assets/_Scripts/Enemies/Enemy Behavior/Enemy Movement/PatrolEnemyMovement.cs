@@ -125,15 +125,12 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     private void Update()
     {
         // Set the NavMeshAgent enabled state
-        // NavMeshAgent.enabled = IsMovementEnabled;
-        NavMeshAgent.isStopped = !IsMovementEnabled;
+        if (NavMeshAgent.enabled && NavMeshAgent.isOnNavMesh)
+            NavMeshAgent.isStopped = !IsMovementEnabled;
 
         // If the navmesh agent is enabled, check if the enemy is within stopping distance
-        if (NavMeshAgent.enabled && IsWithinStoppingDistance)
-        {
+        if (NavMeshAgent.enabled && NavMeshAgent.isOnNavMesh && IsWithinStoppingDistance)
             this.AddMovementDisableToken(this);
-            // Debug.Log($"STOPPING DISTANCE REACHED: {gameObject.name}");
-        }
         else
             this.RemoveMovementDisableToken(this);
 
@@ -151,7 +148,7 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         // Set the target velocity
         _targetVelocity = movementSpeed * movementSpeedTokenMultiplier;
 
-        if (NavMeshAgent.enabled)
+        if (NavMeshAgent.enabled && NavMeshAgent.isOnNavMesh)
         {
             // Set the movement speed of the navmesh agent
             NavMeshAgent.speed = _targetVelocity;
@@ -175,6 +172,10 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         // Return if disabled
         if (!IsMovementEnabled)
             return;
+
+        if (!NavMeshAgent.enabled || !NavMeshAgent.isOnNavMesh)
+            return;
+
         var currentDetectionState = Enemy.EnemyDetectionBehavior.CurrentDetectionState;
 
         switch (currentDetectionState)
@@ -188,36 +189,27 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
                 if (CurrentCheckpoint == null)
                     return;
 
-                if (NavMeshAgent.enabled)
-                {
-                    // Set the destination to the current checkpoint
-                    if (NavMeshAgent.destination != CurrentCheckpoint.position)
-                        NavMeshAgent.SetDestination(CurrentCheckpoint.position);
-                }
+                // Set the destination to the current checkpoint
+                if (NavMeshAgent.destination != CurrentCheckpoint.position)
+                    NavMeshAgent.SetDestination(CurrentCheckpoint.position);
 
                 break;
 
             case EnemyDetectionState.Curious:
 
-                if (NavMeshAgent.enabled)
-                {
-                    // Set the destination to the last known player position
-                    if (NavMeshAgent.destination != Enemy.EnemyDetectionBehavior.LastKnownTargetPosition)
-                        NavMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.LastKnownTargetPosition);
-                }
+                // Set the destination to the last known player position
+                if (NavMeshAgent.destination != Enemy.EnemyDetectionBehavior.LastKnownTargetPosition)
+                    NavMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.LastKnownTargetPosition);
 
                 break;
 
             case EnemyDetectionState.Aware:
 
-                if (NavMeshAgent.enabled)
-                {
-                    // Set the destination to the player's current position
-                    if (Enemy.EnemyDetectionBehavior.IsTargetDetected)
-                        NavMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.Target.GameObject.transform.position);
-                    else
-                        NavMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.LastKnownTargetPosition);
-                }
+                // Set the destination to the player's current position
+                if (Enemy.EnemyDetectionBehavior.IsTargetDetected)
+                    NavMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.Target.GameObject.transform.position);
+                else
+                    NavMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.LastKnownTargetPosition);
 
                 break;
 
@@ -241,7 +233,7 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         var speedValue = velocity * animationSpeedCoefficient;
 
         // If the navmesh agent is disabled, set the speed value to 0
-        if (NavMeshAgent.isStopped)
+        if (NavMeshAgent.enabled && NavMeshAgent.isOnNavMesh && NavMeshAgent.isStopped)
             isMoving = false;
 
         animator.SetBool(AnimatorIsMovingProperty, isMoving);
@@ -252,7 +244,7 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     private void CheckCheckpoint()
     {
         // Return if the NavMeshAgent is disabled
-        if (!NavMeshAgent.enabled)
+        if (!NavMeshAgent.enabled || !NavMeshAgent.isOnNavMesh)
             return;
 
         // Get the distance to the current checkpoint
@@ -270,7 +262,8 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
         _currentCheckpointIndex = (_currentCheckpointIndex + 1) % patrolCheckpoints.Length;
 
         // Set the destination to the next checkpoint
-        NavMeshAgent.SetDestination(CurrentCheckpoint.position);
+        if (CurrentCheckpoint != null)
+            NavMeshAgent.SetDestination(CurrentCheckpoint.position);
     }
 
     private int DetermineClosestCheckpoint()
@@ -289,8 +282,10 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
             if (i >= patrolCheckpoints.Length)
                 break;
 
-            var currentCheckpoint = patrolCheckpoints[i];
-            var distance = Vector3.Distance(transform.position, currentCheckpoint.position);
+            if (patrolCheckpoints[i] == null)
+                continue;
+            
+            var distance = Vector3.Distance(transform.position, patrolCheckpoints[i].position);
 
             // Update the closest checkpoint if the current checkpoint is closer
             if (distance >= closestDistance)
@@ -302,7 +297,7 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
 
         return closestCheckpointIndex;
     }
-    
+
     public void SetPosition(Vector3 pos)
     {
         // If there is a nav mesh agent, set the position
