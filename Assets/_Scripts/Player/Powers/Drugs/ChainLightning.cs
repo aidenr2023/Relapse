@@ -49,7 +49,7 @@ public class ChainLightning : MonoBehaviour, IPower
             yield break;
 
         // Instantiate the trail prefab
-        var trail = Instantiate(trailPrefab, powerManager.Player.Rigidbody.position, Quaternion.identity);
+        var trail = Instantiate(trailPrefab, powerManager.PowerFirePoint.position, Quaternion.identity);
 
         // Create a hash set of all the enemies
         var remainingEnemies = new HashSet<Enemy>();
@@ -62,7 +62,7 @@ public class ChainLightning : MonoBehaviour, IPower
 
         var remainingChainCount = maxChainCount;
 
-        var previousPosition = powerManager.Player.Rigidbody.position;
+        var previousPosition = powerManager.PowerFirePoint.position;
 
         // Keep shooting the projectile at the current enemy
         while (remainingChainCount > 0)

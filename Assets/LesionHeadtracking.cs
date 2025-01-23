@@ -19,32 +19,19 @@ public class LesionHeadtracking : MonoBehaviour
     private IEnumerator WaitForPlayerAndAssignConstraints()
     {
         // Wait for the Player object to be present in the scene
-        GameObject player = null;
-        while (player == null)
-        {
-            player = GameObject.FindWithTag("Player");
-            if (player == null)
-            {
-                Debug.LogWarning("Player not found. Retrying...");
-                yield return null; // Wait one frame before retrying
-            }
-        }
+        // Wait one frame before retrying
+        while (Player.Instance == null)
+            yield return null;
 
-        Debug.Log("Player found. Assigning constraints.");
+        // Debug.Log("Player found. Assigning constraints.");
 
         // Assign the Player transform to the head constraint
-        var headSources = headConstraint.data.sourceObjects;
-        headSources.SetTransform(0, player.transform);
-        headSources.SetWeight(0, 1f);
-        headConstraint.data.sourceObjects = headSources;
+        SetSourceWeight(headConstraint, Player.Instance.transform);
 
         // Assign the Player transform to the hip constraint
-        var hipSources = hipConstraint.data.sourceObjects;
-        hipSources.SetTransform(0, player.transform);
-        hipSources.SetWeight(0, 1f);
-        hipConstraint.data.sourceObjects = hipSources;
+        SetSourceWeight(hipConstraint, Player.Instance.transform);
 
-        Debug.Log("Constraints assigned successfully.");
+        // Debug.Log("Constraints assigned successfully.");
     }
 
     private void Update()
@@ -55,17 +42,31 @@ public class LesionHeadtracking : MonoBehaviour
 
     private void SetWeight()
     {
+        // If there is no player instance, return
+        if (Player.Instance == null)
+            return;
+
+        var targetWeight = 0f;
+
         // If the enemy is aware, smoothly transition constraints to 'weight' (e.g., 1.0)
-        if (enemyDetection.CurrentDetectionState == EnemyDetectionState.Aware)
-        {
-            headConstraint.weight = Mathf.Lerp(headConstraint.weight, weight, Time.deltaTime);
-            hipConstraint.weight = Mathf.Lerp(hipConstraint.weight, weight, Time.deltaTime);
-        }
         // Otherwise, smoothly transition constraints back to 0
-        else
-        {
-            headConstraint.weight = Mathf.Lerp(headConstraint.weight, 0f, Time.deltaTime);
-            hipConstraint.weight = Mathf.Lerp(hipConstraint.weight, 0f, Time.deltaTime);
-        }
+        if (enemyDetection.CurrentDetectionState == EnemyDetectionState.Aware)
+            targetWeight = weight;
+
+        headConstraint.weight = Mathf.Lerp(headConstraint.weight, targetWeight, Time.deltaTime);
+        hipConstraint.weight = Mathf.Lerp(hipConstraint.weight, targetWeight, Time.deltaTime);
+
+        Debug.Log($"Set to target: {Player.Instance}");
+    }
+
+    private void SetSourceWeight(MultiAimConstraint constraint, Transform targetTransform)
+    {
+        if (targetTransform == null)
+            return;
+        
+        var sources = constraint.data.sourceObjects;
+        sources.SetTransform(0, targetTransform);
+        sources.SetWeight(0, 1f);
+        constraint.data.sourceObjects = sources;
     }
 }
