@@ -90,6 +90,9 @@ public class ChainLightning : MonoBehaviour, IPower
 
                 // Set the position of the trail
                 trail.transform.position = trailPosition;
+                
+                // Set the forward direction of the trail
+                trail.transform.forward = enemyPosition - previousPosition;
 
                 // Wait for the step delay time
                 yield return new WaitForSeconds(chainDelayTime / chainStepCount);
