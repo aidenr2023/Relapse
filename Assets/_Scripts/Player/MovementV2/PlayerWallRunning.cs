@@ -441,23 +441,23 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             // Orient the wall forward vector to the correct direction
             if (Vector3.Dot(wallForwardVector, ParentComponent.Orientation.forward) < 0)
                 wallForwardVector *= -1;
-            
+
             var normalOrientationAngle = Vector3.Angle(wallForwardVector, ParentComponent.Orientation.forward);
             if (normalOrientationAngle >= impossibleWallAngle)
-                continue;
+            {
+                if (rayAngle > wallClimbAngle)
+                    continue;
+                
+                var isOnWallClimbLayer = Physics.Raycast(
+                    cRay,
+                    out _,
+                    wallRunningDetectionDistance,
+                    wallClimbLayer
+                );
 
-            // if (rayAngle <= wallClimbAngle)
-            // {
-            //     var cWallClimeHit = Physics.Raycast(
-            //         cRay,
-            //         out var _,
-            //         wallRunningDetectionDistance,
-            //         wallClimbLayer
-            //     );
-            //     
-            //     if (!cWallClimeHit)
-            //         continue;
-            // }
+                if (!isOnWallClimbLayer)
+                    continue;
+            }
 
             // Set the wall sliding flag to true
             _isWallSliding = true;
