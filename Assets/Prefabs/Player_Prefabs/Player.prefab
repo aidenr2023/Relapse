@@ -946,7 +946,7 @@ MonoBehaviour:
   isEnabled: 1
   wallLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 262208
   wallAngleTolerance: 87.5
   maxFallSpeed: 0.25
   fallAcceleration: 0.075
@@ -959,7 +959,7 @@ MonoBehaviour:
   wallRunStartMinimumAirTime: 0.25
   desiredWallDistance: 0.25
   desiredWallDistanceForce: 60
-  impossibleWallAngle: 120
+  impossibleWallAngle: 175
   wallJumpForce: 15
   wallJumpAngle: 40
   autoWallJumpForce: 0.5
@@ -972,7 +972,10 @@ MonoBehaviour:
     pitch: 1
   inwardLookLockAngle: 15
   outwardLookLockAngle: 40
-  wallClimbAngle: 6.25
+  wallClimbLayer:
+    serializedVersion: 2
+    m_Bits: 262144
+  wallClimbAngle: 30
   wallClimbStayAngle: 40
   wallRunningInputSpeed: 0.00390625
   wallClimbStartVelocity: 3

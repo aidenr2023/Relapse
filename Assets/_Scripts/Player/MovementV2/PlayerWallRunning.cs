@@ -32,7 +32,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     [SerializeField, Min(0)] private float desiredWallDistance = 0.25f;
     [SerializeField, Min(0)] private float desiredWallDistanceForce = 1;
-    
+
     [SerializeField, Range(0, 180)] private float impossibleWallAngle = 150;
 
     [Header("Wall Jump")] [SerializeField] [Min(0)]
@@ -49,8 +49,10 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     [SerializeField] private float outwardLookLockAngle = 60;
 
-    [Header("Wall Climb")] [SerializeField, Min(0)]
-    private float wallClimbAngle;
+    [Header("Wall Climb")] [SerializeField]
+    private LayerMask wallClimbLayer;
+
+    [SerializeField, Min(0)] private float wallClimbAngle;
 
     [SerializeField, Min(0)] private float wallClimbStayAngle;
     [SerializeField, Min(0)] private float wallRunningInputSpeed = 0.5f;
@@ -383,12 +385,12 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             var wallNormal = hitInfo.HitInfo.normal;
 
             // Get the angle between the wall normal and the player's forward vector
-            var wallAngle = Vector3.Angle(wallNormal, ParentComponent.Orientation.forward) - 90;
+            var wallAngle = Vector3.Angle(wallNormal, ParentComponent.Orientation.forward);
 
-            // TODO: Replace with actual angle checks
-            const float tmpAngle = 180;
-            if (wallAngle > tmpAngle || wallAngle < -tmpAngle)
-                continue;
+            // // TODO: Replace with actual angle checks
+            // const float tmpAngle = 180;
+            // if (wallAngle > tmpAngle || wallAngle < -tmpAngle)
+            //     continue;
 
             // If the player is in basic movement,
             // check if they are moving fast enough and have been in the air long enough
@@ -435,8 +437,21 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             // If the ray is OUTSIDE the wall climb angle, but normal of the wall is 
             // damn near the opposite of the player's orientation forward, continue
             var normalOrientationAngle = Vector3.Angle(wallNormal, ParentComponent.Orientation.forward);
-            if (rayAngle > wallClimbAngle && normalOrientationAngle > impossibleWallAngle)
+            if (normalOrientationAngle > impossibleWallAngle && rayAngle > wallClimbAngle)
                 continue;
+
+            // if (rayAngle <= wallClimbAngle)
+            // {
+            //     var cWallClimeHit = Physics.Raycast(
+            //         cRay,
+            //         out var _,
+            //         wallRunningDetectionDistance,
+            //         wallClimbLayer
+            //     );
+            //     
+            //     if (!cWallClimeHit)
+            //         continue;
+            // }
 
             // Set the wall sliding flag to true
             _isWallSliding = true;
@@ -448,6 +463,64 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
         // If the player is still not wall sliding, return
         if (!_isWallSliding)
+        {
+            ResetWallSliding();
+            return;
+        }
+
+        // Set the closet hit info as the contact info
+        _contactInfo = closestHitInfo;
+
+        // Set the current wall
+        _currentWall = closestHitInfo.collider.gameObject;
+
+        // Set the current ray
+        _currentRay = closestRay;
+
+        // Perform a raycast to check if the player is wall climbing
+        var wallClimbHit = Physics.Raycast(
+            _currentRay,
+            out _,
+            wallRunningDetectionDistance,
+            wallClimbLayer
+        );
+        
+        // Get the angle of the current ray in relation to the orientation's forward vector
+        // If the angle is withing the wall climbing angle, set the flag to true
+        var currentRayAngle = Vector3.Angle(_currentRay.direction, ParentComponent.Orientation.forward);
+
+        // If the current ray angle is within the wall climb angle, but there is no wall climb hit, return
+        if (currentRayAngle <= wallClimbAngle && !wallClimbHit)
+        {
+            ResetWallSliding();
+            return;
+        }
+        
+        var wallClimbAngleSatisfied = (_previouslyWallClimbing)
+            ? currentRayAngle <= wallClimbStayAngle
+            : currentRayAngle <= wallClimbAngle;
+        
+        _isWallClimbing = wallClimbAngleSatisfied && !_isWallRunning && wallClimbHit;
+
+        // If the previous wall is null, invoke the on wall slide start event
+        if (_previousWall == null)
+            OnWallSlideStart?.Invoke(this);
+
+        // If the previous wall is not the current wall, invoke the on wall changed event
+        if (_previousWall != _currentWall)
+            OnWallChanged?.Invoke(this);
+
+        // If the player is wall climbing, invoke the on wall climb start event
+        if (_isWallClimbing && !_previouslyWallClimbing)
+            OnWallClimbStart?.Invoke(this);
+
+        // If the player was previously wall climbing, invoke the on wall climb end event
+        if (_previouslyWallClimbing && !_isWallClimbing)
+            OnWallClimbEnd?.Invoke(this);
+        
+        return;
+
+        void ResetWallSliding()
         {
             _contactInfo = default;
             _currentWall = null;
@@ -465,43 +538,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             if (_previouslyWallClimbing && !_isWallClimbing)
                 OnWallClimbEnd?.Invoke(this);
 
-            return;
         }
-
-        // Set the closet hit info as the contact info
-        _contactInfo = closestHitInfo;
-
-        // Set the current wall
-        _currentWall = closestHitInfo.collider.gameObject;
-
-        // Set the current ray
-        _currentRay = closestRay;
-
-        // Get the angle of the current ray in relation to the orientation's forward vector
-        // If the angle is withing the wall climbing angle, set the flag to true
-        var currentRayAngle = Vector3.Angle(_currentRay.direction, ParentComponent.Orientation.forward);
-
-        var wallClimbAngleSatisfied = (_previouslyWallClimbing)
-            ? currentRayAngle <= wallClimbStayAngle
-            : currentRayAngle <= wallClimbAngle;
-
-        _isWallClimbing = wallClimbAngleSatisfied && !_isWallRunning;
-
-        // If the previous wall is null, invoke the on wall slide start event
-        if (_previousWall == null)
-            OnWallSlideStart?.Invoke(this);
-
-        // If the previous wall is not the current wall, invoke the on wall changed event
-        if (_previousWall != _currentWall)
-            OnWallChanged?.Invoke(this);
-
-        // If the player is wall climbing, invoke the on wall climb start event
-        if (_isWallClimbing && !_previouslyWallClimbing)
-            OnWallClimbStart?.Invoke(this);
-
-        // If the player was previously wall climbing, invoke the on wall climb end event
-        if (_previouslyWallClimbing && !_isWallClimbing)
-            OnWallClimbEnd?.Invoke(this);
     }
 
     private void UpdateDetectWallRunning()
@@ -516,9 +553,9 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         if (currentWallRunHitInfo != null)
         {
             if (currentWallRunHitInfo.LeftRayAngle < currentWallRunHitInfo.RightRayAngle)
-                angleWithinTolerance = currentWallRunHitInfo.LeftRayAngle <= wallAngleTolerance;
+                angleWithinTolerance = Mathf.Abs(currentWallRunHitInfo.LeftRayAngle) <= wallAngleTolerance;
             else
-                angleWithinTolerance = currentWallRunHitInfo.RightRayAngle <= wallAngleTolerance;
+                angleWithinTolerance = Mathf.Abs(currentWallRunHitInfo.RightRayAngle) <= wallAngleTolerance;
         }
 
         // Get the current hit info

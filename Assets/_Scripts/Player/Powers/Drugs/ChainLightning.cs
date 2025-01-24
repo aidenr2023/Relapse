@@ -175,7 +175,6 @@ public class ChainLightning : MonoBehaviour, IPower
         {
             enemy.EnemyMovementBehavior.RemoveMovementDisableToken(this);
             enemy.EnemyAttackBehavior.RemoveAttackDisableToken(this);
-            
         }
         
         // Destroy the lightning VFX
