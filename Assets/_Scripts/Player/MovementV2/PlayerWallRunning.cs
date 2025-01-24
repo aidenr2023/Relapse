@@ -436,8 +436,14 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
             // If the ray is OUTSIDE the wall climb angle, but normal of the wall is 
             // damn near the opposite of the player's orientation forward, continue
-            var normalOrientationAngle = Vector3.Angle(wallNormal, ParentComponent.Orientation.forward);
-            if (normalOrientationAngle <= impossibleWallAngle)
+            var wallForwardVector = Vector3.Cross(wallNormal, Vector3.up).normalized;
+
+            // Orient the wall forward vector to the correct direction
+            if (Vector3.Dot(wallForwardVector, ParentComponent.Orientation.forward) < 0)
+                wallForwardVector *= -1;
+            
+            var normalOrientationAngle = Vector3.Angle(wallForwardVector, ParentComponent.Orientation.forward);
+            if (normalOrientationAngle >= impossibleWallAngle)
                 continue;
 
             // if (rayAngle <= wallClimbAngle)
@@ -484,7 +490,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             wallRunningDetectionDistance,
             wallClimbLayer
         );
-        
+
         // Get the angle of the current ray in relation to the orientation's forward vector
         // If the angle is withing the wall climbing angle, set the flag to true
         var currentRayAngle = Vector3.Angle(_currentRay.direction, ParentComponent.Orientation.forward);
@@ -495,11 +501,11 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             ResetWallSliding();
             return;
         }
-        
+
         var wallClimbAngleSatisfied = (_previouslyWallClimbing)
             ? currentRayAngle <= wallClimbStayAngle
             : currentRayAngle <= wallClimbAngle;
-        
+
         _isWallClimbing = wallClimbAngleSatisfied && !_isWallRunning && wallClimbHit;
 
         // If the previous wall is null, invoke the on wall slide start event
@@ -517,7 +523,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         // If the player was previously wall climbing, invoke the on wall climb end event
         if (_previouslyWallClimbing && !_isWallClimbing)
             OnWallClimbEnd?.Invoke(this);
-        
+
         return;
 
         void ResetWallSliding()
@@ -537,7 +543,6 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             // If the player was previously wall climbing, invoke the on wall climb end event
             if (_previouslyWallClimbing && !_isWallClimbing)
                 OnWallClimbEnd?.Invoke(this);
-
         }
     }
 
