@@ -44,6 +44,10 @@ public class StationaryEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
         // Return if the target is null
         if (Enemy.EnemyDetectionBehavior.Target == null)
             return;
+        
+        // If there are any movement disable tokens, return
+        if (MovementDisableTokens.Count > 0)
+            return;
 
         var oldRotation = transform.rotation;
 
@@ -56,11 +60,14 @@ public class StationaryEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
         // var desiredRotation = Quaternion.FromToRotation(Vector3.forward, diff.normalized);
         var desiredRotation = Quaternion.LookRotation(diff.normalized, Vector3.up);
 
-        transform.rotation = Quaternion.Euler(
-            0,
-            Mathf.Lerp(oldRotation.eulerAngles.y, desiredRotation.eulerAngles.y, rotationLerpAmount * frameTime),
-            0
-        );
+        // transform.rotation = Quaternion.Euler(
+        //     0,
+        //     Mathf.Lerp(oldRotation.eulerAngles.y, desiredRotation.eulerAngles.y, rotationLerpAmount * frameTime),
+        //     0
+        // );
+        
+        // Lerp the rotation
+        transform.rotation = Quaternion.Lerp(oldRotation, desiredRotation, rotationLerpAmount * frameTime);
 
         // Update the nav mesh agent
         UpdateNavMeshAgent();
