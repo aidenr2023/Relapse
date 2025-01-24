@@ -1,0 +1,135 @@
+﻿using TMPro;
+using UnityEngine;
+
+public class AmmoText : MonoBehaviour
+{
+    private const float LERP_THRESHOLD = 0.0001f;
+
+    #region Serialized Fields
+    
+    [SerializeField] private CanvasGroup canvasGroup;
+    [SerializeField] private ReloadText reloadText;
+
+    [SerializeField, Range(0, 1)] private float maxOpacity = 1;
+    [SerializeField, Range(0, 1)] private float opacityLerpAmount = 0.15f;
+    [SerializeField, Range(0, 1)] private float positionLerpAmount = 0.15f;
+
+    [SerializeField] private Vector3 offset;
+    [SerializeField] private TMP_Text text;
+
+    #endregion
+        
+    #region Private Fields
+
+    private WeaponManager _weaponManager;
+    private float _desiredOpacity;
+
+    #endregion
+
+    private void Awake()
+    {
+        // Set the initial desired opacity to 0
+        _desiredOpacity = 0;
+
+        // Set the canvas group's alpha to 0
+        canvasGroup.alpha = 0;
+    }
+
+    private void Update()
+    {
+        // Update the information of the current weapon manager
+        UpdateInformation();
+
+        // Update the desired opacity
+        UpdateDesiredOpacity();
+
+        // Update the color of the reload text
+        UpdateColor();
+
+        // Update the text of the reload text
+        UpdateText();
+
+        // Update the position of the reload text
+        UpdatePosition();
+    }
+
+    private void UpdateInformation()
+    {
+        // Get the instance of the player object
+        var player = Player.Instance;
+
+        // Return if the player object is null
+        if (player == null)
+        {
+            _weaponManager = null;
+            return;
+        }
+
+        // Get the weapon manager component
+        _weaponManager = player.WeaponManager;
+
+        // Return if the weapon manager component is null
+        if (_weaponManager == null)
+            return;
+    }
+
+    private void UpdateDesiredOpacity()
+    {
+        _desiredOpacity = 1;
+
+        // Set the desired opacity to 0 if the weapon manager is null
+        if (_weaponManager == null)
+            _desiredOpacity = 0;
+
+        // If the equipped gun is null, set the desired opacity to 0
+        else if (_weaponManager.EquippedGun == null)
+            _desiredOpacity = 0;
+
+        // Lerp the alpha of the canvas group's alpha to the desired opacity
+        const float defaultFrameTime = 1 / 60f;
+        var frameAmount = Time.deltaTime / defaultFrameTime;
+        canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, _desiredOpacity, opacityLerpAmount * frameAmount);
+
+        // Set the alpha of the canvas group to the desired opacity if the difference between the two is less than the threshold
+        if (Mathf.Abs(canvasGroup.alpha - _desiredOpacity) < LERP_THRESHOLD)
+            canvasGroup.alpha = _desiredOpacity;
+    }
+
+    private void UpdateColor()
+    {
+        // Set the color of the text to red if the equipped gun is out of ammo
+        text.color = reloadText.Color;
+    }
+    
+    private void UpdateText()
+    {
+        // Set the text of the ammo text to the ammo count of the equipped gun
+        text.text = $"{_weaponManager.EquippedGun.CurrentAmmo}";
+    }
+    
+    private void UpdatePosition()
+    {
+        // Return if the weapon manager is null
+        if (_weaponManager == null)
+            return;
+
+        // Get the gun holder transform
+        var gunHolderTransform = _weaponManager.GunHolder;
+
+        // Return if the gun holder transform is null
+        if (gunHolderTransform == null)
+            return;
+
+        // Put the offset in terms of the gun holder's local space
+        var relativeOffset = gunHolderTransform.TransformDirection(offset);
+
+        // Set the position of the reload text to the gun holder's position
+        var desiredPosition = gunHolderTransform.position + relativeOffset;
+
+        const float defaultFrameTime = 1 / 60f;
+        var frameAmount = Time.unscaledDeltaTime / defaultFrameTime;
+
+        // Lerp the position of the reload text to the desired position
+        transform.position = Vector3.Lerp(transform.position, desiredPosition, positionLerpAmount * frameAmount);
+    }
+}

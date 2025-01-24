@@ -39,6 +39,8 @@ public class ReloadText : MonoBehaviour
 
     #endregion
 
+    public Color Color => text.color;
+
     private void Awake()
     {
         // Set the initial desired opacity to 0
@@ -166,8 +168,12 @@ public class ReloadText : MonoBehaviour
             var gradientAmount = (ammoPercentage - lowAmmoGradientStop) / (lowAmmoPercentage - lowAmmoGradientStop);
 
             // Set the color of the reload text to the blink amount
-            SetColor(lowAmmoGradient.Evaluate(gradientAmount));
+            SetColor(lowAmmoGradient.Evaluate(1 - gradientAmount));
         }
+
+        // Set the color of the reload text to white
+        else
+            SetColor(Color.white);
     }
 
     private void UpdateText()
@@ -221,8 +227,6 @@ public class ReloadText : MonoBehaviour
 
         // Put the offset in terms of the gun holder's local space
         var relativeOffset = gunHolderTransform.TransformDirection(offset);
-
-        // Debug.Log($"Offset: {offset} - Relative Offset: {relativeOffset}");
 
         // Set the position of the reload text to the gun holder's position
         var desiredPosition = gunHolderTransform.position + relativeOffset + bobOffset;
