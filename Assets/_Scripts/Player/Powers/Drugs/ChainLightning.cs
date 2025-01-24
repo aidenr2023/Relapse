@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class ChainLightning : MonoBehaviour, IPower
 {
@@ -11,7 +12,12 @@ public class ChainLightning : MonoBehaviour, IPower
     [SerializeField, Min(0)] private int maxChainCount = 3;
     [SerializeField, Min(0)] private float maxChainDistance = 10f;
     [SerializeField, Min(0)] private float chainDelayTime = .25f;
+    [SerializeField, Min(0)] private float chainStopTime = .25f;
     [SerializeField, Min(0)] private int chainStepCount = 3;
+
+    [SerializeField, Min(0)] private float enemyStunTime = .5f;
+
+    [SerializeField] private VisualEffect lightningVfxPrefab;
 
     public GameObject GameObject => gameObject;
     public PowerScriptableObject PowerScriptableObject { get; set; }
@@ -90,7 +96,7 @@ public class ChainLightning : MonoBehaviour, IPower
 
                 // Set the position of the trail
                 trail.transform.position = trailPosition;
-                
+
                 // Set the forward direction of the trail
                 trail.transform.forward = enemyPosition - previousPosition;
 
@@ -98,12 +104,36 @@ public class ChainLightning : MonoBehaviour, IPower
                 yield return new WaitForSeconds(chainDelayTime / chainStepCount);
             }
 
-            // Damage the current enemy
             if (currentEnemy != null)
+            {
+                // Damage the current enemy
                 currentEnemy.EnemyInfo.ChangeHealth(-damage, powerManager.Player.PlayerInfo, this, enemyPosition);
+
+                // Start the coroutine to stun the enemy
+                StartCoroutine(StunEnemy(currentEnemy, enemyStunTime));
+            }
 
             // Decrement the remaining chain count
             remainingChainCount--;
+
+            var chainStopTimeStart = Time.time;
+
+            // Wait for the chain stop time
+            while (Time.time - chainStopTimeStart < chainStopTime)
+            {
+                // If the current enemy is null, break
+                if (currentEnemy == null)
+                {
+                    yield return null;
+                    continue;
+                }
+
+                // Update the position of the trail
+                trail.transform.position = currentEnemy.transform.position;
+
+                // Wait for 1 frame
+                yield return null;
+            }
 
             // Find the closest enemy to the current enemy
             if (remainingChainCount > 0)
@@ -115,6 +145,40 @@ public class ChainLightning : MonoBehaviour, IPower
 
         // Destroy the trail
         Destroy(trail.gameObject);
+    }
+
+    private IEnumerator StunEnemy(Enemy enemy, float stunTime)
+    {
+        // Add a movement disabled token to the enemy for the duration of the chain stop time
+        enemy.EnemyMovementBehavior.AddMovementDisableToken(this);
+
+        // Instantiate the lightning VFX prefab
+        var lightningVfx = Instantiate(lightningVfxPrefab);
+
+        var stunStartTime = Time.time;
+        
+        while (Time.time - stunStartTime < stunTime)
+        {
+            if (enemy == null)
+                break;
+            
+            // Set the position of the lightning VFX to the enemy position
+            lightningVfx.transform.position = enemy.transform.position;
+
+            // Wait for 1 frame
+            yield return null;
+        }
+        
+        // Remove the movement disabled token from the enemy
+        if (enemy != null)
+            enemy.EnemyMovementBehavior.RemoveMovementDisableToken(this);
+        
+        // Destroy the lightning VFX
+        if (lightningVfx != null)
+        {
+            lightningVfx.SetUInt("ChargeState", 0);
+            Destroy(lightningVfx.gameObject, 10);
+        }
     }
 
     private Enemy GetClosestEnemy(Vector3 currentPosition, HashSet<Enemy> remainingEnemies)
@@ -157,7 +221,6 @@ public class ChainLightning : MonoBehaviour, IPower
     }
 
     #endregion
-
 
     #region Passive Effects
 

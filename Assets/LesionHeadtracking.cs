@@ -48,6 +48,10 @@ public class LesionHeadtracking : MonoBehaviour
 
         var targetWeight = 0f;
 
+        // If the enemy detection is null, return
+        if (enemyDetection == null)
+            return;
+        
         // If the enemy is aware, smoothly transition constraints to 'weight' (e.g., 1.0)
         // Otherwise, smoothly transition constraints back to 0
         if (enemyDetection.CurrentDetectionState == EnemyDetectionState.Aware)
