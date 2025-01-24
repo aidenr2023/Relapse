@@ -437,7 +437,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             // If the ray is OUTSIDE the wall climb angle, but normal of the wall is 
             // damn near the opposite of the player's orientation forward, continue
             var normalOrientationAngle = Vector3.Angle(wallNormal, ParentComponent.Orientation.forward);
-            if (normalOrientationAngle > impossibleWallAngle && rayAngle > wallClimbAngle)
+            if (normalOrientationAngle <= impossibleWallAngle)
                 continue;
 
             // if (rayAngle <= wallClimbAngle)
