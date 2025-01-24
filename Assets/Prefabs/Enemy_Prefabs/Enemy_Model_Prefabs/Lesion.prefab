@@ -2876,6 +2876,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2567795178724217293}
   - component: {fileID: 6378592679936873076}
+  - component: {fileID: 3735890172568817617}
+  - component: {fileID: 7885758082600173400}
   m_Layer: 9
   m_Name: Lesion
   m_TagString: Untagged
@@ -2925,6 +2927,40 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3735890172568817617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3817638210576189762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fff0960ef4ea6e04eac66b4a7fd2189d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_RigLayers:
+  - m_Rig: {fileID: 191422929676498270}
+    m_Active: 1
+  - m_Rig: {fileID: 4113009576397986723}
+    m_Active: 1
+  m_Effectors: []
+--- !u!114 &7885758082600173400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3817638210576189762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea6d5f772ca7e55499aa956d4a8b2eea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  headConstraint: {fileID: 2898984000580234485}
+  hipConstraint: {fileID: 1402508135388805621}
+  enemyDetection: {fileID: 0}
+  weight: 1
 --- !u!1 &3821225446041348820
 GameObject:
   m_ObjectHideFlags: 0
