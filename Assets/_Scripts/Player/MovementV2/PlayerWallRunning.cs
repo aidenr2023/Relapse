@@ -177,6 +177,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         OnWallSlideStart += TransferVelocityOnWallRunStart;
 
         OnWallRunStart += KillVelocityOnWallRunStart;
+        OnWallChanged += KillVelocityOnWallRunStart;
 
         // Add the on wall run end event
         OnWallRunEnd += AutoWallJump;
@@ -192,6 +193,10 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     private void KillVelocityOnWallRunStart(PlayerWallRunning obj)
     {
+        // Return if there is no current wall, return
+        if (_currentWall == null)
+            return;
+        
         // Get the current rigidbody velocity
         var velocity = ParentComponent.Rigidbody.velocity;
 

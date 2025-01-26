@@ -10,7 +10,6 @@ public class SyncReload : MonoBehaviour
 
     public void SyncReloadWithPlayer()
     {
-        return;
 
         _player_animator.SetTrigger("Reload");
     }
