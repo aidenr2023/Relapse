@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -29,6 +30,8 @@ public class ExplosionHelper : MonoBehaviour, IDamager
         // Sphere cast to get all the colliders in the explosion radius
         Physics.OverlapSphereNonAlloc(transform.position, explosionRadius, colliders);
 
+        var actors = new HashSet<IActor>();
+        
         // Loop through all the colliders
         foreach (var cCollider in colliders)
         {
@@ -39,21 +42,27 @@ public class ExplosionHelper : MonoBehaviour, IDamager
             // Try to get the IActor component from the collider
             if (!cCollider.TryGetComponentInParent(out IActor actor))
                 continue;
-
-            // Ray cast to see if the collider is in the line of sight
-            var hit = Physics.Raycast(
-                transform.position,
-                cCollider.transform.position - transform.position,
-                out var hitInfo,
-                explosionRadius
-            );
-
-            // If the hit collider is not the collider we are checking, continue
-            if (hit && hitInfo.collider != cCollider)
+            
+            if (!actors.Add(actor))
                 continue;
 
+            // // Ray cast to see if the collider is in the line of sight
+            // var hit = Physics.Raycast(
+            //     transform.position,
+            //     cCollider.transform.position - transform.position,
+            //     out var hitInfo,
+            //     explosionRadius
+            // );
+            //
+            // // If the hit collider is not the collider we are checking, continue
+            // if (hit && hitInfo.collider != cCollider)
+            //     continue;
+            //
+            // // Now, I can calculate damage
+            // actor.ChangeHealth(-explosionDamage, null, this, hitInfo.point);
+            
             // Now, I can calculate damage
-            actor.ChangeHealth(-explosionDamage, null, this, hitInfo.point);
+            actor.ChangeHealth(-explosionDamage, null, this, actor.GameObject.transform.position);
         }
 
         // Instantiate the explosion VFX

@@ -80,6 +80,18 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
         if (landYVelocity < groundShakeVelocityThreshold)
             return;
 
+        // If the player is set to jump as soon as they land, return
+        if (playerVCamController.ParentComponent.PlayerController is PlayerMovementV2 movementV2)
+        {
+            if (movementV2.BasicPlayerMovement.IsSetToJump)
+                return;
+
+            // If the player is set to slide as soon as they land, return
+            if (movementV2.PlayerSlide.IsSetToSlide)
+                return;
+        }
+
+
         _groundShakeTimer.SetMaxTimeAndReset(groundShakeTime);
         _groundShakeTimer.Start();
 
@@ -165,7 +177,8 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
         const float defaultFrameTime = 1 / 60f;
         var frameAmount = Time.deltaTime / defaultFrameTime;
 
-        _powerChargeToken.Value = NoiseTokenValue.Lerp(_powerChargeToken.Value, desiredValue, powerChargeLerpAmount * frameAmount);
+        _powerChargeToken.Value =
+            NoiseTokenValue.Lerp(_powerChargeToken.Value, desiredValue, powerChargeLerpAmount * frameAmount);
     }
 
     public void SetRecoilShake(NoiseTokenValue noiseToken, float lerpAmount, float time)

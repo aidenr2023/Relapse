@@ -52,6 +52,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     [SerializeField, Min(0)] private float sprintStaminaDrainRate = 10f;
     [SerializeField, Min(0)] private float staminaRegenDelay = .5f;
 
+    [SerializeField, Range(0, 1)] private float relapseSpeedMult = .25f;
+
     #endregion
 
     #region Private Fields
@@ -109,7 +111,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public bool IsSprinting => (_isSprinting || IsSprintToggled) && MovementInput.magnitude > 0.25f;
 
-    public float MovementSpeed => maxSpeed;
+    public float MovementSpeed => maxSpeed * (ParentComponent.PlayerInfo.IsRelapsing ? relapseSpeedMult : 1);
 
     public float HardSpeedLimit => hardSpeedLimit;
 

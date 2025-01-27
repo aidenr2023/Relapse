@@ -105,6 +105,13 @@ public class AmmoText : MonoBehaviour
     {
         // Set the text of the ammo text to the ammo count of the equipped gun
         text.text = $"{_weaponManager.EquippedGun.CurrentAmmo}";
+        
+        // Set the text of the ammo text to "Reloading" if the equipped gun is reloading
+        if (_weaponManager.EquippedGun.IsReloading)
+        {
+            var padAmount = (int) (_weaponManager.EquippedGun.ReloadingPercentage / .33f + 1);
+            text.text = "".PadRight(padAmount, '.');
+        }
     }
     
     private void UpdatePosition()

@@ -64,7 +64,11 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
         get => isEnabled;
         set => isEnabled = value;
     }
+    
+    public bool IsSetToSlide => _midAirGraceTimer.IsActive && _midAirGraceTimer.IsNotComplete;
 
+    public bool IsSliding => _isSliding;
+    
     #endregion
 
     #region Initialization Functions

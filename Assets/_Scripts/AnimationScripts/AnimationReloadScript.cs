@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class AnimationReloadScript : MonoBehaviour
 {
+    private static readonly int ReloadAnimationID = Animator.StringToHash("Reload");
+    
     [SerializeField] private WeaponManager weaponManager;
     [SerializeField] private Animator playerAnimator;
 
@@ -41,7 +43,7 @@ public class AnimationReloadScript : MonoBehaviour
             return;
 
         // Set the player animator's trigger to reload
-        playerAnimator.SetTrigger("Reload");
+        playerAnimator.SetTrigger(ReloadAnimationID);
 
         // // Get the gun's animator
         // var gunAnimator = genericGun.Animator;
