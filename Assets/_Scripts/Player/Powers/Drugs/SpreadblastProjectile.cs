@@ -19,6 +19,8 @@ public class SpreadblastProjectile : MonoBehaviour, IPowerProjectile
     [SerializeField] private float yLaunchVelocity;
     [SerializeField] private float zLaunchVelocity;
 
+    //[SerializeField] private int projectileCount = 5; Use this when you can access it in the loop in the Spreadblast script
+
     [SerializeField] private ParticleSystem explosionParticles;
     [SerializeField][Range(0, 500)] private int explosionParticlesCount = 200;
 
