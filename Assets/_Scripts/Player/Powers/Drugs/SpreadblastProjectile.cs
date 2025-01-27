@@ -8,7 +8,7 @@ public class SpreadblastProjectile : MonoBehaviour, IPowerProjectile
 
     private Rigidbody _rigidbody;
 
-    private Grenade _grenade;
+    private Spreadblast _spreadblast;
     private PlayerPowerManager _powerManager;
     private PowerToken _pToken;
 
@@ -32,7 +32,7 @@ public class SpreadblastProjectile : MonoBehaviour, IPowerProjectile
         // Set the forward of the game object to the forward parameter
         transform.forward = _forward = forward;
 
-        _grenade = (Grenade)power;
+        _spreadblast = (Spreadblast)power;
         _powerManager = powerManager;
         _pToken = pToken;
         Destroy(gameObject, despawnTimer);
@@ -68,7 +68,7 @@ public class SpreadblastProjectile : MonoBehaviour, IPowerProjectile
 
         // If the projectile hits something with an IActor component, deal damage
         if (other.TryGetComponentInParent(out IActor actor))
-            actor.ChangeHealth(-damage, _powerManager.Player.PlayerInfo, _grenade, transform.position);
+            actor.ChangeHealth(-damage, _powerManager.Player.PlayerInfo, _spreadblast, transform.position);
 
         // Destroy the projectile when it hits something
         // Debug.Log($"BOOM! {gameObject.name} hit {other.name}");
