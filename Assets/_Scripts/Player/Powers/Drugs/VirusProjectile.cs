@@ -15,6 +15,9 @@ public class VirusProjectile : MonoBehaviour, IPowerProjectile
     private bool _isExploded;
 
     [SerializeField] private float damage = 100f;
+    [SerializeField] private float tickDamage = 5f;
+    [SerializeField] private float tickRate = 0.5f;
+    [SerializeField] private float tickDuration = 5f;
 
     [SerializeField] private float yLaunchVelocity;
     [SerializeField] private float zLaunchVelocity;
@@ -45,13 +48,31 @@ public class VirusProjectile : MonoBehaviour, IPowerProjectile
     // Start is called before the first frame update
     void Start()
     {
-        
+        StartCoroutine(VirusTicks());
     }
 
     // Update is called once per frame
     void Update()
     {
+
+    }
+
+    IEnumerator VirusTicks(){
+        Debug.Log("Virus started");
         
+
+        for(float elapsedTime = 0; elapsedTime < tickDuration; elapsedTime += tickRate)
+        {
+            //Wait for tickRate to do damage
+            yield return new WaitForSeconds(tickRate);
+
+            //Do damage
+            Debug.Log("Did damage: " + tickDamage);
+
+
+            Debug.Log(elapsedTime + " seconds have passed");
+
+        }
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -69,7 +90,11 @@ public class VirusProjectile : MonoBehaviour, IPowerProjectile
 
         // If the projectile hits something with an IActor component, deal damage
         if (other.TryGetComponentInParent(out IActor actor))
+        {
             actor.ChangeHealth(-damage, _powerManager.Player.PlayerInfo, _virus, transform.position);
+            Debug.Log("You hit");
+            (actor as Enemy)?.StartCoroutine(VirusTicks());
+        }
 
         // Destroy the projectile when it hits something
         // Debug.Log($"BOOM! {gameObject.name} hit {other.name}");
