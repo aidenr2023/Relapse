@@ -6,9 +6,13 @@ public class AmmoText : MonoBehaviour
     private const float LERP_THRESHOLD = 0.0001f;
 
     #region Serialized Fields
-    
+
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private ReloadText reloadText;
+
+    [SerializeField] private CanvasGroup textCanvasGroup;
+    [SerializeField] private CanvasGroup iconCanvasGroup;
+    [SerializeField] private Transform iconTransform;
 
     [SerializeField, Range(0, 1)] private float maxOpacity = 1;
     [SerializeField, Range(0, 1)] private float opacityLerpAmount = 0.15f;
@@ -17,8 +21,10 @@ public class AmmoText : MonoBehaviour
     [SerializeField] private Vector3 offset;
     [SerializeField] private TMP_Text text;
 
+    [SerializeField, Min(0)] private float rotationSpeed = 2;
+
     #endregion
-        
+
     #region Private Fields
 
     private WeaponManager _weaponManager;
@@ -51,6 +57,27 @@ public class AmmoText : MonoBehaviour
 
         // Update the position of the reload text
         UpdatePosition();
+
+        // Update the visibility of the reload text
+        UpdateVisibility();
+    }
+
+    private void UpdateVisibility()
+    {
+        // If the player is currently reloading, set the visibility of the text canvas group to 0
+        if (_weaponManager != null && _weaponManager.EquippedGun != null && _weaponManager.EquippedGun.IsReloading)
+        {
+            textCanvasGroup.alpha = 0;
+            iconCanvasGroup.alpha = 1;
+        }
+        else
+        {
+            textCanvasGroup.alpha = 1;
+            iconCanvasGroup.alpha = 0;
+        }
+
+        // Rotate the icon canvas group
+        iconTransform.Rotate(Vector3.forward, 360 * Time.deltaTime * rotationSpeed);
     }
 
     private void UpdateInformation()
@@ -100,20 +127,20 @@ public class AmmoText : MonoBehaviour
         // Set the color of the text to red if the equipped gun is out of ammo
         text.color = reloadText.Color;
     }
-    
+
     private void UpdateText()
     {
         // Set the text of the ammo text to the ammo count of the equipped gun
         text.text = $"{_weaponManager.EquippedGun.CurrentAmmo}";
-        
+
         // Set the text of the ammo text to "Reloading" if the equipped gun is reloading
         if (_weaponManager.EquippedGun.IsReloading)
         {
-            var padAmount = (int) (_weaponManager.EquippedGun.ReloadingPercentage / .33f + 1);
+            var padAmount = (int)(_weaponManager.EquippedGun.ReloadingPercentage / .33f + 1);
             text.text = "".PadRight(padAmount, '.');
         }
     }
-    
+
     private void UpdatePosition()
     {
         // Return if the weapon manager is null
