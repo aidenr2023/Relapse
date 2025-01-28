@@ -49,6 +49,9 @@ public class DialogueUI : MonoBehaviour
 
     private List<DialogueNode> _dialogueNodes;
 
+    private CountdownTimer _spriteAnimationTimer;
+    private int _currentSpriteIndex;
+
     #endregion
 
     private void Awake()
@@ -58,6 +61,37 @@ public class DialogueUI : MonoBehaviour
         _typingTimer = new CountdownTimer(1f, true, false);
 
         _typingTimer.OnTimerEnd += AddCharacterOnTimerEnd;
+
+        // Set up the sprite animation timer
+        _spriteAnimationTimer = new CountdownTimer(float.MaxValue, true);
+        _spriteAnimationTimer.OnTimerEnd += AdvanceSpriteIndex;
+        _spriteAnimationTimer.Start();
+    }
+
+    private void AdvanceSpriteIndex()
+    {
+        // Return if the current dialogue is null
+        if (_currentDialogue == null)
+            return;
+
+        // Return if the current dialogue's speaker info is null
+        if (_currentDialogue.SpeakerInfo == null)
+            return;
+
+        // Return if the current dialogue's speaker info's NPC sprite is null
+        if (_currentDialogue.SpeakerInfo.NpcSprites == null || _currentDialogue.SpeakerInfo.NpcSprites.Length == 0)
+            return;
+
+        // Increment the current sprite index
+        _currentSpriteIndex = (_currentSpriteIndex + 1) % _currentDialogue.SpeakerInfo.NpcSprites.Length;
+
+        // Set the NPC image
+        npcImage.sprite = _currentDialogue.SpeakerInfo.NpcSprites[_currentSpriteIndex];
+
+        // Reset the timer
+        _spriteAnimationTimer.Reset();
+
+        Debug.Log($"Sprite Index: {_currentSpriteIndex}");
     }
 
 
@@ -78,8 +112,22 @@ public class DialogueUI : MonoBehaviour
         // Update the typing timer
         UpdateTypingTimer();
 
+        // Update the NPC image
+        UpdateNpcImageTimer();
+
         // Update the dialogue
         UpdateDialogue();
+    }
+
+    private void UpdateNpcImageTimer()
+    {
+        if (_currentDialogue != null)
+            _spriteAnimationTimer.SetMaxTime(1f / _currentDialogue.SpeakerInfo.FramesPerSecond);
+
+        // Update the sprite animation timer
+        _spriteAnimationTimer.Update(Time.unscaledDeltaTime);
+
+        SetNpcImage();
     }
 
     private void UpdateTypingTimer()
@@ -116,6 +164,10 @@ public class DialogueUI : MonoBehaviour
     {
         // Reset the current text
         _currentText.Clear();
+
+        // // Reset the timer for animation
+        // if (_currentDialogue != null)
+        //     _spriteAnimationTimer.SetMaxTimeAndReset(1f / _currentDialogue.SpeakerInfo.FramesPerSecond);
 
         // Update the text UI
         UpdateTextUI();
@@ -176,8 +228,11 @@ public class DialogueUI : MonoBehaviour
         // Set the current dialogue object
         SetCurrentDialogue(dialogueNode);
 
+        // Reset the sprite index
+        _currentSpriteIndex = 0;
+
         // Determine the npc image
-        SetNPCImage();
+        SetNpcImage();
 
         // Set the dialogue UI to be visible
         SetVisibility(true);
@@ -256,7 +311,7 @@ public class DialogueUI : MonoBehaviour
         }
 
         // Set the NPC image
-        SetNPCImage();
+        SetNpcImage();
 
         // Reset the typing timer
         _typingTimer.Reset();
@@ -266,7 +321,7 @@ public class DialogueUI : MonoBehaviour
             OnDialogueEnd?.Invoke();
     }
 
-    private void SetNPCImage()
+    private void SetNpcImage()
     {
         // Disable the NPC image by default
         npcImageParent.gameObject.SetActive(false);
@@ -280,14 +335,14 @@ public class DialogueUI : MonoBehaviour
             return;
 
         // Return if the current dialogue's speaker info's NPC sprite is null
-        if (_currentDialogue.SpeakerInfo.NpcSprite == null)
+        if (_currentDialogue.SpeakerInfo.NpcSprites == null || _currentDialogue.SpeakerInfo.NpcSprites.Length == 0)
             return;
 
         // Activate the NPC image
         npcImageParent.gameObject.SetActive(true);
 
         // Set the NPC image
-        npcImage.sprite = _currentDialogue.SpeakerInfo.NpcSprite;
+        npcImage.sprite = _currentDialogue.SpeakerInfo.NpcSprites[_currentSpriteIndex];
     }
 
     private void SetCurrentDialogue(DialogueNode dialogueNode)

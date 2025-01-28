@@ -7,7 +7,8 @@ public sealed class DialogueSpeakerInfo : ScriptableObject
     #region Serialized Fields
 
     [SerializeField] private string speakerName;
-    [SerializeField] private Sprite npcSprite;
+    [SerializeField] private Sprite[] npcSprites;
+    [SerializeField, Min(0)] private int framesPerSecond = 12;
     [SerializeField] private Color textColor;
 
     #endregion
@@ -15,7 +16,8 @@ public sealed class DialogueSpeakerInfo : ScriptableObject
     #region Getters
 
     public string SpeakerName => speakerName;
-    public Sprite NpcSprite => npcSprite;
+    public Sprite[] NpcSprites => npcSprites;
+    public int FramesPerSecond => framesPerSecond;
     public Color TextColor => textColor;
 
     #endregion
