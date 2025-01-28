@@ -9,11 +9,10 @@ using UnityEngine;
 [RequireComponent(typeof(Renderer))]
 public class VolumetricConeFader : MonoBehaviour
 {
-    [Header("Fading Settings")]
-    [Tooltip("Transform to measure distance from (player or camera). If left null, will use Camera.main.")]
-    public Transform player;
+    private static readonly int ColorShaderID = Shader.PropertyToID("_Color");
+    private static readonly int OpacityShaderID = Shader.PropertyToID("_Opacity");
 
-    [Tooltip("Distance at which the cone is fully opaque.")]
+    [Header("Fading Settings")] [Tooltip("Distance at which the cone is fully opaque.")]
     public float fadeStartDistance = 5f;
 
     [Tooltip("Distance at which the cone is fully invisible.")]
@@ -21,46 +20,43 @@ public class VolumetricConeFader : MonoBehaviour
 
     // We'll store a reference to the per-instance material and its initial color.
     private Material _materialInstance;
-    private Color _initialColor;
 
-    void Start()
+    // private Color _initialColor;
+    private float _initialOpacity;
+
+    private void Start()
     {
         // Grab the MeshRenderer and create an instance of the material
-        var rend = GetComponent<Renderer>();
-        if (rend)
+        var materialRenderer = GetComponent<Renderer>();
+        if (materialRenderer)
         {
-            // .material creates a unique material instance for this renderer
-            _materialInstance = rend.material;
-            _initialColor = _materialInstance.GetColor("_Color");
+            // material creates a unique material instance for this renderer
+            _materialInstance = materialRenderer.material;
+            // _initialColor = _materialInstance.GetColor(ColorShaderID);
+            _initialOpacity = _materialInstance.GetFloat(OpacityShaderID);
         }
         else
-        {
             Debug.LogWarning("VolumetricConeFader: No Renderer found on this GameObject.");
-        }
-
-        // If no player assigned, fallback to main camera
-        if (player == null && Camera.main != null)
-        {
-            player = Camera.main.transform;
-        }
     }
 
-    void Update()
+    private void Update()
     {
-        if (_materialInstance == null || player == null) return;
+        var player = Player.Instance;
+
+        if (_materialInstance == null || player == null)
+            return;
 
         // Distance from the cone's pivot to the player/camera
-        float distance = Vector3.Distance(transform.position, player.position);
+        var distance = Vector3.Distance(transform.position, player.transform.position);
 
         // If distance >= fadeStartDistance => alphaFactor = 1 (fully visible)
         // If distance <= fadeEndDistance => alphaFactor = 0 (fully invisible)
         // Between them => linear interpolation
-        float alphaFactor = Mathf.InverseLerp(fadeEndDistance, fadeStartDistance, distance);
+        var alphaFactor = Mathf.InverseLerp(fadeEndDistance, fadeStartDistance, distance);
 
-        // Apply to the material color
-        // e.g. if _initialColor has alpha=0.5, final alpha = 0.5 * alphaFactor
-        Color c = _initialColor;
-        c.a *= alphaFactor;
-        _materialInstance.SetColor("_Color", c);
+        var newOpacity = Mathf.Lerp(0, _initialOpacity, alphaFactor);
+        
+        // Set the new opacity value
+        _materialInstance.SetFloat(OpacityShaderID, newOpacity);
     }
 }
