@@ -99,15 +99,12 @@ public class MoneyNotificationUI : MonoBehaviour
         // Determine if the stay on screen timer should be active based on the wait before total timer
         _stayOnScreenTimer.SetActive(_waitBeforeTotalTimer.IsComplete);
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.unscaledDeltaTime / defaultFrameTime;
-
         // If the stay on screen timer is complete, set the desired alpha to 0
         if (_stayOnScreenTimer.IsComplete)
             _desiredAlpha = 0;
 
         // Lerp the canvas group's alpha to the desired alpha
-        canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, _desiredAlpha, fadeLerpAmount * frameAmount);
+        canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, _desiredAlpha, CustomFunctions.FrameAmount(fadeLerpAmount, false, true));
 
         if (Mathf.Abs(canvasGroup.alpha - _desiredAlpha) < ALPHA_THRESHOLD)
             canvasGroup.alpha = _desiredAlpha;
@@ -118,7 +115,7 @@ public class MoneyNotificationUI : MonoBehaviour
 
         totalMoneyCanvasGroup.alpha = Mathf.Lerp(
             totalMoneyCanvasGroup.alpha, desiredTotalMoneyAlpha,
-            fadeLerpAmount * frameAmount
+            CustomFunctions.FrameAmount(fadeLerpAmount, false, true)
         );
 
         if (Mathf.Abs(totalMoneyCanvasGroup.alpha - desiredTotalMoneyAlpha) < ALPHA_THRESHOLD)

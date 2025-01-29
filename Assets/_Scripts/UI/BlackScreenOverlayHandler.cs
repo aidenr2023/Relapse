@@ -35,14 +35,11 @@ public class BlackScreenOverlayHandler : MonoBehaviour
 
     private void Update()
     {
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.unscaledDeltaTime / defaultFrameTime;
-
         // Calculate the lerp value
         var cLerpValue = _desiredAlpha > overlayCanvasGroup.alpha ? darkenLerpAmount : brightenLerpAmount;
 
         // Lerp the alpha of the overlay canvas group
-        overlayCanvasGroup.alpha = Mathf.Lerp(overlayCanvasGroup.alpha, _desiredAlpha, cLerpValue * frameAmount);
+        overlayCanvasGroup.alpha = Mathf.Lerp(overlayCanvasGroup.alpha, _desiredAlpha, CustomFunctions.FrameAmount(cLerpValue, false, true));
 
         // If the value is close enough, set it to the desired value
         if (Mathf.Abs(overlayCanvasGroup.alpha - _desiredAlpha) < THRESHOLD)

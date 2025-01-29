@@ -132,10 +132,7 @@ public sealed class DynamicFOVModule : DynamicVCamModule
         if (_sprintStart && moveMagnitude >= .75f)
             targetValue = sprintFOVMultiplier;
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.deltaTime / defaultFrameTime;
-
-        _sprintToken.Value = Mathf.Lerp(_sprintToken.Value, targetValue, sprintLerpAmount * frameAmount);
+        _sprintToken.Value = Mathf.Lerp(_sprintToken.Value, targetValue, CustomFunctions.FrameAmount(sprintLerpAmount));
     }
 
     private void UpdateDashToken()
@@ -145,10 +142,7 @@ public sealed class DynamicFOVModule : DynamicVCamModule
         if (_dashStart)
             targetValue = dashFOVMultiplier;
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.deltaTime / defaultFrameTime;
-
-        _dashToken.Value = Mathf.Lerp(_dashToken.Value, targetValue, dashRunLerpAmount * frameAmount);
+        _dashToken.Value = Mathf.Lerp(_dashToken.Value, targetValue, CustomFunctions.FrameAmount(dashRunLerpAmount));
     }
 
     private void UpdateAimToken()
@@ -186,10 +180,7 @@ public sealed class DynamicFOVModule : DynamicVCamModule
 
         var targetValue = _isAiming ? currentFovMultiplier : 1f;
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.deltaTime / defaultFrameTime;
-
-        _aimToken.Value = Mathf.Lerp(_aimToken.Value, targetValue, aimLerpAmount * frameAmount);
+        _aimToken.Value = Mathf.Lerp(_aimToken.Value, targetValue, CustomFunctions.FrameAmount(aimLerpAmount));
     }
 
     private float CurrentTokenValue()

@@ -136,10 +136,8 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
         if (_recoilShakeTimer.Percentage < 1)
             return;
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.deltaTime / defaultFrameTime;
-
-        _recoilToken.Value = NoiseTokenValue.Lerp(_recoilToken.Value, default, _recoilLerpAmount * frameAmount);
+        _recoilToken.Value =
+            NoiseTokenValue.Lerp(_recoilToken.Value, default, CustomFunctions.FrameAmount(_recoilLerpAmount));
     }
 
     private void UpdateRelapseToken()
@@ -149,10 +147,7 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
         if (playerVCamController.ParentComponent.PlayerInfo.IsRelapsing)
             desiredValue = relapseNoise;
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.deltaTime / defaultFrameTime;
-
-        _relapseToken.Value = NoiseTokenValue.Lerp(_relapseToken.Value, desiredValue, .4f * frameAmount);
+        _relapseToken.Value = NoiseTokenValue.Lerp(_relapseToken.Value, desiredValue, CustomFunctions.FrameAmount(.4f));
     }
 
     private void UpdateGroundCheckToken()
@@ -160,11 +155,8 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
         if (_groundShakeTimer.Percentage < 1)
             return;
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.deltaTime / defaultFrameTime;
-
         _groundCheckToken.Value =
-            NoiseTokenValue.Lerp(_groundCheckToken.Value, default, groundCheckLerpAmount * frameAmount);
+            NoiseTokenValue.Lerp(_groundCheckToken.Value, default, CustomFunctions.FrameAmount(groundCheckLerpAmount));
     }
 
     private void UpdatePowerChargeToken()
@@ -174,11 +166,10 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
         if (playerVCamController.ParentComponent.PlayerPowerManager.IsChargingPower)
             desiredValue = powerChargeNoise;
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.deltaTime / defaultFrameTime;
-
-        _powerChargeToken.Value =
-            NoiseTokenValue.Lerp(_powerChargeToken.Value, desiredValue, powerChargeLerpAmount * frameAmount);
+        _powerChargeToken.Value = NoiseTokenValue.Lerp(
+            _powerChargeToken.Value, desiredValue,
+            CustomFunctions.FrameAmount(powerChargeLerpAmount)
+        );
     }
 
     public void SetRecoilShake(NoiseTokenValue noiseToken, float lerpAmount, float time)

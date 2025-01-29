@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
-public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
+public class PlayerSlide : PlayerMovementScript, IUsesInput
 {
     #region Serialized Fields
 
@@ -199,9 +199,6 @@ public class PlayerSlide : PlayerMovementScript, IDebugged, IUsesInput
     {
         // Initialize the events
         InitializeEvents();
-
-        // Add this to the debug manager
-        DebugManager.Instance.AddDebuggedObject(this);
     }
 
     private void InitializeEvents()

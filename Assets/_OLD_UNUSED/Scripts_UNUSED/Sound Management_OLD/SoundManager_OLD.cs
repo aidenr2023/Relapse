@@ -2,7 +2,7 @@
 using System.Text;
 using UnityEngine;
 
-public class SoundManager_OLD : MonoBehaviour, IDebugged
+public class SoundManager_OLD : MonoBehaviour
 {
     #region Constants
 

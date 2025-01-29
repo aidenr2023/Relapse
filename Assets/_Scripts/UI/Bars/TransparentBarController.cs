@@ -46,9 +46,6 @@ public abstract class TransparentBarController : MonoBehaviour
 
     protected void Update()
     {
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.unscaledDeltaTime / defaultFrameTime;
-
         // Update the stay on screen timer
         _stayOnScreenTimer.SetMaxTime(_transparentBar.StayOnScreenTime);
         _stayOnScreenTimer?.Update(Time.unscaledDeltaTime);
@@ -74,14 +71,15 @@ public abstract class TransparentBarController : MonoBehaviour
 
         // Change the slider value
         _transparentBar.Slider.value = Mathf.Lerp(_transparentBar.Slider.value, percentage,
-            _transparentBar.SliderLerpAmount * frameAmount);
+            CustomFunctions.FrameAmount(_transparentBar.SliderLerpAmount, false, true));
         if (Mathf.Abs(_transparentBar.Slider.value - percentage) < SNAPPING_THRESHOLD)
             _transparentBar.Slider.value = percentage;
 
         // Change the background fill slider value
         _transparentBar.BackgroundFillSlider.value = Mathf.Lerp(
             _transparentBar.BackgroundFillSlider.value, percentage,
-            _transparentBar.SliderLerpAmount * _transparentBar.BackgroundSliderLerpMultiplier * frameAmount
+            CustomFunctions.FrameAmount(_transparentBar.SliderLerpAmount, false, true) *
+            _transparentBar.BackgroundSliderLerpMultiplier
         );
         if (Mathf.Abs(_transparentBar.BackgroundFillSlider.value - percentage) < SNAPPING_THRESHOLD)
             _transparentBar.BackgroundFillSlider.value = percentage;
@@ -121,7 +119,7 @@ public abstract class TransparentBarController : MonoBehaviour
 
         // Set the opacity of the images
         var newAlpha = Mathf.Lerp(_transparentBar.CanvasGroup.alpha, _desiredOpacity,
-            _transparentBar.OpacityLerpAmount * frameAmount);
+            CustomFunctions.FrameAmount(_transparentBar.OpacityLerpAmount, false, true));
 
         if (Mathf.Abs(newAlpha - _transparentBar.CanvasGroup.alpha) < SNAPPING_THRESHOLD)
             newAlpha = _desiredOpacity;

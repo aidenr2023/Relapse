@@ -41,7 +41,7 @@ public class DynamicChromaticAberrationModule : DynamicPostProcessingModule
 
         // Add the power token
         _powerToken = _tokens.AddToken(0, -1, true);
-        
+
         // Initialize the power token timer
         _powerTokenTimer = new CountdownTimer(0);
         _powerTokenTimer.OnTimerEnd += () => _powerTokenTimer.Stop();
@@ -92,28 +92,26 @@ public class DynamicChromaticAberrationModule : DynamicPostProcessingModule
         // Inclusively randomly generate a float from 0 to 1
         var relapseValue = UnityEngine.Random.Range(0, multiplier) / (float)multiplier * relapseRange;
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.deltaTime / defaultFrameTime;
-
         // Lerp the relapse token value to the relapse value
-        _relapseToken.Value = Mathf.Lerp(_relapseToken.Value, relapseValue, relapseLerpAmount * frameAmount);
+        _relapseToken.Value =
+            Mathf.Lerp(_relapseToken.Value, relapseValue, CustomFunctions.FrameAmount(relapseLerpAmount));
     }
 
     private void UpdatePowerToken()
     {
         // Update the power token timer
         _powerTokenTimer.Update(Time.deltaTime);
-        
+
         // Calculate the powerTokenValue
         var powerTokenValue = _maxPowerTokenValue * (1 - _powerTokenTimer.Percentage);
-        
+
         // Add some randomness to the power token value
         powerTokenValue += UnityEngine.Random.Range(-.1f, .1f);
-        
+
         // If the power token timer is not running, set the power token value to 0
         if (_powerTokenTimer.IsComplete || !_powerTokenTimer.IsActive)
             powerTokenValue = 0;
-        
+
         // Set the power token value
         _powerToken.Value = powerTokenValue;
     }
@@ -135,7 +133,7 @@ public class DynamicChromaticAberrationModule : DynamicPostProcessingModule
         // Reset the power token timer
         _powerTokenTimer.SetMaxTimeAndReset(time);
         _powerTokenTimer.Start();
-        
+
         Debug.Log($"Added power token");
     }
 }

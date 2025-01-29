@@ -62,10 +62,7 @@ public class ReticleUIManager : MonoBehaviour
 
         // Create an array of all the canvas groups
         var canvasGroups = AllCanvasGroups;
-
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.deltaTime / defaultFrameTime;
-
+        
         // Loop through all the canvas groups
         foreach (var canvasGroup in canvasGroups)
         {
@@ -73,7 +70,7 @@ public class ReticleUIManager : MonoBehaviour
             // Otherwise, lerp the alpha to 0
             var targetOpacity = canvasGroup == currentCanvasGroup ? 1 : 0;
 
-            canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, targetOpacity, opacityLerpAmount * frameAmount);
+            canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, targetOpacity, CustomFunctions.FrameAmount(opacityLerpAmount));
         }
     }
 

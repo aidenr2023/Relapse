@@ -108,9 +108,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         // Initialize the events
         InitializeEvents();
 
-        // // Add this to the debug managed objects
-        // DebugManager.Instance.AddDebuggedObject(this);
-
         // Initialize the vignette token
         _powerChargeVignetteToken = PostProcessingVolumeController.Instance.VignetteModule.Tokens.AddToken(0, -1, true);
 
@@ -525,9 +522,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         if (CurrentPowerToken != null && CurrentPowerToken.ChargePercentage >= 1)
             targetValue = chargedVignetteStrength;
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.deltaTime / defaultFrameTime;
-
         // Sine wave with a y from 0 to 1
         var sineWave = Mathf.Sin(chargedVignetteFlashesPerSecond * Time.time * Mathf.PI * 2 + Mathf.PI / 2) / 2 + 0.5f;
 
@@ -535,7 +529,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         _powerChargeVignetteToken.Value = Mathf.Lerp(
             _powerChargeVignetteToken.Value * sineWave,
             targetValue,
-            chargedVignetteLerpAmount * frameAmount
+            CustomFunctions.FrameAmount(chargedVignetteLerpAmount)
         );
     }
 
@@ -851,11 +845,11 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
             tolerancePercentage = _player.PlayerInfo.CurrentTolerance / _player.PlayerInfo.MaxTolerance * 100;
 
         debugString.Append(
-            $"Tolerance: {_player.PlayerInfo.CurrentTolerance:0.00} / {_player.PlayerInfo.MaxTolerance:0.00} ({tolerancePercentage:0.00}%)\n\n");
+            $"Toxicity: {_player.PlayerInfo.CurrentTolerance:0.00} / {_player.PlayerInfo.MaxTolerance:0.00} ({tolerancePercentage:0.00}%)\n\n");
 
         debugString.Append($"Current Power: {CurrentPower.name}\n");
         // debugString.Append($"\tPurity (Level): {CurrentPowerToken.CurrentLevel}\n");
-        debugString.Append($"\tTolerance Impact: {CurrentPowerToken.ToleranceMeterImpact}\n");
+        debugString.Append($"\nToxicity Impact: {CurrentPowerToken.ToleranceMeterImpact}\n");
 
         // Charging Logic
         debugString.Append($"\tIs Charging? {CurrentPowerToken.IsCharging}\n");

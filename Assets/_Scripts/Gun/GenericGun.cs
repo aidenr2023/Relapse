@@ -144,6 +144,12 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         fireDelta = TimeBetweenShots;
     }
 
+    private void OnDestroy()
+    {
+        // Remove from debug manager
+        DebugManager.Instance.RemoveDebuggedObject(this);
+    }
+
     #region Update Functions
 
     protected virtual void Update()

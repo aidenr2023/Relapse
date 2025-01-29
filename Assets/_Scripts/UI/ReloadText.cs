@@ -133,9 +133,7 @@ public class ReloadText : MonoBehaviour
         }
 
         // Lerp the alpha of the canvas group's alpha to the desired opacity
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.deltaTime / defaultFrameTime;
-        canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, _desiredOpacity, opacityLerpAmount * frameAmount);
+        canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, _desiredOpacity, CustomFunctions.FrameAmount(opacityLerpAmount));
 
         // Set the alpha of the canvas group to the desired opacity if the difference between the two is less than the threshold
         if (Mathf.Abs(canvasGroup.alpha - _desiredOpacity) < LERP_THRESHOLD)
@@ -201,11 +199,8 @@ public class ReloadText : MonoBehaviour
 
     private void SetColor(Color color)
     {
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.unscaledDeltaTime / defaultFrameTime;
-
         // Lerp the color
-        text.color = Color.Lerp(text.color, color, 0.2f * frameAmount);
+        text.color = Color.Lerp(text.color, color, CustomFunctions.FrameAmount(.2f, false, true));
     }
 
     private void UpdatePosition()
@@ -231,10 +226,7 @@ public class ReloadText : MonoBehaviour
         // Set the position of the reload text to the gun holder's position
         var desiredPosition = gunHolderTransform.position + relativeOffset + bobOffset;
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.unscaledDeltaTime / defaultFrameTime;
-
         // Lerp the position of the reload text to the desired position
-        transform.position = Vector3.Lerp(transform.position, desiredPosition, positionLerpAmount * frameAmount);
+        transform.position = Vector3.Lerp(transform.position, desiredPosition, CustomFunctions.FrameAmount(positionLerpAmount, false, true));
     }
 }

@@ -29,11 +29,9 @@ public class MedUsedUIGroup : MonoBehaviour
             _player.PlayerPowerManager.OnPowerUsed += OnPowerUsed;
         }
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameTime = Time.deltaTime / defaultFrameTime;
-
         // Lerp the alpha of the canvas group
-        canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, _desiredOpacity, opacityLerpAmount * frameTime);
+        canvasGroup.alpha =
+            Mathf.Lerp(canvasGroup.alpha, _desiredOpacity, CustomFunctions.FrameAmount(opacityLerpAmount));
 
         // If the difference between the current alpha and the desired alpha is less than the threshold, set the current alpha to the desired alpha
         if (Mathf.Abs(canvasGroup.alpha - _desiredOpacity) < OPACITY_THRESHOLD)

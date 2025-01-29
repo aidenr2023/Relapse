@@ -137,6 +137,12 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
         InputManager.Instance.Unregister(this);
     }
 
+    private void OnDestroy()
+    {
+        // Remove this from the debug manager
+        DebugManager.Instance.RemoveDebuggedObject(this);
+    }
+
     private void GetComponents()
     {
         // Get the TestPlayer component

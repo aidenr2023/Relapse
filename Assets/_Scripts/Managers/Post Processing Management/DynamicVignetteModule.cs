@@ -80,11 +80,8 @@ public class DynamicVignetteModule : DynamicPostProcessingModule
                 player.Rigidbody.velocity.magnitude / speedVignetteMaxSpeed
             );
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameTime = Time.deltaTime / defaultFrameTime;
-
         // Lerp the speed vignette token to the target value
-        _speedVignetteToken.Value = Mathf.Lerp(_speedVignetteToken.Value, targetValue, speedVignetteLerpAmount * frameTime);
+        _speedVignetteToken.Value = Mathf.Lerp(_speedVignetteToken.Value, targetValue, CustomFunctions.FrameAmount(speedVignetteLerpAmount));
     }
     
     private void UpdateSlideVignette()
@@ -106,11 +103,8 @@ public class DynamicVignetteModule : DynamicPostProcessingModule
         if (movementV2.PlayerSlide.IsSliding)
             targetValue = slideVignetteMaxValue;
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameTime = Time.deltaTime / defaultFrameTime;
-
         // Lerp the speed vignette token to the target value
-        _slideVignetteToken.Value = Mathf.Lerp(_slideVignetteToken.Value, targetValue, slideVignetteLerpAmount * frameTime);
+        _slideVignetteToken.Value = Mathf.Lerp(_slideVignetteToken.Value, targetValue, CustomFunctions.FrameAmount(slideVignetteLerpAmount));
     }
 
     private float CurrentTokenValue()

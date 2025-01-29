@@ -453,13 +453,10 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private void UpdateCapsuleColliderHeight()
     {
-        const float fixedFrameTime = 1 / 50f;
-        var frameAmount = Time.fixedDeltaTime / fixedFrameTime;
-
         var oldPlayerHeight = _currentPlayerHeight;
 
         // _currentPlayerHeight = Mathf.Lerp(_currentPlayerHeight, TargetPlayerHeight, frameAmount * .25f);
-        _currentPlayerHeight = Mathf.Lerp(_currentPlayerHeight, TargetPlayerHeight, frameAmount * .15f);
+        _currentPlayerHeight = Mathf.Lerp(_currentPlayerHeight, TargetPlayerHeight, CustomFunctions.FrameAmount(.15f, true));
 
         if (Mathf.Abs(_currentPlayerHeight - TargetPlayerHeight) < .001f)
             _currentPlayerHeight = TargetPlayerHeight;

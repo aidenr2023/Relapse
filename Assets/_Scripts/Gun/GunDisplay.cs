@@ -42,7 +42,7 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
     public HashSet<Material> OutlineMaterials { get; } = new();
 
     public InteractionIcon InteractionIcon => InteractionIcon.Pickup;
-    
+
     public UnityEvent OnInteraction => onPurchase;
 
     #endregion
@@ -101,12 +101,10 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
         var newPosition = gunHolderTransform.position + cOffset;
         var newRotation = gunHolderTransform.rotation;
 
-        const float fixedFrameTime = 1 / 50f;
-        var frameAmount = Time.fixedDeltaTime / fixedFrameTime;
-
         // Lerp the position and rotation
-        rb.MovePosition(Vector3.Lerp(rb.position, newPosition, positionLerpAmount * frameAmount));
-        rb.MoveRotation(Quaternion.Lerp(rb.rotation, newRotation, positionLerpAmount * frameAmount));
+        rb.MovePosition(Vector3.Lerp(rb.position, newPosition, CustomFunctions.FrameAmount(positionLerpAmount, true)));
+        rb.MoveRotation(
+            Quaternion.Lerp(rb.rotation, newRotation, CustomFunctions.FrameAmount(positionLerpAmount, true)));
 
         // Set the scale back to the original scale
         EquippedGun.GameObject.transform.localScale = _originalGunScale;
@@ -300,7 +298,8 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
         if (levelLoader.TryGetDataFromMemory(UniqueId, IS_FREE_KEY, out bool isFreeValue))
             isFree = isFreeValue;
 
-        var hasOriginalGunDataExists = levelLoader.TryGetDataFromMemory(UniqueId, HAS_ORIGINAL_GUN_KEY, out bool hasOriginalGun);
+        var hasOriginalGunDataExists =
+            levelLoader.TryGetDataFromMemory(UniqueId, HAS_ORIGINAL_GUN_KEY, out bool hasOriginalGun);
 
         // set the has original gun flag if the data exists
         if (hasOriginalGunDataExists)

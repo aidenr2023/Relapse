@@ -241,13 +241,13 @@ public class PlayerLook : MonoBehaviour, IUsesInput
 
         // Debug.Log($"Player Angle: {acceptedRotation.eulerAngles.y:0.00}, {leftAngleTolerance:0.00}, {rightAngleTolerance:0.00}");
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.deltaTime / defaultFrameTime;
-
         // Lerp the desired look rotation to the accepted rotation
         // desiredLookRotation = Quaternion.Lerp(desiredLookRotation, acceptedRotation, lerpAmount * frameAmount);
         desiredLookRotation =
-            Quaternion.Slerp(desiredLookRotation, acceptedRotation, wallRunLookLockLerpAmount * frameAmount);
+            Quaternion.Slerp(
+                desiredLookRotation, acceptedRotation,
+                CustomFunctions.FrameAmount(wallRunLookLockLerpAmount)
+            );
         // desiredLookRotation = acceptedRotation;
 
         return desiredLookRotation;

@@ -1,7 +1,7 @@
 ﻿using Cinemachine;
 using UnityEngine;
 
-public class DynamicCamRotationController : MonoBehaviour, IDebugged
+public class DynamicCamRotationController : MonoBehaviour
 {
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
 
@@ -20,9 +20,6 @@ public class DynamicCamRotationController : MonoBehaviour, IDebugged
 
         // Initialize the events
         InitializeEvents();
-
-        // Add this script to the debug manager
-        DebugManager.Instance.AddDebuggedObject(this);
     }
 
     private void GetComponents()
@@ -72,11 +69,5 @@ public class DynamicCamRotationController : MonoBehaviour, IDebugged
 
         // Set the camera's rotation
         _recomposer.m_Dutch = tiltAngle * _wallRunningDirection;
-    }
-
-    public string GetDebugText()
-    {
-        return $"Dynamic Camera Rotation\n" +
-               $"\tTilt On: {tiltTimer.OutputValue}\n";
     }
 }

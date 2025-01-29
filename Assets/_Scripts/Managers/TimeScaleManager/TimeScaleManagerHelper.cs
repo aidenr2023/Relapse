@@ -9,6 +9,12 @@ public class TimeScaleManagerHelper : MonoBehaviour
         DebugManager.Instance.AddDebuggedObject(TimeScaleManager.Instance);
     }
 
+    private void OnDestroy()
+    {
+        // Remove the timeScale manager from the debug manager
+        DebugManager.Instance.RemoveDebuggedObject(TimeScaleManager.Instance);
+    }
+
     private void Update()
     {
         // Update the timeScale manager

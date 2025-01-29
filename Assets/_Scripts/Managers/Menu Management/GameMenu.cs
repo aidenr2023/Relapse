@@ -121,7 +121,10 @@ public abstract class GameMenu : MonoBehaviour
     protected void Update()
     {
         // Lerp the canvas group's alpha to the desired opacity
-        canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, _desiredOpacity, opacityLerpAmount);
+        canvasGroup.alpha = Mathf.Lerp(
+            canvasGroup.alpha, _desiredOpacity,
+            CustomFunctions.FrameAmount(opacityLerpAmount, false, true)
+        );
 
         // If the canvas group's alpha is less than the opacity threshold
         // Set the canvas group's alpha to the desired opacity

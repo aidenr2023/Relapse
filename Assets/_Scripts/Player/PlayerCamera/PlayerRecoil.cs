@@ -67,13 +67,13 @@ public class PlayerRecoil : ComponentScript<PlayerVirtualCameraController>
         if (_gunInformation == null)
             _isRecovering = true;
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.deltaTime / defaultFrameTime;
-
         if (!_isRecovering)
         {
             // Lerp the recoil to the desired recoil
-            _recoilToken.Value = Vector3.Lerp(_recoilToken.Value, _desiredRecoil, RecoilLerpAmount * frameAmount);
+            _recoilToken.Value = Vector3.Lerp(
+                _recoilToken.Value, _desiredRecoil,
+                CustomFunctions.FrameAmount(RecoilLerpAmount)
+            );
 
             // Check if the recoil has been recovered
             // Set the recovery flag to true
@@ -82,7 +82,10 @@ public class PlayerRecoil : ComponentScript<PlayerVirtualCameraController>
         }
         // Lerp the recoil back to zero
         else
-            _recoilToken.Value = Vector3.Lerp(_recoilToken.Value, Vector3.zero, RecoveryLerpAmount * frameAmount);
+            _recoilToken.Value = Vector3.Lerp(
+                _recoilToken.Value, Vector3.zero,
+                CustomFunctions.FrameAmount(RecoveryLerpAmount)
+            );
     }
 
     private void AddRecoil(Vector3 recoil)

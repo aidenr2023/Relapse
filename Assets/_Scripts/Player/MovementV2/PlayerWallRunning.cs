@@ -158,6 +158,12 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         DebugManager.Instance.AddDebuggedObject(this);
     }
 
+    private void OnDestroy()
+    {
+        // Remove this from the debug manager
+        DebugManager.Instance.RemoveDebuggedObject(this);
+    }
+
     private void RegisterOnWallRunStart(PlayerMovementScript obj)
     {
         InputManager.Instance.Register(this);

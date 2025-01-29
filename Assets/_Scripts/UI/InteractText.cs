@@ -76,11 +76,8 @@ public class InteractText : MonoBehaviour
         // Update the desired opacity
         _desiredOpacity = UpdateDesiredOpacity();
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.unscaledDeltaTime / defaultFrameTime;
-
         // Lerp the alpha of the canvas group's alpha to the desired opacity
-        canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, _desiredOpacity, opacityLerpAmount * frameAmount);
+        canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, _desiredOpacity, CustomFunctions.FrameAmount(opacityLerpAmount, false, true));
 
         if (Mathf.Abs(canvasGroup.alpha - _desiredOpacity) < LERP_THRESHOLD)
             canvasGroup.alpha = _desiredOpacity;
@@ -165,11 +162,8 @@ public class InteractText : MonoBehaviour
         // Calculate the new position
         var newPosition = _previousPosition + calculatedOffset + new Vector3(0, sinePosition, 0);
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.unscaledDeltaTime / defaultFrameTime;
-
         // Set the position of this game object to the current interactable's position
-        transform.position = Vector3.Lerp(transform.position, newPosition, positionLerpAmount * frameAmount);
+        transform.position = Vector3.Lerp(transform.position, newPosition, CustomFunctions.FrameAmount(positionLerpAmount, false, true));
     }
 
     private float UpdateDesiredOpacity()

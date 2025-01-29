@@ -4,6 +4,8 @@ using Object = UnityEngine.Object;
 
 public static class CustomFunctions
 {
+    private const float DEFAULT_FRAME_AMOUNT = 1 / 60f;
+    private const float FIXED_FRAME_AMOUNT = 1 / 50f;
     private const int MAX_COMPONENT_SEARCH_DEPTH = 20;
 
     public static TComponent GetComponentInParent<TComponent>(
@@ -55,5 +57,19 @@ public static class CustomFunctions
         component = default;
 
         return false;
+    }
+    
+    public static float FrameAmount(float lerpAmount, bool isFixed = false, bool isUnscaled = false)
+    {
+        var frameAmount = isFixed ? FIXED_FRAME_AMOUNT : DEFAULT_FRAME_AMOUNT;
+
+        float deltaTime;
+
+        if (isUnscaled)
+            deltaTime = isFixed ? Time.fixedUnscaledDeltaTime : Time.unscaledDeltaTime;
+        else
+            deltaTime = isFixed ? Time.fixedDeltaTime : Time.deltaTime;
+
+        return deltaTime / frameAmount * lerpAmount;
     }
 }

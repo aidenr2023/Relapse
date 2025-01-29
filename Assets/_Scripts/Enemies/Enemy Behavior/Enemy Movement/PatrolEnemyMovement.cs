@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Serialization;
 
-public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebugged
+public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
 {
     private static readonly int AnimatorIsMovingProperty = Animator.StringToHash("IsMoving");
     private static readonly int AnimatorSpeedProperty = Animator.StringToHash("Speed");
@@ -352,20 +352,4 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior, IDebug
     }
 
     #endregion
-
-    public string GetDebugText()
-    {
-        if (animator == null)
-            return "UHHH";
-
-        var isMoving = animator.GetBool(AnimatorIsMovingProperty);
-        var speed = animator.GetFloat(AnimatorSpeedProperty);
-        var isRunning = animator.GetBool(AnimatorIsRunningProperty);
-
-        return
-            $"ANIMATOR:\n" +
-            $"\tIs Moving: {isMoving}\n" +
-            $"\tSpeed: {speed}\n" +
-            $"\tIs Running: {isRunning}\n";
-    }
 }

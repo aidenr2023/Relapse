@@ -53,14 +53,11 @@ public class StationaryEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
 
         var diff = Enemy.EnemyDetectionBehavior.LastKnownTargetPosition - transform.position;
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameTime = Time.deltaTime / defaultFrameTime;
-
         // Set the y rotation to the desired rotation's y rotation
         var desiredRotation = Quaternion.LookRotation(diff.normalized, Vector3.up);
 
         // Lerp the rotation
-        transform.rotation = Quaternion.Lerp(oldRotation, desiredRotation, rotationLerpAmount * frameTime);
+        transform.rotation = Quaternion.Lerp(oldRotation, desiredRotation, CustomFunctions.FrameAmount(rotationLerpAmount));
 
         // Update the nav mesh agent
         UpdateNavMeshAgent();

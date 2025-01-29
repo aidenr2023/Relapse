@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerHealthImage : MonoBehaviour, IDebugged
+public class PlayerHealthImage : MonoBehaviour
 {
     [SerializeField] private Player player;
 
@@ -94,12 +94,5 @@ public class PlayerHealthImage : MonoBehaviour, IDebugged
         // Set the opacity
         // healthImage.color = new Color(healthImage.color.r, healthImage.color.g, healthImage.color.b, opacity);
         HealthOverlayUI.Instance.CanvasGroup.alpha = opacity;
-    }
-
-    public string GetDebugText()
-    {
-        return
-            $"Health: {player.PlayerInfo.CurrentHealth} / {player.PlayerInfo.MaxHealth}\n" +
-            $"Flash Time: {_flashTimer.Percentage:F2}";
     }
 }

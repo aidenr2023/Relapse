@@ -179,11 +179,8 @@ public sealed class DynamicRotationModule : DynamicVCamModule
         else if (_wallRunEnd)
             targetValue = Vector3.zero;
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.deltaTime / defaultFrameTime;
-
         // Set the wall run token value
-        _wallRunToken.Value = Vector3.Lerp(_wallRunToken.Value, targetValue, wallRunLerpAmount * frameAmount);
+        _wallRunToken.Value = Vector3.Lerp(_wallRunToken.Value, targetValue, CustomFunctions.FrameAmount(wallRunLerpAmount));
     }
 
     private void UpdateWallClimbToken()
@@ -206,11 +203,8 @@ public sealed class DynamicRotationModule : DynamicVCamModule
         else if (_wallClimbEnd)
             targetValue = Vector3.zero;
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.deltaTime / defaultFrameTime;
-
         // Set the wall run token value
-        _wallClimbToken.Value = Vector3.Lerp(_wallClimbToken.Value, targetValue, wallRunLerpAmount * frameAmount);
+        _wallClimbToken.Value = Vector3.Lerp(_wallClimbToken.Value, targetValue, CustomFunctions.FrameAmount(wallRunLerpAmount));
     }
 
     private void UpdateFlinchToken()

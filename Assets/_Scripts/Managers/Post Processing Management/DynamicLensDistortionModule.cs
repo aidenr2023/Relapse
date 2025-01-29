@@ -58,10 +58,8 @@ public class DynamicLensDistortionModule : DynamicPostProcessingModule
         if (player != null && player.PlayerDash != null)
             targetValue = player.PlayerDash.IsDashing ? dashDistortion : 0;
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameTime = Time.deltaTime / defaultFrameTime;
-        
-        _dashToken.Value = Mathf.Lerp(_dashToken.Value, targetValue, frameTime * dashDistortionLerpAmount);
+        _dashToken.Value = Mathf.Lerp(_dashToken.Value, targetValue,
+            CustomFunctions.FrameAmount(dashDistortionLerpAmount));
     }
 
     private float CurrentTokenValue()

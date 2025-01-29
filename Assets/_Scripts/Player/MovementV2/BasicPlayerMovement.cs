@@ -111,6 +111,12 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         InputManager.Instance.Unregister(this);
     }
 
+    private void OnDestroy()
+    {
+        // Remove this script from the debug manager
+        DebugManager.Instance.RemoveDebuggedObject(this);
+    }
+
     public void InitializeInput()
     {
         InputActions.Add(new InputData(
@@ -410,14 +416,11 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         // Get the normalized lateral velocity
         var normalizedLateralVelocity = lateralVelocity.normalized;
 
-        const float fixedFrameTime = 1 / 50f;
-        var frameAmount = Time.fixedDeltaTime / fixedFrameTime;
-
         var lerpAmount = ParentComponent.HardSpeedLimitLerpAmount;
 
         // Calculate the new velocity
         var newVelocity =
-            Vector3.Lerp(lateralVelocity, normalizedLateralVelocity * speedLimit, lerpAmount * frameAmount);
+            Vector3.Lerp(lateralVelocity, normalizedLateralVelocity * speedLimit, CustomFunctions.FrameAmount(lerpAmount, true));
 
         // Apply the new velocity
         ParentComponent.Rigidbody.velocity = new Vector3(newVelocity.x, vel.y, newVelocity.z);

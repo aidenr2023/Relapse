@@ -178,14 +178,11 @@ public class PowerUIController : MonoBehaviour
             _isFadingIn = false;
         }
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.unscaledDeltaTime / defaultFrameTime;
-
         // Set the opacity of the power icons canvas group
         powerIconsCanvasGroup.alpha = Mathf.Lerp(
             powerIconsCanvasGroup.alpha,
             desiredOpacity,
-            powerIconsOpacityLerpAmount * frameAmount
+            CustomFunctions.FrameAmount(powerIconsOpacityLerpAmount, false, true)
         );
 
         // Set the previous power index
