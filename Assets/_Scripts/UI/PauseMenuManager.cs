@@ -61,6 +61,10 @@ public class PauseMenuManager : GameMenu, IUsesInput
         InitializeInput();
     }
 
+    protected override void CustomStart()
+    {
+    }
+
     public void InitializeInput()
     {
         // // Connect to input system

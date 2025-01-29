@@ -42,7 +42,7 @@ public class RelapseScreen : GameMenu
         Instance = this;
     }
 
-    private void Start()
+    protected override void CustomStart()
     {
     }
 

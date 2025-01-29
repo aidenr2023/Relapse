@@ -26,6 +26,10 @@ public class MainMenu : GameMenu
     protected override void CustomAwake()
     {
     }
+    
+    protected override void CustomStart()
+    {
+    }
 
     protected override void CustomActivate()
     {

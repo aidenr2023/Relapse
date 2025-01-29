@@ -47,6 +47,21 @@ public abstract class GameMenu : MonoBehaviour
         // Manage this menu
         MenuManager.Instance.ManageMenu(this);
 
+
+        // Set the desired opacity to the canvas group's alpha
+        _desiredOpacity = canvasGroup.alpha;
+
+        // Custom Awake
+        CustomAwake();
+    }
+
+    protected abstract void CustomAwake();
+
+    protected void Start()
+    {
+        // Custom Start
+        CustomStart();
+        
         if (isActiveOnStart)
         {
             // Activate the menu
@@ -63,15 +78,9 @@ public abstract class GameMenu : MonoBehaviour
             // Deactivate the menu
             Deactivate();
         }
-
-        // Set the desired opacity to the canvas group's alpha
-        _desiredOpacity = canvasGroup.alpha;
-
-        // Custom Awake
-        CustomAwake();
     }
 
-    protected abstract void CustomAwake();
+    protected abstract void CustomStart();
 
     public void Activate()
     {

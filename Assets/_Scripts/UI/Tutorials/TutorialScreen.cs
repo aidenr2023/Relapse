@@ -60,6 +60,10 @@ public class TutorialScreen : GameMenu, IUsesInput
         // Initialize the input
         InitializeInput();
     }
+    
+    protected override void CustomStart()
+    {
+    }
 
     protected override void CustomActivate()
     {

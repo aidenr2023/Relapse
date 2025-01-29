@@ -82,7 +82,7 @@ public class VendorMenu : GameMenu
         
     }
 
-    private void Start()
+    protected override void CustomStart()
     {
         // Isolate the initial menu
         IsolateMenu(initialMenu);
