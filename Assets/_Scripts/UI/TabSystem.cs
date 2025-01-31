@@ -34,7 +34,6 @@ public class TabSystem : MonoBehaviour
     }
     public void GetCurrentTab()
     {
-        
         for (int i = 0; i < tabs.Length; i++)
         {
             if (tabs[i].activeSelf)
@@ -56,7 +55,6 @@ public class TabSystem : MonoBehaviour
 
                 //Debug.Log("Previous Tab Index: " + previousTabIndex);
                 Debug.Log("Previous Tab: " + previousTab);
-                
             }
         }
     }
@@ -67,10 +65,8 @@ public class TabSystem : MonoBehaviour
 
     public void GetNextTab()
     {
-        
         if (currentTabIndex == tabs.Length-1)
         {
-            
             nextTabIndex = 0;
         }
         else
@@ -78,9 +74,6 @@ public class TabSystem : MonoBehaviour
             nextTabIndex = currentTabIndex + 1;
         }
         nextTab = tabs[nextTabIndex];
-
-        
-
     }
     public void GetPreviousTab()
     {
@@ -94,5 +87,4 @@ public class TabSystem : MonoBehaviour
         }
         previousTab = tabs[previousTabIndex];
     }
-
 }
