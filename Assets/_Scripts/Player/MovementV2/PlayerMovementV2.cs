@@ -31,9 +31,11 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     [SerializeField] private float rideSpringDamper;
 
     [Space, SerializeField, Min(0.0001f)] private float downwardInterpolation = 1;
-    [SerializeField, Min(0.0001f)] private float maxForceAdjust = .25f;
+    [SerializeField] private float maxForceAdjust = .25f;
     [SerializeField, Min(0.0001f)] private float maxDownwardAngle = 35;
     [SerializeField, Min(0.0001f)] private float velocityInterpolation = 1;
+    [SerializeField, Min(0)] private float slideInterpolationMultiplier = 10;
+    [SerializeField, Range(0, 1)] private float sphereCastRadius = .9f;
 
     [Header("Locomotion")] [SerializeField]
     private float maxSpeed = 10;
@@ -77,7 +79,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     private Vector3 _landVelocity;
 
     private float _currentPlayerHeight;
-    private float _rideHeight = .5f;
+    // private float _rideHeight = .5f;
 
     private float _currentStamina;
 
@@ -296,21 +298,56 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Create a layer mask that includes everything but the actor layer and NonPhysical
         var layerMask = ~layersToIgnore;
 
-        // Perform a raycast to check if the player is grounded
-        var hit = Physics.Raycast(
-            transform.position,
+        // // Perform a raycast to check if the player is grounded
+        // var hit = Physics.Raycast(
+        //     transform.position,
+        //     Vector3.down,
+        //     out _floatingControllerHit,
+        //     _rideHeight,
+        //     layerMask
+        // );
+
+        // Perform a sphere cast to check if the player is grounded
+        var sphereRadius = _capsuleCollider.radius * sphereCastRadius;
+
+        var hit = Physics.SphereCast(
+            transform.position + ((_capsuleCollider.height / 2 + sphereRadius) * Vector3.up),
+            // transform.position + (Vector3.up * sphereRadius),
+            // transform.position + (_capsuleCollider.height / 2 * Vector3.up), 
+            sphereRadius,
             Vector3.down,
             out _floatingControllerHit,
-            _rideHeight,
+            // _rideHeight,
+            // _rideHeight + (_capsuleCollider.height / 2 * Vector3.up).y,
+            TargetPlayerHeight - sphereRadius,
             layerMask
         );
 
+        // Do a backup raycast if the sphere cast fails. just to make sure
+        var backupHit = Physics.Raycast(
+            transform.position + ((_capsuleCollider.height / 2) * Vector3.up),
+            Vector3.down,
+            out var backupHitInfo,
+            // _rideHeight + (_capsuleCollider.height / 2 * Vector3.up).y,
+            TargetPlayerHeight,
+            layerMask
+        );
+
+        var cHit = hit;
+
         // Reset the capsule collider height if the player is not grounded
-        if (!hit)
+        if (!hit && !backupHit)
             _floatingControllerHit = new RaycastHit();
 
+        // If the sphere cast fails, but the raycast succeeds, set the floating controller hit to the raycast hit
+        if (!hit && backupHit)
+        {
+            _floatingControllerHit = backupHitInfo;
+            cHit = true;
+        }
+
         // Set the grounded state to the hit state
-        IsGrounded = hit;
+        IsGrounded = cHit;
 
         // Handle the code for when the player lands
         // Invoke the on land event
@@ -359,13 +396,16 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Get the relative velocity
         var relativeVelocity = rayDirectionVelocity - otherDirectionVelocity;
 
-        // Distance of the ray hit vs the ride height
-        var rideHeightPenetration = _floatingControllerHit.distance - _rideHeight;
+        var distance = _floatingControllerHit.distance - _capsuleCollider.height / 2;
 
-        var remainingHeight = _currentPlayerHeight - _capsuleCollider.height;
-        var capsuleHeightOffset = _rideHeight - remainingHeight;
-        var hitOffset = _floatingControllerHit.distance - capsuleHeightOffset;
-        var actualPenetration = remainingHeight - hitOffset;
+        // Distance of the ray hit vs the ride height
+        // var rideHeightPenetration = distance - _rideHeight;
+        var rideHeightPenetration = distance - (TargetPlayerHeight / 2);
+
+        // var remainingHeight = _currentPlayerHeight - _capsuleCollider.height;
+        // var capsuleHeightOffset = _rideHeight - remainingHeight;
+        // var hitOffset = distance - capsuleHeightOffset;
+        // var actualPenetration = remainingHeight - hitOffset;
 
         // // Create a target velocity with the same x and z,
         // // but enough velocity to go up by the actual penetration
@@ -418,10 +458,14 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
             var interpolation = LogarithmicInterpolation(downwardAngle / maxDownwardAngle, downwardInterpolation);
 
+            // TODO:
+            if (PlayerSlide.IsSliding)
+                interpolation *= slideInterpolationMultiplier;
+            
             velocityFactor = LogarithmicInterpolation(velocityFactor, velocityInterpolation);
 
             downwardSlopeForceAdjust = Mathf.Lerp(1, maxForceAdjust, interpolation * velocityFactor);
-
+            
             // Debug.Log(
             //     $"DOWNWARD ANGLE: " +
             //     $"{downwardAngle:0.00} => " +
@@ -456,29 +500,16 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         var oldPlayerHeight = _currentPlayerHeight;
 
         // _currentPlayerHeight = Mathf.Lerp(_currentPlayerHeight, TargetPlayerHeight, frameAmount * .25f);
-        _currentPlayerHeight = Mathf.Lerp(_currentPlayerHeight, TargetPlayerHeight, CustomFunctions.FrameAmount(.15f, true));
+        _currentPlayerHeight =
+            Mathf.Lerp(_currentPlayerHeight, TargetPlayerHeight, CustomFunctions.FrameAmount(.15f, true));
 
         if (Mathf.Abs(_currentPlayerHeight - TargetPlayerHeight) < .001f)
             _currentPlayerHeight = TargetPlayerHeight;
 
-        _rideHeight = _currentPlayerHeight / 2;
+        // _rideHeight = _currentPlayerHeight / 2;
         var desiredCapsuleHeight = _currentPlayerHeight - desiredCapsuleHeightOffset;
 
         // Debug.Log($"_currentPlayerHeight: {_currentPlayerHeight:0.00} => {TargetPlayerHeight:0.00}");
-
-        // Return if the floating controller hit is not set
-        if (!_floatingControllerHit.collider)
-        {
-            return;
-
-            // // Reset the capsule collider height
-            // _capsuleCollider.height = desiredCapsuleHeight;
-            //
-            // // Reset the capsule collider center
-            // _capsuleCollider.center = Vector3.zero;
-            //
-            // return;
-        }
 
         // Change the y of the transform based on the difference between the old and new player height
         var yDifference = _currentPlayerHeight - oldPlayerHeight;
@@ -490,6 +521,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         // Get the distance from the player to the floating controller hit
         var distance = _floatingControllerHit.distance;
+
+        // TODO: Does this line work?
+        distance -= _capsuleCollider.height / 2;
 
         var heightAdjust = desiredCapsuleHeight - ((desiredCapsuleHeight / 2) - distance);
 
@@ -613,17 +647,35 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         Gizmos.color = Color.red;
         Gizmos.DrawRay(orientation.position, orientation.forward * 3);
 
-        // Draw the floating controller ray
-        Gizmos.color = Color.red;
-        Gizmos.DrawRay(
-            transform.position,
-            Vector3.down * _rideHeight
-        );
+        // // Draw the floating controller ray
+        // Gizmos.color = Color.red;
+        // Gizmos.DrawRay(
+        //     transform.position,
+        //     Vector3.down * _rideHeight
+        // );
 
         if (_floatingControllerHit.collider)
         {
             Gizmos.color = Color.green;
             Gizmos.DrawSphere(_floatingControllerHit.point, .125f);
+        }
+
+        if (_capsuleCollider != null)
+        {
+            Gizmos.color = Color.blue;
+
+            // Draw a sphere at the top of the capsule
+            Gizmos.DrawSphere(
+                transform.position + _capsuleCollider.center + (_capsuleCollider.height / 2 * Vector3.up),
+                _capsuleCollider.radius
+            );
+
+            // Draw a ray for the cast
+            Gizmos.DrawRay(
+                transform.position + _capsuleCollider.center + (_capsuleCollider.height / 2 * Vector3.up),
+                // Vector3.down * (_rideHeight + (_capsuleCollider.height / 2 * Vector3.up).y)
+                Vector3.down * TargetPlayerHeight
+            );
         }
     }
 

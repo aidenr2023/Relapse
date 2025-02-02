@@ -1215,14 +1215,16 @@ MonoBehaviour:
   cameraPivot: {fileID: 5244302159661097867}
   orientation: {fileID: 5224293575626551686}
   playerAnimator: {fileID: 2544283650514281553}
-  desiredCapsuleHeightOffset: 0.5
+  desiredCapsuleHeightOffset: 0.75
   defaultPlayerHeight: 2
   rideSpringStrength: 512
   rideSpringDamper: 32
-  downwardInterpolation: 100
-  maxForceAdjust: 0.25
-  maxDownwardAngle: 35
+  downwardInterpolation: 1
+  maxForceAdjust: 0
+  maxDownwardAngle: 75
   velocityInterpolation: 10
+  slideInterpolationMultiplier: 10
+  sphereCastRadius: 0.9
   maxSpeed: 12
   acceleration: 24
   accelerationFactorFromDot:
@@ -1271,7 +1273,7 @@ MonoBehaviour:
   hardSpeedLimitLerpAmount: 0.1
   layersToIgnore:
     serializedVersion: 2
-    m_Bits: 33536
+    m_Bits: 33544
   staminaDrains: 1
   maxStamina: 100
   staminaRegenRate: 50
@@ -1422,9 +1424,9 @@ MonoBehaviour:
   landVelocityTransferMultiplier: 0.65
   landVelocityTransferMax: 30
   maxSlopeSpeedMultiplier: 2
-  slopeAcceleration: 16
-  minSlopeAccelerationAngle: 10
-  maxSlopeAccelerationAngle: 45
+  slopeAcceleration: 0
+  minSlopeAccelerationAngle: 5
+  maxSlopeAccelerationAngle: 90
 --- !u!114 &2400744986159358957
 MonoBehaviour:
   m_ObjectHideFlags: 0
