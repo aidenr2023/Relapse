@@ -165,11 +165,28 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
         InputActions.Add(
             new InputData(InputManager.Instance.PControls.Player.Attack, InputType.Canceled, OnShootCanceled)
         );
+        InputActions.Add(
+            new InputData(InputManager.Instance.PControls.Player.Attack, InputType.Performed, ReloadOnShoot)
+        );
 
         // Reload
         InputActions.Add(
             new InputData(InputManager.Instance.PControls.Player.Reload, InputType.Performed, OnReload)
         );
+    }
+
+    private void ReloadOnShoot(InputAction.CallbackContext obj)
+    {
+        // Return if the current gun is null
+        if (_equippedGun == null)
+            return;
+        
+        // Return if the current gun doesn't need to reload
+        if (_equippedGun.CurrentAmmo > 0)
+            return;
+        
+        // Reload the gun
+        EquippedGun.Reload();
     }
 
     private void OnShoot(InputAction.CallbackContext obj)
