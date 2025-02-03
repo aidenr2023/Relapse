@@ -253,7 +253,7 @@ public class PlayerLook : MonoBehaviour, IUsesInput
         return desiredLookRotation;
     }
 
-    private void ApplyRotation(Quaternion rotation)
+    public void ApplyRotation(Quaternion rotation)
     {
         // Set the look rotation to the desired look rotation
         _lookRotation = rotation;
