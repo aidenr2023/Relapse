@@ -53,6 +53,19 @@ public class MainMenu : GameMenu
     {
         // Set the loading bar's visibility based on whether the scene is loading
         loadingBar.gameObject.SetActive(_clickedButton);
+        
+        // If the opacity is 0, unload the scene
+        if (canvasGroup.alpha == 0)
+            UnloadSceneAfterDeactivate();
+    }
+
+    private void UnloadSceneAfterDeactivate()
+    {
+        // Get the scene that this object is in
+        var scene = gameObject.scene;
+        
+        // Unload the scene
+        SceneManager.UnloadSceneAsync(scene);
     }
 
     private void UpdateProgressBarPercent(float amount)
@@ -67,7 +80,8 @@ public class MainMenu : GameMenu
         {
             // StartCoroutine(LoadSceneAsync());
             AsyncSceneManager.Instance.LoadStartupScene(
-                levelStartupSceneInfo, this, UpdateProgressBarPercent
+                levelStartupSceneInfo, this, UpdateProgressBarPercent,
+                Deactivate
             );
 
             // Set the flag to true
@@ -80,7 +94,6 @@ public class MainMenu : GameMenu
 
     public void ExitButton()
     {
-        Debug.Log("Quit");
         Application.Quit();
 
         // If the player is in the editor, stop playing
@@ -103,7 +116,13 @@ public class MainMenu : GameMenu
 
     public void ForceChangeScene(string sceneName)
     {
-        // Load the scene singularly
-        SceneManager.LoadScene(sceneName);
+        // // Load the scene singularly
+        // SceneManager.LoadScene(sceneName);
+        
+        // Load the scene additively
+        SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+        
+        // Deactivate the main menu
+        Deactivate();
     }
 }

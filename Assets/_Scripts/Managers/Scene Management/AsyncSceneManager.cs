@@ -564,15 +564,15 @@ public class AsyncSceneManager : IDebugged
 
         var emptyScene = SceneManager.CreateScene("Empty");
 
-        // Unload all the currently loaded scenes asynchronously,
-        // but don't remove them from the hierarchy yet
-        foreach (var scene in scenesToUnload)
-        {
-            var operation = SceneManager.UnloadSceneAsync(scene.name);
-
-            // Set the scene to be activated
-            operation.allowSceneActivation = true;
-        }
+        // // Unload all the currently loaded scenes asynchronously,
+        // // but don't remove them from the hierarchy yet
+        // foreach (var scene in scenesToUnload)
+        // {
+        //     var operation = SceneManager.UnloadSceneAsync(scene.name);
+        //
+        //     // Set the scene to be activated
+        //     operation.allowSceneActivation = true;
+        // }
 
         // if the active scene is not done, wait
         if (activeSceneOp != null)

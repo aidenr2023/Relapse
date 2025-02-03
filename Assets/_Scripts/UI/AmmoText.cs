@@ -130,6 +130,14 @@ public class AmmoText : MonoBehaviour
 
     private void UpdateText()
     {
+        // Return if the weapon manager is null
+        if (_weaponManager == null)
+            return;
+        
+        // Return if the equipped gun is null
+        if (_weaponManager.EquippedGun == null)
+            return;
+        
         // Set the text of the ammo text to the ammo count of the equipped gun
         text.text = $"{_weaponManager.EquippedGun.CurrentAmmo}";
 
