@@ -10,7 +10,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     [SerializeField] private bool canSprintWithoutPower = true;
     [SerializeField] private bool canJumpWithoutPower = true;
 
-    [SerializeField] [Min(1)] private float sprintMultiplier = 1.5f;
+    [SerializeField, Min(1)] private float sprintMultiplier = 1.5f;
 
     [Space, SerializeField, Min(0)] private float jumpForce = 10f;
     [SerializeField, Min(0)] private float jumpGraceTime = 0.5f;
@@ -252,7 +252,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     public override void FixedMovementUpdate()
     {
         // Update the sprinting state for toggled sprinting
-        if (MovementInput == Vector2.zero)
+        if (MovementInput == Vector2.zero || !CanSprint)
             ParentComponent.IsSprintToggled = false;
 
         // Update the movement
@@ -420,7 +420,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
         // Calculate the new velocity
         var newVelocity =
-            Vector3.Lerp(lateralVelocity, normalizedLateralVelocity * speedLimit, CustomFunctions.FrameAmount(lerpAmount, true));
+            Vector3.Lerp(lateralVelocity, normalizedLateralVelocity * speedLimit,
+                CustomFunctions.FrameAmount(lerpAmount, true));
 
         // Apply the new velocity
         ParentComponent.Rigidbody.velocity = new Vector3(newVelocity.x, vel.y, newVelocity.z);

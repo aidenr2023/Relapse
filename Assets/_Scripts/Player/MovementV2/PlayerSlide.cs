@@ -64,11 +64,11 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
         get => isEnabled;
         set => isEnabled = value;
     }
-    
+
     public bool IsSetToSlide => _midAirGraceTimer.IsActive && _midAirGraceTimer.IsNotComplete;
 
     public bool IsSliding => _isSliding;
-    
+
     #endregion
 
     #region Initialization Functions
@@ -98,7 +98,7 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
         InputActions.Add(new InputData(
             InputManager.Instance.PControls.PlayerMovementBasic.Jump, InputType.Performed, OnJumpPerformed)
         );
-        
+
         // Sprint button
         InputActions.Add(new InputData(
             InputManager.Instance.PControls.Player.Sprint, InputType.Performed, OnSprintPerformed)
@@ -107,6 +107,7 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
             InputManager.Instance.PControls.Player.SprintToggle, InputType.Performed, OnSprintTogglePerformed)
         );
     }
+
 
     #region Input Functions
 
@@ -357,14 +358,6 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
 
     private void UpdateSlideMovement()
     {
-        // var cameraTransform = ParentComponent.Orientation;
-
-        // // Get the camera's forward without the y component
-        // var cameraForward = new Vector3(cameraTransform.forward.x, 0, cameraTransform.forward.z).normalized;
-        //
-        // // Get the camera's right without the y component
-        // var cameraRight = new Vector3(cameraTransform.right.x, 0, cameraTransform.right.z).normalized;
-
         // Get the lateral velocity
         var lateralVelocity = new Vector3(
             ParentComponent.Rigidbody.velocity.x,
@@ -372,13 +365,15 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
             ParentComponent.Rigidbody.velocity.z
         );
 
-        // var velocityForward = ParentComponent.Rigidbody.velocity.normalized;
-        var velocityForward = lateralVelocity.normalized;
+        // Get the camera forward and right vectors
+        var cameraForward = ParentComponent.CameraPivot.transform.forward;
+        var cameraRight = ParentComponent.CameraPivot.transform.right;
 
         // Calculate the movement vector
-        // var forwardMovement = (cameraForward * _movementInput.y);
-        // var rightMovement = (cameraRight * _movementInput.x);
-        var forwardMovement = velocityForward;
+        // var forwardInput = (cameraForward * Mathf.Min(0, ParentComponent.MovementInput.y));
+        // var rightInput = (cameraRight * ParentComponent.MovementInput.x);
+        // var forwardMovement = forwardInput + rightInput;
+        var forwardMovement = lateralVelocity.normalized;
 
         if (ParentComponent.IsGrounded)
         {
@@ -387,7 +382,6 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
 
             // Get the forward and right vectors based on the surface normal
             forwardMovement = Vector3.ProjectOnPlane(forwardMovement, surfaceNormal);
-            // rightMovement = Vector3.ProjectOnPlane(rightMovement, surfaceNormal);
         }
 
         // Calculate the current movement
@@ -398,19 +392,14 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
             currentMovement.Normalize();
 
         // Calculate how fast the player should be moving
-        var currentTargetVelocityMagnitude = ParentComponent.MovementSpeed * 0;
-
         // Calculate the velocity the rigidbody should be moving at
-        var targetVelocity = (currentMovement * currentTargetVelocityMagnitude) +
-                             new Vector3(0, ParentComponent.Rigidbody.velocity.y, 0);
+        var targetVelocity = new Vector3(0, ParentComponent.Rigidbody.velocity.y, 0);
 
         // Use the ground hit normal to determine if the player is sliding down a slope
         var slopeDirection = Vector3.Cross(
             ParentComponent.GroundHit.normal,
             Vector3.Cross(Vector3.down, ParentComponent.GroundHit.normal)
         ).normalized;
-
-        _tmpSlopeDownDirection = slopeDirection;
 
         var currentAcceleration = 1f;
 
@@ -419,8 +408,6 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
         {
             // Get the angle of the slope
             var slopeAngle = Vector3.Angle(Vector3.up, ParentComponent.GroundHit.normal);
-
-            // Debug.Log($"Sliding On A Slope: {slopeAngle:0.00}!");
 
             float slopeInverseLerp;
             float slopeSpeedMult;
@@ -439,8 +426,6 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
 
             var targetSlopeSpeed = ParentComponent.MovementSpeed * slopeSpeedMult;
 
-            // Debug.Log($"Target Slope Speed: {targetSlopeSpeed:0.0000}");
-
             // Recalculate the target velocity
             targetVelocity = slopeDirection * (targetSlopeSpeed) +
                              new Vector3(0, ParentComponent.Rigidbody.velocity.y, 0);
@@ -449,7 +434,10 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
         }
 
         // Determine if the new velocity is a slowdown
-        if (Vector3.Dot(targetVelocity - ParentComponent.Rigidbody.velocity, ParentComponent.Rigidbody.velocity) < 0)
+        var isSlowDown = Vector3.Dot(targetVelocity - ParentComponent.Rigidbody.velocity,
+            ParentComponent.Rigidbody.velocity) < 0;
+
+        if (isSlowDown)
             currentAcceleration = slideDeceleration;
 
         // Get the dot product between the target velocity and the current velocity
@@ -476,6 +464,21 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
         if (force.magnitude > targetForce.magnitude)
             force = targetForce;
 
+        // TODO: Figure out slope movement
+        
+        // // Rotate the force based on the movement input (Rotate around the y-axis)
+        // const float rotationAngle = 180f;
+        // const float rotationSpeedThresholdMin = 3;
+        // var rotationSpeedThresholdMax = ParentComponent.MovementSpeed * 2;
+        //
+        // var rotationDirection = Vector3.Dot(cameraForward, force) < 0 ? -1 : 1;
+        // var speedLerpValue = Mathf.InverseLerp(
+        //     rotationSpeedThresholdMin, rotationSpeedThresholdMax,
+        //     ParentComponent.Rigidbody.velocity.magnitude
+        // );
+        //
+        // force = Quaternion.AngleAxis(rotationAngle * rotationDirection, Vector3.up) * force;
+
         // Debug.Log(
         //     $"Target Vel: {targetVelocity:0.00} | " +
         //     $"Target Force: {targetForce:0.00} | " +
@@ -486,8 +489,6 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
         // Apply the force to the rigidbody
         ParentComponent.Rigidbody.AddForce(force, ForceMode.Acceleration);
     }
-
-    private Vector3 _tmpSlopeDownDirection;
 
     #endregion
 
@@ -529,17 +530,6 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
     public override string GetDebugText()
     {
         return "";
-    }
-
-    private void OnDrawGizmos()
-    {
-        // Return if there is no parent component
-        if (ParentComponent == null)
-            return;
-
-        // Draw the slope down direction
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawRay(ParentComponent.Rigidbody.position, _tmpSlopeDownDirection * 100);
     }
 
     #endregion

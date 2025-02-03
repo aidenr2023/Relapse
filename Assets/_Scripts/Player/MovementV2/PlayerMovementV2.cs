@@ -240,7 +240,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         InputActions.Add(new InputData(
             InputManager.Instance.PControls.Player.Sprint, InputType.Performed, OnSprintTogglePerformed)
         );
-        
+
         InputActions.Add(new InputData(
             InputManager.Instance.PControls.Player.SprintToggle, InputType.Performed,
             OnSprintTogglePerformed)
@@ -254,7 +254,12 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Update the stamina
         UpdateStamina();
 
-        if (IsSprinting && CurrentStamina <= 0)
+        if (IsSprinting &&
+            (
+                CurrentStamina <= 0 ||
+                MovementInput.magnitude < .125f
+            )
+           )
         {
             _isSprinting = false;
             IsSprintToggled = false;
@@ -465,11 +470,11 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             // TODO:
             if (PlayerSlide.IsSliding)
                 interpolation *= slideInterpolationMultiplier;
-            
+
             velocityFactor = LogarithmicInterpolation(velocityFactor, velocityInterpolation);
 
             downwardSlopeForceAdjust = Mathf.Lerp(1, maxForceAdjust, interpolation * velocityFactor);
-            
+
             // Debug.Log(
             //     $"DOWNWARD ANGLE: " +
             //     $"{downwardAngle:0.00} => " +
@@ -719,7 +724,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             IsSprintToggled = false;
             return;
         }
-        
+
         // If the sprint toggle flag is already on, return
         if (IsSprintToggled && !IsSprinting)
         {

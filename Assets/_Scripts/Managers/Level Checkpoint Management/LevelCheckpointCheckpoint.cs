@@ -36,7 +36,7 @@ public class LevelCheckpointCheckpoint : MonoBehaviour
 
     #endregion
 
-    private void OnTriggerEnter(Collider other)
+    private void SetPlayerCheckpoint(Collider other)
     {
         // Return if the other object is not the player
         if (!other.CompareTag("Player"))
@@ -53,6 +53,11 @@ public class LevelCheckpointCheckpoint : MonoBehaviour
 
         // Set the checkpoint
         LevelCheckpointManager.Instance.SetCheckpoint(this);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        SetPlayerCheckpoint(other);
     }
 
     private void OnTriggerExit(Collider other)
