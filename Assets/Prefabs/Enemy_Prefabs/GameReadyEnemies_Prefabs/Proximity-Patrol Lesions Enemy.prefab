@@ -560,6 +560,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uniqueId: 
+  originalScene: Proximity-Patrol Lesions Enemy
 --- !u!114 &8932513790679332165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -593,15 +594,24 @@ MonoBehaviour:
   maxVFXRangeDamage: 50
   minVFXDamage: 10
   enemyHitSound:
-    clip: {fileID: 0}
-    soundType: 1
+    clip: {fileID: 8300000, guid: 94981910bbf34bb43a109bca992410c3, type: 3}
+    soundType: 2
     volume: 0.0625
     isPersistent: 0
+    isLooping: 0
+    pitch: 1
   enemyDeathSound:
-    clip: {fileID: 0}
-    soundType: 1
+    clip: {fileID: 8300000, guid: 94981910bbf34bb43a109bca992410c3, type: 3}
+    soundType: 2
     volume: 0.0625
     isPersistent: 0
+    isLooping: 0
+    pitch: 1
+  enemyMoanSource: {fileID: 0}
+  moanSounds: []
+  moanSoundChance: 1
+  moanSoundMinCooldown: 5
+  moanSoundMaxCooldown: 10
 --- !u!114 &1321240230866553819
 MonoBehaviour:
   m_ObjectHideFlags: 0
