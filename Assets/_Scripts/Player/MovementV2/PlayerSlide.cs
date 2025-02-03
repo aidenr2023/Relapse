@@ -86,6 +86,7 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
 
     public void InitializeInput()
     {
+        // Slide button
         InputActions.Add(new InputData(
             InputManager.Instance.PControls.PlayerMovementBasic.Slide, InputType.Performed, OnSlidePerformedStart)
         );
@@ -93,9 +94,12 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
             InputManager.Instance.PControls.PlayerMovementBasic.Slide, InputType.Performed, OnSlidePerformedStop)
         );
 
+        // Jump button
         InputActions.Add(new InputData(
             InputManager.Instance.PControls.PlayerMovementBasic.Jump, InputType.Performed, OnJumpPerformed)
         );
+        
+        // Sprint button
         InputActions.Add(new InputData(
             InputManager.Instance.PControls.Player.Sprint, InputType.Performed, OnSprintPerformed)
         );

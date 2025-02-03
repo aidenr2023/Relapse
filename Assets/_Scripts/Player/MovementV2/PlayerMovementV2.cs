@@ -231,12 +231,16 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public void InitializeInput()
     {
+        // InputActions.Add(new InputData(
+        //     InputManager.Instance.PControls.Player.Sprint, InputType.Performed, OnSprintPerformed)
+        // );
+        // InputActions.Add(new InputData(
+        //     InputManager.Instance.PControls.Player.Sprint, InputType.Canceled, OnSprintCanceled)
+        // );
         InputActions.Add(new InputData(
-            InputManager.Instance.PControls.Player.Sprint, InputType.Performed, OnSprintPerformed)
+            InputManager.Instance.PControls.Player.Sprint, InputType.Performed, OnSprintTogglePerformed)
         );
-        InputActions.Add(new InputData(
-            InputManager.Instance.PControls.Player.Sprint, InputType.Canceled, OnSprintCanceled)
-        );
+        
         InputActions.Add(new InputData(
             InputManager.Instance.PControls.Player.SprintToggle, InputType.Performed,
             OnSprintTogglePerformed)
@@ -715,9 +719,16 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             IsSprintToggled = false;
             return;
         }
+        
+        // If the sprint toggle flag is already on, return
+        if (IsSprintToggled && !IsSprinting)
+        {
+            IsSprintToggled = false;
+            return;
+        }
 
         // Set the sprinting flag to true
-        IsSprintToggled = !IsSprintToggled;
+        IsSprintToggled = true;
 
         Debug.Log($"Sprint Toggle Performed: {IsSprintToggled}");
     }
