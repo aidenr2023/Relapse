@@ -25,6 +25,7 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
 
         StartCoroutine(PauseMenuManager.LoadPauseMenuManager());
         StartCoroutine(VendorMenu.LoadVendorMenu());
+        StartCoroutine(RelapseScreen.LoadDeathScene());
     }
 
     public void InitializeInput()

@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class RelapseScreen : GameMenu
 {
+    private const string DEATH_SCENE_NAME = "DeathUIScene";
+
     public static RelapseScreen Instance { get; private set; }
 
     #region Serialized Fields
@@ -183,5 +188,14 @@ public class RelapseScreen : GameMenu
     public override void OnBackPressed()
     {
         // Do nothing
+    }
+
+    public static IEnumerator LoadDeathScene()
+    {
+        // Load the death scene
+        SceneManager.LoadScene(DEATH_SCENE_NAME, LoadSceneMode.Additive);
+
+        // Wait while the instance is null
+        yield return new WaitUntil(() => Instance != null);
     }
 }
