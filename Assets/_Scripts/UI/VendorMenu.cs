@@ -10,7 +10,7 @@ using UnityEngine.UI;
 public class VendorMenu : GameMenu
 {
     private const string VENDOR_SCENE_NAME = "VendorUIScene";
-    
+
     public static VendorMenu Instance { get; private set; }
 
     #region Serialized Fields
@@ -83,7 +83,6 @@ public class VendorMenu : GameMenu
 
     protected override void CustomDestroy()
     {
-        
     }
 
     protected override void CustomStart()
@@ -308,8 +307,29 @@ public class VendorMenu : GameMenu
         // Populate the shop
         PopulateShop();
 
-        // Isolate the initial menu
-        IsolateMenu(initialMenu);
+        // // Isolate the initial menu
+        // IsolateMenu(initialMenu);
+
+        // If the vendor has intro dialogue, start the dialogue
+        if (vendor.IntroDialogue != null && !vendor.HasIntroduced)
+        {
+            dialogueUI.StartDialogue(vendor.IntroDialogue);
+            IsolateMenu(gossipMenu);
+        }
+        
+        // If the vendor has already introduced themselves, start the already introduced dialogue
+        else if (vendor.AlreadyIntroducedDialogue != null && vendor.HasIntroduced)
+        {
+            dialogueUI.StartDialogue(vendor.AlreadyIntroducedDialogue);
+            IsolateMenu(gossipMenu);
+        }
+        
+        // Otherwise, isolate the initial menu
+        else
+            IsolateMenu(initialMenu);
+        
+        // Set the introduced flag in the vendor information
+        vendor.HasIntroduced = true;
     }
 
     public void EndVendor()
@@ -333,7 +353,7 @@ public class VendorMenu : GameMenu
         else if (powerMenu.activeSelf)
             IsolateMenu(initialMenu);
     }
-    
+
     public static IEnumerator LoadVendorMenu()
     {
         // Load the vendor UI scene
