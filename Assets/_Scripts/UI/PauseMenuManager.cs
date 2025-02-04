@@ -11,6 +11,10 @@ using UnityEngine.Serialization;
 
 public class PauseMenuManager : GameMenu, IUsesInput
 {
+    private const string PAUSE_SCENE_NAME = "PauseUIScene";
+
+    public static PauseMenuManager Instance { get; private set; }
+
     #region Serialized Fields
 
     [SerializeField] private GameObject pauseMenuParent;
@@ -57,6 +61,9 @@ public class PauseMenuManager : GameMenu, IUsesInput
     /// </summary>
     protected override void CustomAwake()
     {
+        // Set the instance
+        Instance = this;
+
         // Initialize the input
         InitializeInput();
     }
@@ -72,9 +79,9 @@ public class PauseMenuManager : GameMenu, IUsesInput
         //     new InputData(InputManager.Instance.DefaultInputActions.UI.Cancel, InputType.Performed, OnBackPerformed)
         // );
 
-        InputActions.Add(
-            new InputData(InputManager.Instance.PControls.Player.Pause, InputType.Performed, OnPausePerformed)
-        );
+        // InputActions.Add(
+        //     new InputData(InputManager.Instance.PControls.Player.Pause, InputType.Performed, OnPausePerformed)
+        // );
     }
 
     private void OnEnable()
@@ -106,9 +113,12 @@ public class PauseMenuManager : GameMenu, IUsesInput
 
         // Deactivate the menu
         Deactivate();
+
+        // Unset this as the instance
+        Instance = null;
     }
 
-    private void OnPausePerformed(InputAction.CallbackContext context)
+    public void OnPausePerformed(InputAction.CallbackContext context)
     {
         // Return if inputted this frame
         if (_inputtedThisFrame)
@@ -348,5 +358,17 @@ public class PauseMenuManager : GameMenu, IUsesInput
         // Resume the game
         else
             Resume(pauseMenuPanel.transform.GetChild(0).gameObject);
+    }
+    
+    public static IEnumerator LoadPauseMenuManager()
+    {
+        // Load the pause menu scene
+        SceneManager.LoadScene(PAUSE_SCENE_NAME, LoadSceneMode.Additive);
+        
+        // Wait while the instance is null
+        yield return new WaitUntil(() => Instance != null);
+
+        // // Call the OnPausePerformed method
+        // Instance.OnPausePerformed(obj);
     }
 }
