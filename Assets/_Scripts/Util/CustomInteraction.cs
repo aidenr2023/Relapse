@@ -65,7 +65,6 @@ public class CustomInteraction : MonoBehaviour, IInteractable
     public void PlayTutorial(Tutorial tutorial)
     {
         // Play the tutorial
-        TutorialScreen.Instance.ChangeTutorial(tutorial);
-        TutorialScreen.Instance.Activate();
+        TutorialScreen.Play(this, tutorial);
     }
 }

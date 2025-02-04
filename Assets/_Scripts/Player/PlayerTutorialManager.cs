@@ -60,7 +60,8 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
         _hasRespawned = true;
 
         // Complete the tutorial
-        TutorialScreen.Instance.PlayTutorial(respawnTutorial);
+        // TutorialScreen.Instance.PlayTutorial(respawnTutorial);
+        TutorialScreen.Play(this, respawnTutorial);
     }
 
     private void OnGunEquipped(WeaponManager manager, IGun gun)
@@ -73,7 +74,8 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
         _hasPickedUpGun = true;
 
         // Complete the tutorial
-        TutorialScreen.Instance.PlayTutorial(gunPickupTutorial);
+        // TutorialScreen.Instance.PlayTutorial(gunPickupTutorial);
+        TutorialScreen.Play(this, gunPickupTutorial);
     }
 
     #endregion

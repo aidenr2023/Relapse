@@ -18,7 +18,8 @@ public class TutorialCollider : MonoBehaviour
             return;
 
         // Add the tutorial to the tutorial screen
-        TutorialScreen.Instance.PlayTutorial(tutorial);
+        // TutorialScreen.Instance.PlayTutorial(tutorial);
+        TutorialScreen.Play(this, tutorial);
 
         // Set the has already activated flag to true
         if (activateOnce)

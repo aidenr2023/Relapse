@@ -1,13 +1,19 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using UnityEngine.Video;
+using Object = System.Object;
 
 public class TutorialScreen : GameMenu, IUsesInput
 {
-    public static TutorialScreen Instance { get; private set; }
+    private const string TUTORIAL_SCENE_NAME = "TutorialUIScene";
+
+    private static TutorialScreen Instance { get; set; }
 
     #region Serialized Fields
 
@@ -60,7 +66,7 @@ public class TutorialScreen : GameMenu, IUsesInput
         // Initialize the input
         InitializeInput();
     }
-    
+
     protected override void CustomStart()
     {
     }
@@ -89,6 +95,8 @@ public class TutorialScreen : GameMenu, IUsesInput
 
     protected override void CustomDestroy()
     {
+        // Set the instance to null
+        Instance = null;
     }
 
     public override void OnBackPressed()
@@ -276,6 +284,41 @@ public class TutorialScreen : GameMenu, IUsesInput
 
         // Get the instance of the player tutorial manager & complete the tutorial
         Player.Instance.PlayerTutorialManager.CompleteTutorial(tutorial);
+    }
+
+    public static void Play(MonoBehaviour script, Tutorial tutorial, bool replay = true)
+    {
+        // Run the coroutine
+        script.StartCoroutine(CreateTutorialSceneAndPlay(tutorial, replay));
+    }
+
+    private static IEnumerator CreateTutorialSceneAndPlay(Tutorial tutorial, bool replay = true)
+    {
+        // If the tutorial has already been completed and we are not replaying it, return
+        if (Player.Instance.PlayerTutorialManager.HasCompletedTutorial(tutorial) && !replay)
+            yield break;
+        
+        // If the instance is NOT null, just play the tutorial
+        if (Instance != null)
+        {
+            Instance.PlayTutorial(tutorial, replay);
+            yield break;
+        }
+
+        // Load the tutorial scene
+        var asyncOperation = SceneManager.LoadSceneAsync(TUTORIAL_SCENE_NAME, LoadSceneMode.Additive);
+
+        // Wait until the scene is loaded
+        yield return new WaitUntil(() => asyncOperation.isDone);
+
+        var tutorialScene = SceneManager.GetSceneByName(TUTORIAL_SCENE_NAME);
+
+        // Get the tutorial screen instance
+        var tutorialScreen = FindObjectsOfType<TutorialScreen>()
+            .FirstOrDefault(n => n.gameObject.scene == tutorialScene);
+
+        // Play the tutorial
+        tutorialScreen?.PlayTutorial(tutorial, replay);
     }
 
     #region IUsesInput
