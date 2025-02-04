@@ -33,6 +33,7 @@ public class CustomInteraction : MonoBehaviour, IInteractable
     {
         // Invoke the event
         OnInteract.Invoke();
+        Debug.Log ("Event activated");
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)
