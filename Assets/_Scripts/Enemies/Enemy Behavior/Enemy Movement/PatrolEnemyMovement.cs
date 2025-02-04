@@ -75,8 +75,8 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
 
     private bool IsWithinStoppingDistance =>
         // NavMeshAgent.remainingDistance <= stoppingDistance &&
-        Enemy.EnemyDetectionBehavior.CurrentDetectionState == EnemyDetectionState.Aware &&
-        Vector3.Distance(transform.position, Enemy.EnemyDetectionBehavior.Target.GameObject.transform.position) <=
+        Enemy.DetectionBehavior.CurrentDetectionState == EnemyDetectionState.Aware &&
+        Vector3.Distance(transform.position, Enemy.DetectionBehavior.Target.GameObject.transform.position) <=
         stoppingDistance;
 
     #endregion
@@ -135,7 +135,7 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
             this.RemoveMovementDisableToken(this);
 
         // Update the detection state token
-        _detectionStateToken.Value = Enemy.EnemyDetectionBehavior.CurrentDetectionState switch
+        _detectionStateToken.Value = Enemy.DetectionBehavior.CurrentDetectionState switch
         {
             EnemyDetectionState.Unaware => unawareMovementMultiplier,
             EnemyDetectionState.Curious => curiousMovementMultiplier,
@@ -176,7 +176,7 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
         if (!NavMeshAgent.enabled || !NavMeshAgent.isOnNavMesh)
             return;
 
-        var currentDetectionState = Enemy.EnemyDetectionBehavior.CurrentDetectionState;
+        var currentDetectionState = Enemy.DetectionBehavior.CurrentDetectionState;
 
         switch (currentDetectionState)
         {
@@ -198,18 +198,18 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
             case EnemyDetectionState.Curious:
 
                 // Set the destination to the last known player position
-                if (NavMeshAgent.destination != Enemy.EnemyDetectionBehavior.LastKnownTargetPosition)
-                    NavMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.LastKnownTargetPosition);
+                if (NavMeshAgent.destination != Enemy.DetectionBehavior.LastKnownTargetPosition)
+                    NavMeshAgent.SetDestination(Enemy.DetectionBehavior.LastKnownTargetPosition);
 
                 break;
 
             case EnemyDetectionState.Aware:
 
                 // Set the destination to the player's current position
-                if (Enemy.EnemyDetectionBehavior.IsTargetDetected)
-                    NavMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.Target.GameObject.transform.position);
+                if (Enemy.DetectionBehavior.IsTargetDetected)
+                    NavMeshAgent.SetDestination(Enemy.DetectionBehavior.Target.GameObject.transform.position);
                 else
-                    NavMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.LastKnownTargetPosition);
+                    NavMeshAgent.SetDestination(Enemy.DetectionBehavior.LastKnownTargetPosition);
 
                 break;
 

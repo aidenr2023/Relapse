@@ -96,7 +96,7 @@ public class PositionSwapProjectile : MonoBehaviour, IPowerProjectile
             if (actor is EnemyInfo enemyInfo)
             {
                 // Get the enemy controller
-                var enemyMovement = enemyInfo.ParentComponent.EnemyMovementBehavior;
+                var enemyMovement = enemyInfo.ParentComponent.MovementBehavior;
 
                 // Swap the positions of the shooter and the actor
                 enemyMovement.SetPosition(shooterPosition);

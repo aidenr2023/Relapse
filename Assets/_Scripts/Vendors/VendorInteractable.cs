@@ -63,12 +63,17 @@ public class VendorInteractable : MonoBehaviour, IInteractable, ILevelLoaderInfo
     }
 
     private const string CAN_BUY_FROM_VENDOR = "_canBuyFromVendor";
+    private const string HAS_INTRODUCED = "_hasIntroduced";
 
     public void LoadData(LevelLoader levelLoader)
     {
         // Load whether the player can buy from the vendor
         if (levelLoader.TryGetDataFromMemory(UniqueId, CAN_BUY_FROM_VENDOR, out bool canBuyFromVendor))
             vendorInformation.CanBuyFromVendor = canBuyFromVendor;
+        
+        // Load whether the player has introduced to the vendor
+        if (levelLoader.TryGetDataFromMemory(UniqueId, HAS_INTRODUCED, out bool hasIntroduced))
+            vendorInformation.HasIntroduced = hasIntroduced;
     }
 
     public void SaveData(LevelLoader levelLoader)
@@ -77,6 +82,11 @@ public class VendorInteractable : MonoBehaviour, IInteractable, ILevelLoaderInfo
         // Save the data
         var canBuyFromVendorData = vendorInformation.CanBuyFromVendor;
         levelLoader.AddDataToMemory(UniqueId, new DataInfo(CAN_BUY_FROM_VENDOR, canBuyFromVendorData));
+        
+        // Create a boolean to save whether the player has introduced to the vendor
+        // Save the data
+        var hasIntroducedData = vendorInformation.HasIntroduced;
+        levelLoader.AddDataToMemory(UniqueId, new DataInfo(HAS_INTRODUCED, hasIntroducedData));
     }
 
     #endregion

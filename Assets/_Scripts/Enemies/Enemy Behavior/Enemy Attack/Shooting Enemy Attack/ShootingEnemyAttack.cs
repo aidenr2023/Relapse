@@ -47,10 +47,10 @@ public class ShootingEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     public bool IsAttackEnabled => _isExternallyEnabled && this.IsAttackEnabledTokens();
 
     private bool IsTargetInRange =>
-        Enemy.EnemyDetectionBehavior.Target != null &&
+        Enemy.DetectionBehavior.Target != null &&
         Vector3.Distance(
             transform.position,
-            Enemy.EnemyDetectionBehavior.Target.GameObject.transform.position
+            Enemy.DetectionBehavior.Target.GameObject.transform.position
         ) <= fireRange;
 
     public HashSet<object> AttackDisableTokens { get; } = new();
@@ -81,7 +81,7 @@ public class ShootingEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
         // If the enemy is not aware of the player, recharge the fire delay timer
         _detectionFireDelayTimer.SetMaxTime(detectionFireDelay);
-        var fireDelayDirection = (Enemy.EnemyDetectionBehavior.CurrentDetectionState == EnemyDetectionState.Aware)
+        var fireDelayDirection = (Enemy.DetectionBehavior.CurrentDetectionState == EnemyDetectionState.Aware)
             ? 1
             : -1;
         _detectionFireDelayTimer.Update(Time.deltaTime * fireDelayDirection);
@@ -106,7 +106,7 @@ public class ShootingEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         var bulletObj = Instantiate(enemyBulletPrefab, spawnPoint.position, spawnPoint.rotation);
 
         // Calculate the direction of the bullet
-        var direction = Enemy.EnemyDetectionBehavior.LastKnownTargetPosition - spawnPoint.position;
+        var direction = Enemy.DetectionBehavior.LastKnownTargetPosition - spawnPoint.position;
 
         // Call the shoot method on the bullet
         bulletObj.Shoot(this, direction, projectileSpeed, projectileLifetime);
@@ -120,7 +120,7 @@ public class ShootingEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         // Return if the cooldown timer is not complete
         // Return if the enemy's line of sight with the target is broken
         if (!IsAttackEnabled || !IsTargetInRange || _detectionFireDelayTimer.IsNotComplete ||
-            _attackCooldownTimer.IsNotComplete || !Enemy.EnemyDetectionBehavior.IsTargetDetected)
+            _attackCooldownTimer.IsNotComplete || !Enemy.DetectionBehavior.IsTargetDetected)
             return;
 
         // Reset the attack cooldown timer

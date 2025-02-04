@@ -135,14 +135,14 @@ public class ProximityEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
             return;
 
         // Check if the detection mode is Aware
-        if (Enemy.EnemyDetectionBehavior?.CurrentDetectionState != EnemyDetectionState.Aware)
+        if (Enemy.DetectionBehavior?.CurrentDetectionState != EnemyDetectionState.Aware)
             return;
 
         // Check the detection script for a target
-        if (Enemy.EnemyDetectionBehavior?.Target == null)
+        if (Enemy.DetectionBehavior?.Target == null)
             return;
 
-        var targetPosition = Enemy.EnemyDetectionBehavior.Target.GameObject.transform.position;
+        var targetPosition = Enemy.DetectionBehavior.Target.GameObject.transform.position;
 
         // Check if the target is within range
         if (Vector3.Distance(transform.position, targetPosition) > detectionRadius)

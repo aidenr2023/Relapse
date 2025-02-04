@@ -5,30 +5,25 @@ using UnityEngine;
 [RequireComponent(typeof(EnemyInfo)), RequireComponent(typeof(UniqueId))]
 public class Enemy : MonoBehaviour, ILevelLoaderInfo
 {
-    private static HashSet<Enemy> _enemies = new HashSet<Enemy>();
+    private static readonly HashSet<Enemy> _enemies = new();
 
     public static IReadOnlyCollection<Enemy> Enemies => _enemies;
 
-    #region Fields
-
-    private EnemyInfo _enemyInfo;
-
-    private IEnemyDetectionBehavior _enemyDetectionBehavior;
-    private IEnemyMovementBehavior _enemyMovementBehavior;
-    private IEnemyAttackBehavior _enemyAttackBehavior;
-    private IEnemyAbilityBehavior _enemyAbilityBehavior;
-
-    #endregion
+    // #region Fields
+    //
+    // #endregion
 
     #region Getters
 
-    public EnemyInfo EnemyInfo => _enemyInfo;
+    public EnemyInfo EnemyInfo { get; private set; }
 
-    public IEnemyDetectionBehavior EnemyDetectionBehavior => _enemyDetectionBehavior;
+    public IEnemyDetectionBehavior DetectionBehavior { get; private set; }
 
-    public IEnemyAttackBehavior EnemyAttackBehavior => _enemyAttackBehavior;
+    public IEnemyAttackBehavior AttackBehavior { get; private set; }
 
-    public IEnemyMovementBehavior EnemyMovementBehavior => _enemyMovementBehavior;
+    public IEnemyMovementBehavior MovementBehavior { get; private set; }
+
+    public IEnemyAbilityBehavior AbilityBehavior { get; private set; }
 
     #endregion
 
@@ -44,28 +39,28 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
     private void InitializeComponents()
     {
         // Get the EnemyInfo component
-        _enemyInfo = GetComponent<EnemyInfo>();
+        EnemyInfo = GetComponent<EnemyInfo>();
 
         // Get the IEnemyDetectionBehavior component
-        _enemyDetectionBehavior = GetComponent<IEnemyDetectionBehavior>();
+        DetectionBehavior = GetComponent<IEnemyDetectionBehavior>();
 
         // Get the IEnemyMovementBehavior component
-        _enemyMovementBehavior = GetComponent<IEnemyMovementBehavior>();
+        MovementBehavior = GetComponent<IEnemyMovementBehavior>();
 
         // Get the IEnemyAttackBehavior component
-        _enemyAttackBehavior = GetComponent<IEnemyAttackBehavior>();
+        AttackBehavior = GetComponent<IEnemyAttackBehavior>();
 
         // Get the enemy ability behavior component
-        _enemyAbilityBehavior = GetComponent<IEnemyAbilityBehavior>();
+        AbilityBehavior = GetComponent<IEnemyAbilityBehavior>();
 
         // Assert that the IEnemyDetectionBehavior component is not null
-        Debug.Assert(_enemyDetectionBehavior != null, "The IEnemyDetectionBehavior component is null.");
+        Debug.Assert(DetectionBehavior != null, "The IEnemyDetectionBehavior component is null.");
 
         // Assert that the IEnemyMovementBehavior component is not null
-        Debug.Assert(_enemyMovementBehavior != null, "The IEnemyMovementBehavior component is null.");
+        Debug.Assert(MovementBehavior != null, "The IEnemyMovementBehavior component is null.");
 
         // Assert that the IEnemyAttackBehavior component is not null
-        Debug.Assert(_enemyAttackBehavior != null, "The IEnemyAttackBehavior component is null.");
+        Debug.Assert(AttackBehavior != null, "The IEnemyAttackBehavior component is null.");
     }
 
     private void OnDestroy()
@@ -112,12 +107,12 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
 
         // Load the current health
         else if (levelLoader.TryGetDataFromMemory(UniqueId, CURRENT_HEALTH_KEY, out float currentHealth))
-            _enemyInfo.ChangeHealth(currentHealth - _enemyInfo.CurrentHealth, _enemyInfo, _enemyAttackBehavior,
+            EnemyInfo.ChangeHealth(currentHealth - EnemyInfo.CurrentHealth, EnemyInfo, AttackBehavior,
                 transform.position);
 
         // Load the position and rotation
         if (levelLoader.TryGetDataFromMemory(UniqueId, POSITION_KEY, out Vector3 position))
-            _enemyMovementBehavior.SetPosition(position);
+            MovementBehavior.SetPosition(position);
 
         if (levelLoader.TryGetDataFromMemory(UniqueId, ROTATION_KEY, out Vector3 rotation))
             transform.rotation = Quaternion.Euler(rotation);
@@ -127,12 +122,12 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
     {
         // Create boolean data for whether the enemy is alive or not
         // Save the data
-        var isAliveData = new DataInfo(IS_ALIVE_KEY, _enemyInfo.CurrentHealth > 0);
+        var isAliveData = new DataInfo(IS_ALIVE_KEY, EnemyInfo.CurrentHealth > 0);
         levelLoader.AddDataToMemory(UniqueId, isAliveData);
 
         // Create number data for the current health
         // Save the data
-        var currentHealthData = new DataInfo(CURRENT_HEALTH_KEY, _enemyInfo.CurrentHealth);
+        var currentHealthData = new DataInfo(CURRENT_HEALTH_KEY, EnemyInfo.CurrentHealth);
         levelLoader.AddDataToMemory(UniqueId, currentHealthData);
 
         // Create vector3 data for the position

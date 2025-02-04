@@ -48,7 +48,7 @@ public class PositionSwap : MonoBehaviour, IPower
 
         // Swap the positions of the shooter and the actor
         // Get the enemy controller
-        var enemyMovement = enemyInfo.EnemyMovementBehavior;
+        var enemyMovement = enemyInfo.MovementBehavior;
 
         // Swap the positions of the shooter and the actor
         enemyMovement.SetPosition(shooterPosition);

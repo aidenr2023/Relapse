@@ -18,11 +18,11 @@ public class ShootingEnemyAttackAnimationHelper : EnemyAttackAnimationHelper
 
     public override void DeactivateMovement()
     {
-        shootingEnemyAttack.Enemy.EnemyMovementBehavior.AddMovementDisableToken(MovementDisableToken);
+        shootingEnemyAttack.Enemy.MovementBehavior.AddMovementDisableToken(MovementDisableToken);
     }
 
     public override void ReactivateMovement()
     {
-        shootingEnemyAttack.Enemy.EnemyMovementBehavior.RemoveMovementDisableToken(MovementDisableToken);
+        shootingEnemyAttack.Enemy.MovementBehavior.RemoveMovementDisableToken(MovementDisableToken);
     }
 }

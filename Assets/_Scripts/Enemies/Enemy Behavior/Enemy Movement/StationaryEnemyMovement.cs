@@ -42,7 +42,7 @@ public class StationaryEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
         MovementSpeedTokens.Update(Time.deltaTime);
 
         // Return if the target is null
-        if (Enemy.EnemyDetectionBehavior.Target == null)
+        if (Enemy.DetectionBehavior.Target == null)
             return;
         
         // If there are any movement disable tokens, return
@@ -51,7 +51,7 @@ public class StationaryEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
 
         var oldRotation = transform.rotation;
 
-        var diff = Enemy.EnemyDetectionBehavior.LastKnownTargetPosition - transform.position;
+        var diff = Enemy.DetectionBehavior.LastKnownTargetPosition - transform.position;
 
         // Set the y rotation to the desired rotation's y rotation
         var desiredRotation = Quaternion.LookRotation(diff.normalized, Vector3.up);
@@ -78,11 +78,11 @@ public class StationaryEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
         // _navMeshAgent.speed = 0;
 
         // Return if the detection is unaware
-        if (Enemy.EnemyDetectionBehavior.CurrentDetectionState == EnemyDetectionState.Unaware)
+        if (Enemy.DetectionBehavior.CurrentDetectionState == EnemyDetectionState.Unaware)
             return;
 
         // Set the destination to the target's position
-        _navMeshAgent.SetDestination(Enemy.EnemyDetectionBehavior.LastKnownTargetPosition);
+        _navMeshAgent.SetDestination(Enemy.DetectionBehavior.LastKnownTargetPosition);
     }
 
     public void SetPosition(Vector3 pos)

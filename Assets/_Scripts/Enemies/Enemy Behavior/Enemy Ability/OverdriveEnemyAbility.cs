@@ -72,7 +72,7 @@ public class OverdriveEnemyAbility : ComponentScript<Enemy>, IEnemyAbilityBehavi
                 return;
 
             // If the enemy is not aware of the player, return
-            if (Enemy.EnemyDetectionBehavior.CurrentDetectionState != EnemyDetectionState.Aware)
+            if (Enemy.DetectionBehavior.CurrentDetectionState != EnemyDetectionState.Aware)
                 return;
 
             // If the random number is less than the overdrive chance, start the overdrive
@@ -106,7 +106,7 @@ public class OverdriveEnemyAbility : ComponentScript<Enemy>, IEnemyAbilityBehavi
         _overdriveTimer = new CountdownTimer(overdriveDuration);
 
         // Create a new speed token
-        _speedToken = Enemy.EnemyMovementBehavior.MovementSpeedTokens.AddToken(speedMultiplier, -1, true);
+        _speedToken = Enemy.MovementBehavior.MovementSpeedTokens.AddToken(speedMultiplier, -1, true);
 
         // Add the on timer end event
         _overdriveTimer.OnTimerEnd += StopOverdrive;
@@ -120,7 +120,7 @@ public class OverdriveEnemyAbility : ComponentScript<Enemy>, IEnemyAbilityBehavi
     private void StopOverdrive()
     {
         // Remove the speed token
-        Enemy.EnemyMovementBehavior.MovementSpeedTokens.RemoveToken(_speedToken);
+        Enemy.MovementBehavior.MovementSpeedTokens.RemoveToken(_speedToken);
 
         // Set the speed token to null
         _speedToken = null;

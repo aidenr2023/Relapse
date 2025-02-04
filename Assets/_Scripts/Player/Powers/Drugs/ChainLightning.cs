@@ -150,8 +150,8 @@ public class ChainLightning : MonoBehaviour, IPower
     private IEnumerator StunEnemy(Enemy enemy, float stunTime)
     {
         // Add a movement disabled token to the enemy for the duration of the chain stop time
-        enemy.EnemyMovementBehavior.AddMovementDisableToken(this);
-        enemy.EnemyAttackBehavior.AddAttackDisableToken(this);
+        enemy.MovementBehavior.AddMovementDisableToken(this);
+        enemy.AttackBehavior.AddAttackDisableToken(this);
 
         // Instantiate the lightning VFX prefab
         var lightningVfx = Instantiate(lightningVfxPrefab);
@@ -173,8 +173,8 @@ public class ChainLightning : MonoBehaviour, IPower
         // Remove the movement disabled token from the enemy
         if (enemy != null)
         {
-            enemy.EnemyMovementBehavior.RemoveMovementDisableToken(this);
-            enemy.EnemyAttackBehavior.RemoveAttackDisableToken(this);
+            enemy.MovementBehavior.RemoveMovementDisableToken(this);
+            enemy.AttackBehavior.RemoveAttackDisableToken(this);
         }
         
         // Destroy the lightning VFX

@@ -130,15 +130,15 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     private bool IsTargetInRange()
     {
         // Return if there is no target
-        if (Enemy.EnemyDetectionBehavior?.Target == null)
+        if (Enemy.DetectionBehavior?.Target == null)
             return false;
 
         // If the enemy is not aware of the target, return false
-        if (Enemy.EnemyDetectionBehavior.CurrentDetectionState != EnemyDetectionState.Aware)
+        if (Enemy.DetectionBehavior.CurrentDetectionState != EnemyDetectionState.Aware)
             return false;
 
         var distance = Vector3.Distance(transform.position,
-            Enemy.EnemyDetectionBehavior.Target.GameObject.transform.position);
+            Enemy.DetectionBehavior.Target.GameObject.transform.position);
 
         // Check if the player is in range
         return distance <= meleeAttackRange;
