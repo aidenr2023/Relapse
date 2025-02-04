@@ -22,8 +22,9 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
     {
         // Initialize the input
         InitializeInput();
-        
+
         StartCoroutine(PauseMenuManager.LoadPauseMenuManager());
+        StartCoroutine(VendorMenu.LoadVendorMenu());
     }
 
     public void InitializeInput()
