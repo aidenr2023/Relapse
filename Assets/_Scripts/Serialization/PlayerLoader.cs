@@ -35,11 +35,11 @@ public class PlayerLoader : MonoBehaviour
         // Set the instance to this object
         Instance = this;
 
-        // Set the parent to null
-        transform.parent = null;
-
-        // Set this to not be destroyed when reloading scene
-        DontDestroyOnLoad(gameObject);
+        // // Set the parent to null
+        // transform.parent = null;
+        //
+        // // Set this to not be destroyed when reloading scene
+        // DontDestroyOnLoad(gameObject);
 
         // Load ALL the data from the disk
         LoadDataDiskToMemory();

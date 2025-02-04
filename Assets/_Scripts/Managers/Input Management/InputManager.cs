@@ -36,6 +36,7 @@ public class InputManager
     #region Getters
 
     public PlayerControls PControls { get; }
+    public PlayerControls OtherControls { get; }
 
     public DefaultInputActions DefaultInputActions { get; }
 
@@ -55,15 +56,18 @@ public class InputManager
         _instance = this;
 
         // Create a new instance of the PlayerControls
-        PControls = new PlayerControls();
-
         // Enable the PlayerControls
+        PControls = new PlayerControls();
         PControls.Enable();
+        
+        // Create a new instance of the OtherControls
+        // Enable the OtherControls
+        OtherControls = new PlayerControls();
+        OtherControls.Enable();
 
         // Create a new instance of the DefaultInputActions
-        DefaultInputActions = new DefaultInputActions();
-
         // Enable the DefaultInputActions
+        DefaultInputActions = new DefaultInputActions();
         DefaultInputActions.Enable();
 
         // Initialize the registered items

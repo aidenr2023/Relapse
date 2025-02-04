@@ -1231,6 +1231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c5d163edb614e10b8f5053c5666de0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  commonText: {fileID: 0}
   keyboardButton: {fileID: 8142638395169458905}
   gamepadButton: {fileID: 2678087050624472832}
 --- !u!1 &197006199449675778
@@ -1710,6 +1711,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c5d163edb614e10b8f5053c5666de0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  commonText: {fileID: 0}
   keyboardButton: {fileID: 8256949054313739718}
   gamepadButton: {fileID: 5219850741722974340}
 --- !u!1 &285008717286998865
@@ -3964,6 +3966,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c5d163edb614e10b8f5053c5666de0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  commonText: {fileID: 0}
   keyboardButton: {fileID: 6914713670796447846}
   gamepadButton: {fileID: 1126824566335087174}
 --- !u!1 &724029924791867738
@@ -16464,6 +16467,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c5d163edb614e10b8f5053c5666de0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  commonText: {fileID: 0}
   keyboardButton: {fileID: 2362615034786792215}
   gamepadButton: {fileID: 1057423825156493902}
 --- !u!1 &2666195858026456673
@@ -17791,6 +17795,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c5d163edb614e10b8f5053c5666de0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  commonText: {fileID: 0}
   keyboardButton: {fileID: 1568844659558786148}
   gamepadButton: {fileID: 6436627379872185606}
 --- !u!1 &2831320732724931161
@@ -25134,6 +25139,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5848940379860509701}
+  - {fileID: 6764398970077418405}
   m_Father: {fileID: 2308139119392708246}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -26644,6 +26650,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c5d163edb614e10b8f5053c5666de0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  commonText: {fileID: 0}
   keyboardButton: {fileID: 852355794692671653}
   gamepadButton: {fileID: 2493989218162779700}
 --- !u!1 &4245148098929422371
@@ -33038,6 +33045,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c5d163edb614e10b8f5053c5666de0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  commonText: {fileID: 0}
   keyboardButton: {fileID: 8000668937957015543}
   gamepadButton: {fileID: 6817592589380832742}
 --- !u!1 &5271934474879791680
@@ -36808,6 +36816,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c5d163edb614e10b8f5053c5666de0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  commonText: {fileID: 0}
   keyboardButton: {fileID: 7400346833129831560}
   gamepadButton: {fileID: 1339838564284050903}
 --- !u!1 &5972670670274277684
@@ -42281,6 +42290,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c5d163edb614e10b8f5053c5666de0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  commonText: {fileID: 0}
   keyboardButton: {fileID: 7854722846375248896}
   gamepadButton: {fileID: 1080713957889755810}
 --- !u!1 &6710771553676763857
@@ -44033,6 +44043,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c5d163edb614e10b8f5053c5666de0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  commonText: {fileID: 0}
   keyboardButton: {fileID: 5371612603289545309}
   gamepadButton: {fileID: 894515170876467657}
 --- !u!1 &6954393620732333585
@@ -44415,6 +44426,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c5d163edb614e10b8f5053c5666de0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  commonText: {fileID: 0}
   keyboardButton: {fileID: 4014271645264226782}
   gamepadButton: {fileID: 2418141142350258117}
 --- !u!1 &7017026436173700316
@@ -49546,7 +49558,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5848940379860509701
 RectTransform:
   m_ObjectHideFlags: 0
@@ -54012,6 +54024,81 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &8322420673207650296
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6764398970077418405}
+  - component: {fileID: 2910092085969972390}
+  - component: {fileID: 6151842960578706209}
+  m_Layer: 17
+  m_Name: Image
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6764398970077418405
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8322420673207650296}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4988691858632544497}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 8}
+  m_SizeDelta: {x: 64, y: 64}
+  m_Pivot: {x: 0.5, y: 0}
+--- !u!222 &2910092085969972390
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8322420673207650296}
+  m_CullTransparentMesh: 1
+--- !u!114 &6151842960578706209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8322420673207650296}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 0aa183ac7ebeb274697c1653480e2b48, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &8328118735422474273
 GameObject:
   m_ObjectHideFlags: 0
@@ -56442,6 +56529,7 @@ MonoBehaviour:
   descriptionText: {fileID: 7441801433918302324}
   pageText: {fileID: 6242162687470239942}
   debugTutorial: {fileID: 11400000, guid: 40ac18e7ad2988c4da8f8f4959532409, type: 2}
+  buttonsParent: {fileID: 0}
   shootButton: {fileID: 2787565150006814531}
   reloadButton: {fileID: 6879135384078400087}
   interactButton: {fileID: 5904141770043455594}

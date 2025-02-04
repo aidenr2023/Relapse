@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.PlayerLoop;
 
 [RequireComponent(typeof(PlayerInput))]
 public class InputManagerHelper : MonoBehaviour
@@ -11,11 +12,24 @@ public class InputManagerHelper : MonoBehaviour
 
     private void Awake()
     {
+        // If the instance is not null and is not this, destroy this object
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
         // Set the instance to this
         Instance = this;
 
         // Get the PlayerInput component
         _playerInput = GetComponent<PlayerInput>();
+    }
+
+    private void OnDestroy()
+    {
+        // Set the instance to null
+        Instance = null;
     }
 
     private void Start()
