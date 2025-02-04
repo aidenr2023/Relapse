@@ -26,7 +26,9 @@ public class TutorialScreen : GameMenu, IUsesInput
     [SerializeField] private Tutorial debugTutorial;
 
     [Header("Tutorial Buttons")] [SerializeField]
-    private TutorialButtonManager shootButton;
+    private GameObject buttonsParent;
+
+    [SerializeField] private TutorialButtonManager shootButton;
 
     [SerializeField] private TutorialButtonManager reloadButton;
     [SerializeField] private TutorialButtonManager interactButton;
@@ -172,9 +174,14 @@ public class TutorialScreen : GameMenu, IUsesInput
 
         var isKeyboard = InputManager.Instance.CurrentControlScheme == InputManager.ControlSchemeType.Keyboard;
 
+        // Enable the buttons parent
+        buttonsParent.SetActive(true);
+        
         switch (tutorialButton)
         {
             case TutorialPage.TutorialButton.None:
+                // Disable the buttons parent
+                buttonsParent.SetActive(false);
                 break;
 
             case TutorialPage.TutorialButton.Shoot:
@@ -224,6 +231,8 @@ public class TutorialScreen : GameMenu, IUsesInput
             default:
                 throw new ArgumentOutOfRangeException(nameof(tutorialButton), tutorialButton, null);
         }
+        
+        
     }
 
     private void SetTutorialPage(int index)
@@ -297,7 +306,7 @@ public class TutorialScreen : GameMenu, IUsesInput
         // If the tutorial has already been completed and we are not replaying it, return
         if (Player.Instance.PlayerTutorialManager.HasCompletedTutorial(tutorial) && !replay)
             yield break;
-        
+
         // If the instance is NOT null, just play the tutorial
         if (Instance != null)
         {
