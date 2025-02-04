@@ -30,6 +30,10 @@ public class ReloadText : MonoBehaviour
     [SerializeField] private string lowAmmoText = "LOW AMMO!";
     [SerializeField] private string reloadText = "RELOAD!";
 
+    [SerializeField] private GameObject buttonsParent;
+    [SerializeField] private GameObject gamepadButtons;
+    [SerializeField] private GameObject keyboardButtons;
+
     #endregion
 
     #region Private Fields
@@ -66,6 +70,40 @@ public class ReloadText : MonoBehaviour
 
         // Update the position of the reload text
         UpdatePosition();
+
+        // Update the buttons
+        UpdateButtons();
+    }
+
+    private void UpdateButtons()
+    {
+        // If there is no weapon manager, disable the buttons
+        if (_weaponManager == null)
+        {
+            buttonsParent.SetActive(false);
+            return;
+        }
+
+        // If the equipped gun is null, disable the buttons
+        if (_weaponManager.EquippedGun == null)
+        {
+            buttonsParent.SetActive(false);
+            return;
+        }
+
+        // If the equipped gun is not out of ammo, disable the buttons
+        if (_weaponManager.EquippedGun.CurrentAmmo > 0)
+        {
+            buttonsParent.SetActive(false);
+            return;
+        }
+
+        // If the equipped gun is out of ammo, enable the buttons
+        buttonsParent.SetActive(true);
+
+        // Set the buttons based on the current control scheme
+        gamepadButtons.SetActive(InputManager.Instance.CurrentControlScheme == InputManager.ControlSchemeType.Gamepad);
+        keyboardButtons.SetActive(InputManager.Instance.CurrentControlScheme == InputManager.ControlSchemeType.Keyboard);
     }
 
     private void UpdateInformation()
@@ -133,7 +171,8 @@ public class ReloadText : MonoBehaviour
         }
 
         // Lerp the alpha of the canvas group's alpha to the desired opacity
-        canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, _desiredOpacity, CustomFunctions.FrameAmount(opacityLerpAmount));
+        canvasGroup.alpha =
+            Mathf.Lerp(canvasGroup.alpha, _desiredOpacity, CustomFunctions.FrameAmount(opacityLerpAmount));
 
         // Set the alpha of the canvas group to the desired opacity if the difference between the two is less than the threshold
         if (Mathf.Abs(canvasGroup.alpha - _desiredOpacity) < LERP_THRESHOLD)
@@ -227,6 +266,7 @@ public class ReloadText : MonoBehaviour
         var desiredPosition = gunHolderTransform.position + relativeOffset + bobOffset;
 
         // Lerp the position of the reload text to the desired position
-        transform.position = Vector3.Lerp(transform.position, desiredPosition, CustomFunctions.FrameAmount(positionLerpAmount, false, true));
+        transform.position = Vector3.Lerp(transform.position, desiredPosition,
+            CustomFunctions.FrameAmount(positionLerpAmount, false, true));
     }
 }
