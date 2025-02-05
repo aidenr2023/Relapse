@@ -40,6 +40,8 @@ public class MenuManager : IUsesInput
     public bool IsControlsDisabledInMenus => _activeMenus.Any(menu => menu.DisablePlayerControls);
 
     public bool IsGamePausedInMenus => _activeMenus.Any(menu => menu.PausesGame);
+    
+    public GameMenu ActiveMenu => _activeMenus.Peek();
 
     #endregion
 

@@ -132,6 +132,12 @@ public class DialogueUI : MonoBehaviour
 
     private void UpdateTypingTimer()
     {
+        // Return if there is an active menu other than the vendor menu that pauses the game
+        var activeMenus = MenuManager.Instance.ActiveMenus;
+        
+        if (activeMenus.Any(menu => menu.PausesGame && menu != VendorMenu.Instance))
+            return;
+        
         // Return if the current dialogue is null
         if (_currentDialogue == null)
             return;
