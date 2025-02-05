@@ -1,5 +1,6 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AmmoText : MonoBehaviour
 {
@@ -22,6 +23,10 @@ public class AmmoText : MonoBehaviour
     [SerializeField] private TMP_Text text;
 
     [SerializeField, Min(0)] private float rotationSpeed = 2;
+
+    [SerializeField] private Image ammoCountFillImage;
+    [SerializeField, Range(0, 1)] private float fillAmountLerpAmount = 0.35f;
+    [SerializeField] private CanvasGroup ammoCountFillImageGroup;
 
     #endregion
 
@@ -60,6 +65,48 @@ public class AmmoText : MonoBehaviour
 
         // Update the visibility of the reload text
         UpdateVisibility();
+
+        // Update the ammo count fill image
+        UpdateAmmoCountFillImage();
+    }
+
+    private void UpdateAmmoCountFillImage()
+    {
+        // Return if the ammo count fill image is null
+        if (ammoCountFillImage == null)
+            return;
+
+        // Return if the weapon manager is null
+        if (_weaponManager == null)
+            return;
+
+        // Return if the equipped gun is null
+        if (_weaponManager.EquippedGun == null)
+            return;
+
+        var desiredFillPercentage = _weaponManager.EquippedGun.CurrentAmmo /
+                                    (float)_weaponManager.EquippedGun.GunInformation.MagazineSize;
+
+        // Set the fill amount of the ammo count fill image to the percentage of the equipped gun's ammo
+        ammoCountFillImage.fillAmount = Mathf.Lerp(
+            ammoCountFillImage.fillAmount, desiredFillPercentage,
+            CustomFunctions.FrameAmount(fillAmountLerpAmount, false, true)
+        );
+
+        if (Mathf.Abs(ammoCountFillImage.fillAmount - desiredFillPercentage) < LERP_THRESHOLD)
+            ammoCountFillImage.fillAmount = desiredFillPercentage;
+
+        ammoCountFillImage.color = reloadText.Color;
+
+        var desiredOpacity = _weaponManager.EquippedGun.IsReloading ? 0 : 1;
+
+        ammoCountFillImageGroup.alpha = Mathf.Lerp(
+            ammoCountFillImageGroup.alpha, desiredOpacity,
+            CustomFunctions.FrameAmount(opacityLerpAmount * 2, false, true)
+        );
+        
+        if (Mathf.Abs(ammoCountFillImageGroup.alpha - desiredOpacity) < LERP_THRESHOLD)
+            ammoCountFillImageGroup.alpha = desiredOpacity;
     }
 
     private void UpdateVisibility()
@@ -133,11 +180,11 @@ public class AmmoText : MonoBehaviour
         // Return if the weapon manager is null
         if (_weaponManager == null)
             return;
-        
+
         // Return if the equipped gun is null
         if (_weaponManager.EquippedGun == null)
             return;
-        
+
         // Set the text of the ammo text to the ammo count of the equipped gun
         text.text = $"{_weaponManager.EquippedGun.CurrentAmmo}";
 

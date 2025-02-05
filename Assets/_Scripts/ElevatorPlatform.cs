@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class ElevatorPlatform : MonoBehaviour
 {
-    private readonly HashSet<Player> _playersOnPlatform = new();
+    private static int _elevatorPlatformCount;
+    
+    private readonly HashSet<Player> _playersOnThisPlatform = new();
 
     private void OnTriggerStay(Collider other)
     {
@@ -19,11 +21,14 @@ public class ElevatorPlatform : MonoBehaviour
         // If the player is not grounded, return
         if (!player.PlayerController.IsGrounded)
             return;
-
+        
         // If the player is already on the platform, return
         // Add the player to the platform
-        if (!_playersOnPlatform.Add(player))
+        if (!_playersOnThisPlatform.Add(player))
             return;
+        
+        // Increment the elevator platform count
+        _elevatorPlatformCount++;
 
         // Make this game object the parent of the player
         player.transform.SetParent(transform);
@@ -37,10 +42,17 @@ public class ElevatorPlatform : MonoBehaviour
 
         // If the player is not on the platform, return
         // Remove the player from the platform
-        if (!_playersOnPlatform.Remove(player))
+        if (!_playersOnThisPlatform.Remove(player))
             return;
 
+        // Decrement the elevator platform count
+        _elevatorPlatformCount--;
+        
         // Remove the parent of the player
         player.transform.SetParent(null);
+        
+        // If the platform count is less than or equal to 0, reset the player to their original scene.
+        player.gameObject.transform.parent = player.OriginalSceneObject.transform;
+        player.gameObject.transform.parent = null;
     }
 }

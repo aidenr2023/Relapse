@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// This class is mainly used as a hub to connect all the player components together.
@@ -38,14 +39,25 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
 
     public PlayerTutorialManager PlayerTutorialManager { get; private set; }
 
+    public GameObject OriginalSceneObject { get; private set; }
+        
     #endregion
 
     #region Initialization Functions
 
     private void Awake()
     {
+        // If there is already an instance, Log an error!
+        if (Instance != null)
+        {
+            Debug.LogError("There is already an instance of the Player class!");
+        }
+        
         // Set the instance to this
         Instance = this;
+        
+        // Set the original scene
+        OriginalSceneObject = new GameObject("OriginalSceneObject");
 
         // Initialize the components
         InitializeComponents();
