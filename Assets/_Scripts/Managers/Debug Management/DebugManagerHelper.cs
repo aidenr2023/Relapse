@@ -154,11 +154,11 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
             return;
 
         Player.PlayerInfo.ChangeHealth(
-            _healthChange * Time.deltaTime *
+            _healthChange * Time.unscaledDeltaTime *
             healthMult * Player.PlayerInfo.MaxHealth,
             Player.PlayerInfo, this, Player.transform.position
         );
-        Player.PlayerInfo.ChangeTolerance(_toleranceChange * Time.deltaTime * toleranceMult);
+        Player.PlayerInfo.ChangeTolerance(_toleranceChange * Time.unscaledDeltaTime * toleranceMult);
     }
 
     private void UpdateText()
