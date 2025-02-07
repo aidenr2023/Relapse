@@ -16,27 +16,20 @@ public class HoverDrone : MonoBehaviour
     public float waypointThreshold = 0.5f; // Distance to consider a waypoint reached
 
     [Header("Unstable Behavior Settings")]
-    public float destructionDelay = 5f; // Time before the drone explodes
     public float triggerDelay = 1f; // Delay before triggering events after player enters
-
-    [Header("Physics Thruster Settings")]
-    public float thrustForce = 15f; // Force of the main thruster
-    public Transform thrusterPosition; // Position of the main thruster
-    public Transform secondaryThrusterPosition; // Position of the secondary thruster
-    public float secondaryThrustForce = 10f; // Force of the secondary thruster
-
-    [Header("Explosion Settings")]
-    public ParticleSystem explosionEffect; // Particle system for explosion
-    public AudioSource explosionAudioSource; // Audio source for explosion sound
+    public float downwardDisplacement = 0.5f; // How much the drone moves down when the player lands
+    public float recoverySpeed = 2f; // Speed at which the drone returns to original height
+    public float pitchDuration = 1.5f; // Duration the pitch stays at 3 before transitioning back
+    public float pitchTransitionSpeed = 1f; // Speed of the pitch transition
+    public float lightDuration = 2f; // Duration the warning light stays on
 
     [Header("Interaction Settings")]
-    public AudioSource playerLandingAudioSource; // Audio source for player landing sound
-    public Light warningLight; // Light that starts flashing when unstable
-    public float lightFlashSpeed = 10f; // Speed of the flashing light
+    public AudioSource droneAudioSource; // Existing audio source to modify
+    public Light warningLight; // Light that turns on temporarily
 
     private Vector3 originalPosition;
     private Rigidbody rb;
-    private bool isUnstable = false;
+    private bool isTriggered = false;
     private int currentWaypointIndex = 0;
     private Vector3 velocity = Vector3.zero; // For smoothing movement
 
@@ -56,14 +49,10 @@ public class HoverDrone : MonoBehaviour
 
     void Update()
     {
-        if (!isUnstable)
+        if (!isTriggered)
         {
             Hover();
             FollowPath();
-        }
-        else
-        {
-            FlashWarningLight();
         }
     }
 
@@ -86,7 +75,6 @@ public class HoverDrone : MonoBehaviour
     {
         if (waypoints == null || waypoints.Length == 0)
         {
-            Debug.LogWarning("No waypoints assigned to the drone.");
             return;
         }
 
@@ -109,16 +97,13 @@ public class HoverDrone : MonoBehaviour
         if (distance < waypointThreshold)
         {
             currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
-            Debug.Log($"Reached waypoint {currentWaypointIndex}, moving to next waypoint.");
         }
-
-        // Debug line in the Scene view to visualize the waypoint path
-        Debug.DrawLine(transform.position, targetWaypoint.position, Color.green);
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && !isUnstable)
+        // Only allow landing effects on drones that do not have waypoints assigned
+        if (other.CompareTag("Player") && !isTriggered && (waypoints == null || waypoints.Length == 0))
         {
             StartCoroutine(TriggerWithDelay());
         }
@@ -128,71 +113,68 @@ public class HoverDrone : MonoBehaviour
     {
         yield return new WaitForSeconds(triggerDelay);
 
-        Debug.Log("Player landed on the drone!");
-        isUnstable = true;
-        rb.isKinematic = false; // Enable physics
+        isTriggered = true;
 
-        if (playerLandingAudioSource != null)
+        if (droneAudioSource != null)
         {
-            playerLandingAudioSource.Play();
+            StartCoroutine(AdjustPitch());
         }
 
         if (warningLight != null)
         {
-            warningLight.enabled = true; // Start flashing the light
+            StartCoroutine(EnableLightTemporarily());
         }
 
-        StartCoroutine(ApplyThrusters());
-        Invoke("Explode", destructionDelay); // Schedule explosion
+        StartCoroutine(DisplaceAndRecover());
     }
 
-    IEnumerator ApplyThrusters()
+    IEnumerator AdjustPitch()
     {
-        while (isUnstable)
+        if (droneAudioSource != null)
         {
-            if (rb != null && thrusterPosition != null)
-            {
-                // Apply force from the main thruster
-                Vector3 localUp = thrusterPosition.up;
-                rb.AddForceAtPosition(localUp * thrustForce, thrusterPosition.position, ForceMode.Force);
-            }
+            droneAudioSource.pitch = 3f; // Set pitch to 3
+            yield return new WaitForSeconds(pitchDuration);
 
-            if (rb != null && secondaryThrusterPosition != null)
+            // Smoothly transition back to 2
+            float elapsedTime = 0f;
+            while (elapsedTime < pitchTransitionSpeed)
             {
-                // Apply force from the secondary thruster to add rotational instability
-                Vector3 localUp = secondaryThrusterPosition.up;
-                rb.AddForceAtPosition(localUp * secondaryThrustForce, secondaryThrusterPosition.position, ForceMode.Force);
+                droneAudioSource.pitch = Mathf.Lerp(3f, 2f, elapsedTime / pitchTransitionSpeed);
+                elapsedTime += Time.deltaTime;
+                yield return null;
             }
+            droneAudioSource.pitch = 2f; // Ensure final value is exact
+        }
+    }
 
+    IEnumerator EnableLightTemporarily()
+    {
+        if (warningLight != null)
+        {
+            warningLight.enabled = true;
+            yield return new WaitForSeconds(lightDuration);
+            warningLight.enabled = false;
+        }
+    }
+
+    IEnumerator DisplaceAndRecover()
+    {
+        Vector3 loweredPosition = originalPosition + Vector3.down * downwardDisplacement;
+
+        // Move down smoothly
+        while (Vector3.Distance(transform.position, loweredPosition) > 0.01f)
+        {
+            transform.position = Vector3.Lerp(transform.position, loweredPosition, Time.deltaTime * recoverySpeed);
             yield return null;
         }
-    }
 
-    void FlashWarningLight()
-    {
-        if (warningLight != null)
+        // Move back up smoothly
+        while (Vector3.Distance(transform.position, originalPosition) > 0.01f)
         {
-            float intensity = Mathf.Abs(Mathf.Sin(Time.time * lightFlashSpeed));
-            warningLight.intensity = intensity;
-        }
-    }
-
-    void Explode()
-    {
-        if (explosionEffect != null)
-        {
-            ParticleSystem instantiatedEffect = Instantiate(explosionEffect, transform.position, Quaternion.identity);
-            instantiatedEffect.Play();
-            Destroy(instantiatedEffect.gameObject, instantiatedEffect.main.duration);
+            transform.position = Vector3.Lerp(transform.position, originalPosition, Time.deltaTime * recoverySpeed);
+            yield return null;
         }
 
-        if (explosionAudioSource != null)
-        {
-            AudioSource instantiatedAudioSource = Instantiate(explosionAudioSource, transform.position, Quaternion.identity);
-            instantiatedAudioSource.Play();
-            Destroy(instantiatedAudioSource.gameObject, instantiatedAudioSource.clip.length);
-        }
-
-        Destroy(gameObject); // Destroy the drone
+        isTriggered = false;
     }
 }
