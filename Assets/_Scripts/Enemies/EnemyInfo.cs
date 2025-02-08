@@ -266,6 +266,10 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         // If the amount is 0, do nothing
         else
             return;
+        
+        // If the amount is less than 0 and the enemy is already dead, return
+        if (amount < 0 && _isDead)
+            return;
 
         // If the enemy's health is less than or equal to 0, call the Die function
         if (currentHealth <= 0)

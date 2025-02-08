@@ -58,7 +58,7 @@ public static class CustomFunctions
 
         return false;
     }
-    
+
     public static float FrameAmount(float lerpAmount, bool isFixed = false, bool isUnscaled = false)
     {
         var frameAmount = isFixed ? FIXED_FRAME_AMOUNT : DEFAULT_FRAME_AMOUNT;
@@ -71,5 +71,27 @@ public static class CustomFunctions
             deltaTime = isFixed ? Time.fixedDeltaTime : Time.deltaTime;
 
         return deltaTime / frameAmount * lerpAmount;
+    }
+
+    public static void DrawArrow(
+        Vector3 position, Vector3 forward,
+        float arrowLength = 3, float arrowYOffset = 2, float arrowAngleSize = 30
+    )
+    {
+        var arrowStart = position - forward * arrowLength / 2 + Vector3.up * arrowYOffset;
+        var arrowEnd = position + forward * arrowLength + Vector3.up * arrowYOffset;
+
+        // Draw the forward of the respawn point
+        Gizmos.DrawLine(arrowStart, arrowEnd);
+
+        // Draw the arrow head
+        Gizmos.DrawLine(
+            arrowEnd,
+            arrowEnd + Quaternion.Euler(0, arrowAngleSize, 0) * -forward * arrowLength / 4
+        );
+        Gizmos.DrawLine(
+            arrowEnd,
+            arrowEnd + Quaternion.Euler(0, -arrowAngleSize, 0) * -forward * arrowLength / 4
+        );
     }
 }

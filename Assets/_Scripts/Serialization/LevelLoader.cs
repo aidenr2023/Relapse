@@ -68,20 +68,22 @@ public class LevelLoader : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F7))
-            SaveDataSceneToMemory(null);
+        // TODO: Remove these debug key presses
+        
+        // if (Input.GetKeyDown(KeyCode.F7))
+        //     SaveDataSceneToMemory(null);
 
         // Reload the current scene to test the saving and loading
         if (Input.GetKeyDown(KeyCode.F8))
             StartCoroutine(ReloadScenes());
 
-        // Save the data to the disk
-        if (Input.GetKeyDown(KeyCode.F10))
-            SaveDataMemoryToDisk();
-
-        // Load the data from the disk
-        if (Input.GetKeyDown(KeyCode.F11))
-            LoadDataDiskToMemory(null);
+        // // Save the data to the disk
+        // if (Input.GetKeyDown(KeyCode.F10))
+        //     SaveDataMemoryToDisk();
+        //
+        // // Load the data from the disk
+        // if (Input.GetKeyDown(KeyCode.F11))
+        //     LoadDataDiskToMemory(null);
     }
 
     private IEnumerator ReloadScenes()
@@ -428,6 +430,10 @@ public class LevelLoader : MonoBehaviour
 
     public void AddDataToMemory(UniqueId id, IDataInfo dataInfo)
     {
+        // Return if the unique id was instantiated at runtime
+        if (id.InstantiatedAtRuntime)
+            return;
+        
         // If the unique id is empty, log an error and return
         if (id.UniqueIdValue == "")
         {

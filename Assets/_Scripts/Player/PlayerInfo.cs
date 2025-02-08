@@ -341,6 +341,10 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     private void TakeDamage(float damageAmount, IActor changer, IDamager damager, Vector3 position)
     {
+        // Return if the player is already dead
+        if (health <= 0)
+            return;
+        
         // Return if the player is invincible
         if (_invincibilityTimer.IsActive)
             return;

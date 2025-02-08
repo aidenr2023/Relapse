@@ -27,6 +27,8 @@ public class UniqueId : MonoBehaviour
 
     public string OriginalScene => originalScene;
 
+    public bool InstantiatedAtRuntime { get; set; } = false;
+
     private void Awake()
     {
         GenerateNewUniqueIdIfNeeded();
@@ -49,6 +51,10 @@ public class UniqueId : MonoBehaviour
     {
 #if UNITY_EDITOR
 
+        // Return if the id was generated at runtime
+        if (InstantiatedAtRuntime)
+            return;
+        
         // if in the editor
         if (!Application.isPlaying)
         {
@@ -75,6 +81,10 @@ public class UniqueId : MonoBehaviour
     {
 #if UNITY_EDITOR
 
+        // Return if the id was generated at runtime
+        if (InstantiatedAtRuntime)
+            return;
+        
         if (!Application.isPlaying)
             originalScene = gameObject.scene.name;
 #endif

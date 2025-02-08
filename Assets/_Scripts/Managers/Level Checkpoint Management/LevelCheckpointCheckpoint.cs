@@ -93,25 +93,28 @@ public class LevelCheckpointCheckpoint : MonoBehaviour
         Gizmos.color = Color.green;
         Gizmos.DrawSphere(respawnPoint.position, sphereSize);
 
-        const float arrowLength = 3f;
-        const float arrowYOffset = 2f;
-
-        var arrowStart = respawnPoint.position - forward * arrowLength / 2 + Vector3.up * arrowYOffset;
-        var arrowEnd = respawnPoint.position + forward * arrowLength + Vector3.up * arrowYOffset;
-
-        // Draw the forward of the respawn point
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(arrowStart, arrowEnd);
-
-        // Draw the arrow head
-        const float arrowAngleSize = 30;
-        Gizmos.DrawLine(
-            arrowEnd,
-            arrowEnd + Quaternion.Euler(0, arrowAngleSize, 0) * -forward * arrowLength / 4
-        );
-        Gizmos.DrawLine(
-            arrowEnd,
-            arrowEnd + Quaternion.Euler(0, -arrowAngleSize, 0) * -forward * arrowLength / 4
-        );
+        CustomFunctions.DrawArrow(respawnPoint.position, forward);
+        
+        // const float arrowLength = 3f;
+        // const float arrowYOffset = 2f;
+        //
+        // var arrowStart = respawnPoint.position - forward * arrowLength / 2 + Vector3.up * arrowYOffset;
+        // var arrowEnd = respawnPoint.position + forward * arrowLength + Vector3.up * arrowYOffset;
+        //
+        // // Draw the forward of the respawn point
+        // Gizmos.color = Color.red;
+        // Gizmos.DrawLine(arrowStart, arrowEnd);
+        //
+        // // Draw the arrow head
+        // const float arrowAngleSize = 30;
+        // Gizmos.DrawLine(
+        //     arrowEnd,
+        //     arrowEnd + Quaternion.Euler(0, arrowAngleSize, 0) * -forward * arrowLength / 4
+        // );
+        // Gizmos.DrawLine(
+        //     arrowEnd,
+        //     arrowEnd + Quaternion.Euler(0, -arrowAngleSize, 0) * -forward * arrowLength / 4
+        // );
     }
 }
