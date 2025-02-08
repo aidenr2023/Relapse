@@ -8,6 +8,8 @@ using UnityEngine.Serialization;
 
 public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDebugged, IUsesInput
 {
+    private const int MAX_SPHERECAST_HITS = 128;
+
     #region Serialized Fields
 
     [Header("Important Transforms")]
@@ -36,6 +38,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     [SerializeField, Min(0.0001f)] private float velocityInterpolation = 1;
     [SerializeField, Min(0)] private float slideInterpolationMultiplier = 10;
     [SerializeField, Range(0, 1)] private float sphereCastRadius = .9f;
+    [SerializeField, Range(0, 90)] private float maxSlopeAngle = 60;
 
     [Header("Locomotion")] [SerializeField]
     private float maxSpeed = 10;
@@ -67,6 +70,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     private InputActionMap _currentActionMap;
 
     private RaycastHit _floatingControllerHit;
+    private readonly RaycastHit[] _floatingControllerHits = new RaycastHit[MAX_SPHERECAST_HITS];
 
     private CapsuleCollider _capsuleCollider;
 
@@ -257,7 +261,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         if (IsSprinting &&
             (
                 CurrentStamina <= 0 ||
-                MovementInput.magnitude < .125f
+                MovementInput.magnitude < .125f ||
+                !BasicPlayerMovement.CanSprint ||
+                Rigidbody.velocity.magnitude < 1f
             )
            )
         {
@@ -307,30 +313,23 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Create a layer mask that includes everything but the actor layer and NonPhysical
         var layerMask = ~layersToIgnore;
 
-        // // Perform a raycast to check if the player is grounded
-        // var hit = Physics.Raycast(
-        //     transform.position,
+        // // Perform a sphere cast to check if the player is grounded
+        // var sphereRadius = _capsuleCollider.radius * sphereCastRadius;
+        //
+        // var hit = Physics.SphereCast(
+        //     transform.position + ((_capsuleCollider.height / 2 + sphereRadius) * Vector3.up),
+        //     // transform.position + (Vector3.up * sphereRadius),
+        //     // transform.position + (_capsuleCollider.height / 2 * Vector3.up), 
+        //     sphereRadius,
         //     Vector3.down,
         //     out _floatingControllerHit,
-        //     _rideHeight,
+        //     // _rideHeight,
+        //     // _rideHeight + (_capsuleCollider.height / 2 * Vector3.up).y,
+        //     TargetPlayerHeight - sphereRadius,
         //     layerMask
         // );
 
-        // Perform a sphere cast to check if the player is grounded
-        var sphereRadius = _capsuleCollider.radius * sphereCastRadius;
-
-        var hit = Physics.SphereCast(
-            transform.position + ((_capsuleCollider.height / 2 + sphereRadius) * Vector3.up),
-            // transform.position + (Vector3.up * sphereRadius),
-            // transform.position + (_capsuleCollider.height / 2 * Vector3.up), 
-            sphereRadius,
-            Vector3.down,
-            out _floatingControllerHit,
-            // _rideHeight,
-            // _rideHeight + (_capsuleCollider.height / 2 * Vector3.up).y,
-            TargetPlayerHeight - sphereRadius,
-            layerMask
-        );
+        var hit = GroundCast(layerMask);
 
         // Do a backup raycast if the sphere cast fails. just to make sure
         var backupHit = Physics.Raycast(
@@ -365,6 +364,94 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         // Set the was previously grounded state
         _wasPreviouslyGrounded = IsGrounded;
+    }
+
+    private bool IsValidHit(RaycastHit hit)
+    {
+        var normal = hit.normal;
+        var hitAngle = Vector3.Angle(Vector3.up, normal);
+
+        var hitStepHeight = _currentPlayerHeight - hit.distance;
+        
+        // Debug.Log($"Hit Step Height: {hitStepHeight:0.00} ({hit.distance:0.00})");
+        
+        // if (hitStepHeight > 0.25f)
+        //     return false;
+
+        // Return if the hit's collider is a trigger
+        if (hit.collider.isTrigger)
+            return false;
+        
+        // Return if the angle between the normal and the ground is more than the max slope angle
+        if (hitAngle > maxSlopeAngle)
+            return false;
+        
+        return true;
+    }
+
+    private bool GroundCast(LayerMask layerMask)
+    {
+        // Perform a sphere cast to check if the player is grounded
+        var sphereRadius = _capsuleCollider.radius * sphereCastRadius;
+
+        // var hit = Physics.SphereCast(
+        //     transform.position + ((_capsuleCollider.height / 2 + sphereRadius) * Vector3.up),
+        //     // transform.position + (Vector3.up * sphereRadius),
+        //     // transform.position + (_capsuleCollider.height / 2 * Vector3.up), 
+        //     sphereRadius,
+        //     Vector3.down,
+        //     out _floatingControllerHit,
+        //     // _rideHeight,
+        //     // _rideHeight + (_capsuleCollider.height / 2 * Vector3.up).y,
+        //     TargetPlayerHeight - sphereRadius,
+        //     layerMask
+        // );
+
+        // Physics.SphereCastAll(
+        //     transform.position + ((_capsuleCollider.height / 2 + sphereRadius) * Vector3.up),
+        //     sphereRadius,
+        //     Vector3.down,
+        //     TargetPlayerHeight - sphereRadius,
+        //     layerMask
+        // );
+
+        var hitCount = Physics.SphereCastNonAlloc(
+            transform.position + ((_capsuleCollider.height / 2 + sphereRadius) * Vector3.up),
+            sphereRadius,
+            Vector3.down,
+            _floatingControllerHits,
+            TargetPlayerHeight - sphereRadius + .01f,
+            // TargetPlayerHeight,
+            layerMask
+        );
+
+        // Debug.Log($"Hit Count: {hitCount}");
+        
+        // Find the first valid hit
+        for (var i = 0; i < hitCount; i++)
+        {
+            var hit = _floatingControllerHits[i];
+
+            if (!IsValidHit(hit))
+                continue;
+            
+            // var normal = hit.normal;
+            // var hitAngle = Vector3.Angle(Vector3.up, normal);
+            //
+            // // // If the angle between the normal and the ground is more than the max slope angle, continue
+            // // if (hitAngle > maxSlopeAngle)
+            // // {
+            // //     // continue;
+            // //     return false;
+            // // }
+
+            // Debug.Log($"Hit Angle: {hitAngle:0.00}");
+            
+            _floatingControllerHit = hit;
+            return true;
+        }
+
+        return false;
     }
 
     private void UpdateSpringForce()

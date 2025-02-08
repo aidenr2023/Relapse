@@ -156,13 +156,13 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     {
         UpdateFireDelta();
 
+
         // Fire the weapon if applicable
         if (_weaponManager != null)
+        {
             Fire(_weaponManager, _weaponManager.FireTransform.position, _weaponManager.FireTransform.forward);
 
-        // Update the PLAYER's animator based on the gun model type
-        if (_weaponManager != null)
-        {
+            // Update the PLAYER's animator based on the gun model type
             var movementV2 = _weaponManager.Player.PlayerController as PlayerMovementV2;
 
             if (movementV2 != null)

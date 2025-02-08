@@ -1423,7 +1423,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 620451dc3b668814a95ea7c4efe1bba4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useUpdate: 1
+  useLateUpdate: 0
   useFixedUpdate: 0
+  useStart: 0
 --- !u!114 &5315513715403336473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1831,7 +1834,7 @@ MonoBehaviour:
   cameraPivot: {fileID: 5244302159661097867}
   orientation: {fileID: 5224293575626551686}
   playerAnimator: {fileID: 2544283650514281553}
-  desiredCapsuleHeightOffset: 0.75
+  desiredCapsuleHeightOffset: 0.5
   defaultPlayerHeight: 2
   rideSpringStrength: 512
   rideSpringDamper: 32
@@ -1840,7 +1843,8 @@ MonoBehaviour:
   maxDownwardAngle: 75
   velocityInterpolation: 10
   slideInterpolationMultiplier: 10
-  sphereCastRadius: 0.9
+  sphereCastRadius: 0.6
+  maxSlopeAngle: 60
   maxSpeed: 12
   acceleration: 24
   accelerationFactorFromDot:
@@ -1889,7 +1893,7 @@ MonoBehaviour:
   hardSpeedLimitLerpAmount: 0.1
   layersToIgnore:
     serializedVersion: 2
-    m_Bits: 557832
+    m_Bits: 755464
   staminaDrains: 1
   maxStamina: 100
   staminaRegenRate: 50
@@ -2138,13 +2142,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 027cd40e0a4af9146a67af463ec9d8d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bobSpeed: 8
-  sprintStrengthMultiplier: 2
+  bobSpeed: 11
+  sprintStrengthMultiplier: 1.5
   bobSmoothness: 0.25
   stopMovingSmoothness: 0.25
   bobAmount: 0.05
   xStrength: 0.25
-  yStrength: 0.75
+  yStrength: -0.75
 --- !u!114 &3925261621140247122
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3294,7 +3298,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 620451dc3b668814a95ea7c4efe1bba4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useUpdate: 1
+  useLateUpdate: 0
   useFixedUpdate: 0
+  useStart: 0
 --- !u!114 &2713551161182507535
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6732,7 +6739,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9143679467954201745}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3685670135b3416685a77771b2141780, type: 3}
   m_Name: 
