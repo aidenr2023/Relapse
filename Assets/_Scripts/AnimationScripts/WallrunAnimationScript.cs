@@ -23,12 +23,12 @@ public class WallrunAnimationScript : MonoBehaviour
         if (playerWallRunning.IsWallRunningRight)
         {
             //set the wallrun animation to true
-            playerAnimator.SetBool("isWallrunLeft", true);
+            playerAnimator.SetBool("isWallrunRight", true);
         }
         else if (playerWallRunning.IsWallRunningLeft)
         {
             //set the wallrun animation to true
-            playerAnimator.SetBool("isWallrunRight", true);
+            playerAnimator.SetBool("isWallrunLeft", true);
         }
         else
         {
