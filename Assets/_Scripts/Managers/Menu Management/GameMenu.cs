@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public abstract class GameMenu : MonoBehaviour
@@ -10,6 +11,7 @@ public abstract class GameMenu : MonoBehaviour
     #region Serialized Fields
 
     [SerializeField] protected CanvasGroup canvasGroup;
+    [SerializeField] protected EventSystem eventSystem;
 
     [SerializeField] private bool isActiveOnStart = false;
     [SerializeField, Min(0)] private float opacityLerpAmount = .25f;
@@ -47,7 +49,6 @@ public abstract class GameMenu : MonoBehaviour
         // Manage this menu
         MenuManager.Instance.ManageMenu(this);
 
-
         // Set the desired opacity to the canvas group's alpha
         _desiredOpacity = canvasGroup.alpha;
 
@@ -61,7 +62,7 @@ public abstract class GameMenu : MonoBehaviour
     {
         // Custom Start
         CustomStart();
-        
+
         if (isActiveOnStart)
         {
             // Activate the menu
@@ -93,6 +94,10 @@ public abstract class GameMenu : MonoBehaviour
         // Set the activate flag to true
         _isActive = true;
 
+        // Update the event system
+        UpdateEventSystem();
+
+        // Custom Activate
         CustomActivate();
     }
 
@@ -106,7 +111,11 @@ public abstract class GameMenu : MonoBehaviour
 
         // Set the activate flag to false
         _isActive = false;
-
+        
+        // Update the event system
+        UpdateEventSystem();
+        
+        // Custom Deactivate
         CustomDeactivate();
     }
 
@@ -129,6 +138,8 @@ public abstract class GameMenu : MonoBehaviour
 
     protected void Update()
     {
+        UpdateEventSystem();
+
         // Lerp the canvas group's alpha to the desired opacity
         canvasGroup.alpha = Mathf.Lerp(
             canvasGroup.alpha, _desiredOpacity,
@@ -150,6 +161,14 @@ public abstract class GameMenu : MonoBehaviour
 
         // Custom Update
         CustomUpdate();
+    }
+
+    protected void UpdateEventSystem()
+    {
+        var active = _isActive && MenuManager.Instance.ActiveMenu == this;
+        
+        // The event system is enabled if the menu is active
+        eventSystem.enabled = active;
     }
 
     protected abstract void CustomUpdate();

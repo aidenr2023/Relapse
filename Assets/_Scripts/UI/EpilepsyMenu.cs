@@ -29,6 +29,14 @@ public class EpilepsyMenu : GameMenu
 
     protected override void CustomUpdate()
     {
+        // If this is NOT the active menu and is currently active,
+        // Remove it from the active menus stack and add it back to put it on top
+        if (MenuManager.Instance.ActiveMenu != this && IsActive)
+        {
+            Deactivate();
+            Activate();
+        }
+        
         // If the opacity is 0, unload the scene
         if (canvasGroup.alpha == 0)
             UnloadScene();

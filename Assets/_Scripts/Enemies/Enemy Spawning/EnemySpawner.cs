@@ -33,6 +33,17 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
 
     protected abstract void CustomStart();
 
+    private void OnDestroy()
+    {
+        // Remove this from the debug manager
+        DebugManager.Instance.RemoveDebuggedObject(this);
+
+        // Call the custom destroy method
+        CustomDestroy();
+    }
+
+    protected abstract void CustomDestroy();
+
     protected void SpawnEnemy(Enemy enemyPrefab, Vector3 spawnPosition, Quaternion spawnRotation)
     {
         // Instantiate the enemy prefab at the spawn position and rotation

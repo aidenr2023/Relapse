@@ -54,7 +54,8 @@ public class RelapseScreen : GameMenu
     protected override void CustomActivate()
     {
         // Set the event system's current selected game object to the first selected game object
-        EventSystem.current.SetSelectedGameObject(firstSelectedButton.gameObject);
+        // EventSystem.current.SetSelectedGameObject(firstSelectedButton.gameObject);
+        eventSystem.SetSelectedGameObject(firstSelectedButton.gameObject);
 
         // Reset the flag
         _respawnButtonClicked = false;

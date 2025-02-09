@@ -44,6 +44,11 @@ public class ContinuousEnemySpawner : EnemySpawner
             StartSpawning();
     }
 
+    protected override void CustomDestroy()
+    {
+        
+    }
+
     private void Update()
     {
         _spawnTimer.SetMaxTime(spawnInterval);

@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using UnityEngine.Video;
 using Object = System.Object;
 
@@ -22,9 +23,10 @@ public class TutorialScreen : GameMenu, IUsesInput
     [SerializeField] private TMP_Text subtitleText;
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private TMP_Text pageText;
-
-    [SerializeField] private Tutorial debugTutorial;
-
+    [SerializeField] private Button exitButton;
+    [SerializeField] private Button nextButton;
+    [SerializeField] private Button prevButton;
+    
     [Header("Tutorial Buttons")] [SerializeField]
     private GameObject buttonsParent;
 
@@ -50,6 +52,8 @@ public class TutorialScreen : GameMenu, IUsesInput
     private Tutorial _currentTutorial;
 
     private int _currentTutorialPage;
+
+    private bool _navigateNeedsToReset;
 
     #endregion
 
@@ -77,6 +81,9 @@ public class TutorialScreen : GameMenu, IUsesInput
     {
         // Register the input
         InputManager.Instance.Register(this);
+        
+        // Set the selected game object to the exit button
+        eventSystem.SetSelectedGameObject(null);
     }
 
     protected override void CustomDeactivate()
@@ -176,7 +183,7 @@ public class TutorialScreen : GameMenu, IUsesInput
 
         // Enable the buttons parent
         buttonsParent.SetActive(true);
-        
+
         switch (tutorialButton)
         {
             case TutorialPage.TutorialButton.None:
@@ -231,8 +238,6 @@ public class TutorialScreen : GameMenu, IUsesInput
             default:
                 throw new ArgumentOutOfRangeException(nameof(tutorialButton), tutorialButton, null);
         }
-        
-        
     }
 
     private void SetTutorialPage(int index)
@@ -340,22 +345,46 @@ public class TutorialScreen : GameMenu, IUsesInput
             new InputData(InputManager.Instance.DefaultInputActions.UI.Navigate, InputType.Performed,
                 OnNavigatePerformed)
         );
+
+        InputActions.Add(
+            new InputData(InputManager.Instance.DefaultInputActions.UI.Navigate, InputType.Canceled,
+                OnNavigateCanceled)
+        );
     }
 
     private void OnNavigatePerformed(InputAction.CallbackContext obj)
     {
+        var value = obj.ReadValue<Vector2>();
+
+        const float threshold = 0.5f;
+
+        if (Mathf.Abs(value.x) < threshold)
+        {
+            _navigateNeedsToReset = false;
+            return;
+        }
+
         // Return if not active
         if (!IsActive)
             return;
 
-        var value = obj.ReadValue<Vector2>();
+        // Return if the navigate needs to reset
+        if (_navigateNeedsToReset)
+            return;
 
-        const float threshold = 0.5f;
+        // Set the navigate needs to reset flag to true
+        _navigateNeedsToReset = true;
 
         if (value.x > threshold)
             NextPage();
         else if (value.x < -threshold)
             PreviousPage();
+    }
+
+    private void OnNavigateCanceled(InputAction.CallbackContext obj)
+    {
+        // Set the navigate needs to reset flag to false
+        _navigateNeedsToReset = false;
     }
 
     #endregion

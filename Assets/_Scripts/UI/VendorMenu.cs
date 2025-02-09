@@ -132,7 +132,10 @@ public class VendorMenu : GameMenu
                 SetSelectedGameObject(shopSelectedButton);
         }
         else if (menu == gossipMenu)
+        {
+            Debug.Log($"Setting selected game object to {gossipSelectedButton} {eventSystem.isActiveAndEnabled}");
             SetSelectedGameObject(gossipSelectedButton);
+        }
         else
             SetSelectedGameObject(firstSelectedButton);
     }
@@ -342,7 +345,8 @@ public class VendorMenu : GameMenu
     public void SetSelectedGameObject(GameObject element)
     {
         // Set the selected element
-        EventSystem.current.SetSelectedGameObject(element);
+        // EventSystem.current.SetSelectedGameObject(element);
+        eventSystem.SetSelectedGameObject(element);
     }
 
     public override void OnBackPressed()

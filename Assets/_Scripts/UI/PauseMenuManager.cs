@@ -9,7 +9,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 
-public class PauseMenuManager : GameMenu, IUsesInput
+public class PauseMenuManager : GameMenu
 {
     private const string PAUSE_SCENE_NAME = "PauseUIScene";
 
@@ -74,27 +74,19 @@ public class PauseMenuManager : GameMenu, IUsesInput
 
     public void InitializeInput()
     {
-        // // Connect to input system
-        // InputActions.Add(
-        //     new InputData(InputManager.Instance.DefaultInputActions.UI.Cancel, InputType.Performed, OnBackPerformed)
-        // );
-
-        // InputActions.Add(
-        //     new InputData(InputManager.Instance.PControls.Player.Pause, InputType.Performed, OnPausePerformed)
-        // );
     }
 
-    private void OnEnable()
-    {
-        if (!_isInputRegistered)
-        {
-            // Register the input user
-            InputManager.Instance.Register(this);
-
-            // Set the input registered flag to true
-            _isInputRegistered = true;
-        }
-    }
+    // private void OnEnable()
+    // {
+    //     if (!_isInputRegistered)
+    //     {
+    //         // Register the input user
+    //         InputManager.Instance.Register(this);
+    //
+    //         // Set the input registered flag to true
+    //         _isInputRegistered = true;
+    //     }
+    // }
 
     protected override void CustomActivate()
     {
@@ -108,8 +100,8 @@ public class PauseMenuManager : GameMenu, IUsesInput
 
     protected override void CustomDestroy()
     {
-        // Unregister the input user
-        InputManager.Instance.Unregister(this);
+        // // Unregister the input user
+        // InputManager.Instance.Unregister(this);
 
         // Deactivate the menu
         Deactivate();
@@ -335,7 +327,8 @@ public class PauseMenuManager : GameMenu, IUsesInput
 
     public void SetSelectedButton(GameObject button)
     {
-        EventSystem.current.SetSelectedGameObject(button);
+        eventSystem.SetSelectedGameObject(button);
+        // EventSystem.current.SetSelectedGameObject(button);
     }
 
     public override void OnBackPressed()
