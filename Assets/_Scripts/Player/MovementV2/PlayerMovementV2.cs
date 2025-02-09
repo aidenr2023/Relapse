@@ -63,6 +63,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     #region Private Fields
 
+    static readonly int isRunning = Animator.StringToHash("IsSprinting");
+
     private Rigidbody _rigidbody;
 
     private CustomStack<PlayerMovementScript> _movementScripts;
@@ -273,9 +275,18 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         // Sprint events
         if (IsSprinting && !_wasPreviouslySprinting)
+        {
             OnSprintStart?.Invoke();
+
+            playerAnimator.SetBool(isRunning, true);
+
+        }
         else if (!IsSprinting && _wasPreviouslySprinting)
+        {
             OnSprintEnd?.Invoke();
+            playerAnimator.SetBool(isRunning, false);
+            
+        }
     }
 
     private void LateUpdate()
@@ -789,8 +800,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         _isSprinting = true;
         //set animator isMoving to true
 
-        if (playerAnimator != null)
-            playerAnimator.SetBool("isMoving", true);
+       // if (playerAnimator != null)
     }
 
     private void OnSprintCanceled(InputAction.CallbackContext obj)
@@ -798,8 +808,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Set the sprinting flag to false
         _isSprinting = false;
 
-        if (playerAnimator != null)
-            playerAnimator.SetBool("isMoving", false);
+        //if (playerAnimator != null)
     }
 
 

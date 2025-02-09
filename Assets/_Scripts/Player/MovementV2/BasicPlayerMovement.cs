@@ -29,6 +29,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     #endregion
 
     #region Private Fields
+    
+    static readonly int HasJumped = Animator.StringToHash("Jump");
 
     private Vector2 _movementInput;
 
@@ -459,6 +461,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
         // Play the jump sound
         SoundManager.Instance.PlaySfx(jumpSound);
+        player_Animator.SetTrigger(HasJumped);
+        
 
         // Set the is trying to jump flag to true
         IsTryingToJump = true;
