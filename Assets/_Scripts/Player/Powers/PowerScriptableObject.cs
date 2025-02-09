@@ -10,6 +10,8 @@ public class PowerScriptableObject : ScriptableObject
 
     public static IReadOnlyCollection<PowerScriptableObject> PowerScriptableObjects => powerScriptableObjects;
 
+    private static GameObject _logicParent;
+    
     [Header("Overview Information")] [SerializeField]
     private string powerName;
 
@@ -92,8 +94,15 @@ public class PowerScriptableObject : ScriptableObject
 
     private void InitializeComponents()
     {
+        // If the logic parent is null, create a new GameObject
+        if (_logicParent == null)
+        {
+            _logicParent = new GameObject("PowerLogic");
+            DontDestroyOnLoad(_logicParent);
+        }
+        
         // Get the PowerLogic component
-        _powerLogic = Instantiate(powerLogicPrefab).GetComponent<IPower>();
+        _powerLogic = Instantiate(powerLogicPrefab, _logicParent.transform).GetComponent<IPower>();
 
         // Set the power logic to not destroy on load
         DontDestroyOnLoad(_powerLogic.GameObject);
@@ -101,8 +110,8 @@ public class PowerScriptableObject : ScriptableObject
         // Attach the PowerScriptableObject to the PowerLogic
         _powerLogic.AttachToScriptableObject(this);
 
-        // Hide the PowerLogic object in the hierarchy
-        _powerLogic.GameObject.hideFlags = HideFlags.HideInHierarchy;
+        // // Hide the PowerLogic object in the hierarchy
+        // _powerLogic.GameObject.hideFlags = HideFlags.HideInHierarchy;
     }
 
     /// <summary>

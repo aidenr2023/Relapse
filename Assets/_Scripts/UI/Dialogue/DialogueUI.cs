@@ -70,6 +70,9 @@ public class DialogueUI : MonoBehaviour
 
     private void AdvanceSpriteIndex()
     {
+        // Reset the timer
+        _spriteAnimationTimer.Reset();
+        
         // Return if the current dialogue is null
         if (_currentDialogue == null)
             return;
@@ -87,9 +90,6 @@ public class DialogueUI : MonoBehaviour
 
         // Set the NPC image
         npcImage.sprite = _currentDialogue.SpeakerInfo.NpcSprites[_currentSpriteIndex];
-
-        // Reset the timer
-        _spriteAnimationTimer.Reset();
 
         Debug.Log($"Sprite Index: {_currentSpriteIndex}");
     }
@@ -121,6 +121,9 @@ public class DialogueUI : MonoBehaviour
 
     private void UpdateNpcImageTimer()
     {
+        // Set the sprite timer to active
+        _spriteAnimationTimer.SetActive(true);
+        
         if (_currentDialogue != null)
             _spriteAnimationTimer.SetMaxTime(1f / _currentDialogue.SpeakerInfo.FramesPerSecond);
 
@@ -170,10 +173,6 @@ public class DialogueUI : MonoBehaviour
     {
         // Reset the current text
         _currentText.Clear();
-
-        // // Reset the timer for animation
-        // if (_currentDialogue != null)
-        //     _spriteAnimationTimer.SetMaxTimeAndReset(1f / _currentDialogue.SpeakerInfo.FramesPerSecond);
 
         // Update the text UI
         UpdateTextUI();

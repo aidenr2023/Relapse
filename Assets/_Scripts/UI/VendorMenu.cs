@@ -319,18 +319,18 @@ public class VendorMenu : GameMenu
             dialogueUI.StartDialogue(vendor.IntroDialogue);
             IsolateMenu(gossipMenu);
         }
-        
+
         // If the vendor has already introduced themselves, start the already introduced dialogue
         else if (vendor.AlreadyIntroducedDialogue != null && vendor.HasIntroduced)
         {
             dialogueUI.StartDialogue(vendor.AlreadyIntroducedDialogue);
             IsolateMenu(gossipMenu);
         }
-        
+
         // Otherwise, isolate the initial menu
         else
             IsolateMenu(initialMenu);
-        
+
         // Set the introduced flag in the vendor information
         vendor.HasIntroduced = true;
     }
@@ -340,6 +340,38 @@ public class VendorMenu : GameMenu
         // // Set this menu to inactive
         // gameObject.SetActive(false);
         Deactivate();
+    }
+
+    public void BuyUpgrade()
+    {
+        var playerInventory = Player.Instance.PlayerInventory;
+
+        // If the player does not have enough money, return
+        if (playerInventory.MoneyCount < CurrentVendor.UpgradeCost)
+        {
+            JournalTooltipManager.Instance.AddTooltip("You do not have enough money to buy this upgrade.");
+            return;
+        }
+
+        // Deduct the cost of the upgrade from the player's money
+        playerInventory.RemoveItem(playerInventory.MoneyObject, CurrentVendor.UpgradeCost);
+
+        var playerInfo = Player.Instance.PlayerInfo;
+        
+        switch (CurrentVendor.VendorType)
+        {
+            // If this vendor is a doctor, increase the player's max health
+            case VendorType.Doctor:
+                Player.Instance.PlayerInfo.ChangeMaxHealth(playerInfo.MaxHealth + CurrentVendor.UpgradeAmount);
+                JournalTooltipManager.Instance.AddTooltip($"You have bought a health upgrade. Your max health is now {playerInfo.MaxHealth}.");
+                break;
+            
+            // If this vendor is a dealer, increase the player's toxicity
+            case VendorType.Dealer:
+                Player.Instance.PlayerInfo.ChangeMaxToxicity(playerInfo.MaxTolerance + CurrentVendor.UpgradeAmount);
+                JournalTooltipManager.Instance.AddTooltip($"You have bought a toxicity upgrade. Your max toxicity is now {playerInfo.MaxTolerance}.");
+                break;
+        }
     }
 
     public void SetSelectedGameObject(GameObject element)

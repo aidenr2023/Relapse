@@ -8,6 +8,10 @@ public class VendorScriptableObject : ScriptableObject
 
     [SerializeField] private string vendorName;
 
+    [SerializeField] private VendorType vendorType;
+    [SerializeField, Min(0)] private int upgradeCost = 250;
+    [SerializeField, Min(0)] private int upgradeAmount = 50;
+    
     [SerializeField] private PowerScriptableObject[] medicinePowers;
     [SerializeField] private PowerScriptableObject[] drugPowers;
 
@@ -24,6 +28,12 @@ public class VendorScriptableObject : ScriptableObject
 
     public string VendorName => vendorName;
 
+    public VendorType VendorType => vendorType;
+    
+    public int UpgradeCost => upgradeCost;
+    
+    public int UpgradeAmount => upgradeAmount;
+    
     public PowerScriptableObject[] MedicinePowers => medicinePowers;
 
     public PowerScriptableObject[] DrugPowers => drugPowers;
@@ -47,4 +57,5 @@ public class VendorScriptableObject : ScriptableObject
     }
 
     #endregion
+
 }

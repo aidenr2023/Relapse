@@ -322,6 +322,42 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     #endregion
 
+    public void ChangeMaxHealth(float newValue)
+    {
+        // If the player is gaining health, increase the max health & health
+        if (newValue > maxHealth)
+        {
+            var healthDifference = newValue - maxHealth;
+            maxHealth = newValue;
+            health += healthDifference;
+        }
+        
+        // If the player is losing health, decrease the max health & health
+        else if (newValue < maxHealth)
+            maxHealth = newValue;
+        
+        // Clamp the health
+        health = Mathf.Clamp(health, 0, maxHealth);
+    }
+
+    public void ChangeMaxToxicity(float newValue)
+    {
+        // If the player is gaining toxicity, increase the max toxicity & toxicity
+        if (newValue > maxTolerance)
+            maxTolerance = newValue;
+        
+        // If the player is losing toxicity, decrease the max toxicity & toxicity
+        else if (newValue < maxTolerance)
+        {
+            var toleranceDifference = newValue - maxTolerance;
+            maxTolerance = newValue;
+            currentTolerance += toleranceDifference;
+        }
+        
+        // Clamp the toxicity
+        currentTolerance = Mathf.Clamp(currentTolerance, 0, maxTolerance);
+    }
+    
     public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position)
     {
         // If the amount is negative, the player is taking damage
