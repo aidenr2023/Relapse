@@ -58,4 +58,10 @@ public class VendorScriptableObject : ScriptableObject
 
     #endregion
 
+    public void ResetVendorInformation()
+    {
+        // Reset the vendor information
+        _canBuyFromVendor = true;
+        _hasIntroduced = false;
+    }
 }

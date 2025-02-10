@@ -41,6 +41,8 @@ public abstract class GameMenu : MonoBehaviour
     public bool PausesGame => pausesGame;
 
     public bool IsActive => _isActive;
+    
+    public EventSystem EventSystem => eventSystem;
 
     #endregion
 
@@ -163,8 +165,12 @@ public abstract class GameMenu : MonoBehaviour
         CustomUpdate();
     }
 
-    protected void UpdateEventSystem()
+    public void UpdateEventSystem()
     {
+        // Return if the event system is null
+        if (eventSystem == null)
+            return;
+        
         var active = _isActive && MenuManager.Instance.ActiveMenu == this;
         
         // The event system is enabled if the menu is active

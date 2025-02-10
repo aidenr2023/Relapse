@@ -52,6 +52,10 @@ public class PauseMenuManager : GameMenu
     public HashSet<InputData> InputActions { get; } = new();
 
     public bool IsPaused { get; private set; }
+    
+    public GameObject SettingsPanel => settingsPanel;
+    
+    public GameObject SettingsFirstSelected => settingsFirstSelected;
 
     #endregion
 
@@ -203,7 +207,7 @@ public class PauseMenuManager : GameMenu
             tmpText.color = clickColor;
     }
 
-    private void IsolateMenu(GameObject obj)
+    public void IsolateMenu(GameObject obj)
     {
         // Hide all the menus
         pauseMenuPanel.SetActive(false);
@@ -310,6 +314,13 @@ public class PauseMenuManager : GameMenu
 
     public void GoBack()
     {
+        // If the menu stack is empty, deactivate and return
+        if (_menuStack.Count == 0)
+        {
+            Deactivate();
+            return;
+        }
+        
         // Pop the current menu off the stack
         _menuStack.Pop();
 

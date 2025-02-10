@@ -125,4 +125,24 @@ public class MainMenu : GameMenu
         // Deactivate the main menu
         Deactivate();
     }
+
+    public void ActiveSettingsMenu()
+    {
+        var pauseMenuManager = PauseMenuManager.Instance;
+        
+        // Throw an exception if the pause menu instance is null
+        if (pauseMenuManager == null)
+            return;
+        
+        // Activate the settings menu
+        pauseMenuManager.IsolateMenu(pauseMenuManager.SettingsPanel);
+        pauseMenuManager.Activate();
+        
+        // Update the event system
+        UpdateEventSystem();
+        pauseMenuManager.UpdateEventSystem();
+        
+        // Set the event system's selected object to the first button
+        pauseMenuManager.EventSystem.SetSelectedGameObject(pauseMenuManager.SettingsFirstSelected);
+    }
 }

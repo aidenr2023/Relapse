@@ -128,7 +128,7 @@ public class RelapseScreen : GameMenu
                 PlayerLoader.Instance.LoadDataDiskToMemory();
 
             // Load the scene
-            LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+            LoadScene(SceneManager.GetActiveScene().name);
 
             // Load the data from the memory to the scene
             LevelLoader.Instance.LoadDataMemoryToScene(null);

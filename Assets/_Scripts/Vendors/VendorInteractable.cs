@@ -67,6 +67,9 @@ public class VendorInteractable : MonoBehaviour, IInteractable, ILevelLoaderInfo
 
     public void LoadData(LevelLoader levelLoader)
     {
+        // Reset the vendor information
+        vendorInformation.ResetVendorInformation();
+        
         // Load whether the player can buy from the vendor
         if (levelLoader.TryGetDataFromMemory(UniqueId, CAN_BUY_FROM_VENDOR, out bool canBuyFromVendor))
             vendorInformation.CanBuyFromVendor = canBuyFromVendor;
