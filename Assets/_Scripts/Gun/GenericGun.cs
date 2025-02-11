@@ -13,8 +13,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 {
     private static readonly int ShootingAnimationID = Animator.StringToHash("Shooting");
     private static readonly int ReloadAnimationID = Animator.StringToHash("Reload");
+    private static readonly int IsReloadingAnimationID = Animator.StringToHash("isReloading");
     private static readonly int ModelTypeAnimationID = Animator.StringToHash("modelType");
     private static readonly int IsEmptyAnimationID = Animator.StringToHash("isEmpty");
+    private static readonly int jumpTriggerID = Animator.StringToHash("Jump");
 
     #region Serialized Fields
 
@@ -76,6 +78,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     /// A reference to the weapon manager that is currently using this gun.
     /// </summary>
     private WeaponManager _weaponManager;
+    
+    private Animator _playerAnimator;
 
     #endregion
 
@@ -131,8 +135,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Get the collider component
         Collider = GetComponent<Collider>();
 
-        // Get the animator component from pistol
-        // animator = GetComponent<Animator>();
+        
     }
 
     protected virtual void Start()
@@ -142,6 +145,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Set the fire delta to the time between shots
         fireDelta = TimeBetweenShots;
+        
+        // Get the animator component from KinBody
+        _playerAnimator = GetComponentInParent<Animator>();
     }
 
     private void OnDestroy()
@@ -183,6 +189,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Update the outline
         UpdateOutline(_weaponManager);
+        
+       
     }
 
     private void UpdateReload()
@@ -199,6 +207,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Set the reloading flag to false
         isReloading = false;
+        
+        // set animation param to false
+        _playerAnimator.SetBool(IsReloadingAnimationID, isReloading);
 
         // If the player has finished reloading, reset the magazine size
         currentMagazineSize = gunInformation.MagazineSize;
@@ -440,12 +451,16 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     {
         // Return if the player is reloading
         if (IsReloading)
+            
             return;
 
         // Return if the gun's magazine is full
         if (currentMagazineSize == gunInformation.MagazineSize)
             return;
-
+        
+        //check to see if is reloading is false, if so, allow the player to jump
+       // HandleJumpAnimWhileReloading();
+        
         // Force the firing flag to false
         isFiring = false;
         hasFiredThisFrame = false;
@@ -458,6 +473,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // set animation param trigger to reload
         animator.SetTrigger(ReloadAnimationID);
+        // Set the reloading animation to true
+        _playerAnimator.SetBool(IsReloadingAnimationID, isReloading);
 
         // Play the reload sound
         // Debug.Log($"Sound Settings: {gunInformation.ReloadSound.Clip.name}");
@@ -466,6 +483,21 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Start the reload event
         OnReloadStart?.Invoke(this);
     }
+    
+    //this function gates the the jump animation while reloading
+    // public void HandleJumpAnimWhileReloading()
+    // {
+    //     // Check if the player is reloading
+    //     if (isReloading)
+    //     {
+    //         // Optionally, you might want to clear the trigger in case it was set earlier
+    //         _playerAnimator.ResetTrigger(jumpTriggerID);
+    //         return;
+    //     }
+    //
+    //     // If not reloading, allow jump input
+    //     //_playerAnimator.SetTrigger(jumpTriggerID);
+    // }
 
     public void OnEquipToPlayer(WeaponManager weaponManager)
     {

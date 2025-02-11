@@ -17,6 +17,10 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     [SerializeField, Range(0, 1)] private float airMovementMultiplier = 0.5f;
     [SerializeField] private float variableJumpForce = 1f;
     [SerializeField, Min(0)] private float variableJumpTime = 1f;
+   
+    //variables to store the ground floor and jump height for calculating distance to ground
+    [SerializeField] private float groundFloorDistance = 100f;
+    [SerializeField] private float JumpHeightThreshold = 2f;
 
     [Header("Sounds")] [SerializeField] private SoundPool footstepSoundPool;
 
@@ -30,7 +34,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
     #region Private Fields
     
-    static readonly int HasJumped = Animator.StringToHash("Jump");
+    static readonly int HasJumped = Animator.StringToHash("hasJumped");
 
     private Vector2 _movementInput;
 
@@ -41,7 +45,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
     private bool _isJumpHeld;
     private CountdownTimer _variableJumpTimer;
-
+    private bool _canJumpWhileReloading;
+    
     #endregion
 
     #region Getters
@@ -226,6 +231,23 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
         // Update the footstep sounds
         UpdateFootsteps();
+        
+        //check if the player is on the ground
+        float heightAboveGround = GetHeightAboveGround();
+        player_Animator.SetFloat("JumpHeight", heightAboveGround);
+    }
+    
+    private float GetHeightAboveGround()
+    {
+        //raycast to the ground
+        RaycastHit hit;
+        if (Physics.Raycast(ParentComponent.transform.position, Vector3.down, out hit, groundFloorDistance))
+        {
+            //get the distance to the ground
+            float distanceToGround = hit.distance;
+            return distanceToGround;
+        }
+        return 0;
     }
 
     private void UpdateFootsteps()
@@ -443,6 +465,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
             return;
 
         // Jump in the direction of the movement input
+        player_Animator.SetBool(HasJumped, false);
         Jump(_movementInput);
     }
 
@@ -461,9 +484,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
         // Play the jump sound
         SoundManager.Instance.PlaySfx(jumpSound);
-        player_Animator.SetTrigger(HasJumped);
+        //player_Animator.SetBool(HasJumped, true);
         
-
         // Set the is trying to jump flag to true
         IsTryingToJump = true;
 
