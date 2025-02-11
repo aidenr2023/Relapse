@@ -21,6 +21,8 @@ public abstract class GameMenu : MonoBehaviour
 
     [SerializeField] protected bool disablePlayerControls = true;
     [SerializeField] protected bool pausesGame = true;
+    [SerializeField] protected bool pausesGameMusic = true;
+    [SerializeField] protected bool mufflesMusic = false;
 
     #endregion
 
@@ -43,6 +45,10 @@ public abstract class GameMenu : MonoBehaviour
     public bool IsActive => _isActive;
     
     public EventSystem EventSystem => eventSystem;
+    
+    public bool PausesGameMusic => pausesGameMusic;
+    
+    public bool MufflesMusic => mufflesMusic;
 
     #endregion
 

@@ -41,6 +41,10 @@ public class MenuManager : IUsesInput
 
     public bool IsGamePausedInMenus => _activeMenus.Any(menu => menu.PausesGame);
     
+    public bool IsGameMusicPausedInMenus => _activeMenus.Any(menu => menu.PausesGameMusic);
+    
+    public bool IsMusicMuffledInMenus => _activeMenus.Any(menu => menu.MufflesMusic);
+    
     public GameMenu ActiveMenu => _activeMenus.Peek();
 
     #endregion
