@@ -33,18 +33,6 @@ public class PlayerHealthImage : MonoBehaviour
         _flashTimer.Start();
     }
 
-
-    private void Start()
-    {
-        // Add an event that adds a tooltip
-        // player.PlayerInfo.OnDamaged += (_, args) =>
-        // {
-        //     JournalTooltipManager.Instance.AddTooltip(
-        //         $"{player.PlayerInfo.CurrentHealth} / {player.PlayerInfo.MaxHealth} - ({args.Amount} damage)"
-        //     );
-        // };
-    }
-
     private void Update()
     {
         _flashTimer.SetMaxTime(DetermineCurrentFlashTime());
@@ -77,7 +65,6 @@ public class PlayerHealthImage : MonoBehaviour
         // If the player's health is above the max flashing health, set the opacity to max
         if (player.PlayerInfo.CurrentHealth >= healthForMaxFlashing)
         {
-            // healthImage.color = new Color(healthImage.color.r, healthImage.color.g, healthImage.color.b, 0);
             HealthOverlayUI.Instance.CanvasGroup.alpha = 0;
             return;
         }
@@ -92,7 +79,6 @@ public class PlayerHealthImage : MonoBehaviour
         var opacity = (sinAmount * maxOpacity * healthPercentage);
 
         // Set the opacity
-        // healthImage.color = new Color(healthImage.color.r, healthImage.color.g, healthImage.color.b, opacity);
         HealthOverlayUI.Instance.CanvasGroup.alpha = opacity;
     }
 }
