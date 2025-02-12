@@ -12,13 +12,28 @@ public class HealthOverlayUI : MonoBehaviour
 
     private void Awake()
     {
+        // Since this is part of the game UI, we want to make sure there is only one instance of this
+        // If the instance is not null and not this, destroy this
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
         // Set the instance to this
         Instance = this;
 
         // Get the CanvasGroup component
         _canvasGroup = GetComponent<CanvasGroup>();
-        
+
         // Set the alpha to 0
         _canvasGroup.alpha = 0;
+    }
+
+    private void OnDestroy()
+    {
+        // Set the instance to null
+        if (Instance == this)
+            Instance = null;
     }
 }

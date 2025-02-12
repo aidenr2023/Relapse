@@ -269,10 +269,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         // Update the relapse opacity timer
         relapseOpacityTimer.Update(Time.deltaTime);
 
-        // // Return if the relapse image is not enabled
-        // if (relapseImage == null || !relapseImage.enabled)
-        //     return;
-
         // Update the relapse image's opacity
         var opacity = relapseOpacityCurve.Evaluate(relapseOpacityTimer.OutputValue);
 
@@ -280,12 +276,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
             opacity = 0;
         
         // Set the opacity of the relapse image
-        // relapseImage.color = new Color(
-        //     relapseImage.color.r,
-        //     relapseImage.color.g,
-        //     relapseImage.color.b,
-        //     opacity
-        // );
         RelapseOverlayUI.Instance.CanvasGroup.alpha = opacity;
     }
 
