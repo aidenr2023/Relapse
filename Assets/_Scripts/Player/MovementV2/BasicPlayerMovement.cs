@@ -17,7 +17,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     [SerializeField, Range(0, 1)] private float airMovementMultiplier = 0.5f;
     [SerializeField] private float variableJumpForce = 1f;
     [SerializeField, Min(0)] private float variableJumpTime = 1f;
-   
+
     //variables to store the ground floor and jump height for calculating distance to ground
     [SerializeField] private float groundFloorDistance = 100f;
     [SerializeField] private float JumpHeightThreshold = 2f;
@@ -28,12 +28,11 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     [SerializeField] private float sprintingFootstepInterval = 0.25f;
 
     [SerializeField] private Sound jumpSound;
-    [SerializeField] private Animator player_Animator;
 
     #endregion
 
     #region Private Fields
-    
+
     static readonly int HasJumped = Animator.StringToHash("hasJumped");
 
     private Vector2 _movementInput;
@@ -46,7 +45,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     private bool _isJumpHeld;
     private CountdownTimer _variableJumpTimer;
     private bool _canJumpWhileReloading;
-    
+
     #endregion
 
     #region Getters
@@ -77,6 +76,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         get => canJumpWithoutPower;
         set => canJumpWithoutPower = value;
     }
+
+    private Animator PlayerAnimator => ParentComponent.PlayerAnimator;
 
     #endregion
 
@@ -175,8 +176,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         _movementInput = obj.ReadValue<Vector2>();
 
         // set walking true in animator
-        if (player_Animator != null)
-            player_Animator.SetBool("Walking", true);
+        if (PlayerAnimator != null)
+            PlayerAnimator?.SetBool("Walking", true);
 
         // Reset the parent component's isSprintToggled flag if there is no forward input
         if (_movementInput == Vector2.zero)
@@ -188,8 +189,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         // Reset the movement input
         _movementInput = Vector2.zero;
 
-        if (player_Animator != null)
-            player_Animator.SetBool("Walking", false);
+        if (PlayerAnimator != null)
+            PlayerAnimator?.SetBool("Walking", false);
     }
 
 
@@ -231,12 +232,12 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
         // Update the footstep sounds
         UpdateFootsteps();
-        
+
         //check if the player is on the ground
         float heightAboveGround = GetHeightAboveGround();
-        player_Animator.SetFloat("JumpHeight", heightAboveGround);
+        PlayerAnimator?.SetFloat("JumpHeight", heightAboveGround);
     }
-    
+
     private float GetHeightAboveGround()
     {
         //raycast to the ground
@@ -247,6 +248,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
             float distanceToGround = hit.distance;
             return distanceToGround;
         }
+
         return 0;
     }
 
@@ -465,7 +467,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
             return;
 
         // Jump in the direction of the movement input
-        player_Animator.SetBool(HasJumped, false);
+        PlayerAnimator?.SetBool(HasJumped, false);
         Jump(_movementInput);
     }
 
@@ -484,8 +486,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
         // Play the jump sound
         SoundManager.Instance.PlaySfx(jumpSound);
-        //player_Animator.SetBool(HasJumped, true);
-        
+        //player_Animator?.SetBool(HasJumped, true);
+
         // Set the is trying to jump flag to true
         IsTryingToJump = true;
 
