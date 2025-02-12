@@ -116,6 +116,10 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         // Random chance to play the moan sound
         if (UnityEngine.Random.value > moanSoundChance)
             return;
+        
+        // Return if the moan sounds array is null or empty
+        if (moanSounds == null || moanSounds.Length == 0)
+            return;
 
         // Play a random moan sound
         var randomSound = moanSounds[UnityEngine.Random.Range(0, moanSounds.Length)];

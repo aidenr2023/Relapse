@@ -271,6 +271,10 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
 
     private void UpdateDebug()
     {
+        // Return if the debug canvas is null
+        if (debugCanvas == null)
+            return;
+        
         // If the game is not in debug mode, hide the debug canvas and return
         if (!DebugManager.Instance.IsDebugMode)
         {

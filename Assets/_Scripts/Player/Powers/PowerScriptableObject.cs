@@ -104,8 +104,8 @@ public class PowerScriptableObject : ScriptableObject
         // Get the PowerLogic component
         _powerLogic = Instantiate(powerLogicPrefab, _logicParent.transform).GetComponent<IPower>();
 
-        // Set the power logic to not destroy on load
-        DontDestroyOnLoad(_powerLogic.GameObject);
+        // // Set the power logic to not destroy on load
+        // DontDestroyOnLoad(_powerLogic.GameObject);
 
         // Attach the PowerScriptableObject to the PowerLogic
         _powerLogic.AttachToScriptableObject(this);

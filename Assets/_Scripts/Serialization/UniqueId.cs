@@ -5,6 +5,12 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+#if UNITY_EDITOR
+
+using UnityEditor.SceneManagement;
+
+#endif
+
 // Placeholder for UniqueIdDrawer script
 public class UniqueIdentifierAttribute : PropertyAttribute
 {
@@ -58,16 +64,21 @@ public class UniqueId : MonoBehaviour
         // if in the editor
         if (!Application.isPlaying)
         {
+            var oldUniqueId = uniqueId;
+            
+            // Check whether the user is currently editing a prefab
+            var isEditingPrefab = PrefabStageUtility.GetCurrentPrefabStage() != null;
+            
             // If this object's unique id is not in the dictionary, add it
             if (!UniqueIdDictionary.ContainsKey(uniqueId))
                 UniqueIdDictionary.Add(uniqueId, this);
 
             // If the dictionary DOES contain the unique ID, but the UniqueID object does not match, then this object was copied
             // Regenerate the unique ID
-            if (UniqueIdDictionary.ContainsKey(uniqueId) && UniqueIdDictionary[uniqueId] != this)
+            if (UniqueIdDictionary.ContainsKey(uniqueId) && UniqueIdDictionary[uniqueId] != this && !isEditingPrefab)
             {
                 uniqueId = Guid.NewGuid().ToString();
-                Debug.Log($"Generated new Unique ID for {gameObject.name} to {uniqueId}!");
+                Debug.Log($"Generated new Unique ID for {gameObject.name} to {uniqueId}! ({oldUniqueId})");
             }
 
             // prevent any actual code from running
