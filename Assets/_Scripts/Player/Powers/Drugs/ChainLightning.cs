@@ -193,6 +193,9 @@ public class ChainLightning : MonoBehaviour, IPower
 
         foreach (var enemy in remainingEnemies)
         {
+            if (enemy == null)
+                continue;
+            
             var distance = Vector3.Distance(currentPosition,
                 enemy.EnemyInfo.ParentComponent.transform.position);
 

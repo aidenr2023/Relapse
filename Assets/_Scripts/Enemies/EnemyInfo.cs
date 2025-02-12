@@ -77,7 +77,11 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         OnDeath += PlaySoundOnDeath;
 
         // Activate the animator's hit trigger
-        OnDamaged += (_, args) => animator?.SetTrigger(HitAnimationID);
+        OnDamaged += (_, _) =>
+        {
+            if (animator != null)
+                animator.SetTrigger(HitAnimationID);
+        };
 
         // Set up the cooldown timer for the moan sound
         _moanSoundTimer = new CountdownTimer(UnityEngine.Random.Range(moanSoundMinCooldown, moanSoundMaxCooldown));
@@ -90,25 +94,23 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
         // Set the moan sound source to be permanent
         enemyMoanSource.SetPermanent(true);
+    }
 
-        return;
+    private void LogOnHealed(object _, HealthChangedEventArgs args)
+    {
+        Debug.Log(
+            $"{gameObject.name} healed: {args.Amount:0.00} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
+    }
 
-        void LogOnHealed(object _, HealthChangedEventArgs args)
-        {
-            Debug.Log(
-                $"{gameObject.name} healed: {args.Amount:0.00} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
-        }
+    private void LogOnDamaged(object _, HealthChangedEventArgs args)
+    {
+        Debug.Log(
+            $"{gameObject.name} damaged: {args.Amount:0.00} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
+    }
 
-        void LogOnDamaged(object _, HealthChangedEventArgs args)
-        {
-            Debug.Log(
-                $"{gameObject.name} damaged: {args.Amount:0.00} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
-        }
-
-        void LogOnDeath(object _, HealthChangedEventArgs args)
-        {
-            Debug.Log($"{gameObject.name} died: {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
-        }
+    private void LogOnDeath(object _, HealthChangedEventArgs args)
+    {
+        Debug.Log($"{gameObject.name} died: {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
     }
 
     private void PlayMoanSound()
@@ -116,7 +118,7 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         // Random chance to play the moan sound
         if (UnityEngine.Random.value > moanSoundChance)
             return;
-        
+
         // Return if the moan sounds array is null or empty
         if (moanSounds == null || moanSounds.Length == 0)
             return;
@@ -270,7 +272,7 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         // If the amount is 0, do nothing
         else
             return;
-        
+
         // If the amount is less than 0 and the enemy is already dead, return
         if (amount < 0 && _isDead)
             return;
