@@ -362,9 +362,13 @@ public class DialogueUI : MonoBehaviour
         // TODO: Put this in a better place or something. This goes against SOLID
         if (_currentDialogue is DialogueChoiceNode dialogueChoiceNode)
             ActivateChoiceButtons(dialogueChoiceNode);
-        // Select the next button
         else
+        {
+            // Select the next button
             nextButton.Select();
+            
+            VendorMenu.Instance.EventSystem.SetSelectedGameObject(nextButton.gameObject);
+        }
 
         if (nextButton != null)
             nextButton.gameObject.SetActive(_currentDialogue is not DialogueChoiceNode);
