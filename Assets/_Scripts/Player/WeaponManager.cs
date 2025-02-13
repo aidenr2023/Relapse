@@ -13,6 +13,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
     private Transform fireTransform;
 
     [SerializeField] private Transform gunHolder;
+    [SerializeField] private Transform ShotgunHolder;
 
     /// <summary>
     /// A prefab that immediately equips the player with a gun.
@@ -238,8 +239,11 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
         // Set the current gun to the gun that was passed in
         _equippedGun = gun;
 
-        // Set the gun's parent to the gun holder
-        gun.GameObject.transform.SetParent(gunHolder, true);
+        // Set the gun's parent to the gun holder or shotgun holder
+        if (gun.GunModelType == GunModelType.Mag7)
+            gun.GameObject.transform.SetParent(ShotgunHolder, true);
+        else
+            gun.GameObject.transform.SetParent(gunHolder, true);
 
         // Set the local position of the gun to the gun holder's local position
         gun.GameObject.transform.localPosition = Vector3.zero;
