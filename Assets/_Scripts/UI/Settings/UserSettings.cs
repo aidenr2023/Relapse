@@ -48,11 +48,6 @@ public class UserSettings
     public float UISFXVolume { get; private set; }
 
 
-
-
-
-
-
     #endregion
 
     #region Public Methods
