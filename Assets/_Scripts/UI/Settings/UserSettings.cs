@@ -38,6 +38,16 @@ public class UserSettings
 
     public float Gamma { get; private set; }
 
+    //Volume settings
+    public float MasterVolume { get; private set; }
+    public float MusicVolume { get; private set; }
+    public float GameSFXVolume { get; private set; }
+    public float PlayerVolume { get; private set; }
+    public float EnemiesVolume { get; private set; }
+    public float OtherVolume { get; private set; }
+    public float UISFXVolume { get; private set; }
+
+
     #endregion
 
     #region Public Methods
@@ -70,12 +80,63 @@ public class UserSettings
 
         Gamma = value;
     }
-    public void SetSoundVolume(float value)
-    {
-        value = Mathf.Clamp(value, 0, 1);
 
-        // Set sound volume
+    //Volume settings individual
+    public void SetSoundMasterVolume(float value)
+    {
+        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
+
+        MasterVolume = value; 
+    }
+    public void SetSoundMusicVolume(float value)
+    {
+        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
+
+        MusicVolume = value;
+    }
+    public void SetSoundGameSFXVolume(float value)
+    {
+        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
+
+        GameSFXVolume = value;
+    }
+    public void SetSoundPlayerVolume(float value)
+    {
+        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
+
+        PlayerVolume = value;
+    }
+    public void SetSoundEnemiesVolume(float value)
+    {
+        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
+
+        EnemiesVolume = value;
+    }
+    public void SetSoundOtherVolume(float value)
+    {
+        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
+
+        OtherVolume = value;
+    }
+    public void SetSoundUISFXVolume(float value)
+    {
+        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
+
+        UISFXVolume = value;
     }
 
+
+
+
+    //This is probably better to use than the above methods
+    public void SetAllVolumes(float Master, float Music, float GameSFX, float Player, float Enemies, float Other, float UISFX) {
+        MasterVolume = Mathf.Clamp(Master, MIN_VOLUME, MAX_VOLUME);
+        MusicVolume = Mathf.Clamp(Music, MIN_VOLUME, MAX_VOLUME);
+        GameSFXVolume = Mathf.Clamp(GameSFX, MIN_VOLUME, MAX_VOLUME);
+        PlayerVolume = Mathf.Clamp(Player, MIN_VOLUME, MAX_VOLUME);
+        EnemiesVolume = Mathf.Clamp(Enemies, MIN_VOLUME, MAX_VOLUME);
+        OtherVolume = Mathf.Clamp(Other, MIN_VOLUME, MAX_VOLUME);
+        UISFXVolume = Mathf.Clamp(UISFX, MIN_VOLUME, MAX_VOLUME);
+    }
     #endregion
 }
