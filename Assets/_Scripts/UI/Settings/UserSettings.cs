@@ -9,6 +9,8 @@ public class UserSettings
 
     public const float MIN_GAMMA = -1;
     public const float MAX_GAMMA = 1;
+    public const float MIN_VOLUME = -80;
+    public const float MAX_VOLUME = 20;
 
     #endregion
 
@@ -67,6 +69,12 @@ public class UserSettings
         value = Mathf.Clamp(value, MIN_GAMMA, MAX_GAMMA);
 
         Gamma = value;
+    }
+    public void SetSoundVolume(float value)
+    {
+        value = Mathf.Clamp(value, 0, 1);
+
+        // Set sound volume
     }
 
     #endregion
