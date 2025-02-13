@@ -73,7 +73,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     protected float currentReloadTime;
 
     protected bool isReloading;
-
+    
     /// <summary>
     /// A reference to the weapon manager that is currently using this gun.
     /// </summary>
@@ -145,7 +145,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         fireDelta = TimeBetweenShots;
 
         // Get the animator component from KinBody
-        _playerAnimator = GetComponentInParent<Animator>();
+        //_playerAnimator = GetComponentInParent<Animator>();
     }
 
     private void OnDestroy()
@@ -469,12 +469,12 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         isReloading = true;
 
         // set animation param trigger to reload
-        if (_playerAnimator != null)
-            animator.SetTrigger(ReloadAnimationID);
+        //if (_playerAnimator != null)
+        animator.SetTrigger(ReloadAnimationID);
 
         // Set the reloading animation to true
-        if (_playerAnimator != null)
-            _playerAnimator.SetBool(IsReloadingAnimationID, isReloading);
+        //if (_playerAnimator != null)
+        _playerAnimator.SetBool(IsReloadingAnimationID, isReloading);
 
         // Play the reload sound
         // Debug.Log($"Sound Settings: {gunInformation.ReloadSound.Clip.name}");
@@ -503,6 +503,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     {
         // Set the weapon manager
         this._weaponManager = weaponManager;
+        
+        // Set the player animator
+        _playerAnimator = GetComponentInParent<Animator>();
 
         // Add to debug manager
         DebugManager.Instance.AddDebuggedObject(this);
