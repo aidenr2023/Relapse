@@ -80,6 +80,8 @@ public class UserSettings
 
         Gamma = value;
     }
+
+    //Volume settings individual
     public void SetSoundMasterVolume(float value)
     {
         value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
@@ -121,6 +123,20 @@ public class UserSettings
         value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
 
         UISFXVolume = value;
+    }
+
+
+
+
+    //This is probably better to use than the above methods
+    public void SetAllVolumes(float Master, float Music, float GameSFX, float Player, float Enemies, float Other, float UISFX) {
+        MasterVolume = Mathf.Clamp(Master, MIN_VOLUME, MAX_VOLUME);
+        MusicVolume = Mathf.Clamp(Music, MIN_VOLUME, MAX_VOLUME);
+        GameSFXVolume = Mathf.Clamp(GameSFX, MIN_VOLUME, MAX_VOLUME);
+        PlayerVolume = Mathf.Clamp(Player, MIN_VOLUME, MAX_VOLUME);
+        EnemiesVolume = Mathf.Clamp(Enemies, MIN_VOLUME, MAX_VOLUME);
+        OtherVolume = Mathf.Clamp(Other, MIN_VOLUME, MAX_VOLUME);
+        UISFXVolume = Mathf.Clamp(UISFX, MIN_VOLUME, MAX_VOLUME);
     }
     #endregion
 }
