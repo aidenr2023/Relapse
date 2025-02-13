@@ -56,7 +56,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     [SerializeField, Min(0)] private float staminaRegenRate = 20f;
     [SerializeField, Min(0)] private float sprintStaminaDrainRate = 10f;
     [SerializeField, Min(0)] private float staminaRegenDelay = .5f;
-
+    [SerializeField, Min(0)] private float staminaEnemyDetectionDistance = 20;
+    
     [SerializeField, Range(0, 1)] private float relapseSpeedMult = .25f;
 
     #endregion
@@ -154,6 +155,10 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     public float StaminaRegenRate => staminaRegenRate;
 
     public float MidAirTime => _midAirTime;
+
+    private bool CurrentlyUsesStamina =>
+        staminaDrains &&
+        Enemy.Enemies.Any(n => Vector3.Distance(n.transform.position, transform.position) < staminaEnemyDetectionDistance);
 
     #endregion
 
@@ -279,13 +284,11 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             OnSprintStart?.Invoke();
 
             playerAnimator.SetBool(isRunning, true);
-
         }
         else if (!IsSprinting && _wasPreviouslySprinting)
         {
             OnSprintEnd?.Invoke();
             playerAnimator.SetBool(isRunning, false);
-            
         }
     }
 
@@ -383,20 +386,20 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         var hitAngle = Vector3.Angle(Vector3.up, normal);
 
         var hitStepHeight = _currentPlayerHeight - hit.distance;
-        
+
         // Debug.Log($"Hit Step Height: {hitStepHeight:0.00} ({hit.distance:0.00})");
-        
+
         // if (hitStepHeight > 0.25f)
         //     return false;
 
         // Return if the hit's collider is a trigger
         if (hit.collider.isTrigger)
             return false;
-        
+
         // Return if the angle between the normal and the ground is more than the max slope angle
         if (hitAngle > maxSlopeAngle)
             return false;
-        
+
         return true;
     }
 
@@ -437,7 +440,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         );
 
         // Debug.Log($"Hit Count: {hitCount}");
-        
+
         // Find the first valid hit
         for (var i = 0; i < hitCount; i++)
         {
@@ -445,7 +448,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
             if (!IsValidHit(hit))
                 continue;
-            
+
             // var normal = hit.normal;
             // var hitAngle = Vector3.Angle(Vector3.up, normal);
             //
@@ -457,7 +460,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             // // }
 
             // Debug.Log($"Hit Angle: {hitAngle:0.00}");
-            
+
             _floatingControllerHit = hit;
             return true;
         }
@@ -800,7 +803,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         _isSprinting = true;
         //set animator isMoving to true
 
-       // if (playerAnimator != null)
+        // if (playerAnimator != null)
     }
 
     private void OnSprintCanceled(InputAction.CallbackContext obj)
@@ -849,13 +852,17 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             _currentStamina = maxStamina;
             return;
         }
+        
+        if (amount < 0 && !CurrentlyUsesStamina)
+            amount = 0;
+
+        if (amount < 0)
+        {
+            // Reset the stamina regen delay timer
+            _staminaRegenDelayTimer.SetMaxTimeAndReset(staminaRegenDelay);
+        }
 
         _currentStamina = Mathf.Clamp(_currentStamina + amount, 0, maxStamina);
-
-
-        // Reset the stamina regen delay timer
-        if (amount < 0)
-            _staminaRegenDelayTimer.SetMaxTimeAndReset(staminaRegenDelay);
     }
 
     public void SetUpStamina(float cStamina, float mStamina)
