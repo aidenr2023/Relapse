@@ -38,6 +38,21 @@ public class UserSettings
 
     public float Gamma { get; private set; }
 
+    //Volume settings
+    public float MasterVolume { get; private set; }
+    public float MusicVolume { get; private set; }
+    public float GameSFXVolume { get; private set; }
+    public float PlayerVolume { get; private set; }
+    public float EnemiesVolume { get; private set; }
+    public float OtherVolume { get; private set; }
+    public float UISFXVolume { get; private set; }
+
+
+
+
+
+
+
     #endregion
 
     #region Public Methods
@@ -70,12 +85,47 @@ public class UserSettings
 
         Gamma = value;
     }
-    public void SetSoundVolume(float value)
+    public void SetSoundMasterVolume(float value)
     {
-        value = Mathf.Clamp(value, 0, 1);
+        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
 
-        // Set sound volume
+        MasterVolume = value; 
     }
+    public void SetSoundMusicVolume(float value)
+    {
+        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
 
+        MusicVolume = value;
+    }
+    public void SetSoundGameSFXVolume(float value)
+    {
+        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
+
+        GameSFXVolume = value;
+    }
+    public void SetSoundPlayerVolume(float value)
+    {
+        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
+
+        PlayerVolume = value;
+    }
+    public void SetSoundEnemiesVolume(float value)
+    {
+        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
+
+        EnemiesVolume = value;
+    }
+    public void SetSoundOtherVolume(float value)
+    {
+        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
+
+        OtherVolume = value;
+    }
+    public void SetSoundUISFXVolume(float value)
+    {
+        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
+
+        UISFXVolume = value;
+    }
     #endregion
 }
