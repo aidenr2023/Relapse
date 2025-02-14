@@ -65,5 +65,8 @@ public class LevelCheckpointManager
         // Convert the respawn forward to a quaternion
         var respawnForward = Quaternion.LookRotation(checkpoint.RespawnForward);
         Player.Instance.PlayerLook.ApplyRotation(respawnForward);
+        
+        // Kill the player's velocity
+        Player.Instance.Rigidbody.velocity = Vector3.zero;
     }
 }
