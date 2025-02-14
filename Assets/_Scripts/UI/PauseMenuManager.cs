@@ -191,6 +191,9 @@ public class PauseMenuManager : GameMenu
     {
         // Reset the inputted this frame flag
         _inputtedThisFrame = false;
+
+        if (eventSystem.currentSelectedGameObject == null)
+            SetSelectedButton(firstSelectedButton);
     }
 
     /// <summary>
@@ -339,7 +342,6 @@ public class PauseMenuManager : GameMenu
     public void SetSelectedButton(GameObject button)
     {
         eventSystem.SetSelectedGameObject(button);
-        // EventSystem.current.SetSelectedGameObject(button);
     }
 
     public override void OnBackPressed()

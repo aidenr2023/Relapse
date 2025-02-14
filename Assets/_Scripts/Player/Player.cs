@@ -47,10 +47,14 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
 
     private void Awake()
     {
+        // Initialize the components
+        InitializeComponents();
+        
         // If there is already an instance, Log an error!
         if (Instance != null)
         {
             Debug.LogError("There is already an instance of the Player class!");
+            return;
         }
         
         // Set the instance to this
@@ -59,8 +63,6 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
         // Set the original scene
         OriginalSceneObject = new GameObject("OriginalSceneObject");
 
-        // Initialize the components
-        InitializeComponents();
     }
 
     private void InitializeComponents()

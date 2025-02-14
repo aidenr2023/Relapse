@@ -62,8 +62,6 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
         // If the scene is loaded singularly, then the menus get unloaded.
         // This function forcibly reloads the menus.
 
-        Debug.Log($"Reloading menus for scene {scene.name}. THIS DOESN'T DO ANYTHING!");
-
         // Initialize the game UI
         InitializeGameUI();
     }

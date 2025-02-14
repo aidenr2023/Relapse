@@ -24,6 +24,7 @@ public class TutorialScreen : GameMenu, IUsesInput
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private TMP_Text pageText;
     [SerializeField] private Button exitButton;
+    [SerializeField] private CanvasGroup exitCanvasGroup;
     [SerializeField] private Button nextButton;
     [SerializeField] private Button prevButton;
     
@@ -54,6 +55,8 @@ public class TutorialScreen : GameMenu, IUsesInput
     private int _currentTutorialPage;
 
     private bool _navigateNeedsToReset;
+
+    private bool _hasReachedEnd;
 
     #endregion
 
@@ -97,9 +100,16 @@ public class TutorialScreen : GameMenu, IUsesInput
 
     protected override void CustomUpdate()
     {
+        if (CurrentTutorial == null) 
+            return;
+        
         // Set the button image to the current tutorial page
-        if (CurrentTutorial != null)
-            SetButtonImage(CurrentTutorial.TutorialPages[_currentTutorialPage].Button);
+        SetButtonImage(CurrentTutorial.TutorialPages[_currentTutorialPage].Button);
+
+        // If the exit button is active & the current selected element is null,
+        // set the exit button as the selected game object
+        if (exitButton.gameObject.activeSelf && eventSystem.currentSelectedGameObject == null)
+            eventSystem.SetSelectedGameObject(exitButton.gameObject);
     }
 
     protected override void CustomDestroy()
@@ -110,6 +120,10 @@ public class TutorialScreen : GameMenu, IUsesInput
 
     public override void OnBackPressed()
     {
+        // Return if the exit button is not active
+        if (!_hasReachedEnd)
+            return;
+        
         Deactivate();
     }
 
@@ -121,6 +135,9 @@ public class TutorialScreen : GameMenu, IUsesInput
         // If the tutorial is the same as the previous tutorial, return
         if (_currentTutorial == previousTutorial && IsActive)
             return;
+        
+        // Reset the has reached end flag
+        _hasReachedEnd = false;
 
         // Reset the current tutorial page
         SetTutorialPage(0);
@@ -261,6 +278,9 @@ public class TutorialScreen : GameMenu, IUsesInput
 
         // Set the button image
         SetButtonImage(CurrentTutorial.TutorialPages[index].Button);
+        
+        // Update the exit button
+        UpdateExitButton();
     }
 
     public void NextPage()
@@ -335,6 +355,29 @@ public class TutorialScreen : GameMenu, IUsesInput
         tutorialScreen?.PlayTutorial(tutorial, replay);
     }
 
+    private void UpdateExitButton()
+    {
+        if (!_hasReachedEnd)
+            exitButton.gameObject.SetActive(false);
+        
+        // If the current tutorial page is not the last page, return
+        if (_currentTutorialPage < _currentTutorial.TutorialPages.Count - 1)
+            return;
+        
+        // If the flag is already set, return
+        if (_hasReachedEnd)
+            return;
+        
+        // Set the flag to true
+        _hasReachedEnd = true;
+        
+        // Set the exit button to active
+        exitButton.gameObject.SetActive(true);
+
+        // Select the exit button
+        eventSystem.SetSelectedGameObject(exitButton.gameObject);
+    }
+    
     #region IUsesInput
 
     public HashSet<InputData> InputActions { get; } = new();
