@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -19,6 +20,8 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
     [SerializeField] [Range(0, 1)] private float healthMult = 1f;
     [SerializeField] [Min(0)] private float toleranceMult = 10f;
+
+    [SerializeField] private Material interactableMaterial;
 
     #endregion
 
@@ -145,6 +148,41 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
             UserSettings.Instance.SetGamma(UserSettings.Instance.Gamma - 0.1f);
         if (Input.GetKeyDown(KeyCode.Period))
             UserSettings.Instance.SetGamma(UserSettings.Instance.Gamma + 0.1f);
+        if (Input.GetKeyDown(KeyCode.Slash))
+            UserSettings.Instance.SetGamma(0);
+
+        if (Input.GetKeyDown(KeyCode.Z))
+            FindBadInteractableMaterials();
+    }
+
+    private void FindBadInteractableMaterials()
+    {
+        // Return if the interactable material is null
+        if (interactableMaterial == null)
+            return;
+        
+        // Look through the entire scene for any interactables
+        var interactables = FindObjectsOfType<MonoBehaviour>()
+            .OfType<IInteractable>();
+
+        foreach (var interactable in interactables)
+        {
+            // Get all the renderers in the interactable
+            var renderers = interactable.GameObject.GetComponentsInChildren<Renderer>();
+
+            foreach (var cRenderer in renderers)
+            {
+                // Get the materials in the renderer
+                var materials = cRenderer.materials;
+
+                // If the renderer contains a material w/ the same shader as the interactable material
+                if (materials.All(material => material.shader != interactableMaterial.shader))
+                    continue;
+
+                // Snitch
+                Debug.Log($"BAD INTERACTABLE MATERIAL: {cRenderer.gameObject} ({interactable.GameObject})", cRenderer);
+            }
+        }
     }
 
     private void UpdateToleranceAndHealth()
