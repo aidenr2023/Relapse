@@ -22,18 +22,22 @@ public class PauseMenuManager : GameMenu
     [SerializeField] private GameObject pauseMenuPanel;
     [SerializeField] private GameObject journalPanel;
     [SerializeField] private GameObject settingsPanel;
+    [SerializeField] private GameObject tutorialsPanel;
 
     // Colors for normal, hover, and click states
     [SerializeField] private Color normalColor = Color.white;
     [SerializeField] private Color hoverColor = Color.yellow;
     [SerializeField] private Color clickColor = Color.red;
 
-
     [Header("Navigation Control")] [SerializeField]
     private GameObject firstSelectedButton;
 
     [SerializeField] private GameObject settingsFirstSelected;
     [SerializeField] private GameObject journalFirstSelected;
+
+    [SerializeField] private GameObject tutorialsButtonParent;
+    [SerializeField] private TutorialButton tutorialButtonPrefab;
+    [SerializeField] private GameObject tutorialBack;
 
     #endregion
 
@@ -52,9 +56,9 @@ public class PauseMenuManager : GameMenu
     public HashSet<InputData> InputActions { get; } = new();
 
     public bool IsPaused { get; private set; }
-    
+
     public GameObject SettingsPanel => settingsPanel;
-    
+
     public GameObject SettingsFirstSelected => settingsFirstSelected;
 
     #endregion
@@ -216,6 +220,7 @@ public class PauseMenuManager : GameMenu
         pauseMenuPanel.SetActive(false);
         journalPanel.SetActive(false);
         settingsPanel.SetActive(false);
+        tutorialsPanel.SetActive(false);
 
         // Show the selected menu
         obj?.SetActive(true);
@@ -303,6 +308,55 @@ public class PauseMenuManager : GameMenu
         SetSelectedButton(settingsFirstSelected);
     }
 
+    public void Tutorials(GameObject textObject)
+    {
+        ChangeClickColor(textObject);
+
+        // Push the tutorials panel onto the stack
+        _menuStack.Push(tutorialsPanel);
+
+        // Isolate the tutorials panel
+        IsolateMenu(_menuStack.Peek());
+
+        // Populate the tutorials panel with the tutorials
+        var tutorialsFirstSelected = PopulateTutorialsPanel();
+
+        // Set the event system's selected object to the first button
+        SetSelectedButton(tutorialsFirstSelected);
+    }
+
+    private GameObject PopulateTutorialsPanel()
+    {
+        // Destroy all the children of the tutorials button parent
+        foreach (Transform child in tutorialsButtonParent.transform)
+            Destroy(child.gameObject);
+
+        // Get all the tutorials that the player has read
+        var allTutorials = Tutorial.Tutorials;
+
+        var firstSelected = tutorialBack;
+        
+        foreach (var tutorial in allTutorials)
+        {
+            // Continue if the player has not read the tutorial
+            if (!TutorialManager.Instance.IsTutorialCompleted(tutorial))
+                continue;
+            
+            // Create a new button
+            var tutorialButton = Instantiate(tutorialButtonPrefab, tutorialsButtonParent.transform);
+            
+            // Set the tutorial button's text to the tutorial's name
+            tutorialButton.Initialize(this, tutorial);
+            
+            // Set the first selected button
+            if (firstSelected == tutorialBack)
+                firstSelected = tutorialButton.gameObject;
+            
+        }
+
+        return firstSelected;
+    }
+
     /// <summary>
     /// Called when the Exit button is clicked.
     /// </summary>
@@ -323,7 +377,7 @@ public class PauseMenuManager : GameMenu
             Deactivate();
             return;
         }
-        
+
         // Pop the current menu off the stack
         _menuStack.Pop();
 
@@ -365,12 +419,12 @@ public class PauseMenuManager : GameMenu
         else
             Resume(pauseMenuPanel.transform.GetChild(0).gameObject);
     }
-    
+
     public static IEnumerator LoadPauseMenuManager()
     {
         // Load the pause menu scene
         SceneManager.LoadScene(PAUSE_SCENE_NAME, LoadSceneMode.Additive);
-        
+
         // Wait while the instance is null
         yield return new WaitUntil(() => Instance != null);
 

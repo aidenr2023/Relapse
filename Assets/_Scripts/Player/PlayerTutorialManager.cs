@@ -17,7 +17,7 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
 
     #region Private Fields
 
-    private readonly HashSet<Tutorial> _completedTutorials = new();
+    // private readonly HashSet<Tutorial> _completedTutorials = new();
 
     private bool _hasPickedUpGun;
     private const string HAS_PICKED_UP_GUN_FLAG = "HasPickedUpGun";
@@ -60,7 +60,6 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
         _hasRespawned = true;
 
         // Complete the tutorial
-        // TutorialScreen.Instance.PlayTutorial(respawnTutorial);
         TutorialScreen.Play(this, respawnTutorial);
     }
 
@@ -74,7 +73,6 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
         _hasPickedUpGun = true;
 
         // Complete the tutorial
-        // TutorialScreen.Instance.PlayTutorial(gunPickupTutorial);
         TutorialScreen.Play(this, gunPickupTutorial);
     }
 
@@ -83,18 +81,21 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
     private void Update()
     {
         // Refresh the completed tutorials
-        completedTutorials = _completedTutorials.ToArray();
+        // completedTutorials = _completedTutorials.ToArray();
+        completedTutorials = TutorialManager.Instance.CompletedTutorials.ToArray();
     }
 
     public void CompleteTutorial(Tutorial tutorial)
     {
         // Add the tutorial to the completed tutorials
-        _completedTutorials.Add(tutorial);
+        // _completedTutorials.Add(tutorial);
+        TutorialManager.Instance.CompleteTutorial(tutorial);
     }
-    
+
     public bool HasCompletedTutorial(Tutorial tutorial)
     {
-        return _completedTutorials.Contains(tutorial);
+        // return _completedTutorials.Contains(tutorial);
+        return TutorialManager.Instance.IsTutorialCompleted(tutorial);
     }
 
     #region Saving and Loading
@@ -105,7 +106,8 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
     public void LoadData(PlayerLoader playerLoader, bool restore)
     {
         // Clear the completed tutorials
-        _completedTutorials.Clear();
+        // _completedTutorials.Clear();
+        TutorialManager.Instance.ClearCompletedTutorials();
 
         // For each tutorial in the save data, add it to the completed tutorials
         foreach (var tutorial in Tutorial.Tutorials)
@@ -116,7 +118,10 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
 
             // Add the tutorial to the completed tutorials
             if (isComplete)
-                _completedTutorials.Add(tutorial);
+            {
+                // _completedTutorials.Add(tutorial);
+                TutorialManager.Instance.CompleteTutorial(tutorial);
+            }
 
             Debug.Log($"Reloaded & added {tutorial.TutorialName} to the completed tutorials!");
         }
@@ -135,10 +140,13 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
 
     public void SaveData(PlayerLoader playerLoader)
     {
+        var tutorials = TutorialManager.Instance.CompletedTutorials;
+        
         // For each completed tutorial, save the data
-        foreach (var tutorial in _completedTutorials)
+        // foreach (var tutorial in _completedTutorials)
+        foreach (var tutorial in tutorials)
         {
-            var itemData = new DataInfo(tutorial.UniqueId, _completedTutorials.Contains(tutorial));
+            var itemData = new DataInfo(tutorial.UniqueId, tutorials.Contains(tutorial));
             playerLoader.AddDataToMemory(Id, itemData);
         }
 
