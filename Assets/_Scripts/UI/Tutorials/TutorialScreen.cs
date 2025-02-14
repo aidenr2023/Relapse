@@ -309,12 +309,27 @@ public class TutorialScreen : GameMenu, IUsesInput
         if (tutorial == null)
             return;
 
+        var isTutorialCompleted = TutorialManager.Instance.IsTutorialCompleted(tutorial);
+        
         // Return if the tutorial has already been completed and we are not replaying it
-        if (Player.Instance.PlayerTutorialManager.HasCompletedTutorial(tutorial) && !replay)
+        if (isTutorialCompleted && !replay)
             return;
 
         ChangeTutorial(tutorial);
         Activate();
+
+        // Hacky solution to force the exit button to pop up if the tutorial has already been completed
+        if (replay && isTutorialCompleted)
+        {
+            // Set the current page to the last page
+            SetTutorialPage(tutorial.TutorialPages.Count - 1);
+            
+            // Force an update of the exit button
+            UpdateExitButton();
+            
+            // Reset the current page to the first page
+            SetTutorialPage(0);
+        }
 
         // Get the instance of the player tutorial manager & complete the tutorial
         Player.Instance.PlayerTutorialManager.CompleteTutorial(tutorial);
