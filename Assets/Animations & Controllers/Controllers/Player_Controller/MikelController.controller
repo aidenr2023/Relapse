@@ -389,11 +389,11 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.25
+  m_TransitionDuration: 0.26472703
   m_TransitionOffset: 0
-  m_ExitTime: 0.70000005
+  m_ExitTime: 0.7000001
   m_HasExitTime: 0
-  m_HasFixedDuration: 1
+  m_HasFixedDuration: 0
   m_InterruptionSource: 1
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
@@ -850,6 +850,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 2
     m_ConditionEvent: isWallrunRight
     m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: modelType
+    m_EventTreshold: 1
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -5852057904874439097}
   m_Solo: 0
@@ -1188,6 +1191,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 4
     m_ConditionEvent: JumpHeight
     m_EventTreshold: 2
+  - m_ConditionMode: 7
+    m_ConditionEvent: modelType
+    m_EventTreshold: 1
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 868716515117886133}
   m_Solo: 0
@@ -1258,7 +1264,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Take 001_Jump
-  m_Speed: 0.5
+  m_Speed: 0.75
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 8383346421526322688}
@@ -1614,6 +1620,12 @@ AnimatorStateTransition:
   m_Conditions:
   - m_ConditionMode: 1
     m_ConditionEvent: Jump
+    m_EventTreshold: 0
+  - m_ConditionMode: 2
+    m_ConditionEvent: isWallrunLeft
+    m_EventTreshold: 0
+  - m_ConditionMode: 2
+    m_ConditionEvent: isWallrunRight
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -1227247325010136447}
@@ -2157,7 +2169,7 @@ AnimatorStateTransition:
   serializedVersion: 3
   m_TransitionDuration: 0.25
   m_TransitionOffset: 0
-  m_ExitTime: 0.60526335
+  m_ExitTime: 0.01
   m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 1
@@ -2530,6 +2542,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: IsSprinting
     m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: modelType
+    m_EventTreshold: 1
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 4158058063803224997}
   m_Solo: 0
@@ -2607,7 +2622,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: WallRight
-  m_Speed: 1
+  m_Speed: 0.5
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 8320497534426866469}
@@ -2840,6 +2855,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: IsSprinting
     m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: modelType
+    m_EventTreshold: 1
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 868716515117886133}
   m_Solo: 0
@@ -2999,10 +3017,10 @@ AnimatorStateMachine:
     m_Position: {x: 460, y: 720, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 5009672830098601561}
-    m_Position: {x: -1020, y: 30, z: 0}
+    m_Position: {x: -1000, y: 30, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -6770438307283911211}
-    m_Position: {x: -670, y: 20, z: 0}
+    m_Position: {x: -530, y: 270, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7205583504467868471}
     m_Position: {x: 850, y: -510, z: 0}
@@ -3035,7 +3053,7 @@ AnimatorStateMachine:
   m_EntryTransitions: []
   m_StateMachineTransitions: {}
   m_StateMachineBehaviours: []
-  m_AnyStatePosition: {x: -920, y: 320, z: 0}
+  m_AnyStatePosition: {x: -970, y: 700, z: 0}
   m_EntryPosition: {x: 920, y: -210, z: 0}
   m_ExitPosition: {x: 940, y: -370, z: 0}
   m_ParentStateMachinePosition: {x: 870, y: 60, z: 0}
@@ -3313,14 +3331,14 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.15500578
-  m_TransitionOffset: 0
-  m_ExitTime: 0.7500001
+  m_TransitionDuration: 0.2467872
+  m_TransitionOffset: 0.0024064595
+  m_ExitTime: 0.75101614
   m_HasExitTime: 0
-  m_HasFixedDuration: 0
+  m_HasFixedDuration: 1
   m_InterruptionSource: 2
   m_OrderedInterruption: 1
-  m_CanTransitionToSelf: 1
+  m_CanTransitionToSelf: 0
 --- !u!1102 &8947946515090778030
 AnimatorState:
   serializedVersion: 6
