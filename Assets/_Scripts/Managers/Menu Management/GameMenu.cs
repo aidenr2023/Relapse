@@ -102,8 +102,11 @@ public abstract class GameMenu : MonoBehaviour
         // Set the activate flag to true
         _isActive = true;
 
-        // Update the event system
-        UpdateEventSystem();
+        // // Update the event system
+        // UpdateEventSystem();
+
+        foreach (var menu in MenuManager.Instance.ActiveMenus)
+            menu.UpdateEventSystem();
 
         // Custom Activate
         CustomActivate();
@@ -120,8 +123,12 @@ public abstract class GameMenu : MonoBehaviour
         // Set the activate flag to false
         _isActive = false;
         
-        // Update the event system
-        UpdateEventSystem();
+        // // Update the event system
+        // UpdateEventSystem();
+        
+        foreach (var menu in MenuManager.Instance.ActiveMenus)
+            menu.UpdateEventSystem();
+
         
         // Custom Deactivate
         CustomDeactivate();
@@ -181,6 +188,9 @@ public abstract class GameMenu : MonoBehaviour
         
         // The event system is enabled if the menu is active
         eventSystem.enabled = active;
+        
+        // TODO: remove?
+        canvasGroup.interactable = active;
     }
 
     protected abstract void CustomUpdate();

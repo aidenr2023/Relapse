@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 public class EpilepsyMenu : GameMenu
 {
     [SerializeField] private string mainMenuSceneName = "MainMenu";
-    
+
     protected override void CustomAwake()
     {
         // Additively load the main menu scene
@@ -36,10 +36,14 @@ public class EpilepsyMenu : GameMenu
             Deactivate();
             Activate();
         }
-        
+
         // If the opacity is 0, unload the scene
         if (canvasGroup.alpha == 0)
             UnloadScene();
+
+        if (MenuManager.Instance.ActiveMenu == this &&
+            eventSystem.currentSelectedGameObject == null)
+            eventSystem.SetSelectedGameObject(eventSystem.firstSelectedGameObject);
     }
 
     public override void OnBackPressed()
@@ -56,7 +60,7 @@ public class EpilepsyMenu : GameMenu
     {
         // Get the scene that this object is in
         var scene = gameObject.scene;
-        
+
         // Unload the scene
         SceneManager.UnloadSceneAsync(scene);
     }

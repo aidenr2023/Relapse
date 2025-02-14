@@ -32,8 +32,12 @@ public class DialogueUI : MonoBehaviour
     public DialogueNode CurrentDialogue => _currentDialogue;
 
     public TMP_Text DialogueText => dialogueText;
+    
+    public Button NextButton => nextButton;
 
     private bool IsTyping => _currentCharacterIndex < _currentDialogue.DialogueText.Length;
+    
+    public IReadOnlyList<Button> Buttons => buttons;
 
     #endregion
 
@@ -90,8 +94,6 @@ public class DialogueUI : MonoBehaviour
 
         // Set the NPC image
         npcImage.sprite = _currentDialogue.SpeakerInfo.NpcSprites[_currentSpriteIndex];
-
-        Debug.Log($"Sprite Index: {_currentSpriteIndex}");
     }
 
 

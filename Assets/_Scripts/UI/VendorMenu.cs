@@ -48,6 +48,8 @@ public class VendorMenu : GameMenu
     private PowerScriptableObject[] _medPowers;
     private PowerScriptableObject[] _drugPowers;
 
+    private GameObject _isolatedMenu;
+
     #endregion
 
     #region Getters
@@ -96,6 +98,23 @@ public class VendorMenu : GameMenu
 
     protected override void CustomUpdate()
     {
+        if (MenuManager.Instance.ActiveMenu == this &&
+            eventSystem.currentSelectedGameObject == null)
+        {
+            if (_isolatedMenu == gossipMenu)
+            {
+                // Debug.Log(
+                // $"Setting selected game object to {dialogueUI.NextButton.gameObject} {eventSystem.isActiveAndEnabled}");
+
+                if (dialogueUI.CurrentDialogue is not DialogueChoiceNode)
+                    eventSystem.SetSelectedGameObject(dialogueUI.NextButton.gameObject);
+                else 
+                    eventSystem.SetSelectedGameObject(dialogueUI.Buttons[0].gameObject);
+            }
+
+            else if (_isolatedMenu == initialMenu)
+                eventSystem.SetSelectedGameObject(firstSelectedButton);
+        }
     }
 
     public void StartDialogue()
@@ -108,6 +127,7 @@ public class VendorMenu : GameMenu
         // If the menu is the power menu, but the player can no longer buy from the vendor, return
         if (menu == powerMenu && !_currentVendor.CanBuyFromVendor)
         {
+            // TODO: Add a timer for spamming this message
             JournalTooltipManager.Instance.AddTooltip($"You can no longer buy from {_currentVendor.VendorName}.");
             return;
         }
@@ -117,6 +137,7 @@ public class VendorMenu : GameMenu
         gossipMenu.SetActive(false);
 
         menu.SetActive(true);
+        _isolatedMenu = menu;
 
         // Set the selected button
         if (menu == powerMenu)
@@ -357,19 +378,21 @@ public class VendorMenu : GameMenu
         playerInventory.RemoveItem(playerInventory.MoneyObject, CurrentVendor.UpgradeCost);
 
         var playerInfo = Player.Instance.PlayerInfo;
-        
+
         switch (CurrentVendor.VendorType)
         {
             // If this vendor is a doctor, increase the player's max health
             case VendorType.Doctor:
                 Player.Instance.PlayerInfo.ChangeMaxHealth(playerInfo.MaxHealth + CurrentVendor.UpgradeAmount);
-                JournalTooltipManager.Instance.AddTooltip($"You have bought a health upgrade. Your max health is now {playerInfo.MaxHealth}.");
+                JournalTooltipManager.Instance.AddTooltip(
+                    $"You have bought a health upgrade. Your max health is now {playerInfo.MaxHealth}.");
                 break;
-            
+
             // If this vendor is a dealer, increase the player's toxicity
             case VendorType.Dealer:
                 Player.Instance.PlayerInfo.ChangeMaxToxicity(playerInfo.MaxTolerance + CurrentVendor.UpgradeAmount);
-                JournalTooltipManager.Instance.AddTooltip($"You have bought a toxicity upgrade. Your max toxicity is now {playerInfo.MaxTolerance}.");
+                JournalTooltipManager.Instance.AddTooltip(
+                    $"You have bought a toxicity upgrade. Your max toxicity is now {playerInfo.MaxTolerance}.");
                 break;
         }
     }
