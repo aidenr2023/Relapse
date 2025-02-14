@@ -24,7 +24,7 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
     private void Awake()
     {
         // If the instance is not null and not this, destroy this
-        if (Instance != null && Instance != this)
+        if (Instance != null)
         {
             Destroy(gameObject);
             return;
@@ -58,14 +58,14 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
         // Return if the mode is not single
         if (mode != LoadSceneMode.Single)
             return;
-        
+
         // If the scene is loaded singularly, then the menus get unloaded.
         // This function forcibly reloads the menus.
 
         Debug.Log($"Reloading menus for scene {scene.name}. THIS DOESN'T DO ANYTHING!");
-        
-        // // Initialize the game UI
-        // InitializeGameUI();
+
+        // Initialize the game UI
+        InitializeGameUI();
     }
 
     public void InitializeInput()
@@ -100,6 +100,7 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
         InputManager.Instance.Unregister(this);
 
         // Unset this as the instance
-        Instance = null;
+        if (Instance == this)
+            Instance = null;
     }
 }
