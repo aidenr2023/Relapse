@@ -31,9 +31,18 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
     {
         // Get the components
         InitializeComponents();
+    }
 
+    private void OnEnable()
+    {
         // Add the enemy to the enemies hash set
         _enemies.Add(this);
+    }
+
+    private void OnDisable()
+    {
+        // Remove the enemy from the enemies hash set
+        _enemies.Remove(this);
     }
 
     private void InitializeComponents()
@@ -65,9 +74,6 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
 
     private void OnDestroy()
     {
-        // Remove the enemy from the enemies hash set
-        _enemies.Remove(this);
-
         // Save the fact that the enemy is dead
         SaveData(LevelLoader.Instance);
     }

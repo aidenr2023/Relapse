@@ -17,6 +17,8 @@ public class PlayerLook : MonoBehaviour, IUsesInput
 
     [SerializeField, Range(0, 1)] private float wallRunLookLockLerpAmount = 1f;
 
+    [SerializeField, Min(0)] private float aimAssistRange = 50f;
+
     #endregion
 
     #region Private Fields
@@ -161,19 +163,28 @@ public class PlayerLook : MonoBehaviour, IUsesInput
 
         var desiredLookRotation = _lookRotation;
 
+        var subtractAmount = _lookInput.y * _currentSens.y * constantSense;
+        var newXRotation = desiredLookRotation.eulerAngles.x;
+
+        // Get the new X rotation within the 0 - 360 range
+        if (newXRotation < 0)
+            newXRotation = newXRotation % 360 + 360;
+        
+        // Clamp the new X rotation to the upper and lower limits
+        var upperLimit = 270 + upDownAngleLimit;
+        var lowerLimit = 90 - upDownAngleLimit;
+        
+        if (newXRotation >= 180 && newXRotation - subtractAmount < upperLimit)
+            newXRotation = upperLimit;
+        else if (newXRotation < 180 && newXRotation - subtractAmount > lowerLimit)
+            newXRotation = lowerLimit;
+        else
+            newXRotation -= subtractAmount;
+
         // Adjust rotation based on mouse input
         desiredLookRotation = Quaternion.Euler(
-            desiredLookRotation.eulerAngles.x - _lookInput.y * _currentSens.y * constantSense,
+            newXRotation,
             desiredLookRotation.eulerAngles.y + _lookInput.x * _currentSens.x * constantSense,
-            desiredLookRotation.eulerAngles.z
-        );
-
-        // Clamp the X rotation to prevent over-rotation
-        desiredLookRotation = Quaternion.Euler(
-            desiredLookRotation.eulerAngles.x > 180
-                ? Mathf.Clamp(desiredLookRotation.eulerAngles.x, 360 - (90 - upDownAngleLimit), 360)
-                : Mathf.Clamp(desiredLookRotation.eulerAngles.x, 0, (90 - upDownAngleLimit)),
-            desiredLookRotation.eulerAngles.y,
             desiredLookRotation.eulerAngles.z
         );
 
