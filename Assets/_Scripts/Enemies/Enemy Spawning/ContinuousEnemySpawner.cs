@@ -124,8 +124,16 @@ public class ContinuousEnemySpawner : EnemySpawner
     {
         const float sphereSize = 0.25f;
 
+        // Return if the spawn points is null
+        if (spawnPoints == null)
+            return;
+        
         foreach (var spawnPoint in spawnPoints)
         {
+            // continue if the spawn point is null
+            if (spawnPoint == null)
+                continue;
+            
             // Draw a green sphere for each spawn point
             Gizmos.color = Color.green;
             Gizmos.DrawSphere(spawnPoint.position, sphereSize);
