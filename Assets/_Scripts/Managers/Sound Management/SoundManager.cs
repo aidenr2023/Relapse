@@ -15,13 +15,27 @@ public class SoundManager : MonoBehaviour
 
     #endregion
 
-    private void Start()
+    private void Awake()
     {
+        // If the instance is not null, destroy this object
+        if (Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
         // Set the instance
         Instance = this;
 
         // Initialize the audio sources
         InitializeAudioSources();
+    }
+
+    private void OnDestroy()
+    {
+        // If the instance is this, set the instance to null
+        if (Instance == this)
+            Instance = null;
     }
 
     private void InitializeAudioSources()

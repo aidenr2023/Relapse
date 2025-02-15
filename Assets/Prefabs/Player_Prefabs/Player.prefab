@@ -891,7 +891,7 @@ Transform:
   m_GameObject: {fileID: 360827176506690469}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0.65}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -909,7 +909,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 10
+  m_Intensity: 75
   m_Range: 150
   m_SpotAngle: 83.86573
   m_InnerSpotAngle: 75.667816
@@ -8731,7 +8731,6 @@ MonoBehaviour:
   passiveRegenCap: 50
   passiveRegenRate: 5
   passiveRegenDelay: 10
-  vCam: {fileID: 0}
   hitSound:
     clip: {fileID: 8300000, guid: a07d4a0a361f338429c6b98e1d8a4499, type: 3}
     soundType: 1
@@ -8761,6 +8760,7 @@ MonoBehaviour:
   sensitivityMultiplier: 15
   upDownAngleLimit: 5
   wallRunLookLockLerpAmount: 1
+  aimAssistRange: 50
 --- !u!114 &3702472085182245376
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16444,8 +16444,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraPivot: {fileID: 6662289434304302906}
   useFixedUpdate: 0
-  positionLerpAmount: 0.95
-  rotationLerpAmount: 0.85
+  positionLerpAmount: 10
+  rotationLerpAmount: 10
   targetPosition: {x: 0, y: 0, z: 0}
   targetRotation: {x: 0, y: 0, z: 0}
 --- !u!1 &6680556349440564722
@@ -21211,7 +21211,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 883a3cf06dcc4516a8e272b552c90d50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponManager: {fileID: 0}
+  weaponManager: {fileID: -7043807009064224948}
   playerAnimator: {fileID: 4298942248171799672}
 --- !u!114 &2368341771634268908
 MonoBehaviour:
@@ -21225,8 +21225,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bcbb5e0eb11e93944bbddde08ae26d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerWallRunning: {fileID: 0}
-  playerPowerManager: {fileID: 0}
+  playerWallRunning: {fileID: -2300652163101954379}
+  playerPowerManager: {fileID: 27674651915690864}
   playerAnimator: {fileID: 4298942248171799672}
   syncMag7Fire: {fileID: 0}
 --- !u!114 &5913765326952978786
@@ -21243,8 +21243,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cameraPivot: {fileID: 6662289434304302906}
   useFixedUpdate: 0
-  positionLerpAmount: 0.95
-  rotationLerpAmount: 0.85
+  positionLerpAmount: 10
+  rotationLerpAmount: 10
   targetPosition: {x: 0, y: 0, z: 0}
   targetRotation: {x: 0, y: 0, z: 0}
 --- !u!1 &8818440328132041162
