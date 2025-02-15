@@ -27,11 +27,15 @@ public class VendorMenu : GameMenu
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private Image biggerPowerImage;
 
+    [SerializeField] private TMP_Text upgradeInfoText;
+    [SerializeField] private TMP_Text upgradeMoneyText;
+
     [Header("Gossip Dialogue")] [SerializeField]
     private DialogueUI dialogueUI;
 
     [Header("Menus")] [SerializeField] private GameObject initialMenu;
     [SerializeField] private GameObject powerMenu;
+    [SerializeField] private GameObject upgradeMenu;
     [SerializeField] private GameObject gossipMenu;
 
     [Header("Navigation Control")] [SerializeField]
@@ -39,6 +43,8 @@ public class VendorMenu : GameMenu
 
     [SerializeField] private GameObject shopSelectedButton;
     [SerializeField] private GameObject gossipSelectedButton;
+    [SerializeField] private GameObject upgradeSelectedButton;
+    
 
     #endregion
 
@@ -134,6 +140,7 @@ public class VendorMenu : GameMenu
 
         initialMenu.SetActive(false);
         powerMenu.SetActive(false);
+        upgradeMenu.SetActive(false);
         gossipMenu.SetActive(false);
 
         menu.SetActive(true);
@@ -157,10 +164,28 @@ public class VendorMenu : GameMenu
             Debug.Log($"Setting selected game object to {gossipSelectedButton} {eventSystem.isActiveAndEnabled}");
             SetSelectedGameObject(gossipSelectedButton);
         }
+        else if (menu == upgradeMenu)
+        {
+            SetUpUpgradeMenu();
+            SetSelectedGameObject(upgradeSelectedButton);
+        }
         else
             SetSelectedGameObject(firstSelectedButton);
     }
 
+    private void SetUpUpgradeMenu()
+    {
+        var statToUpgrade = CurrentVendor.VendorType switch
+        {
+            VendorType.Doctor => "Health",
+            VendorType.Dealer => "Toxicity",
+            _ => "Unknown"
+        };
+        
+        upgradeInfoText.text = $"Do you want to upgrade your maximum {statToUpgrade} for ${CurrentVendor.UpgradeCost}?";
+        upgradeMoneyText.text = $"Money: ${Player.Instance.PlayerInventory.MoneyCount}";
+    }
+    
     private void PopulateShop()
     {
         // Reset all the power buttons

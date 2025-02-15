@@ -702,9 +702,16 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         // Update the power collections
         UpdatePowerCollections(powerScriptableObject);
 
+        var powerTypeName = powerScriptableObject.PowerType switch
+        {
+            PowerType.Drug => "Neuro",
+            PowerType.Medicine => "Vital",
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
         // Display a tooltip for the power
         JournalTooltipManager.Instance.AddTooltip(
-            $"New {powerScriptableObject.PowerType}: {powerScriptableObject.PowerName}"
+            $"New {powerTypeName}: {powerScriptableObject.PowerName}"
         );
     }
 
