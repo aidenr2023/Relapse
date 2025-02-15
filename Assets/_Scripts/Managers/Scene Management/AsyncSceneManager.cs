@@ -28,6 +28,18 @@ public class AsyncSceneManager : IDebugged
 
     private readonly HashSet<string> _scenesThatNeedToLoadFromDisk = new();
 
+    private readonly HashSet<string> _debugLoadedScenes = new();
+
+    #endregion
+
+    #region Getters
+
+    public IReadOnlyList<string> GetManagedScenes() => 
+        _asyncSceneRecords
+        .Where(n => n.Value.State == AsyncSceneState.Loaded)
+        .Select(n => n.Key)
+        .ToArray();
+
     #endregion
 
     private AsyncSceneManager()
@@ -40,6 +52,24 @@ public class AsyncSceneManager : IDebugged
         DebugManager.Instance.AddDebuggedObject(this);
 
         SceneManager.sceneLoaded += LoadDataFromDiskOnSceneLoaded;
+        SceneManager.sceneLoaded += SceneLoadedDebug;
+    }
+
+    private void SceneLoadedDebug(Scene scene, LoadSceneMode _)
+    {
+        // If this scene is not a debug loaded scene, return
+        if (!_debugLoadedScenes.Remove(scene.name))
+            return;
+
+        Debug.Log($"Trying to load scene: {scene.name}");
+
+        // Try to get the level information for the loaded scene
+        if (!LevelInformation.GetLevelInformation(scene.name, out var levelInfo))
+            return;
+
+        Debug.Log($"Loaded Level: {levelInfo.name}");
+        Debug.Log($"Starting Checkpoint: {levelInfo.StartingCheckpoint.name}");
+        LevelCheckpointManager.Instance.ResetToCheckpoint(levelInfo.StartingCheckpoint);
     }
 
     private void LoadDataFromDiskOnSceneLoaded(Scene scene, LoadSceneMode _)
@@ -236,7 +266,7 @@ public class AsyncSceneManager : IDebugged
         // If the scene is already loaded, return
         if (_asyncSceneRecords.TryGetValue(scene, out var sceneRecord))
             return;
-        
+
         // Return if the scene name is empty
         if (scene.SceneName.Trim() == "")
         {
@@ -743,6 +773,24 @@ public class AsyncSceneManager : IDebugged
             UnloadSceneAsync(section);
 
         onCompletion?.Invoke();
+    }
+
+    public void DebugLoadSceneSynchronous(SceneLoaderInformation loaderInformation)
+    {
+        // Unload all the scenes to unload asynchronously
+        foreach (var scene in loaderInformation.SectionsToUnload)
+            UnloadSceneAsync(scene);
+
+        // Clear the debug loaded scenes
+        _debugLoadedScenes.Clear();
+
+        // Add all the scenes to load to the debug loaded scenes
+        foreach (var scene in loaderInformation.SectionsToLoad)
+            _debugLoadedScenes.Add(scene.SectionScene.SceneName);
+
+        // Load all the scenes to load synchronously
+        foreach (var scene in loaderInformation.SectionsToLoad)
+            LoadSceneSynchronous(scene);
     }
 
     #endregion

@@ -9,4 +9,13 @@ public class LevelSectionSceneInfo : ScriptableObject
     public SceneField SectionPersistentData => sectionPersistentData;
 
     public SceneField SectionScene => sectionScene;
+    
+    public static LevelSectionSceneInfo Create(SceneField sectionPersistentData, SceneField sectionScene)
+    {
+        var info = new LevelSectionSceneInfo();
+        info.sectionPersistentData = sectionPersistentData;
+        info.sectionScene = sectionScene;
+        
+        return info;
+    }
 }

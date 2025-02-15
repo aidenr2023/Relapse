@@ -5908,6 +5908,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7256394280690143964}
+  - component: {fileID: 7796367963603914402}
   m_Layer: 0
   m_Name: Camera Stack & VCams
   m_TagString: Untagged
@@ -5933,6 +5934,21 @@ Transform:
   - {fileID: 5808006832929318470}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7796367963603914402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8470495535782639255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ac8e0ff8ff04e269d218f0ffec1256e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCamera: {fileID: 5256681407823044528}
+  handsCamera: {fileID: 8914122279228631675}
+  virtualCamera: {fileID: 7065384412726524469}
 --- !u!1 &8542539507103184754
 GameObject:
   m_ObjectHideFlags: 0

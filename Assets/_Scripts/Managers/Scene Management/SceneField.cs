@@ -22,6 +22,14 @@ public class SceneField
     {
         return sceneField.SceneName;
     }
+    
+    public static implicit operator SceneField(string sceneName)
+    {
+        var field = new SceneField();
+        field.sceneName = sceneName;
+
+        return field;
+    }
 
     // public static bool operator ==(SceneField a, object b)
     // {

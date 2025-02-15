@@ -47,8 +47,8 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     [SerializeField, Min(0)] private float passiveRegenRate = 5;
     [SerializeField, Min(0)] private float passiveRegenDelay = 10;
 
-    // TODO: Find a better way to do this
-    [SerializeField] private CinemachineVirtualCamera vCam;
+    // // TODO: Find a better way to do this
+    // [SerializeField] private CinemachineVirtualCamera vCam;
 
     [Header("Audio"), SerializeField] private Sound hitSound;
     [SerializeField] private Sound deathSound;
@@ -92,7 +92,8 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     public bool IsInvincible => _invincibilityTimer.IsActive;
 
-    public CinemachineVirtualCamera VirtualCamera => vCam;
+    // public CinemachineVirtualCamera VirtualCamera => vCam;
+    public CinemachineVirtualCamera VirtualCamera => CameraManager.Instance.VirtualCamera;
 
     public bool IsInvincibleBecauseDamaged => _invincibilityTimer.IsActive && _invincibilityTimer.Percentage < 1;
 

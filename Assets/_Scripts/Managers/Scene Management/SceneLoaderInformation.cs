@@ -65,4 +65,14 @@ public class SceneLoaderInformation
             return scenes;
         }
     }
+    
+    public static SceneLoaderInformation Create(LevelSectionSceneInfo[] sectionsToLoad, LevelSectionSceneInfo[] sectionsToUnload)
+    {
+        var information = new SceneLoaderInformation();
+        
+        information.sectionsToLoad = sectionsToLoad;
+        information.sectionsToUnload = sectionsToUnload;
+        
+        return information;
+    }
 }

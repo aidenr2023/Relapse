@@ -15,7 +15,7 @@ public class SoundManager : MonoBehaviour
 
     #endregion
 
-    private void Awake()
+    private void Start()
     {
         // Set the instance
         Instance = this;

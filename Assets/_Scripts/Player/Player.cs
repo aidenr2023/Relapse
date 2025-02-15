@@ -54,6 +54,10 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
         if (Instance != null)
         {
             Debug.LogError("There is already an instance of the Player class!");
+            
+            // Destroy this object
+            Destroy(gameObject);
+            
             return;
         }
         
@@ -63,6 +67,10 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
         // Set the original scene
         OriginalSceneObject = new GameObject("OriginalSceneObject");
 
+    }
+
+    private void OnDestroy()
+    {
     }
 
     private void InitializeComponents()

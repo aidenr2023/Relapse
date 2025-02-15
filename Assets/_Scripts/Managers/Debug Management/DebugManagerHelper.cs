@@ -23,6 +23,20 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
     [SerializeField] private Material interactableMaterial;
 
+    [Header("Debug Scene Skips")] [SerializeField]
+    private LevelSectionSceneInfo[] levelInfo1;
+
+    [SerializeField] private LevelSectionSceneInfo[] levelInfo2;
+    [SerializeField] private LevelSectionSceneInfo[] levelInfo3;
+
+    [SerializeField] private LevelSectionSceneInfo[] levelInfo4;
+    [SerializeField] private LevelSectionSceneInfo[] levelInfo5;
+    [SerializeField] private LevelSectionSceneInfo[] levelInfo6;
+
+    [SerializeField] private LevelSectionSceneInfo[] levelInfo7;
+    [SerializeField] private LevelSectionSceneInfo[] levelInfo8;
+    [SerializeField] private LevelSectionSceneInfo[] levelInfo9;
+
     #endregion
 
     #region Private Fields
@@ -153,6 +167,63 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
         if (Input.GetKeyDown(KeyCode.Z))
             FindBadInteractableMaterials();
+
+        if (Input.GetKeyDown(KeyCode.Keypad1))
+            DebugLoadScene(levelInfo1);
+        if (Input.GetKeyDown(KeyCode.Keypad2))
+            DebugLoadScene(levelInfo2);
+        if (Input.GetKeyDown(KeyCode.Keypad3))
+            DebugLoadScene(levelInfo3);
+        if (Input.GetKeyDown(KeyCode.Keypad4))
+            DebugLoadScene(levelInfo4);
+        if (Input.GetKeyDown(KeyCode.Keypad5))
+            DebugLoadScene(levelInfo5);
+        if (Input.GetKeyDown(KeyCode.Keypad6))
+            DebugLoadScene(levelInfo6);
+        if (Input.GetKeyDown(KeyCode.Keypad7))
+            DebugLoadScene(levelInfo7);
+        if (Input.GetKeyDown(KeyCode.Keypad8))
+            DebugLoadScene(levelInfo8);
+        if (Input.GetKeyDown(KeyCode.Keypad9))
+            DebugLoadScene(levelInfo9);
+    }
+
+    private void DebugLoadScene(LevelSectionSceneInfo[] levelInfo)
+    {
+        // If the array is empty or null, return
+        if (levelInfo == null || levelInfo.Length == 0)
+            return;
+        
+        // If there is no player, return
+        if (Player.Instance == null)
+            return;
+        
+        // Find the scene the player is in
+        var playerSceneField = (SceneField)Player.Instance.gameObject.scene.name;
+
+        // Get the currently managed scenes from the AsyncSceneManager
+        var managedScenes = AsyncSceneManager.Instance.GetManagedScenes();
+
+        // Create a level section scene info array with all the managed scenes EXCEPT the player's scene
+        var scenesToUnload = new List<string>();
+        foreach (var scene in managedScenes)
+        {
+            if (scene == playerSceneField.SceneName)
+                continue;
+
+            scenesToUnload.Add(scene);
+
+            Debug.Log($"Unload: {scene}");
+        }
+
+        // Convert the scenes to unload to a LevelSectionSceneInfo array
+        var scenesToUnloadInfo = scenesToUnload.Select(scene => LevelSectionSceneInfo.Create(null, scene)).ToArray();
+
+        // Create a new SceneLoaderInformation based on the input
+        var sceneLoaderInformation = SceneLoaderInformation.Create(levelInfo, scenesToUnloadInfo);
+
+        // Load the scene
+        AsyncSceneManager.Instance.DebugLoadSceneSynchronous(sceneLoaderInformation);
     }
 
     private void FindBadInteractableMaterials()
@@ -160,7 +231,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         // Return if the interactable material is null
         if (interactableMaterial == null)
             return;
-        
+
         // Look through the entire scene for any interactables
         var interactables = FindObjectsOfType<MonoBehaviour>()
             .OfType<IInteractable>();

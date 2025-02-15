@@ -58,15 +58,19 @@ public class LevelCheckpointManager
             return;
         }
 
-        // Move the player to the checkpoint's respawn point
-        // Rotate the player to the checkpoint's rotation
-        Player.Instance.transform.position = checkpoint.RespawnPoint.position;
+        // // Move the player to the checkpoint's respawn point
+        // // Rotate the player to the checkpoint's rotation
+        // Player.Instance.transform.position = checkpoint.RespawnPoint.position;
         
         // Convert the respawn forward to a quaternion
         var respawnForward = Quaternion.LookRotation(checkpoint.RespawnForward);
         Player.Instance.PlayerLook.ApplyRotation(respawnForward);
         
+        Player.Instance.Rigidbody.MovePosition(checkpoint.RespawnPoint.position);
+        
         // Kill the player's velocity
         Player.Instance.Rigidbody.velocity = Vector3.zero;
+        
+        Debug.Log($"Player reset to {checkpoint.name}");
     }
 }
