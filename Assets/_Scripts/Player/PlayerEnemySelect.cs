@@ -24,6 +24,8 @@ public class PlayerEnemySelect : ComponentScript<Player>
 
     #region Getters
 
+    public Vector2 OriginalScreenSize => originalScreenSize;
+    
     public float MaxDistance => maxDistance;
 
     private float ActualAimSquareSize => aimSquareSize * (Screen.width / originalScreenSize.x);
@@ -41,15 +43,16 @@ public class PlayerEnemySelect : ComponentScript<Player>
         // Get the main camera
         var mainCam = ParentComponent.PlayerInteraction.Camera;
 
-        // If the main camera is null, return
-        if (mainCam == null ||
-            ParentComponent.PlayerPowerManager.CurrentPower == null ||
-            !ParentComponent.PlayerPowerManager.CurrentPower.UsesReticle
-           )
-        {
-            SelectedEnemy = null;
-            return;
-        }
+        // // If the main camera is null, return
+        // if (mainCam == null ||
+        //     ParentComponent.PlayerPowerManager.CurrentPower == null ||
+        //     !ParentComponent.PlayerPowerManager.CurrentPower.UsesReticle
+        //    )
+        // {
+        //     SelectedEnemy = null;
+        //     return;
+        // }
+        
 
         // Get the screen dimensions
         var screenDimensions = new Vector2(Screen.width, Screen.height);
@@ -151,18 +154,18 @@ public class PlayerEnemySelect : ComponentScript<Player>
         const int squareSize = 64;
 
         // Draw a red box at the selected enemy's position
-        if (SelectedEnemy != null)
-        {
-            var screenPoint = ParentComponent.PlayerInteraction.Camera.WorldToScreenPoint(_enemyPosition);
-            GUI.Box(
-                new Rect(
-                    screenPoint.x - squareSize / 2f,
-                    Screen.height - screenPoint.y - squareSize / 2f,
-                    squareSize,
-                    squareSize
-                ),
-                ""
-            );
-        }
+        if (SelectedEnemy == null) 
+            return;
+        
+        var screenPoint = ParentComponent.PlayerInteraction.Camera.WorldToScreenPoint(_enemyPosition);
+        GUI.Box(
+            new Rect(
+                screenPoint.x - squareSize / 2f,
+                Screen.height - screenPoint.y - squareSize / 2f,
+                squareSize,
+                squareSize
+            ),
+            ""
+        );
     }
 }

@@ -59,7 +59,11 @@ public class PlayerEnemySelectUI : MonoBehaviour
     {
         var desiredOpacity = 0f;
 
-        if (Player.Instance != null && Player.Instance.PlayerEnemySelect.SelectedEnemy != null)
+        if (Player.Instance != null &&
+            Player.Instance.PlayerEnemySelect.SelectedEnemy != null &&
+            Player.Instance.PlayerPowerManager.CurrentPower != null &&
+            Player.Instance.PlayerPowerManager.CurrentPower.UsesReticle
+           )
             desiredOpacity = iconOpacity;
 
         const float defaultFrameTime = 1 / 60f;

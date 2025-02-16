@@ -17,7 +17,11 @@ public class PlayerLook : MonoBehaviour, IUsesInput
 
     [SerializeField, Range(0, 1)] private float wallRunLookLockLerpAmount = 1f;
 
-    [SerializeField, Min(0)] private float aimAssistRange = 50f;
+    [Header("Aim Assist")] [SerializeField, Range(0, 1)]
+    private float aimAssistMultiplier = 0.5f;
+
+    [SerializeField, Min(0)] private float minAimAssistScreenDistance = 200;
+    [SerializeField, Min(0)] private float maxAimAssistScreenDistance = 50;
 
     #endregion
 
@@ -161,6 +165,32 @@ public class PlayerLook : MonoBehaviour, IUsesInput
         // depend on x or y sensitivity / input
         var constantSense = sensitivityMultiplier * Time.deltaTime;
 
+        // If the player's selected enemy is not null, 
+        // Apply the aim assist
+        if (InputManager.Instance.CurrentControlScheme == InputManager.ControlSchemeType.Gamepad &&
+            _player.PlayerEnemySelect.SelectedEnemy != null)
+        {
+            var screenSize = new Vector2(Screen.width, Screen.height);
+
+            // Scale the distance w/ the screen size
+            var screenSizeCoefficient = Player.Instance.PlayerEnemySelect.OriginalScreenSize.x / screenSize.x;
+
+            var distanceFromScreenCenter = Vector2.Distance(
+                _player.PlayerEnemySelect.EnemyScreenPosition,
+                screenSize / 2
+            ) * screenSizeCoefficient;
+
+            // Inverse lerp the distance from the screen center
+            var inverseLerp = 1 - Mathf.InverseLerp(
+                maxAimAssistScreenDistance,
+                minAimAssistScreenDistance,
+                distanceFromScreenCenter
+            );
+
+            constantSense *= (aimAssistMultiplier * inverseLerp);
+        }
+
+
         var desiredLookRotation = _lookRotation;
 
         var subtractAmount = _lookInput.y * _currentSens.y * constantSense;
@@ -169,11 +199,11 @@ public class PlayerLook : MonoBehaviour, IUsesInput
         // Get the new X rotation within the 0 - 360 range
         if (newXRotation < 0)
             newXRotation = newXRotation % 360 + 360;
-        
+
         // Clamp the new X rotation to the upper and lower limits
         var upperLimit = 270 + upDownAngleLimit;
         var lowerLimit = 90 - upDownAngleLimit;
-        
+
         if (newXRotation >= 180 && newXRotation - subtractAmount < upperLimit)
             newXRotation = upperLimit;
         else if (newXRotation < 180 && newXRotation - subtractAmount > lowerLimit)
@@ -271,7 +301,9 @@ public class PlayerLook : MonoBehaviour, IUsesInput
 
         // Rotate the player's orientation first
         // Then rotate the camera pivot (which is a child of the orientation)
-        _player.PlayerController.Orientation.transform.localEulerAngles = new(0f, _lookRotation.eulerAngles.y, 0f);
-        _player.PlayerController.CameraPivot.transform.localEulerAngles = new(_lookRotation.eulerAngles.x, 0f, 0f);
+        _player.PlayerController.Orientation.transform.localEulerAngles =
+            new Vector3(0f, _lookRotation.eulerAngles.y, 0f);
+        _player.PlayerController.CameraPivot.transform.localEulerAngles =
+            new Vector3(_lookRotation.eulerAngles.x, 0f, 0f);
     }
 }

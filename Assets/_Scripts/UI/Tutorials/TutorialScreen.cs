@@ -108,7 +108,7 @@ public class TutorialScreen : GameMenu, IUsesInput
 
         // If the exit button is active & the current selected element is null,
         // set the exit button as the selected game object
-        if (exitButton.gameObject.activeSelf && eventSystem.currentSelectedGameObject == null)
+        if (exitButton.gameObject.activeSelf && eventSystem.currentSelectedGameObject != exitButton.gameObject)
             eventSystem.SetSelectedGameObject(exitButton.gameObject);
     }
 

@@ -13,7 +13,7 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
 
     #region Serialized Fields
 
-    [SerializeField] private Camera cam;
+    // [SerializeField] private Camera cam;
 
     [SerializeField] [Min(0)] private float interactDistance = 5;
 
@@ -52,7 +52,7 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
 
     public InteractionIcon CurrentInteractionIcon => _selectedInteractable?.InteractionIcon ?? InteractionIcon.None;
 
-    public Camera Camera => cam;
+    public Camera Camera => CameraManager.Instance.MainCamera;
         
     #endregion
 
@@ -125,7 +125,8 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
         var previousInteractable = _selectedInteractable;
 
         // Get the camera pivot
-        var cameraPivot = cam.transform;
+        // var cameraPivot = cam.transform;
+        var cameraPivot = Camera.transform;
 
         // Is there a ray cast hit within the interact distance?
         var hit = Physics.Raycast(
