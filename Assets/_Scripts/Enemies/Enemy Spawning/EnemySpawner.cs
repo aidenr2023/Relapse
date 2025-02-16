@@ -11,6 +11,7 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
     [SerializeField] protected bool isActiveOnStart = false;
 
     [SerializeField] protected UnityEvent onEnemyKilled;
+    [SerializeField] protected UnityEvent onSpawnerStart;
     [SerializeField] protected UnityEvent onSpawnerComplete;
 
     #endregion
@@ -83,6 +84,9 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
         // Set the flag to true
         hasStartedSpawning = true;
 
+        // Invoke the on spawner start event
+        onSpawnerStart.Invoke();
+        
         // Call the custom start spawning method
         CustomStartSpawning();
     }
