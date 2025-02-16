@@ -44,8 +44,12 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _Texture:
+        m_Texture: {fileID: 2800000, guid: f6e8e034125c35548b88a78a3445eca8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Texture2DAsset_06217d9c6e5045b0957ffbaf7ad51fe4_Out_0_Texture2D:
-        m_Texture: {fileID: 2800000, guid: 369fed82cba29724d891649d165625b3, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Texture2DAsset_cd125faf91384b4fab0490e9be206b5b_Out_0_Texture2D:
@@ -68,13 +72,13 @@ Material:
     m_Floats:
     - _Brightness: 3
     - _Contrast: 131.68
-    - _Density: 0.05
-    - _FlickerSpeed: 5
+    - _Density: 0.02
+    - _FlickerSpeed: 3
     - _FloatSpeed: 0.5
     - _FresnelPower: 0
     - _IntersectPower: 1.09
-    - _Max: 1
-    - _Min: 0
+    - _Max: 0.4
+    - _Min: 0.001
     - _NoiseScale: 0.19
     - _Power: 3
     - _QueueControl: 0
@@ -84,7 +88,7 @@ Material:
     - _tmp: 1
     m_Colors:
     - _BaseColor: {r: 0.7490196, g: 0.7490196, b: 0.7490196, a: 0}
-    - _Color: {r: 0.21509945, g: 0.21509945, b: 0.21509945, a: 0}
+    - _Color: {r: 0.53333336, g: 0.92156863, b: 0.7176471, a: 1}
     - _Color_1: {r: 0.25943398, g: 0.99274844, b: 1, a: 0}
     - _IntersectColor: {r: 0.7490195, g: 0.7490195, b: 0.7490195, a: 0}
     - _Tiling: {r: 0, g: 0.5, b: 0, a: 0}

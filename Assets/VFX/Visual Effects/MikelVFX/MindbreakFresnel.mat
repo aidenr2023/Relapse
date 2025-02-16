@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-7592412792834493622
+--- !u!114 &-604494356680524322
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,18 +20,19 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: MindbreakSphere
-  m_Shader: {fileID: -6465566751694194690, guid: a912f06b21508d344b4843d2fe01cb97,
+  m_Name: MindbreakFresnel
+  m_Shader: {fileID: -6465566751694194690, guid: 34015082b75cdd04199dc2f93edffc50,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
-  m_LightmapFlags: 2
+  m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
-  stringTagMap: {}
+  stringTagMap:
+    RenderType: Opaque
   disabledShaderPasses: []
   m_LockedProperties: 
   m_SavedProperties:
@@ -51,15 +52,21 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _FresnelPower: 6
-    - _NoiseModifier: 0
-    - _NoiseScale: 50
-    - _Power: 10
+    - _Alpha: 1
+    - _AlphaClip: 0
+    - _AlphaToMask: 0
+    - _Blend: 0
+    - _CastShadows: 1
+    - _Cull: 2
+    - _DstBlend: 0
+    - _FresnelPower: 2
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _ScrollSpeed: 0.05
-    - _TwirlStrength: 50
+    - _SrcBlend: 1
+    - _Surface: 0
+    - _ZTest: 4
+    - _ZWrite: 1
+    - _ZWriteControl: 0
     m_Colors:
-    - _InnerColor: {r: 0.684, g: 1, b: 0.8340202, a: 1}
-    - _OuterColor: {r: 0.53333336, g: 0.92156863, b: 0.7176471, a: 1}
+    - _Color: {r: 0.8284087, g: 0.9811321, b: 0.9009137, a: 1}
   m_BuildTextureStacks: []
