@@ -21,19 +21,21 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: MindbreakGlow
-  m_Shader: {fileID: -6465566751694194690, guid: 34015082b75cdd04199dc2f93edffc50,
+  m_Shader: {fileID: -6465566751694194690, guid: b2685d08a5caebd4180993abfb83bfc9,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 3000
   stringTagMap:
-    RenderType: Opaque
-  disabledShaderPasses: []
+    RenderType: Transparent
+  disabledShaderPasses:
+  - DepthOnly
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -58,15 +60,18 @@ Material:
     - _Blend: 0
     - _CastShadows: 1
     - _Cull: 2
-    - _DstBlend: 0
+    - _DstBlend: 10
     - _FresnelPower: 2
+    - _IntersectPower: 1.07
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _SrcBlend: 1
-    - _Surface: 0
+    - _SrcBlend: 5
+    - _Surface: 1
     - _ZTest: 4
-    - _ZWrite: 1
+    - _ZWrite: 0
     - _ZWriteControl: 0
     m_Colors:
-    - _Color: {r: 0, g: 0, b: 0, a: 1}
+    - _BaseColor: {r: 0, g: 0, b: 0, a: 0}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _IntersectColor: {r: 1, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
