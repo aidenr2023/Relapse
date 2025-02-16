@@ -12,5 +12,10 @@ public class CutsceneData : ScriptableObject
     public PlayableAsset timelineAsset;
     
     // Reference to the Cinemachine virtual camera for the cutscene.
-    public CinemachineVirtualCameraBase virtualCamera;
+   // public CinemachineVirtualCamera virtualCamera;
+   
+   private void OnEnable()
+   {
+       Debug.Log("CutsceneData is created");
+   }
 }

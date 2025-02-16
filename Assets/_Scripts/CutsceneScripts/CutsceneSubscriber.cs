@@ -29,7 +29,7 @@ public class CutsceneSubscriber : MonoBehaviour
     /// <summary>
     /// Disables player movement when the cutscene starts.
     /// </summary>
-    private void DisableMovement()
+    public void DisableMovement()
     {
         playerMovement.enabled = false;
     }
@@ -37,7 +37,7 @@ public class CutsceneSubscriber : MonoBehaviour
     /// <summary>
     /// Re-enables player movement when the cutscene ends.
     /// </summary>
-    private void EnableMovement()
+    public void EnableMovement()
     {
         playerMovement.enabled = true;
     }
@@ -45,7 +45,7 @@ public class CutsceneSubscriber : MonoBehaviour
     /// <summary>
     /// Disables the player's UI during the cutscene.
     /// </summary>
-    private void DisableUI()
+    public void DisableUI()
     {
         playerUI.SetActive(false);
     }
@@ -53,7 +53,7 @@ public class CutsceneSubscriber : MonoBehaviour
     /// <summary>
     /// Re-enables the player's UI after the cutscene.
     /// </summary>
-    private void EnableUI()
+    public void EnableUI()
     {
         playerUI.SetActive(true);
     }
