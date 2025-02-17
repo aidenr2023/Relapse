@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 2605369641432191521}
   - component: {fileID: 6898910570332570751}
   - component: {fileID: -4203176436745943468}
+  - component: {fileID: 5703009590115349191}
   m_Layer: 8
   m_Name: Shotgun 1
   m_TagString: Untagged
@@ -144,9 +145,25 @@ MonoBehaviour:
     type: 3}
   bulletHoleDecal: {fileID: 897063514554204210, guid: 7858f0785a3edd24a9d8daf6a699cf72,
     type: 3}
+  onInteract:
+    m_PersistentCalls:
+      m_Calls: []
   muzzleParticles: {fileID: 4716975621855594022}
   muzzleParticlesCount: 70
   pelletsPerShot: 8
+--- !u!114 &5703009590115349191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1676120636432712961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 068ce04631044bf9bcc1d7f44c7c5f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showOutline: 1
 --- !u!1001 &1241437108590454951
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -713,7 +730,7 @@ PrefabInstance:
     - target: {fileID: -2423552905024128431, guid: 2e464ecc8706e3e42b240ce4511112f3,
         type: 3}
       propertyPath: m_Materials.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -2423552905024128431, guid: 2e464ecc8706e3e42b240ce4511112f3,
         type: 3}
@@ -758,7 +775,7 @@ PrefabInstance:
     - target: {fileID: -773661210800101325, guid: 2e464ecc8706e3e42b240ce4511112f3,
         type: 3}
       propertyPath: m_Materials.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -773661210800101325, guid: 2e464ecc8706e3e42b240ce4511112f3,
         type: 3}
@@ -843,7 +860,7 @@ PrefabInstance:
     - target: {fileID: 3646911631767602418, guid: 2e464ecc8706e3e42b240ce4511112f3,
         type: 3}
       propertyPath: m_Materials.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3646911631767602418, guid: 2e464ecc8706e3e42b240ce4511112f3,
         type: 3}
@@ -873,7 +890,7 @@ PrefabInstance:
     - target: {fileID: 5626993751196956607, guid: 2e464ecc8706e3e42b240ce4511112f3,
         type: 3}
       propertyPath: m_Materials.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5626993751196956607, guid: 2e464ecc8706e3e42b240ce4511112f3,
         type: 3}
@@ -898,7 +915,7 @@ PrefabInstance:
     - target: {fileID: 7189879108799088161, guid: 2e464ecc8706e3e42b240ce4511112f3,
         type: 3}
       propertyPath: m_Materials.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7189879108799088161, guid: 2e464ecc8706e3e42b240ce4511112f3,
         type: 3}

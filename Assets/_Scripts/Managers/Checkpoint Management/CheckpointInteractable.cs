@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(InteractableMaterialManager))]
 public class CheckpointInteractable : MonoBehaviour, IInteractable
 {
     #region Serialized Fields
@@ -17,6 +18,8 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
     #endregion
 
     #region Getters
+
+    public InteractableMaterialManager InteractableMaterialManager { get; set; }
 
     public Transform RespawnPosition => respawnPosition;
 

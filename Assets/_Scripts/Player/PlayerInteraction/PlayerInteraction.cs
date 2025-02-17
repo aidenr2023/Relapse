@@ -7,9 +7,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerInteraction : MonoBehaviour, IUsesInput
 {
-    private static readonly int CachedScaleProperty = Shader.PropertyToID("_Scale");
-    private static readonly int CachedIsOutlinedProperty = Shader.PropertyToID("_IsOutlined");
-    private static readonly int CachedIsSelectedProperty = Shader.PropertyToID("_IsSelected");
+
 
     #region Serialized Fields
 
@@ -64,9 +62,9 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
 
     private void Start()
     {
-        // Events
-        OnLookAtInteractable += SetLookedAtMaterial;
-        OnStopLookingAtInteractable += UnsetLookedAtMaterial;
+        // // Events
+        // OnLookAtInteractable += SetLookedAtMaterial;
+        // OnStopLookingAtInteractable += UnsetLookedAtMaterial;
     }
 
     private void OnEnable()
@@ -171,60 +169,57 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
 
     #region Materials Functions
 
-    private void SetLookedAtMaterial(IInteractable interactable)
-    {
-        // Return if the interactable is null
-        if (interactable == null || interactable.GameObject == null)
-            return;
-
-        // Return if the interactable has no outline materials
-        if (interactable.OutlineMaterials == null)
-            return;
-
-        // Check if the interactable has outline materials
-        // Get the outline materials
-        if (interactable.OutlineMaterials != null && interactable.OutlineMaterials.Count == 0)
-            interactable.GetOutlineMaterials(outlineMaterial.shader);
-
-        // Set the outline materials to the looked at color
-        foreach (var material in interactable.OutlineMaterials)
-            SetOutlineMaterial(material, true, true);
-    }
-
-    private void UnsetLookedAtMaterial(IInteractable interactable)
-    {
-        // Return if the interactable is null
-        if (interactable == null || (interactable is MonoBehaviour mb && mb == null))
-            return;
-
-        // Return if the interactable has no outline materials
-        if (interactable.OutlineMaterials == null)
-            return;
-
-        // Check if the interactable has outline materials
-        // Get the outline materials
-        if (interactable.OutlineMaterials != null && interactable.OutlineMaterials.Count == 0)
-            interactable.GetOutlineMaterials(outlineMaterial.shader);
-
-        // Set the outline materials to the looked at color
-        foreach (var material in interactable.OutlineMaterials)
-            SetOutlineMaterial(material, false, true);
-    }
-
-    public void SetOutlineMaterial(Material material, bool isSelected, bool isOutlined)
-    {
-        if (material == null)
-            return;
-
-        // Set the material's color to the looked at material's color
-        material.SetFloat(CachedIsSelectedProperty, isSelected ? 1 : 0);
-
-        // // Set the scale of the outline
-        // material.SetFloat(CachedScaleProperty, scale);
-
-        // Set the material's outline state
-        material.SetInt(CachedIsOutlinedProperty, isOutlined ? 1 : 0);
-    }
+    // private void SetLookedAtMaterial(IInteractable interactable)
+    // {
+    //     // Return if the interactable is null
+    //     if (interactable == null || interactable.GameObject == null)
+    //         return;
+    //
+    //     // Return if the interactable has no outline materials
+    //     if (interactable.OutlineMaterials == null)
+    //         return;
+    //
+    //     // Check if the interactable has outline materials
+    //     // Get the outline materials
+    //     if (interactable.OutlineMaterials != null && interactable.OutlineMaterials.Count == 0)
+    //         interactable.GetOutlineMaterials(outlineMaterial.shader);
+    //
+    //     // Set the outline materials to the looked at color
+    //     foreach (var material in interactable.OutlineMaterials)
+    //         SetOutlineMaterial(material, true, true);
+    // }
+    //
+    // private void UnsetLookedAtMaterial(IInteractable interactable)
+    // {
+    //     // Return if the interactable is null
+    //     if (interactable == null || (interactable is MonoBehaviour mb && mb == null))
+    //         return;
+    //
+    //     // Return if the interactable has no outline materials
+    //     if (interactable.OutlineMaterials == null)
+    //         return;
+    //
+    //     // Check if the interactable has outline materials
+    //     // Get the outline materials
+    //     if (interactable.OutlineMaterials != null && interactable.OutlineMaterials.Count == 0)
+    //         interactable.GetOutlineMaterials(outlineMaterial.shader);
+    //
+    //     // Set the outline materials to the looked at color
+    //     foreach (var material in interactable.OutlineMaterials)
+    //         SetOutlineMaterial(material, false, true);
+    // }
+    //
+    // public void SetOutlineMaterial(Material material, bool isSelected, bool isOutlined)
+    // {
+    //     if (material == null)
+    //         return;
+    //
+    //     // // Set the material's color to the looked at material's color
+    //     // material.SetFloat(CachedIsSelectedProperty, isSelected ? 1 : 0);
+    //     //
+    //     // // Set the material's outline state
+    //     // material.SetInt(CachedIsOutlinedProperty, isOutlined ? 1 : 0);
+    // }
 
     #endregion
 

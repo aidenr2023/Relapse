@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 
-[RequireComponent(typeof(UniqueId))]
+[RequireComponent(typeof(UniqueId), typeof(InteractableMaterialManager))]
 public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoaderInfo
 {
     #region Serialized Fields
@@ -27,10 +27,12 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
     private Vector3 _originalGunScale;
 
     private bool _hasOriginalGun = true;
-
+    
     #endregion
 
     #region Getters
+
+    public InteractableMaterialManager InteractableMaterialManager { get; set; }
 
     public IGun EquippedGun { get; private set; }
 
@@ -261,6 +263,11 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
     public void LookAtUpdate(PlayerInteraction playerInteraction)
     {
         _isCurrentlyLookedAt = true;
+        
+        // If there is a gun equipped,
+        // Force the material manager to be selected
+        if (EquippedGun != null)
+            EquippedGun.InteractableMaterialManager.IsForceSelected = true;
     }
 
     public string InteractText(PlayerInteraction playerInteraction)

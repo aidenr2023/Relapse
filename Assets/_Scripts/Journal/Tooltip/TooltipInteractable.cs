@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 
+[RequireComponent(typeof(InteractableMaterialManager))]
 public class TooltipInteractable : MonoBehaviour, IInteractable
 {
     #region Serialized Fields
@@ -15,6 +16,8 @@ public class TooltipInteractable : MonoBehaviour, IInteractable
 
     #region Getters
 
+    public InteractableMaterialManager InteractableMaterialManager { get; set; }
+    
     public GameObject GameObject => gameObject;
 
     public bool IsInteractable => true;

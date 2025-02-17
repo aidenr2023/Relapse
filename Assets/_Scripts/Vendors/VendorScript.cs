@@ -6,6 +6,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 
 [ExecuteAlways]
+[RequireComponent(typeof(InteractableMaterialManager))]
 public class VendorScript : MonoBehaviour, IInteractable
 {
     private enum VendorInteractionMode
@@ -29,6 +30,8 @@ public class VendorScript : MonoBehaviour, IInteractable
 
     #region IInteractable
 
+    public InteractableMaterialManager InteractableMaterialManager { get; set; }
+    
     public GameObject GameObject => gameObject;
 
     public bool IsCurrentlySelected { get; set; }

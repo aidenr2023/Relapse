@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 
-[RequireComponent(typeof(UniqueId))]
+[RequireComponent(typeof(UniqueId), typeof(InteractableMaterialManager))]
 public class InventoryObjectChecker : MonoBehaviour, IInteractable, ILevelLoaderInfo
 {
     #region Serialized Fields
@@ -37,6 +37,8 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable, ILevelLoader
 
     #region Getters
 
+    public InteractableMaterialManager InteractableMaterialManager { get; set; }
+    
     public InventoryEntry[] RequiredItems => requiredItems;
 
     public GameObject GameObject => gameObject;

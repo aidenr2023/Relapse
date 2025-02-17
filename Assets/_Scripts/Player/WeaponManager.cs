@@ -422,8 +422,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
             // Equip the new gun
             gun = Instantiate(newGun).GetComponent<IGun>();
 
-            // Get the interactable materials of the gun
-            gun.GetOutlineMaterials(Player.PlayerInteraction.OutlineMaterial.shader);
+            // // Get the interactable materials of the gun
+            // gun.GetOutlineMaterials(Player.PlayerInteraction.OutlineMaterial.shader);
 
             // Equip the gun
             EquipGun(gun);

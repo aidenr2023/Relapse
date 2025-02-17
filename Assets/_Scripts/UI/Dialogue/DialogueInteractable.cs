@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
 
+[RequireComponent(typeof(InteractableMaterialManager))]
 public class DialogueInteractable : MonoBehaviour, IInteractable
 {
     #region Serialized Fields
@@ -17,6 +18,8 @@ public class DialogueInteractable : MonoBehaviour, IInteractable
 
     #region Getters
 
+    public InteractableMaterialManager InteractableMaterialManager { get; set; }
+    
     public GameObject GameObject => gameObject;
 
     public bool IsInteractable => true;

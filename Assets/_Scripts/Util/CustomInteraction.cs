@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(InteractableMaterialManager))]
 public class CustomInteraction : MonoBehaviour, IInteractable
 {
     #region Serialized Fields
@@ -16,6 +17,8 @@ public class CustomInteraction : MonoBehaviour, IInteractable
 
     #region Getters
 
+    public InteractableMaterialManager InteractableMaterialManager { get; set; }
+    
     public GameObject GameObject => gameObject;
     public bool IsInteractable => true;
 

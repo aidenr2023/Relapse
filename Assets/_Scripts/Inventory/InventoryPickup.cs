@@ -4,7 +4,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
 
-[RequireComponent(typeof(UniqueId))]
+[RequireComponent(typeof(UniqueId), typeof(InteractableMaterialManager))]
 public class InventoryPickup : MonoBehaviour, IInteractable, ILevelLoaderInfo
 {
     #region Serialized Fields
@@ -18,6 +18,8 @@ public class InventoryPickup : MonoBehaviour, IInteractable, ILevelLoaderInfo
     #endregion
 
     #region Getters
+
+    public InteractableMaterialManager InteractableMaterialManager { get; set; }
 
     public InventoryEntry InventoryEntry => inventoryEntry;
 

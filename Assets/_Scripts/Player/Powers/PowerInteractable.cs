@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(InteractableMaterialManager))]
 public class PowerInteractable : MonoBehaviour, IInteractable
 {
     #region Serialized Fields
@@ -21,6 +22,8 @@ public class PowerInteractable : MonoBehaviour, IInteractable
 
     #region Getters
 
+    public InteractableMaterialManager InteractableMaterialManager { get; set; }
+    
     public GameObject GameObject => gameObject;
 
     public bool IsInteractable => true;

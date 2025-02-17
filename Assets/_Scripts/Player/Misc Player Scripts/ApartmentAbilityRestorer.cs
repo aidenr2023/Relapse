@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(InteractableMaterialManager))]
 public class ApartmentAbilityRestorer : MonoBehaviour, IInteractable
 {
     #region Serialized Fields
@@ -26,6 +27,8 @@ public class ApartmentAbilityRestorer : MonoBehaviour, IInteractable
 
     #region Getters
 
+    public InteractableMaterialManager InteractableMaterialManager { get; set; }
+    
     public bool IsInteractable { get; private set; } = true;
 
     public GameObject GameObject => gameObject;

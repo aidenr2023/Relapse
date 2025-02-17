@@ -8,7 +8,7 @@ using UnityEngine.Serialization;
 using UnityEngine.VFX;
 using Random = UnityEngine.Random;
 
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(Rigidbody),  typeof(InteractableMaterialManager))]
 public class GenericGun : MonoBehaviour, IGun, IDebugged
 {
     private static readonly int ShootingAnimationID = Animator.StringToHash("Shooting");
@@ -85,6 +85,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     #region Getters
 
+    public InteractableMaterialManager InteractableMaterialManager { get; set; }
+    
     public GunInformation GunInformation => gunInformation;
 
     public GunModelType GunModelType => gunModelType;
@@ -185,8 +187,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Update the reload time if the gun is currently reloading
         UpdateReload();
 
-        // Update the outline
-        UpdateOutline(_weaponManager);
+        // // Update the outline
+        // UpdateOutline(_weaponManager);
     }
 
     private void UpdateReload()
@@ -510,8 +512,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Add to debug manager
         DebugManager.Instance.AddDebuggedObject(this);
 
-        // Get the interactable materials of the gun
-        this.GetOutlineMaterials(weaponManager.Player.PlayerInteraction.OutlineMaterial.shader);
+        // Stop showing the outline
+        InteractableMaterialManager.ShowOutline = false;
     }
 
     public void OnRemovalFromPlayer(WeaponManager weaponManager)
@@ -520,11 +522,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         DebugManager.Instance.RemoveDebuggedObject(this);
 
         // Clear the weapon manager
-        this._weaponManager = null;
-
-        // Add the outline to the weapon manager
-        foreach (var mat in OutlineMaterials)
-            weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, false, true);
+        _weaponManager = null;
+        
+        // Stop showing the outline
+        InteractableMaterialManager.ShowOutline = true;
     }
 
     protected static void PlayParticles(ParticleSystem system, Vector3 position, int count)
@@ -594,16 +595,6 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     public string InteractText(PlayerInteraction playerInteraction)
     {
         return $"Pick up {gunInformation.GunName}";
-    }
-
-    public void UpdateOutline(WeaponManager weaponManager)
-    {
-        if (_weaponManager == null)
-            return;
-
-        // Remove the outline from the previous weapon manager
-        foreach (var mat in OutlineMaterials)
-            _weaponManager.Player.PlayerInteraction.SetOutlineMaterial(mat, false, false);
     }
 
     public string GetDebugText()

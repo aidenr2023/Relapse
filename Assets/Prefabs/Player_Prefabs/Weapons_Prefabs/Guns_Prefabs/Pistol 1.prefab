@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 2605369641432191521}
   - component: {fileID: 6898910570332570751}
   - component: {fileID: 2917225923522862026}
+  - component: {fileID: 5703009590115349191}
   m_Layer: 8
   m_Name: Pistol 1
   m_TagString: Untagged
@@ -147,6 +148,19 @@ MonoBehaviour:
   onInteract:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &5703009590115349191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1676120636432712961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 068ce04631044bf9bcc1d7f44c7c5f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showOutline: 1
 --- !u!1001 &1133895146079915244
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -730,7 +744,7 @@ PrefabInstance:
     - target: {fileID: -9156295447175353106, guid: b160d5512de38844d9425add0872f548,
         type: 3}
       propertyPath: m_Materials.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -9156295447175353106, guid: b160d5512de38844d9425add0872f548,
         type: 3}
@@ -830,7 +844,7 @@ PrefabInstance:
     - target: {fileID: -3644467237300200172, guid: b160d5512de38844d9425add0872f548,
         type: 3}
       propertyPath: m_Materials.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -3644467237300200172, guid: b160d5512de38844d9425add0872f548,
         type: 3}
@@ -855,7 +869,7 @@ PrefabInstance:
     - target: {fileID: -3111029086884251759, guid: b160d5512de38844d9425add0872f548,
         type: 3}
       propertyPath: m_Materials.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -3111029086884251759, guid: b160d5512de38844d9425add0872f548,
         type: 3}
@@ -890,7 +904,7 @@ PrefabInstance:
     - target: {fileID: 4561304716834361031, guid: b160d5512de38844d9425add0872f548,
         type: 3}
       propertyPath: m_Materials.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4561304716834361031, guid: b160d5512de38844d9425add0872f548,
         type: 3}

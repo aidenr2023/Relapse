@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-[RequireComponent(typeof(UniqueId))]
+[RequireComponent(typeof(UniqueId), typeof(InteractableMaterialManager))]
 public class MemoryPickup : MonoBehaviour, IInteractable, ILevelLoaderInfo
 {
     #region Serialized Fields
@@ -21,6 +21,8 @@ public class MemoryPickup : MonoBehaviour, IInteractable, ILevelLoaderInfo
     #endregion
 
     #region Getters
+
+    public InteractableMaterialManager InteractableMaterialManager { get; set; }
 
     public GameObject GameObject => gameObject;
 

@@ -9,6 +9,8 @@ using UnityEngine.Events;
 /// </summary>
 public interface IInteractable : IInterfacedObject
 {
+    public InteractableMaterialManager InteractableMaterialManager { get; set; }
+    
     /// <summary>
     /// Can the player interact with the object right now?
     /// </summary>

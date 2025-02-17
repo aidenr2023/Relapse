@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-[RequireComponent(typeof(UniqueId))]
+[RequireComponent(typeof(UniqueId), typeof(InteractableMaterialManager))]
 public class VendorInteractable : MonoBehaviour, IInteractable, ILevelLoaderInfo
 {
     #region Serialized Fields
@@ -15,6 +15,8 @@ public class VendorInteractable : MonoBehaviour, IInteractable, ILevelLoaderInfo
 
     #region Getters
 
+    public InteractableMaterialManager InteractableMaterialManager { get; set; }
+    
     public GameObject GameObject => gameObject;
 
     public bool IsInteractable { get; set; } = true;

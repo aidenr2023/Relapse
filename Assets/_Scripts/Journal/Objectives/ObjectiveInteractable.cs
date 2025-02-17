@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(InteractableMaterialManager))]
 public class ObjectiveInteractable : MonoBehaviour, IInteractable
 {
     #region Serialized Fields
@@ -17,6 +18,8 @@ public class ObjectiveInteractable : MonoBehaviour, IInteractable
     #endregion
 
     #region Getters
+    
+    public InteractableMaterialManager InteractableMaterialManager { get; set; }
 
     public GameObject GameObject => gameObject;
 
