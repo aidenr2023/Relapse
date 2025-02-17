@@ -72,7 +72,7 @@ public class UILookAtCam : MonoBehaviour
         if (_mainCamera != null)
             return;
 
-        _mainCamera = CameraManager.Instance.MainCamera;
+        _mainCamera = CameraManager.Instance?.MainCamera;
 
         if (_mainCamera == null)
             _mainCamera = Camera.main;

@@ -1950,16 +1950,22 @@ MonoBehaviour:
   isCursorRequired: 1
   disablePlayerControls: 1
   pausesGame: 1
+  pausesGameMusic: 1
+  mufflesMusic: 0
   pauseMenuParent: {fileID: 334856214002750773}
   pauseMenuPanel: {fileID: 3611365686212271884}
   journalPanel: {fileID: 8687534565452270826}
   settingsPanel: {fileID: 7368113640531166161}
+  tutorialsPanel: {fileID: 0}
   normalColor: {r: 1, g: 1, b: 1, a: 1}
   hoverColor: {r: 0.77142864, g: 0.34285712, b: 1, a: 0.9019608}
   clickColor: {r: 0, g: 0.83137256, b: 0.08506719, a: 0.9019608}
   firstSelectedButton: {fileID: 1428959379440892220}
   settingsFirstSelected: {fileID: 3049023395320301304}
   journalFirstSelected: {fileID: 5157906829328139284}
+  tutorialsButtonParent: {fileID: 0}
+  tutorialButtonPrefab: {fileID: 0}
+  tutorialBack: {fileID: 0}
 --- !u!1 &345702180427059568
 GameObject:
   m_ObjectHideFlags: 0
@@ -10687,6 +10693,8 @@ MonoBehaviour:
   isCursorRequired: 1
   disablePlayerControls: 1
   pausesGame: 1
+  pausesGameMusic: 1
+  mufflesMusic: 0
   firstSelectedButton: {fileID: 8727203491671867173}
   backgroundImage: {fileID: 1119776154184219479}
   deathImage: {fileID: 21300000, guid: 5b9018c24b0d45e4b8829e8a56fd0506, type: 3}
@@ -27848,7 +27856,7 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4394611683194815673}
   m_Enabled: 1
-  m_Alpha: 1
+  m_Alpha: 0
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
@@ -56529,12 +56537,17 @@ MonoBehaviour:
   isCursorRequired: 1
   disablePlayerControls: 1
   pausesGame: 1
+  pausesGameMusic: 1
+  mufflesMusic: 0
   videoPlayer: {fileID: 8585155619892785079}
   titleText: {fileID: 5484742482570002265}
   subtitleText: {fileID: 201004763218317029}
   descriptionText: {fileID: 7441801433918302324}
   pageText: {fileID: 6242162687470239942}
-  debugTutorial: {fileID: 11400000, guid: 40ac18e7ad2988c4da8f8f4959532409, type: 2}
+  exitButton: {fileID: 0}
+  exitCanvasGroup: {fileID: 0}
+  nextButton: {fileID: 0}
+  prevButton: {fileID: 0}
   buttonsParent: {fileID: 0}
   shootButton: {fileID: 2787565150006814531}
   reloadButton: {fileID: 6879135384078400087}
@@ -58273,6 +58286,8 @@ MonoBehaviour:
   isCursorRequired: 1
   disablePlayerControls: 1
   pausesGame: 1
+  pausesGameMusic: 1
+  mufflesMusic: 0
   medButtons:
   - {fileID: 6852667887764531499}
   - {fileID: 8614985119889177763}
@@ -58289,13 +58304,17 @@ MonoBehaviour:
   cooldownText: {fileID: 8340508540953175814}
   descriptionText: {fileID: 8276461090102280836}
   biggerPowerImage: {fileID: 1740806580922931495}
+  upgradeInfoText: {fileID: 0}
+  upgradeMoneyText: {fileID: 0}
   dialogueUI: {fileID: 9205465006221189032}
   initialMenu: {fileID: 1090673224385867464}
   powerMenu: {fileID: 4857094234687402358}
+  upgradeMenu: {fileID: 0}
   gossipMenu: {fileID: 6835424508514428348}
   firstSelectedButton: {fileID: 9106090203530485542}
   shopSelectedButton: {fileID: 3693519758179446908}
   gossipSelectedButton: {fileID: 7309336908387776525}
+  upgradeSelectedButton: {fileID: 0}
 --- !u!114 &7767912678747333605
 MonoBehaviour:
   m_ObjectHideFlags: 0
