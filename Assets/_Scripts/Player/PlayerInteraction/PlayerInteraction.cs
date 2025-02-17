@@ -18,7 +18,6 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
     [SerializeField] [Min(0)] private float interactDistance = 5;
 
     [SerializeField] private Material outlineMaterial;
-    [SerializeField] [Min(0)] private float outlineScale = 1.1f;
 
     #endregion
 
@@ -45,8 +44,6 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
     public IInteractable SelectedInteractable => _selectedInteractable;
 
     public Material OutlineMaterial => outlineMaterial;
-
-    public float OutlineScale => outlineScale;
 
     public RaycastHit InteractionHitInfo => _interactionHitInfo;
 
