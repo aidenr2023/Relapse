@@ -56,9 +56,10 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     [SerializeField, Min(0)] private float staminaRegenRate = 20f;
     [SerializeField, Min(0)] private float sprintStaminaDrainRate = 10f;
     [SerializeField, Min(0)] private float staminaRegenDelay = .5f;
-    [SerializeField, Min(0)] private float staminaEnemyDetectionDistance = 20;
-    
+
     [SerializeField, Range(0, 1)] private float relapseSpeedMult = .25f;
+
+    [SerializeField, Range(0, 1)] private float enemyNearbySpeedMult = 1;
 
     #endregion
 
@@ -120,7 +121,10 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public bool IsSprinting => (_isSprinting || IsSprintToggled) && MovementInput.magnitude > 0.25f;
 
-    public float MovementSpeed => maxSpeed * (ParentComponent.PlayerInfo.IsRelapsing ? relapseSpeedMult : 1);
+    public float MovementSpeed =>
+        maxSpeed *
+        (ParentComponent.PlayerInfo.IsRelapsing ? relapseSpeedMult : 1) *
+        (ParentComponent.AreEnemiesNearby ? enemyNearbySpeedMult : 1);
 
     public float HardSpeedLimit => hardSpeedLimit;
 
@@ -156,9 +160,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public float MidAirTime => _midAirTime;
 
-    private bool CurrentlyUsesStamina =>
-        staminaDrains &&
-        Enemy.Enemies.Any(n => Vector3.Distance(n.transform.position, transform.position) < staminaEnemyDetectionDistance);
+    private bool CurrentlyUsesStamina => staminaDrains && ParentComponent.AreEnemiesNearby;
 
     #endregion
 
@@ -852,7 +854,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             _currentStamina = maxStamina;
             return;
         }
-        
+
         if (amount < 0 && !CurrentlyUsesStamina)
             amount = 0;
 

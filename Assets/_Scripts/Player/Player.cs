@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,7 +12,15 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
 {
     public static Player Instance { get; private set; }
 
+    #region Serialized Fields
+
+    [SerializeField, Min(0)] private float enemyDetectionDistance = 20;
+
+    #endregion
+
     #region Getters
+
+    #region Components
 
     public Rigidbody Rigidbody { get; private set; }
 
@@ -40,7 +49,13 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
     public PlayerTutorialManager PlayerTutorialManager { get; private set; }
 
     public GameObject OriginalSceneObject { get; private set; }
-        
+
+    #endregion
+
+    public float EnemyDetectionDistance => enemyDetectionDistance;
+
+    public bool AreEnemiesNearby { get; private set; }
+
     #endregion
 
     #region Initialization Functions
@@ -49,24 +64,23 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
     {
         // Initialize the components
         InitializeComponents();
-        
+
         // If there is already an instance, Log an error!
         if (Instance != null)
         {
             Debug.LogError("There is already an instance of the Player class!");
-            
+
             // Destroy this object
             Destroy(gameObject);
-            
+
             return;
         }
-        
+
         // Set the instance to this
         Instance = this;
-        
+
         // Set the original scene
         OriginalSceneObject = new GameObject("OriginalSceneObject");
-
     }
 
     private void OnDestroy()
@@ -89,7 +103,7 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
 
         // Get the PlayerLook component
         PlayerLook = GetComponent<PlayerLook>();
-        
+
         // Get the PlayerEnemySelect component
         PlayerEnemySelect = GetComponent<PlayerEnemySelect>();
 
@@ -116,6 +130,12 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
     }
 
     #endregion
+
+    private void Update()
+    {
+        AreEnemiesNearby = Enemy.Enemies.Any(enemy =>
+            Vector3.Distance(transform.position, enemy.transform.position) <= enemyDetectionDistance);
+    }
 
     public void ResetPlayer()
     {
