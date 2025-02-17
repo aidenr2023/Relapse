@@ -47940,7 +47940,7 @@ MonoBehaviour:
   interactText: {fileID: 8699571440939110359}
   hoverOverOpacity: 0.75
   opacityLerpAmount: 0.15
-  positionLerpAmount: 0.1
+  positionLerpAmount: 0.3
   offset: {x: 0, y: 0.25, z: -0.7}
   floatingBobAmount: 0.025
   floatingBobFrequency: 1
@@ -57701,6 +57701,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7108683120651174666}
   - component: {fileID: 2023779953950457201}
+  - component: {fileID: 3995633852797608002}
   m_Layer: 0
   m_Name: Game UI
   m_TagString: Untagged
@@ -57743,6 +57744,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6772063c45984b849b08a604e20e21d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3995633852797608002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8884686855320833934}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5099a84e26384b5cb32f4a9e286326d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: 924af0cc88dad9d41a4da7d3e377c214, type: 2}
 --- !u!1 &8890183546392816376
 GameObject:
   m_ObjectHideFlags: 0

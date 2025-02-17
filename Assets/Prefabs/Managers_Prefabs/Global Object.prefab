@@ -1,5 +1,50 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &256746535636466656
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7394385129330340248}
+  - component: {fileID: 2477393866473111487}
+  m_Layer: 0
+  m_Name: Interactable Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &7394385129330340248
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 256746535636466656}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 9096709999290135187}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2477393866473111487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 256746535636466656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5099a84e26384b5cb32f4a9e286326d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMaterial: {fileID: 2100000, guid: 924af0cc88dad9d41a4da7d3e377c214, type: 2}
 --- !u!1 &776815584557299028
 GameObject:
   m_ObjectHideFlags: 0
@@ -1444,6 +1489,7 @@ Transform:
   - {fileID: 1722729889453286236}
   - {fileID: 3542608064269737025}
   - {fileID: 3146892125379584874}
+  - {fileID: 7394385129330340248}
   m_Father: {fileID: 6751824976234669261}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5203047533488425427
@@ -1523,6 +1569,14 @@ MonoBehaviour:
     type: 2}
   levelInfo1:
   - {fileID: 11400000, guid: ffb3ea285254c7e438d0d21bcafb645d, type: 2}
+  levelInfo2: []
+  levelInfo3: []
+  levelInfo4: []
+  levelInfo5: []
+  levelInfo6: []
+  levelInfo7: []
+  levelInfo8: []
+  levelInfo9: []
 --- !u!1 &7666583957015521617
 GameObject:
   m_ObjectHideFlags: 0

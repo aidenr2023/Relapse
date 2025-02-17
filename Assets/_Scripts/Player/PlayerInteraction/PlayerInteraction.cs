@@ -7,15 +7,11 @@ using UnityEngine.InputSystem;
 
 public class PlayerInteraction : MonoBehaviour, IUsesInput
 {
-
-
     #region Serialized Fields
 
     // [SerializeField] private Camera cam;
 
     [SerializeField] [Min(0)] private float interactDistance = 5;
-
-    [SerializeField] private Material outlineMaterial;
 
     #endregion
 
@@ -40,8 +36,6 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
     public Player Player { get; private set; }
 
     public IInteractable SelectedInteractable => _selectedInteractable;
-
-    public Material OutlineMaterial => outlineMaterial;
 
     public RaycastHit InteractionHitInfo => _interactionHitInfo;
 

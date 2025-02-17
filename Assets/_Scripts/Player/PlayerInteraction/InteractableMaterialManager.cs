@@ -45,12 +45,12 @@ public class InteractableMaterialManager : MonoBehaviour
     private void Start()
     {
         // Set up the interactable materials
-        SetUpInteractableMaterials(Player.Instance.PlayerInteraction);
+        SetUpInteractableMaterials();
     }
 
     private void Update()
     {
-        var playerInteraction = Player.Instance.PlayerInteraction;
+        var playerInteraction = Player.Instance?.PlayerInteraction;
 
         // Return if the player interaction instance is null
         if (playerInteraction == null)
@@ -71,13 +71,9 @@ public class InteractableMaterialManager : MonoBehaviour
         IsForceSelected = false;
     }
 
-    private void SetUpInteractableMaterials(PlayerInteraction playerInteraction)
+    private void SetUpInteractableMaterials()
     {
-        // Return if the player interaction is null
-        if (playerInteraction == null)
-            return;
-
-        var outlineMaterial = playerInteraction.OutlineMaterial;
+        var outlineMaterial = InteractableManager.Instance.OutlineMaterial;
 
         // Return if player interaction's outline material is null
         if (outlineMaterial == null)
