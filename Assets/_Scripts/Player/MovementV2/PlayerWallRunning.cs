@@ -980,6 +980,10 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         // Set the y velocity to 0
         ParentComponent.Rigidbody.velocity =
             new Vector3(ParentComponent.Rigidbody.velocity.x, 0, ParentComponent.Rigidbody.velocity.z);
+        
+        // Close the distance between the player and the wall
+        const float stickDistance = .25f;
+        ParentComponent.Rigidbody.MovePosition(ParentComponent.transform.position + _currentRay.direction * stickDistance);
     }
 
     private void TransferVelocityOnWallClimbStart(PlayerWallRunning obj)
