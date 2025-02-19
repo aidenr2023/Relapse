@@ -77,7 +77,7 @@ public class CutsceneSubscriber : MonoBehaviour
     /// </summary>
     public void EnableMovement()
     {
-        playerMovementV2.enabled = false;
+        playerMovementV2.enabled = true;
         playerMovement.enabled = true;
         //reset the player's velocity
         playerRigidbody.isKinematic = false;

@@ -117,6 +117,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     {
         // Unregister this script with the input manager
         InputManager.Instance.Unregister(this);
+        
+        _movementInput = Vector2.zero;
     }
 
     private void OnDestroy()
