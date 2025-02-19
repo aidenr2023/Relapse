@@ -40,13 +40,18 @@ public class CutsceneSubscriber : MonoBehaviour
     /// </summary>
     public void DisableMovement()
     {
+       // playerRigidbody.velocity = Vector3.zero;
+        
         playerMovement.enabled = false;
         
         
         playerMovementV2.enabled = false;
         
+        
         //turn off ridigbody physics
-        playerRigidbody.isKinematic = true;
+        
+       // playerRigidbody.isKinematic = true;
+        
         
         //set the player to Kinematic to prevent physics from moving the player
         //playerRigidbody.isKinematic = true;
@@ -61,7 +66,8 @@ public class CutsceneSubscriber : MonoBehaviour
         playerMovementV2.enabled = true;
         playerMovement.enabled = true;
         //reset the player's velocity
-        playerRigidbody.isKinematic = false;        
+        
+      //  playerRigidbody.isKinematic = false;        
     }
     
     /// <summary>

@@ -19,4 +19,12 @@ public class CutsceneTrigger : MonoBehaviour
             cutsceneManager.PlayCutsceneByName(cutsceneName);
         }
     }
+    // //on trigger exit destroy the cutscene and gameobject trigger
+    // private void OnTriggerExit(Collider other)
+    // {
+    //     if (other.CompareTag("Player"))
+    //     {
+    //         Destroy(gameObject);
+    //     }
+    // }
 }
