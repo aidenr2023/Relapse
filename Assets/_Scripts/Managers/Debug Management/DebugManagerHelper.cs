@@ -28,14 +28,13 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
     [SerializeField] private LevelSectionSceneInfo[] levelInfo2;
     [SerializeField] private LevelSectionSceneInfo[] levelInfo3;
-
     [SerializeField] private LevelSectionSceneInfo[] levelInfo4;
     [SerializeField] private LevelSectionSceneInfo[] levelInfo5;
     [SerializeField] private LevelSectionSceneInfo[] levelInfo6;
-
     [SerializeField] private LevelSectionSceneInfo[] levelInfo7;
     [SerializeField] private LevelSectionSceneInfo[] levelInfo8;
     [SerializeField] private LevelSectionSceneInfo[] levelInfo9;
+    [SerializeField] private LevelSectionSceneInfo[] levelInfo10;
 
     #endregion
 
@@ -186,6 +185,8 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
             DebugLoadScene(levelInfo8);
         if (Input.GetKeyDown(KeyCode.Keypad9))
             DebugLoadScene(levelInfo9);
+        if (Input.GetKeyDown(KeyCode.Keypad0))
+            DebugLoadScene(levelInfo10);
     }
 
     private void DebugLoadScene(LevelSectionSceneInfo[] levelInfo)
@@ -193,11 +194,14 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         // If the array is empty or null, return
         if (levelInfo == null || levelInfo.Length == 0)
             return;
-        
+
         // If there is no player, return
         if (Player.Instance == null)
             return;
         
+        // Move the player back to their original scene
+        Player.Instance.transform.parent = Player.Instance.OriginalSceneObject.transform;
+
         // Find the scene the player is in
         var playerSceneField = (SceneField)Player.Instance.gameObject.scene.name;
 
@@ -224,6 +228,9 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
         // Load the scene
         AsyncSceneManager.Instance.DebugLoadSceneSynchronous(sceneLoaderInformation);
+        
+        // Set the parent of the player back to null
+        Player.Instance.transform.parent = null;
     }
 
     private void FindBadInteractableMaterials()

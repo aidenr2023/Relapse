@@ -34,11 +34,11 @@ public class AsyncSceneManager : IDebugged
 
     #region Getters
 
-    public IReadOnlyList<string> GetManagedScenes() => 
+    public IReadOnlyList<string> GetManagedScenes() =>
         _asyncSceneRecords
-        .Where(n => n.Value.State == AsyncSceneState.Loaded)
-        .Select(n => n.Key)
-        .ToArray();
+            .Where(n => n.Value.State == AsyncSceneState.Loaded)
+            .Select(n => n.Key)
+            .ToArray();
 
     #endregion
 
@@ -65,7 +65,11 @@ public class AsyncSceneManager : IDebugged
 
         // Try to get the level information for the loaded scene
         if (!LevelInformation.GetLevelInformation(scene.name, out var levelInfo))
+        {
+            // Log an error if the level information is not found
+            Debug.LogError($"Level Information for {scene.name} not found!");
             return;
+        }
 
         Debug.Log($"Loaded Level: {levelInfo.name}");
         Debug.Log($"Starting Checkpoint: {levelInfo.StartingCheckpoint.name}");
