@@ -8,7 +8,10 @@ using Cinemachine;
 /// </summary>
 public class CutsceneCamSwitcher : MonoBehaviour
 {
-    [SerializeField] private Animator _animator;
+    //[SerializeField] private Animator _animator;
+    
+    [SerializeField]private CinemachineVirtualCamera _virtualCameraPlayer;
+    [SerializeField]private CinemachineVirtualCamera _virtualCameraCutscene;
     
     // Reference to the CutsceneHandler to subscribe to its events.
     public CutsceneHandler cutsceneHandler;
@@ -56,16 +59,29 @@ public class CutsceneCamSwitcher : MonoBehaviour
         switch (newState)
         {
             case CameraState.MainCamera:
-                _animator.Play("PlayerCam");
+                //log main camera
+                Debug.Log("Main Camera");
+                _virtualCameraPlayer.Priority = 10;
+                //cutscene camera is no longer active
+                _virtualCameraCutscene.Priority = 0;
                 break;
             case CameraState.CutsceneCamera:
-                _animator.Play("CutsceneCam");
+                //log cutscene camera
+                Debug.Log("Cutscene Camera");
+                _virtualCameraCutscene.Priority = 10;
+                //player camera is no longer active
+                _virtualCameraPlayer.Priority = 0;
+                //_animator.Play("CutsceneCam");
                 break;
             case CameraState.CreditsCamera:
-                _animator.Play("CreditsCam");
+                //log credits camera
+                Debug.Log("Credits Camera");
+                //_animator.Play("CreditsCam");
                 break;
             case CameraState.MainMenuCamera:
-                _animator.Play("MainMenuCam");
+                //log main menu camera
+                Debug.Log("Main Menu Camera");
+                //_animator.Play("MainMenuCam");
                 break;
         }
 
