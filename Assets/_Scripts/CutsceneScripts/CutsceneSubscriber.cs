@@ -84,7 +84,7 @@ public class CutsceneSubscriber : MonoBehaviour
         playerMovementV2.EnablePlayerControls();
         playerRigidbody.velocity = Vector3.zero;
 
-        weaponManager.enabled = false;
+        weaponManager.enabled = true;
 
         playerCameraMovement.enabled = true;
         //clear the player's input buffer
