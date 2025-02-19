@@ -72,8 +72,25 @@ public class AsyncSceneManager : IDebugged
         }
 
         Debug.Log($"Loaded Level: {levelInfo.name}");
-        Debug.Log($"Starting Checkpoint: {levelInfo.StartingCheckpoint.name}");
-        LevelCheckpointManager.Instance.ResetToCheckpoint(levelInfo.StartingCheckpoint);
+
+        if (levelInfo.StartingCheckpoint != null)
+        {
+            Debug.Log($"Starting Checkpoint: {levelInfo.StartingCheckpoint.name}");
+            LevelCheckpointManager.Instance.ResetToCheckpoint(levelInfo.StartingCheckpoint);
+        }
+        else
+        {
+            // Kill the player's velocity
+            Player.Instance.Rigidbody.velocity = Vector3.zero;
+
+            // Move the player to the level information's position
+            Player.Instance.Rigidbody.position = levelInfo.transform.position;
+
+            // Rotate the player to the level information's rotation
+            Player.Instance.PlayerLook.ApplyRotation(levelInfo.transform.rotation);
+            
+            Debug.Log($"Moving player to {levelInfo.name} ({levelInfo.transform.position})");
+        }
     }
 
     private void LoadDataFromDiskOnSceneLoaded(Scene scene, LoadSceneMode _)
