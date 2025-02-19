@@ -872,4 +872,16 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         _currentStamina = cStamina;
         maxStamina = mStamina;
     }
+
+    public void DisablePlayerControls()
+    {
+        InputManager.Instance.IsExternallyDisabled = true;
+        Debug.Log("Player Controls Disabled");
+    }
+    
+    public void EnablePlayerControls()
+    {
+        InputManager.Instance.IsExternallyDisabled = false;
+        Debug.Log("Player Controls Enabled");
+    }
 }

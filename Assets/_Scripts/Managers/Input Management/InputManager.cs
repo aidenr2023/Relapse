@@ -42,9 +42,11 @@ public class InputManager
 
     public bool IsCursorActive => MenuManager.Instance.IsCursorActiveInMenus && CurrentControlScheme == ControlSchemeType.Keyboard;
 
-    public bool IsControlsDisabled => MenuManager.Instance.IsControlsDisabledInMenus;
+    public bool IsControlsDisabled => MenuManager.Instance.IsControlsDisabledInMenus || IsExternallyDisabled;
 
     public ControlSchemeType CurrentControlScheme => _currentControlScheme;
+    
+    public bool IsExternallyDisabled { get; set; }
 
     #endregion
 
