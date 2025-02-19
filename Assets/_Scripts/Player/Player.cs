@@ -16,6 +16,8 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
 
     [SerializeField, Min(0)] private float enemyDetectionDistance = 20;
 
+    [SerializeField, Min(0)] private float levelCheckpointDamage = 10;
+        
     #endregion
 
     #region Getters
@@ -55,6 +57,8 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
     public float EnemyDetectionDistance => enemyDetectionDistance;
 
     public bool AreEnemiesNearby { get; private set; }
+    
+    public float LevelCheckpointDamage => levelCheckpointDamage;
 
     #endregion
 

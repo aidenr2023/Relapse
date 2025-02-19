@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LevelCheckpointReset : MonoBehaviour
+public class LevelCheckpointReset : MonoBehaviour, IDamager
 {
+    [SerializeField] private bool damagePlayer = true;
+
     #region Private Fields
 
     private readonly Dictionary<Player, Collider> _playersInCollider = new();
 
     #endregion
+
+    public GameObject GameObject => gameObject;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -27,6 +31,15 @@ public class LevelCheckpointReset : MonoBehaviour
 
         // Reset the player to the checkpoint
         LevelCheckpointManager.Instance.ResetToCheckpoint(LevelCheckpointManager.Instance.CurrentCheckpoint);
+
+        // Damage the player if the damagePlayer field is true
+        if (damagePlayer)
+        {
+            player.PlayerInfo.ChangeHealth(
+                -player.LevelCheckpointDamage,
+                null, this,
+                player.GameObject.transform.position);
+        }
     }
 
     private void OnTriggerExit(Collider other)
