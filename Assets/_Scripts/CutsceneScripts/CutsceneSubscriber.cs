@@ -7,11 +7,20 @@ public class CutsceneSubscriber : MonoBehaviour
 {
     public CutsceneHandler cutsceneHandler;
     public BasicPlayerMovement playerMovement;
+    [SerializeField] PlayerMovementV2 playerMovementV2;
+    private Rigidbody playerRigidbody;
+    private PlayerActions playerActions;
     // Reference to the player's UI.
     public GameObject playerUI;
 
     private void Start()
     {
+        // Get the player's Rigidbody component.
+        playerRigidbody = GetComponent<Rigidbody>();
+        
+        // Get the player's PlayerActions component.
+        //playerActions = GetComponent<PlayerActions>();
+        
         // Subscribe to cutscene start/end events.
         if (cutsceneHandler != null)
         {
@@ -32,6 +41,16 @@ public class CutsceneSubscriber : MonoBehaviour
     public void DisableMovement()
     {
         playerMovement.enabled = false;
+        
+        
+        playerMovementV2.enabled = false;
+        
+        //turn off ridigbody physics
+        playerRigidbody.isKinematic = true;
+        
+        //set the player to Kinematic to prevent physics from moving the player
+        //playerRigidbody.isKinematic = true;
+        //playerRigidbody.velocity = Vector3.zero;
     }
 
     /// <summary>
@@ -39,7 +58,10 @@ public class CutsceneSubscriber : MonoBehaviour
     /// </summary>
     public void EnableMovement()
     {
+        playerMovementV2.enabled = true;
         playerMovement.enabled = true;
+        //reset the player's velocity
+        playerRigidbody.isKinematic = false;        
     }
     
     /// <summary>
