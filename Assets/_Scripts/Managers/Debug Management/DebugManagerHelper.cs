@@ -183,26 +183,30 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         if (Input.GetKeyDown(KeyCode.Z))
             FindBadInteractableMaterials();
 
-        if (Input.GetKeyDown(KeyCode.Keypad1))
-            DebugLoadScene(levelInfo1);
-        if (Input.GetKeyDown(KeyCode.Keypad2))
-            DebugLoadScene(levelInfo2);
-        if (Input.GetKeyDown(KeyCode.Keypad3))
-            DebugLoadScene(levelInfo3);
-        if (Input.GetKeyDown(KeyCode.Keypad4))
-            DebugLoadScene(levelInfo4);
-        if (Input.GetKeyDown(KeyCode.Keypad5))
-            DebugLoadScene(levelInfo5);
-        if (Input.GetKeyDown(KeyCode.Keypad6))
-            DebugLoadScene(levelInfo6);
-        if (Input.GetKeyDown(KeyCode.Keypad7))
-            DebugLoadScene(levelInfo7);
-        if (Input.GetKeyDown(KeyCode.Keypad8))
-            DebugLoadScene(levelInfo8);
-        if (Input.GetKeyDown(KeyCode.Keypad9))
-            DebugLoadScene(levelInfo9);
-        if (Input.GetKeyDown(KeyCode.Keypad0))
-            DebugLoadScene(levelInfo10);
+        if (DebugManager.Instance.IsDebugMode)
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+                DebugLoadScene(levelInfo1);
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+                DebugLoadScene(levelInfo2);
+            if (Input.GetKeyDown(KeyCode.Alpha3))
+                DebugLoadScene(levelInfo3);
+            if (Input.GetKeyDown(KeyCode.Alpha4))
+                DebugLoadScene(levelInfo4);
+            if (Input.GetKeyDown(KeyCode.Alpha5))
+                DebugLoadScene(levelInfo5);
+            if (Input.GetKeyDown(KeyCode.Alpha6))
+                DebugLoadScene(levelInfo6);
+            if (Input.GetKeyDown(KeyCode.Alpha7))
+                DebugLoadScene(levelInfo7);
+            if (Input.GetKeyDown(KeyCode.Alpha8))
+                DebugLoadScene(levelInfo8);
+            if (Input.GetKeyDown(KeyCode.Alpha9))
+                DebugLoadScene(levelInfo9);
+            if (Input.GetKeyDown(KeyCode.Alpha0))
+                DebugLoadScene(levelInfo10);
+        }
+
     }
 
     private void DebugLoadScene(LevelSectionSceneInfo[] levelInfo)
