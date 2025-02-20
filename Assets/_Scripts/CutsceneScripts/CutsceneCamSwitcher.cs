@@ -12,6 +12,7 @@ public class CutsceneCamSwitcher : MonoBehaviour
     
     [SerializeField]private CinemachineVirtualCamera _virtualCameraPlayer;
     [SerializeField]private CinemachineVirtualCamera _virtualCameraCutscene;
+    [SerializeField]private CutsceneTrigger[] _cutsceneTrigger;
     
     // Reference to the CutsceneHandler to subscribe to its events.
     public CutsceneHandler cutsceneHandler;
@@ -93,7 +94,21 @@ public class CutsceneCamSwitcher : MonoBehaviour
     /// </summary>
     public void SwitchToCutsceneCamera()
     {
-        SetCameraState(CameraState.CutsceneCamera);
+        bool camChangeNeeded = false;
+        // Iterate over all cutscene triggers.
+        foreach (CutsceneTrigger trigger in _cutsceneTrigger)
+        {
+            if (trigger.IsCamChangeNeeded)
+            {
+                camChangeNeeded = true;
+                break;
+            }
+        }
+
+        if (camChangeNeeded)
+        {
+            SetCameraState(CameraState.CutsceneCamera);
+        }
     }
         
     /// <summary>

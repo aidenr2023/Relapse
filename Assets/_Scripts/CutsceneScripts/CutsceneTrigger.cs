@@ -11,8 +11,13 @@ public class CutsceneTrigger : MonoBehaviour
     // Name of the cutscene to trigger (must match a mapping in the CutsceneManager).
     public string cutsceneName;
 
+    [SerializeField] private bool isCamChangeNeeded = true;
+    public bool IsCamChangeNeeded => isCamChangeNeeded;
+
     //bool to check if the cutscene has been played
     private bool cutscenePlayed = false;
+    //bool for camera switch
+    public bool WantsCameraSwitch = false;
 
     //if the player enters the trigger, play the cutscene
     private void OnTriggerEnter(Collider other)
