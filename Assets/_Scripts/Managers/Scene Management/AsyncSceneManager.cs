@@ -88,7 +88,7 @@ public class AsyncSceneManager : IDebugged
 
             // Rotate the player to the level information's rotation
             Player.Instance.PlayerLook.ApplyRotation(levelInfo.transform.rotation);
-            
+
             Debug.Log($"Moving player to {levelInfo.name} ({levelInfo.transform.position})");
         }
     }
@@ -269,17 +269,36 @@ public class AsyncSceneManager : IDebugged
 
     public void LoadSceneAsync(LevelSectionSceneInfo levelSectionSceneInfo, bool loadInfoFromMemory = false)
     {
+        AsyncOperation sectionSceneOp = null;
+        AsyncOperation sectionPersistentDataOp = null;
+
         // Load the section scene
         if (levelSectionSceneInfo.SectionScene != null &&
             levelSectionSceneInfo.SectionScene.SceneName != ""
            )
-            LoadSceneAsync(levelSectionSceneInfo.SectionScene, loadInfoFromMemory);
+            sectionSceneOp = LoadSceneAsync(levelSectionSceneInfo.SectionScene, loadInfoFromMemory);
 
         // Load the section persistent data
         if (levelSectionSceneInfo.SectionPersistentData != null &&
             levelSectionSceneInfo.SectionPersistentData.SceneName != ""
            )
-            LoadSceneAsync(levelSectionSceneInfo.SectionPersistentData, loadInfoFromMemory);
+            sectionPersistentDataOp = LoadSceneAsync(levelSectionSceneInfo.SectionPersistentData, loadInfoFromMemory);
+
+
+        if (sectionSceneOp == null)
+            return;
+
+        // When the section scene is done loading, set the active scene
+        sectionSceneOp.completed += operation =>
+        {
+            if (!levelSectionSceneInfo.SetActiveSceneToSectionScene)
+                return;
+
+            var activeScene = SceneManager.GetSceneByName(levelSectionSceneInfo.SectionScene);
+
+            if (activeScene.IsValid())
+                SceneManager.SetActiveScene(activeScene);
+        };
     }
 
     private void LoadSceneSynchronous(SceneField scene)
@@ -788,6 +807,27 @@ public class AsyncSceneManager : IDebugged
         foreach (var operation in loadOperations)
             operation.allowSceneActivation = true;
 
+        // Find the first active scene in the scenes to load
+        foreach (var sceneInfo in loaderInformation.SectionsToLoad)
+        {
+            // Continue if not setting the active scene
+            if (!sceneInfo.SetActiveSceneToSectionScene)
+                continue;
+
+            // Find the actual scene
+            var activeScene = SceneManager.GetSceneByName(sceneInfo.SectionScene);
+
+            // If the scene is not valid, continue
+            if (!activeScene.IsValid())
+                continue;
+
+            Debug.Log($"Setting active scene to {activeScene.name}");
+
+            // Set the active scene
+            SceneManager.SetActiveScene(activeScene);
+            break;
+        }
+
         // Unload all the currently loaded scenes asynchronously,
         // but don't remove them from the hierarchy yet
         foreach (var section in loaderInformation.SectionsToUnload)
@@ -812,6 +852,34 @@ public class AsyncSceneManager : IDebugged
         // Load all the scenes to load synchronously
         foreach (var scene in loaderInformation.SectionsToLoad)
             LoadSceneSynchronous(scene);
+
+        // Start the coroutine to set the active scene
+        DebugManagerHelper.Instance.StartCoroutine(DebugLoadActiveScene(loaderInformation));
+    }
+
+    private static IEnumerator DebugLoadActiveScene(SceneLoaderInformation loaderInformation)
+    {
+        // Wait 1 frame
+        yield return null;
+
+        // Set the active scene
+        foreach (var scene in loaderInformation.SectionsToLoad)
+        {
+            // Continue if not setting the active scene
+            if (!scene.SetActiveSceneToSectionScene)
+                continue;
+
+            var activeScene = SceneManager.GetSceneByName(scene.SectionScene);
+
+            // If the scene is not valid, continue
+            if (!activeScene.IsValid())
+                continue;
+
+            // Set the active scene
+            SceneManager.SetActiveScene(activeScene);
+
+            break;
+        }
     }
 
     #endregion

@@ -10,6 +10,8 @@ using UnityEngine.InputSystem;
 
 public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 {
+    public static DebugManagerHelper Instance { get; private set; }
+    
     #region Serialized Fields
 
     [Tooltip("A Canvas object to display debug text")] [SerializeField]
@@ -59,6 +61,16 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
     private void Awake()
     {
+        // If the instance is not null and not this, destroy this
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
+        // Set the instance
+        Instance = this;
+        
         // Initialize the input
         InitializeInput();
 
@@ -68,6 +80,10 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
     private void OnDestroy()
     {
+        // If the instance is this, set the instance to null
+        if (Instance == this)
+            Instance = null;
+        
         // Remove this from the debug manager
         DebugManager.Instance.RemoveDebuggedObject(this);
     }
