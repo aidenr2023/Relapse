@@ -45,11 +45,18 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
 
     protected abstract void CustomDestroy();
 
-    protected void SpawnEnemy(Enemy enemyPrefab, Vector3 spawnPosition, Quaternion spawnRotation)
+    protected Enemy SpawnEnemy(Enemy enemyPrefab, Vector3 spawnPosition, Quaternion spawnRotation)
     {
         // Instantiate the enemy prefab at the spawn position and rotation
-        var enemy = Instantiate(enemyPrefab, spawnPosition, spawnRotation);
+        var enemy = Instantiate(enemyPrefab, transform);
 
+        // Set the transform's parent to null
+        enemy.transform.SetParent(null);
+        
+        // Set the position and rotation of the enemy to the spawn position and rotation
+        enemy.transform.position = spawnPosition;
+        enemy.transform.rotation = spawnRotation;
+        
         // Set the instantiated at runtime flag to true to avoid data for
         // this enemy being saved / loaded
         enemy.UniqueId.InstantiatedAtRuntime = true;
@@ -62,6 +69,8 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
         
         // Call the custom spawn enemy method
         CustomSpawnEnemy(enemy, spawnPosition, spawnRotation);
+
+        return enemy;
     }
 
     protected abstract void CustomSpawnEnemy(Enemy actualEnemy, Vector3 spawnPosition, Quaternion spawnRotation);

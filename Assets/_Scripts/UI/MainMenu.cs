@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -124,6 +126,18 @@ public class MainMenu : GameMenu
         
         // Deactivate the main menu
         Deactivate();
+        
+        // Set the loaded scene as the active scene
+        StartCoroutine(SetActiveScene(sceneName));
+    }
+
+    private static IEnumerator SetActiveScene(string sceneName)
+    {
+        // Wait 1 frame
+        yield return null;
+        
+        // Set the active scene
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
     }
 
     public void ActiveSettingsMenu()

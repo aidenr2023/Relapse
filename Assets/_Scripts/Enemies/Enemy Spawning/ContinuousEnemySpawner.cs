@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ContinuousEnemySpawner : EnemySpawner
 {
@@ -67,6 +68,10 @@ public class ContinuousEnemySpawner : EnemySpawner
 
         // Return if there are no spawn points or enemy prefabs
         if (spawnPoints.Length == 0 || enemyPrefabs.Length == 0)
+            return;
+        
+        // Return if the current scene is not loaded
+        if (!gameObject.scene.isLoaded)
             return;
 
         // Spawn an enemy at a random spawn point
