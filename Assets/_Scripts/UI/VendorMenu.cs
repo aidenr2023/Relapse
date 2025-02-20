@@ -45,7 +45,11 @@ public class VendorMenu : GameMenu
     [SerializeField] private GameObject gossipSelectedButton;
     [SerializeField] private GameObject upgradeSelectedButton;
     
-
+    [Header("Notifications")]
+    [SerializeField] private Image shopNotification;
+    [SerializeField] private Image gossipNotification;
+    [SerializeField] private Image upgradeNotification;
+    
     #endregion
 
     #region Private Fields
@@ -121,10 +125,33 @@ public class VendorMenu : GameMenu
             else if (_isolatedMenu == initialMenu)
                 eventSystem.SetSelectedGameObject(firstSelectedButton);
         }
+        
+        // Update the notifications
+        UpdateNotifications();
     }
 
+    private void UpdateNotifications()
+    {
+        // If the player can buy from the vendor, show the shop notification
+        shopNotification.enabled = _currentVendor.CanBuyFromVendor;
+
+        // If the player can gossip with the vendor, show the gossip notification
+        gossipNotification.enabled = !_currentVendor.HasGossipped;
+
+        // If the player can upgrade with the vendor, show the upgrade notification
+        upgradeNotification.enabled = Player.Instance.PlayerInventory.MoneyCount >= _currentVendor.UpgradeCost;
+        
+        var scaleAdd = Mathf.Sin(Time.time * Mathf.PI * 2) * 0.1f;
+        var newScale = Vector3.one + new Vector3(scaleAdd, scaleAdd, 0);
+        
+        shopNotification.transform.localScale = newScale;
+        gossipNotification.transform.localScale = newScale;
+        upgradeNotification.transform.localScale = newScale;
+    }
+    
     public void StartDialogue()
     {
+        _currentVendor.HasGossipped = true;
         dialogueUI.StartDialogue(GossipDialogue);
     }
 

@@ -23,6 +23,7 @@ public class VendorScriptableObject : ScriptableObject
 
     [NonSerialized] private bool _canBuyFromVendor = true;
     [NonSerialized] private bool _hasIntroduced = false;
+    [NonSerialized] private bool _hasGossipped = false;
 
     #region Getters
 
@@ -54,6 +55,12 @@ public class VendorScriptableObject : ScriptableObject
     {
         get => _hasIntroduced;
         set => _hasIntroduced = value;
+    }
+
+    public bool HasGossipped
+    {
+        get => _hasGossipped;
+        set => _hasGossipped = value;
     }
 
     #endregion
