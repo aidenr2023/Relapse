@@ -14,7 +14,7 @@ public class LevelCheckpointReset : MonoBehaviour, IDamager
 
     public GameObject GameObject => gameObject;
 
-    private void OnTriggerEnter(Collider other)
+    protected void OnTriggerEnter(Collider other)
     {
         // Return if the other object is not the player
         if (!other.CompareTag("Player"))
@@ -29,6 +29,12 @@ public class LevelCheckpointReset : MonoBehaviour, IDamager
         if (!_playersInCollider.TryAdd(player, other))
             return;
 
+        // Call the custom on trigger enter method
+        CustomOnTriggerEnter(other, player);
+    }
+
+    protected virtual void CustomOnTriggerEnter(Collider other, Player player)
+    {
         // Reset the player to the checkpoint
         LevelCheckpointManager.Instance.ResetToCheckpoint(LevelCheckpointManager.Instance.CurrentCheckpoint);
 
@@ -42,7 +48,7 @@ public class LevelCheckpointReset : MonoBehaviour, IDamager
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    protected void OnTriggerExit(Collider other)
     {
         // Return if the other object is not the player
         if (!other.CompareTag("Player"))

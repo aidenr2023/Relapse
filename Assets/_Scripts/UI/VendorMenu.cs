@@ -44,12 +44,13 @@ public class VendorMenu : GameMenu
     [SerializeField] private GameObject shopSelectedButton;
     [SerializeField] private GameObject gossipSelectedButton;
     [SerializeField] private GameObject upgradeSelectedButton;
-    
-    [Header("Notifications")]
-    [SerializeField] private Image shopNotification;
+
+    [Header("Notifications")] [SerializeField]
+    private Image shopNotification;
+
     [SerializeField] private Image gossipNotification;
     [SerializeField] private Image upgradeNotification;
-    
+
     #endregion
 
     #region Private Fields
@@ -118,20 +119,24 @@ public class VendorMenu : GameMenu
 
                 if (dialogueUI.CurrentDialogue is not DialogueChoiceNode)
                     eventSystem.SetSelectedGameObject(dialogueUI.NextButton.gameObject);
-                else 
+                else
                     eventSystem.SetSelectedGameObject(dialogueUI.Buttons[0].gameObject);
             }
 
             else if (_isolatedMenu == initialMenu)
                 eventSystem.SetSelectedGameObject(firstSelectedButton);
         }
-        
+
         // Update the notifications
         UpdateNotifications();
     }
 
     private void UpdateNotifications()
     {
+        // Return if the current vendor is null
+        if (_currentVendor == null)
+            return;
+
         // If the player can buy from the vendor, show the shop notification
         shopNotification.enabled = _currentVendor.CanBuyFromVendor;
 
@@ -140,15 +145,15 @@ public class VendorMenu : GameMenu
 
         // If the player can upgrade with the vendor, show the upgrade notification
         upgradeNotification.enabled = Player.Instance.PlayerInventory.MoneyCount >= _currentVendor.UpgradeCost;
-        
+
         var scaleAdd = Mathf.Sin(Time.time * Mathf.PI * 2) * 0.1f;
         var newScale = Vector3.one + new Vector3(scaleAdd, scaleAdd, 0);
-        
+
         shopNotification.transform.localScale = newScale;
         gossipNotification.transform.localScale = newScale;
         upgradeNotification.transform.localScale = newScale;
     }
-    
+
     public void StartDialogue()
     {
         _currentVendor.HasGossipped = true;
@@ -208,11 +213,11 @@ public class VendorMenu : GameMenu
             VendorType.Dealer => "Toxicity",
             _ => "Unknown"
         };
-        
+
         upgradeInfoText.text = $"Do you want to upgrade your maximum {statToUpgrade} for ${CurrentVendor.UpgradeCost}?";
         upgradeMoneyText.text = $"Money: ${Player.Instance.PlayerInventory.MoneyCount}";
     }
-    
+
     private void PopulateShop()
     {
         // Reset all the power buttons
