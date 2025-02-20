@@ -11,7 +11,7 @@ using UnityEngine.InputSystem;
 public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 {
     public static DebugManagerHelper Instance { get; private set; }
-    
+
     #region Serialized Fields
 
     [Tooltip("A Canvas object to display debug text")] [SerializeField]
@@ -67,10 +67,10 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
             Destroy(gameObject);
             return;
         }
-        
+
         // Set the instance
         Instance = this;
-        
+
         // Initialize the input
         InitializeInput();
 
@@ -83,7 +83,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         // If the instance is this, set the instance to null
         if (Instance == this)
             Instance = null;
-        
+
         // Remove this from the debug manager
         DebugManager.Instance.RemoveDebuggedObject(this);
     }
@@ -183,6 +183,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         if (Input.GetKeyDown(KeyCode.Z))
             FindBadInteractableMaterials();
 
+        // Scene Skips
         if (DebugManager.Instance.IsDebugMode)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -207,6 +208,11 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
                 DebugLoadScene(levelInfo10);
         }
 
+        // Deadzone
+        if (Input.GetKeyDown(KeyCode.Semicolon))
+            InputManager.Instance.minimumDeadzone = Mathf.Clamp01(InputManager.Instance.minimumDeadzone - 0.1f);
+        if (Input.GetKeyDown(KeyCode.Quote))
+            InputManager.Instance.minimumDeadzone = Mathf.Clamp01(InputManager.Instance.minimumDeadzone + 0.1f);
     }
 
     private void DebugLoadScene(LevelSectionSceneInfo[] levelInfo)
@@ -218,7 +224,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         // If there is no player, return
         if (Player.Instance == null)
             return;
-        
+
         // Move the player back to their original scene
         Player.Instance.transform.parent = Player.Instance.OriginalSceneObject.transform;
 
@@ -248,7 +254,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
         // Load the scene
         AsyncSceneManager.Instance.DebugLoadSceneSynchronous(sceneLoaderInformation);
-        
+
         // Set the parent of the player back to null
         Player.Instance.transform.parent = null;
     }
@@ -336,6 +342,8 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         //     foreach (var data in keyValue.Value)
         //         sb.Append($"\t\t{data.Key}: {data.Value}\n");
         // }
+        
+        sb.Append($"Minimum Deadzone: {InputManager.Instance.minimumDeadzone}\n");
 
         return sb.ToString();
     }

@@ -6,6 +6,8 @@ using UnityEngine.InputSystem;
 
 public class InputManager
 {
+    public float minimumDeadzone = 0f;
+    
     #region Singleton Pattern
 
     private static InputManager _instance;

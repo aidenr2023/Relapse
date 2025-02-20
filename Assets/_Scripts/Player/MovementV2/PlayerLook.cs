@@ -79,8 +79,11 @@ public class PlayerLook : MonoBehaviour, IUsesInput
         // Set the current sensitivity to the mouse sensitivity
         _currentSens = UserSettings.Instance.MouseSens;
 
+        // Read the value of the look input
+        var value = obj.ReadValue<Vector2>();
+        
         // Call the look performed function
-        OnLookPerformed(obj);
+        OnLookPerformed(value);
     }
 
     private void OnLookControllerPerformed(InputAction.CallbackContext obj)
@@ -88,14 +91,26 @@ public class PlayerLook : MonoBehaviour, IUsesInput
         // Set the current sensitivity to the controller sensitivity
         _currentSens = UserSettings.Instance.ControllerSens;
 
+        // read the value of the look input
+        var value = obj.ReadValue<Vector2>();
+        
+        Debug.Log($"Value: {value}");
+        
+        // If the magnitude of the value is less than the deadzone, return
+        if (value.magnitude / 50 < InputManager.Instance.minimumDeadzone)
+        {
+            Debug.Log($"Returning: {value.magnitude}");
+            value = Vector2.zero;
+        }
+        
         // Call the look performed function
-        OnLookPerformed(obj);
+        OnLookPerformed(value);
     }
 
-    private void OnLookPerformed(InputAction.CallbackContext obj)
+    private void OnLookPerformed(Vector2 value)
     {
         // Get the look input
-        _lookInput = obj.ReadValue<Vector2>();
+        _lookInput = value;
     }
 
     private void OnLookCanceled(InputAction.CallbackContext obj)
