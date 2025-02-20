@@ -16,8 +16,6 @@ public class CutsceneTrigger : MonoBehaviour
 
     //bool to check if the cutscene has been played
     private bool cutscenePlayed = false;
-    //bool for camera switch
-    public bool WantsCameraSwitch = false;
 
     //if the player enters the trigger, play the cutscene
     private void OnTriggerEnter(Collider other)

@@ -26,6 +26,9 @@ public class CutsceneSubscriber : MonoBehaviour
 
         // Get the player's WeaponManager component.
         weaponManager = GetComponent<WeaponManager>();
+        storedRotation = playerMovementV2.transform.rotation;
+        Debug.Log("Stored Rotation: " + storedRotation);
+
 
         // Subscribe to cutscene start/end events.
         if (cutsceneHandler != null)
@@ -47,8 +50,7 @@ public class CutsceneSubscriber : MonoBehaviour
     public void DisableMovement()
     {
         //get rotation of player and store it 
-        storedRotation = playerMovementV2.transform.rotation;
-    
+        
         playerMovementV2.DisablePlayerControls();
         weaponManager.enabled = false;
         
@@ -60,6 +62,7 @@ public class CutsceneSubscriber : MonoBehaviour
     public void EnableMovement()
     {
         playerMovementV2.transform.rotation = storedRotation;
+        Debug.Log("Restored Rotation: " + storedRotation);
         
         playerMovementV2.EnablePlayerControls();
        
