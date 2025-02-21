@@ -5,10 +5,13 @@ using UnityEngine;
 public class TempleRun : MonoBehaviour
 {
       public Animator anim;
+      public GameObject debris;
+    [SerializeField] public AudioClip debrisBreak;
+     [SerializeField] public AudioSource audioSource;
     // Start is called before the first frame update
     void Awake()
     {
-        
+        audioSource = gameObject.GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -16,7 +19,9 @@ public class TempleRun : MonoBehaviour
     {
         if(other.tag =="Player")
         {
-               anim.Play("Temple Run"); 
+               anim.Play("BreakableWall");
+               debris.SetActive(true); 
+               audioSource.PlayOneShot(debrisBreak, 1);
         }
     }
 }
