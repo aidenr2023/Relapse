@@ -8,6 +8,7 @@ public class TempleRun : MonoBehaviour
       public GameObject debris;
     [SerializeField] public AudioClip debrisBreak;
      [SerializeField] public AudioSource audioSource;
+     [SerializeField] public Collider collider;
     // Start is called before the first frame update
     void Awake()
     {
@@ -23,5 +24,9 @@ public class TempleRun : MonoBehaviour
                debris.SetActive(true); 
                audioSource.PlayOneShot(debrisBreak, 1);
         }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        collider.enabled = false;
     }
 }

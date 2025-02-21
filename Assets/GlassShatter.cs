@@ -8,6 +8,7 @@ public class GlassShatter : MonoBehaviour
     [SerializeField] public GameObject Glass;
     [SerializeField] public AudioClip glassBreak;
      [SerializeField] public AudioSource audioSource;
+     [SerializeField] public Collider collider;
     // Start is called before the first frame update
     void Start()
     {
@@ -24,5 +25,8 @@ public class GlassShatter : MonoBehaviour
         audioSource.PlayOneShot(glassBreak, 1);
     }
     }
-
+    private void OnTriggerExit(Collider other)
+    {
+        collider.enabled = false;
+    }
 }
