@@ -9,6 +9,8 @@ public class TempleRun : MonoBehaviour
     [SerializeField] public AudioClip debrisBreak;
      [SerializeField] public AudioSource audioSource;
      [SerializeField] public Collider collider;
+     [SerializeField] public GameObject wall;
+      [SerializeField] public GameObject shatteredwall;
     // Start is called before the first frame update
     void Awake()
     {
@@ -21,6 +23,8 @@ public class TempleRun : MonoBehaviour
         if(other.tag =="Player")
         {
                anim.Play("BreakableWall");
+               shatteredwall.SetActive(true);
+               wall.SetActive(false);
                debris.SetActive(true); 
                audioSource.PlayOneShot(debrisBreak, 1);
         }
