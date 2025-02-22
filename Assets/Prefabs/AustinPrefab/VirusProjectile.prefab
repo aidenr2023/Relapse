@@ -131,7 +131,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 1
 --- !u!114 &-3651777712952985882
@@ -146,13 +146,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 198b8db16f5c7d94db2b1e2b4247abe4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 100
-  tickDamage: 5
-  tickRate: 0.5
+  damage: 10
+  explosionInfectionRadius: 10
+  tickDamage: 20
+  tickRate: 1
   tickDuration: 5
   yLaunchVelocity: 4
   zLaunchVelocity: 24
   explosionParticles: {fileID: 5786114173115362945, guid: 698484421d4499e4db04575c02ec6179,
     type: 3}
   explosionParticlesCount: 200
-  despawnTimer: 100
+  infectionVfxPrefab: {fileID: 3385356646171980169, guid: 23a37541e0417f44280abb5316198c46,
+    type: 3}
+  despawnTimer: 10

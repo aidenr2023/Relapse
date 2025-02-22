@@ -13,8 +13,6 @@ public class SpreadblastProjectile : MonoBehaviour, IPowerProjectile
     [SerializeField] private float yLaunchVelocity;
     [SerializeField] private float zLaunchVelocity;
 
-    //[SerializeField] private int projectileCount = 5; Use this when you can access it in the loop in the Spreadblast script
-
     [SerializeField] private ParticleSystem explosionParticles;
     [SerializeField] [Range(0, 500)] private int explosionParticlesCount = 200;
 
@@ -62,7 +60,6 @@ public class SpreadblastProjectile : MonoBehaviour, IPowerProjectile
         Destroy(gameObject, despawnTimer);
 
         var rb = GetComponent<Rigidbody>();
-
         rb.AddForce(transform.up * yLaunchVelocity, ForceMode.VelocityChange);
         rb.AddForce(transform.forward * zLaunchVelocity, ForceMode.VelocityChange);
     }

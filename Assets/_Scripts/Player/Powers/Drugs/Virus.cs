@@ -5,11 +5,21 @@ using UnityEngine;
 
 public class Virus : MonoBehaviour, IPower
 {
-    public GameObject virusPrefab;
+    private static readonly HashSet<IActor> InfectedActors = new();
+
+    #region Serialized Fields
+
+    [SerializeField] private GameObject virusPrefab;
+
+    #endregion
+
+    #region Getters
 
     public GameObject GameObject => gameObject;
 
     public PowerScriptableObject PowerScriptableObject { get; set; }
+
+    #endregion
 
     public string PassiveEffectDebugText(PlayerPowerManager powerManager, PowerToken pToken)
     {
@@ -30,28 +40,24 @@ public class Virus : MonoBehaviour, IPower
 
     public void Use(PlayerPowerManager powerManager, PowerToken pToken)
     {
-        
-            //Create object at current position
-            var virus = Instantiate(virusPrefab,
-                powerManager.Player.PlayerController.CameraPivot.transform.position,
-                powerManager.Player.PlayerController.CameraPivot.transform.rotation);
+        //Create object at current position
+        var virus = Instantiate(virusPrefab,
+            powerManager.Player.PlayerController.CameraPivot.transform.position,
+            powerManager.Player.PlayerController.CameraPivot.transform.rotation);
 
-            var virusProjectile = virus.GetComponent<VirusProjectile>();
-        
-            // Create the position of the projectile
-            var firePosition = powerManager.PowerFirePoint.position;
+        var virusProjectile = virus.GetComponent<VirusProjectile>();
 
-            // Create a vector that points forward from the camera pivot
-            var aimTargetPoint = powerManager.PowerAimHitPoint;
-            var fireForward = (aimTargetPoint - firePosition).normalized;
+        // Create the position of the projectile
+        var firePosition = powerManager.PowerFirePoint.position;
 
-            virusProjectile.Shoot(
-                this, powerManager, pToken,
-                // powerManager.Player.WeaponManager.FireTransform.position,
-                // powerManager.Player.WeaponManager.FireTransform.forward
-                firePosition, fireForward
-            );
-        
+        // Create a vector that points forward from the camera pivot
+        var aimTargetPoint = powerManager.PowerAimHitPoint;
+        var fireForward = (aimTargetPoint - firePosition).normalized;
+
+        virusProjectile.Shoot(
+            this, powerManager, pToken,
+            firePosition, fireForward
+        );
     }
 
     public void StartActiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
@@ -76,5 +82,23 @@ public class Virus : MonoBehaviour, IPower
 
     public void EndPassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
+    }
+    
+    public static void AddInfectedActor(IActor actor)
+    {
+        // Add the actor to the infected actors list
+        InfectedActors.Add(actor);
+    }
+    
+    public static void RemoveInfectedActor(IActor actor)
+    {
+        // Remove the actor from the infected actors list
+        InfectedActors.Remove(actor);
+    }
+    
+    public static bool IsActorInfected(IActor actor)
+    {
+        // Return whether the actor is infected
+        return InfectedActors.Contains(actor);
     }
 }
