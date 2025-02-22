@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2409002761089976634}
   - component: {fileID: 6143515421399788582}
   - component: {fileID: 1039811493297525285}
-  m_Layer: 0
+  m_Layer: 19
   m_Name: Explosive Mine Projectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -161,3 +161,6 @@ MonoBehaviour:
   inactiveDestroyTime: 10
   destroyOnExplode: 1
   damage: 50
+  explosionParticles: {fileID: 5786114173115362945, guid: 71f7ea08adb8a864394bacdbc8e52d02,
+    type: 3}
+  particleCount: 50

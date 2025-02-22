@@ -17,6 +17,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     [SerializeField] private Transform powerFirePoint;
 
+    [SerializeField] private LayerMask powerAimIgnoreLayers;
+    
     [SerializeField] private PowerScriptableObject[] powers;
 
     [Header("Power Charged Vignette"), SerializeField, Range(0, 1)]
@@ -570,7 +572,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
             _player.PlayerController.CameraPivot.transform.position,
             _player.PlayerController.CameraPivot.transform.forward,
             out var hit,
-            Mathf.Infinity
+            Mathf.Infinity,
+            ~powerAimIgnoreLayers
         );
 
         // Fire a raycast from the camera pivot to the camera forward

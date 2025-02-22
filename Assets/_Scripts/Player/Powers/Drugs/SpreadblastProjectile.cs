@@ -4,15 +4,9 @@ using UnityEngine;
 
 public class SpreadblastProjectile : MonoBehaviour, IPowerProjectile
 {
-    private Vector3 _forward;
+    #region Serialized Fields
 
-    private Rigidbody _rigidbody;
-
-    private Spreadblast _spreadblast;
-    private PlayerPowerManager _powerManager;
-    private PowerToken _pToken;
-
-    private bool _isExploded;
+    [SerializeField, Min(0)] private int projectileCount = 5;
 
     [SerializeField] private float damage = 100f;
 
@@ -22,38 +16,57 @@ public class SpreadblastProjectile : MonoBehaviour, IPowerProjectile
     //[SerializeField] private int projectileCount = 5; Use this when you can access it in the loop in the Spreadblast script
 
     [SerializeField] private ParticleSystem explosionParticles;
-    [SerializeField][Range(0, 500)] private int explosionParticlesCount = 200;
+    [SerializeField] [Range(0, 500)] private int explosionParticlesCount = 200;
 
-    [SerializeField]
-    float despawnTimer;
-    public void Shoot(IPower power, PlayerPowerManager powerManager, PowerToken pToken, Vector3 position, Vector3 forward)
+    [SerializeField] private float despawnTimer;
+
+    [SerializeField, Min(0)] private float randomSpreadX = 30;
+    [SerializeField, Min(0)] private float randomSpreadY = 30;
+
+    #endregion
+
+    #region Private Fields
+
+    private Rigidbody _rigidbody;
+
+    private Spreadblast _spreadBlast;
+    private PlayerPowerManager _powerManager;
+    private PowerToken _pToken;
+
+    private bool _isExploded;
+
+    #endregion
+
+    public int ProjectileCount => projectileCount;
+
+    public void Shoot(IPower power, PlayerPowerManager powerManager, PowerToken pToken, Vector3 position,
+        Vector3 forward)
     {
         // Move the projectile to the position parameter
         transform.position = position;
 
-        // Set the forward of the game object to the forward parameter
-        transform.forward = _forward = forward;
+        // Randomize the forward parameter by rotating it by a random amount
+        forward = Quaternion.Euler(
+            Random.Range(-randomSpreadY, randomSpreadY),
+            Random.Range(-randomSpreadX, randomSpreadX),
+            0
+        ) * forward;
 
-        _spreadblast = (Spreadblast)power;
+        // Set the forward of the game object to the forward parameter
+        transform.forward = forward;
+
+        _spreadBlast = (Spreadblast)power;
         _powerManager = powerManager;
         _pToken = pToken;
+
         Destroy(gameObject, despawnTimer);
 
-        GetComponent<Rigidbody>()
-            .AddRelativeForce(new Vector3(0, yLaunchVelocity, zLaunchVelocity), ForceMode.VelocityChange);
+        var rb = GetComponent<Rigidbody>();
+
+        rb.AddForce(transform.up * yLaunchVelocity, ForceMode.VelocityChange);
+        rb.AddForce(transform.forward * zLaunchVelocity, ForceMode.VelocityChange);
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     private void OnTriggerEnter(Collider other)
     {
         // Return if the projectile hits sender of the projectile
@@ -70,14 +83,12 @@ public class SpreadblastProjectile : MonoBehaviour, IPowerProjectile
 
         // If the projectile hits something with an IActor component, deal damage
         if (other.TryGetComponentInParent(out IActor actor))
-            actor.ChangeHealth(-damage, _powerManager.Player.PlayerInfo, _spreadblast, transform.position);
-
-        // Destroy the projectile when it hits something
-        // Debug.Log($"BOOM! {gameObject.name} hit {other.name}");
+            actor.ChangeHealth(-damage, _powerManager.Player.PlayerInfo, _spreadBlast, transform.position);
 
         // Explode the projectile
         Explode();
     }
+
     private void Explode()
     {
         _isExploded = true;
@@ -88,6 +99,7 @@ public class SpreadblastProjectile : MonoBehaviour, IPowerProjectile
         // Destroy the projectile
         Destroy(gameObject);
     }
+
     private void CreateExplosionParticles()
     {
         // Instantiate the explosion particles at the projectile's position
@@ -102,5 +114,8 @@ public class SpreadblastProjectile : MonoBehaviour, IPowerProjectile
 
         // Emit the explosion particles
         explosion.Emit(emitParams, explosionParticlesCount);
+        
+        // Destroy the explosion particles after the duration of the main explosion particle system
+        Destroy(explosion.gameObject, explosion.main.duration);
     }
 }

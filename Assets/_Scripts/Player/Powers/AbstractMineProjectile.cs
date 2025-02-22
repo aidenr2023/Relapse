@@ -330,4 +330,23 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, explosionRadius);
     }
+    
+        protected static void CreateExplosionParticles(ParticleSystem explosionParticles, Vector3 position, int explosionParticlesCount)
+        {
+            // Instantiate the explosion particles at the projectile's position
+            var explosion = Instantiate(explosionParticles, position, Quaternion.identity);
+    
+            // Create emit parameters for the explosion particles
+            var emitParams = new ParticleSystem.EmitParams
+            {
+                applyShapeToPosition = true,
+                position = position
+            };
+    
+            // Emit the explosion particles
+            explosion.Emit(emitParams, explosionParticlesCount);
+            
+            // Destroy the explosion particles after the duration of the main explosion particle system
+            Destroy(explosion.gameObject, explosion.main.duration);
+        }
 }

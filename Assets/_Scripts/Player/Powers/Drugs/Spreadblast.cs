@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Spreadblast : MonoBehaviour, IPower
 {
-    public GameObject spreadblastPrefab;
+    [SerializeField] private GameObject spreadblastPrefab;
 
     public GameObject GameObject => gameObject;
 
@@ -30,17 +30,17 @@ public class Spreadblast : MonoBehaviour, IPower
 
     public void Use(PlayerPowerManager powerManager, PowerToken pToken)
     {
-        //WIP!! Use projectile count from the projectile script.
-        var projectileCount = 5;
-        for (int i = 0; i < projectileCount; i++)
+        var projectileCount = spreadblastPrefab.GetComponent<SpreadblastProjectile>().ProjectileCount;
+
+        for (var i = 0; i < projectileCount; i++)
         {
             //Create object at current position
-            var spreadblast = Instantiate(spreadblastPrefab,
+            var spreadBlast = Instantiate(spreadblastPrefab,
                 powerManager.Player.PlayerController.CameraPivot.transform.position,
                 powerManager.Player.PlayerController.CameraPivot.transform.rotation);
 
-            var spreadblastProjectile = spreadblast.GetComponent<SpreadblastProjectile>();
-        
+            var spreadblastProjectile = spreadBlast.GetComponent<SpreadblastProjectile>();
+
             // Create the position of the projectile
             var firePosition = powerManager.PowerFirePoint.position;
 
@@ -50,8 +50,6 @@ public class Spreadblast : MonoBehaviour, IPower
 
             spreadblastProjectile.Shoot(
                 this, powerManager, pToken,
-                // powerManager.Player.WeaponManager.FireTransform.position,
-                // powerManager.Player.WeaponManager.FireTransform.forward
                 firePosition, fireForward
             );
         }
