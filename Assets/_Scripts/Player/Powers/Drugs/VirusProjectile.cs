@@ -67,17 +67,8 @@ public class VirusProjectile : MonoBehaviour, IPowerProjectile
         Virus.AddInfectedActor(actor);
 
         // Start the virus ticks
-        switch (actor)
-        {
-            case EnemyInfo enemy:
-                enemy.StartCoroutine(VirusTicks(actor));
-                break;
-
-            case PlayerInfo player:
-                player.StartCoroutine(VirusTicks(actor));
-                break;
-        }
-
+        (actor as MonoBehaviour)!.StartCoroutine(VirusTicks(actor));
+        
         // Add an event to the actor's death event to remove them from the infected actors list
         actor.OnDeath += RemoveFromInfectedActors;
     }

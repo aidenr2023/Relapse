@@ -1,11 +1,18 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class StunMineProjectile : AbstractMineProjectile
 {
-    [Header("Unique Stats")] [SerializeField, Min(0)]
-    protected float stunDuration = 5f;
+    [Header("Unique Stats")] 
+    
+    [SerializeField, Min(0)] protected float stunDuration = 5f;
+    [SerializeField] private VisualEffect stunVfxPrefab;
 
+    [SerializeField] private ParticleSystem explosionParticles;
+    [SerializeField, Min(0)] private int particleCount = 50;
+    
+    
     protected override void CustomAwake()
     {
     }
@@ -34,6 +41,9 @@ public class StunMineProjectile : AbstractMineProjectile
         // Call this from the power logic game object because this projectile is destroyed after the explosion
         ((MonoBehaviour)_power.PowerScriptableObject.PowerLogic)
             .StartCoroutine(ApplyStun(movementBehavior, attackBehavior));
+        
+        // Create the explosion particles
+        CreateExplosionParticles(explosionParticles, transform.position, particleCount);
     }
 
     private IEnumerator ApplyStun(IEnemyMovementBehavior movementBehavior, IEnemyAttackBehavior attackBehavior)
@@ -41,6 +51,9 @@ public class StunMineProjectile : AbstractMineProjectile
         // Disable the movement & attack
         movementBehavior.AddMovementDisableToken(this);
         attackBehavior.AddAttackDisableToken(this);
+        
+        // Instantiate the stun VFX
+        var stunVfx = Instantiate(stunVfxPrefab, movementBehavior.GameObject.transform);
 
         // Wait until the stun duration is over
         var timeRemaining = stunDuration;
@@ -53,6 +66,9 @@ public class StunMineProjectile : AbstractMineProjectile
         // Re-enable the movement & attack
         movementBehavior?.RemoveMovementDisableToken(this);
         attackBehavior?.RemoveAttackDisableToken(this);
+        
+        // Destroy the stun VFX
+        Destroy(stunVfx.gameObject);
     }
 
     protected override void CustomShoot(IPower power, PlayerPowerManager powerManager, PowerToken pToken,

@@ -155,9 +155,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 520
   shootForce: 30
-  detectionRadius: 8
-  explosionRadius: 10
-  fuseTime: 2
+  detectionRadius: 6
+  explosionRadius: 12
+  fuseTime: 1
   inactiveDestroyTime: 10
   destroyOnExplode: 1
   stunDuration: 5
+  stunVfxPrefab: {fileID: 3385356646171980169, guid: 1938b1f9232829e4988a4e56c6bdfffb,
+    type: 3}
+  explosionParticles: {fileID: 5786114173115362945, guid: 373d40ed5e3f4ec42aabe1f9b91a4894,
+    type: 3}
+  particleCount: 50
