@@ -22,7 +22,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     [SerializeField] private Transform orientation;
 
     //Reference to player animator
-    [SerializeField] private Animator playerAnimator;
+    [SerializeField] Animator playerAnimator;
 
     [Header("Floating Controller")] [SerializeField, Min(0)]
     private float desiredCapsuleHeightOffset = .25f;

@@ -1,50 +1,124 @@
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Events;
+using UnityEngine.Animations;
 
-/// <summary>
-/// Plays a cutscene based on the provided CutsceneData and signals its start and end via UnityEvents.
-/// </summary>
+[RequireComponent(typeof(PlayableDirector))]
 public class CutsceneHandler : MonoBehaviour
 {
-    [SerializeField] private PlayableDirector playableDirector;
-    
-    // UnityEvents that notify listeners when a cutscene starts and ends.
     public UnityEvent OnCutsceneStart;
     public UnityEvent OnCutsceneEnd;
+
+    private PlayableDirector _director;
+    private Animator _playerCutsceneAnimator;
+    private bool _isCutsceneActive;
     
-    /// <summary>
-    /// Plays the cutscene defined in the CutsceneData.
-    /// </summary>
-    /// <param name="cutsceneData">The data asset containing the timeline and camera info.</param>
-    public void PlayCutscene(CutsceneData cutsceneData)
+
+    private void Awake()
     {
-        if (playableDirector == null || cutsceneData == null)
+        _director = GetComponent<PlayableDirector>();
+        InitializePlayerReferences();
+    }
+
+    private void InitializePlayerReferences()
+    {
+        if (CutsceneManager.Instance != null && CutsceneManager.Instance.PlayerController != null)
         {
-            Debug.LogError("PlayableDirector or CutsceneData is missing.");
-            return;
+            _playerCutsceneAnimator = CutsceneManager.Instance.PlayerController.PlayerAnimator;
+        }
+    
+        if (_playerCutsceneAnimator == null)
+        {
+            Debug.LogWarning("Player animator reference not found on initialization. Will attempt dynamic binding.");
+        }
+    }
+
+    public void PlayCutscene(PlayableAsset timelineAsset)
+    {
+        if (_isCutsceneActive) return;
+
+        if (!ValidateDependencies(timelineAsset)) return;
+
+        ConfigureTimeline(timelineAsset);
+        StartCutscene();
+    }
+
+    private bool ValidateDependencies(PlayableAsset timelineAsset)
+    {
+        if (_director == null)
+        {
+            Debug.LogError("Missing PlayableDirector component!");
+            return false;
         }
 
-        // Set the timeline asset to play.
-        playableDirector.playableAsset = cutsceneData.timelineAsset;
-        
-        // Subscribe to the 'stopped' event to know when the cutscene finishes.
-        playableDirector.stopped += OnCutsceneStopped;
-        
-        // Notify listeners that the cutscene is starting.
-        OnCutsceneStart?.Invoke();
-        
-        // Play the cutscene.
-        playableDirector.Play();
+        if (timelineAsset == null)
+        {
+            Debug.LogError("No timeline asset provided!");
+            return false;
+        }
+
+        if (_playerCutsceneAnimator == null)
+        {
+            _playerCutsceneAnimator = FindPlayerAnimator();
+            if (_playerCutsceneAnimator == null)
+            {
+                Debug.LogError("Failed to locate player animator!");
+                return false;
+            }
+        }
+
+        return true;
     }
-    
-    /// <summary>
-    /// Callback invoked when the cutscene finishes.
-    /// </summary>
-    private void OnCutsceneStopped(PlayableDirector director)
+
+    private Animator FindPlayerAnimator()
     {
-        playableDirector.stopped -= OnCutsceneStopped;
-        // Notify listeners that the cutscene has ended.
+        if (CutsceneManager.Instance != null && 
+            CutsceneManager.Instance.PlayerController != null)
+        {
+            return CutsceneManager.Instance.PlayerController.PlayerAnimator;
+        }
+
+        var playerObj = GameObject.FindGameObjectWithTag("Player");
+        return playerObj?.GetComponentInChildren<Animator>();
+    }
+
+    private void ConfigureTimeline(PlayableAsset timelineAsset)
+    {
+        _director.playableAsset = timelineAsset;
+        
+        foreach (var output in _director.playableAsset.outputs)
+        {
+            if (output.outputTargetType == typeof(Animator))
+            {
+                _director.SetGenericBinding(output.sourceObject, _playerCutsceneAnimator);
+            }
+        }
+    }
+
+    private void StartCutscene()
+    {
+        _isCutsceneActive = true;
+        _director.stopped += OnCutsceneFinished;
+        OnCutsceneStart?.Invoke();
+        _director.Play();
+    }
+
+    private void OnCutsceneFinished(PlayableDirector director)
+    {
+        _isCutsceneActive = false;
+        _director.stopped -= OnCutsceneFinished;
         OnCutsceneEnd?.Invoke();
+        
+        // Optional: Reset timeline bindings
+        _director.playableAsset = null;
+    }
+
+    public void EmergencyStop()
+    {
+        if (_isCutsceneActive)
+        {
+            _director.Stop();
+            OnCutsceneFinished(_director);
+        }
     }
 }

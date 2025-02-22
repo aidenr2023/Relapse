@@ -1,68 +1,121 @@
 using System.Collections.Generic;
 using UnityEngine;
-
-/// <summary>
-/// Organizes cutscenes using a dictionary (populated from a serialized array) and delegates playback to the CutsceneHandler.
-/// </summary>
-[System.Serializable]
-public class CutsceneMapping
-{
-    // The unique name for the cutscene (used for lookup).
-    public string cutsceneName;
-    // The corresponding CutsceneData asset.
-    public CutsceneData cutsceneData;
-}
+using UnityEngine.Playables;
 
 public class CutsceneManager : MonoBehaviour
 {
-    [Header("Cutscene Mappings (ordered for clarity)")]
-    [Tooltip("Assign cutscene names and their corresponding CutsceneData asset.")]
-    public CutsceneMapping[] cutsceneMappings;
+    #region Singleton
+    public static CutsceneManager Instance { get; private set; }
     
-    // Dictionary for fast runtime lookup of cutscene data by name.
-    private Dictionary<string, CutsceneData> cutsceneDictionary;
+    public PlayerMovementV2 PlayerController { get; private set; }
+    
+    #endregion
+    
+    [System.Serializable]
+    public class CutsceneMapping
+    {
+        public string cutsceneName;
+        public PlayableAsset timelineAsset;
+    }
 
-    // Reference to the CutsceneHandler that actually plays the cutscene.
-    public CutsceneHandler cutsceneHandler;
+    [Header("Configuration")]
+    [SerializeField] private List<CutsceneMapping> cutsceneMappings = new List<CutsceneMapping>();
+    [SerializeField] private CutsceneHandler cutsceneHandler;
+
+    private Dictionary<string, PlayableAsset> cutsceneDictionary;
+    private PlayableDirector activeDirector;
+
+    #region Lifecycle
     
+    public void RegisterPlayer(PlayerMovementV2 player)
+    {
+        PlayerController = player;
+        Debug.Log($"Player registered  + {player.name}");
+    }
     private void Awake()
     {
-        // Build the dictionary from the serialized mappings.
-        cutsceneDictionary = new Dictionary<string, CutsceneData>();
-        foreach(var mapping in cutsceneMappings)
+        InitializeSingleton();
+        InitializeDictionary();
+        CacheActiveDirector();
+    }
+
+    private void InitializeSingleton()
+    {
+        if (Instance != null && Instance != this)
         {
-            if(!cutsceneDictionary.ContainsKey(mapping.cutsceneName))
+            Destroy(gameObject);
+            return;
+        }
+        
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
+    private void InitializeDictionary()
+    {
+        cutsceneDictionary = new Dictionary<string, PlayableAsset>();
+        foreach (var mapping in cutsceneMappings)
+        {
+            if (!cutsceneDictionary.ContainsKey(mapping.cutsceneName))
             {
-                cutsceneDictionary.Add(mapping.cutsceneName, mapping.cutsceneData);
+                cutsceneDictionary.Add(mapping.cutsceneName, mapping.timelineAsset);
             }
             else
             {
-                Debug.LogWarning("Duplicate cutscene name found: " + mapping.cutsceneName);
+                Debug.LogWarning($"Duplicate cutscene name: {mapping.cutsceneName}");
             }
         }
     }
-    
-    /// <summary>
-    /// Looks up and plays a cutscene by its name.
-    /// </summary>
-    /// <param name="cutsceneName">The name of the cutscene to play (must match one in the dictionary).</param>
+
+    private void CacheActiveDirector()
+    {
+        if (cutsceneHandler != null)
+        {
+            activeDirector = cutsceneHandler.GetComponent<PlayableDirector>();
+        }
+    }
+    #endregion
+
+    #region Public API
     public void PlayCutsceneByName(string cutsceneName)
     {
-        if(cutsceneDictionary.ContainsKey(cutsceneName))
+        if (!cutsceneDictionary.TryGetValue(cutsceneName, out PlayableAsset asset))
         {
-            CutsceneData data = cutsceneDictionary[cutsceneName];
-            if(cutsceneHandler != null)
-            {
-                cutsceneHandler.PlayCutscene(data);
-            }
-            else
-            {
-                Debug.LogError("CutsceneHandler is not assigned in the CutsceneManager.");
-            }
+            Debug.LogError($"Cutscene not found: {cutsceneName}");
+            return;
         }
-        else
+
+        if (activeDirector == null)
         {
-            Debug.LogError("Cutscene not found: " + cutsceneName);
+            Debug.LogError("No active PlayableDirector found!");
+            return;
+        }
+
+        StartCutsceneSequence(asset);
+    }
+    #endregion
+
+    #region Execution
+    private void StartCutsceneSequence(PlayableAsset asset)
+    {
+        try
+        {
+           cutsceneHandler.PlayCutscene(asset);// pass the asset directly
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Cutscene playback failed: {e.Message}");
         }
     }
+    #endregion
+
+    #region Cleanup
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
+    }
+    #endregion
 }

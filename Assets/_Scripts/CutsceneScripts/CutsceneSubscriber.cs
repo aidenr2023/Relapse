@@ -9,28 +9,21 @@ public class CutsceneSubscriber : MonoBehaviour
     public CutsceneHandler cutsceneHandler;
     PlayerMovementV2 playerMovementV2;
     private PlayerActions playerActions;
-    // Reference to the player's UI.
     public GameObject playerUI;
     private PlayerLook playerCameraMovement;
     private WeaponManager weaponManager;
     private Quaternion storedRotation;
-    #endregion References
-    
+    #endregion
+
+    [Tooltip("Reset player rotation to (0,0,0) instead of stored rotation?")]
+    [SerializeField] private bool resetRotationToZero = true;
+
     private void Start()
     {
-        //Get the player's PlayerMovementV2 component
         playerMovementV2 = GetComponent<PlayerMovementV2>();
-        
-        // Get the player's PlayerLook component.
         playerCameraMovement = GetComponent<PlayerLook>();
-
-        // Get the player's WeaponManager component.
         weaponManager = GetComponent<WeaponManager>();
-        storedRotation = playerMovementV2.transform.rotation;
-        Debug.Log("Stored Rotation: " + storedRotation);
 
-
-        // Subscribe to cutscene start/end events.
         if (cutsceneHandler != null)
         {
             cutsceneHandler.OnCutsceneStart.AddListener(DisableMovement);
@@ -44,30 +37,25 @@ public class CutsceneSubscriber : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Disables player movement when the cutscene starts.
-    /// </summary>
     public void DisableMovement()
     {
-        //get rotation of player and store it 
-        
+        // Store rotation WHEN CUTSCENE STARTS, not at Start()
+        //force player rotation to 0,0,0
+        storedRotation = playerMovementV2.transform.rotation.eulerAngles.y == 0 ? Quaternion.identity : playerMovementV2.transform.rotation;
+        Debug.Log("Stored Rotation: " + storedRotation);
+
         playerMovementV2.DisablePlayerControls();
         weaponManager.enabled = false;
-        
     }
 
-    /// <summary>
-    /// Re-enables player movement when the cutscene ends.
-    /// </summary>
     public void EnableMovement()
     {
-        playerMovementV2.transform.rotation = storedRotation;
-        Debug.Log("Restored Rotation: " + storedRotation);
-        
+        // Restore to stored rotation or zero based on setting
+        playerMovementV2.transform.rotation = resetRotationToZero ? Quaternion.identity : storedRotation;
+        Debug.Log("Restored Rotation: " + playerMovementV2.transform.rotation);
+
         playerMovementV2.EnablePlayerControls();
-       
         weaponManager.enabled = true;
-        
     }
 
     /// <summary>
