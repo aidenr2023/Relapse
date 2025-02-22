@@ -246,8 +246,12 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         var toleranceDifferencePerSecond = toleranceDifference / relapseDuration;
         ChangeTolerance(toleranceDifferencePerSecond * Time.deltaTime);
 
-        // If the relapse duration is greater than the relapse duration, end the relapse
-        if (_currentRelapseDuration >= relapseDuration)
+        // // If the relapse duration is greater than the relapse duration, end the relapse
+        // if (_currentRelapseDuration >= relapseDuration)
+        //     EndRelapse();
+        
+        // If the current tolerance is less than or equal to 0, end the relapse
+        if (currentTolerance <= 0)
             EndRelapse();
     }
 
@@ -422,13 +426,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
         // Increase the relapse count
         _relapseCount++;
-
-        // if (_relapseCount >= relapsesToLose)
-        // {
-        //     // The player dies / restarts the level from relapsing too many times!
-        //     DieFromRelapse();
-        //     return;
-        // }
 
         // Reset the relapse duration
         _currentRelapseDuration = 0;

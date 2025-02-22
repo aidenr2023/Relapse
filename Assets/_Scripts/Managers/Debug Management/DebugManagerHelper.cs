@@ -295,12 +295,18 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         if (Player == null)
             return;
 
-        Player.PlayerInfo.ChangeHealth(
+        var playerInfo = Player.PlayerInfo;
+
+        playerInfo.ChangeHealth(
             _healthChange * Time.unscaledDeltaTime *
-            healthMult * Player.PlayerInfo.MaxHealth,
-            Player.PlayerInfo, this, Player.transform.position
+            healthMult * playerInfo.MaxHealth,
+            playerInfo, this, Player.transform.position
         );
-        Player.PlayerInfo.ChangeTolerance(_toleranceChange * Time.unscaledDeltaTime * toleranceMult);
+
+        if (_toleranceChange < 0 && playerInfo.IsRelapsing)
+            playerInfo.ChangeTolerance(-playerInfo.CurrentTolerance);
+        else
+            playerInfo.ChangeTolerance(_toleranceChange * Time.unscaledDeltaTime * toleranceMult);
     }
 
     private void UpdateText()
@@ -342,7 +348,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         //     foreach (var data in keyValue.Value)
         //         sb.Append($"\t\t{data.Key}: {data.Value}\n");
         // }
-        
+
         sb.Append($"Minimum Deadzone: {InputManager.Instance.minimumDeadzone}\n");
 
         return sb.ToString();
