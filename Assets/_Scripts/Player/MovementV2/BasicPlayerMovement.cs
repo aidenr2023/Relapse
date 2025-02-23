@@ -29,6 +29,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
     [SerializeField] private Sound jumpSound;
 
+    [SerializeField] private Transform tempCameraPivot;
+
     #endregion
 
     #region Private Fields
@@ -249,6 +251,30 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         //check if the player is on the ground
         float heightAboveGround = GetHeightAboveGround();
         PlayerAnimator?.SetFloat("JumpHeight", heightAboveGround);
+
+        if (Input.GetKey("f"))
+        {
+            flight();
+        }
+        else
+        {
+            stopFlight();
+        }
+    }
+    public void flight()
+    {
+        ParentComponent.Rigidbody.useGravity = false;
+        var cameraTransform = tempCameraPivot.transform;
+
+        // Get the camera's forward without the y component
+        var cameraForward = new Vector3(cameraTransform.forward.x, cameraTransform.forward.y, cameraTransform.forward.z).normalized;
+        Debug.Log("F Pressed");
+        ParentComponent.Rigidbody.position += cameraForward * Time.deltaTime * 20;
+    }
+    public void stopFlight()
+    {
+        ParentComponent.Rigidbody.useGravity = true;
+
     }
 
     private float GetHeightAboveGround()
@@ -437,7 +463,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
                 _footstepTimer.ForcePercent(1);
         }
     }
-
+    
     private void ApplyLateralSpeedLimit()
     {
         var vel = ParentComponent.Rigidbody.velocity;
