@@ -252,6 +252,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         float heightAboveGround = GetHeightAboveGround();
         PlayerAnimator?.SetFloat("JumpHeight", heightAboveGround);
 
+        //REMOVE LATER - FLIGHT DEBUG
         if (Input.GetKey("f"))
         {
             flight();
@@ -268,7 +269,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
         // Get the camera's forward without the y component
         var cameraForward = new Vector3(cameraTransform.forward.x, cameraTransform.forward.y, cameraTransform.forward.z).normalized;
-        Debug.Log("F Pressed");
+        //Debug.Log("F Pressed");
         ParentComponent.Rigidbody.position += cameraForward * Time.deltaTime * 20;
     }
     public void stopFlight()
