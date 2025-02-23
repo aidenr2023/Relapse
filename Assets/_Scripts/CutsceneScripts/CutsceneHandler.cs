@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Events;
+using System.Collections;
 using UnityEngine.Animations;
 
 [RequireComponent(typeof(PlayableDirector))]
@@ -14,22 +15,27 @@ public class CutsceneHandler : MonoBehaviour
     private bool _isCutsceneActive;
     
 
-    private void Awake()
+    private void Start()
     {
         _director = GetComponent<PlayableDirector>();
+        Debug.Log($"CutsceneHandler initialized with director: {_director}");
         InitializePlayerReferences();
     }
 
     private void InitializePlayerReferences()
     {
-        if (CutsceneManager.Instance != null && CutsceneManager.Instance.PlayerController != null)
+        Debug.Log("[HANDLER] Initializing player references...");
+
+        if (CutsceneManager.Instance != null)
         {
-            _playerCutsceneAnimator = CutsceneManager.Instance.PlayerController.PlayerAnimator;
+            Debug.Log($"[HANDLER] CutsceneManager exists: {CutsceneManager.Instance != null}");
+            Debug.Log($"[HANDLER] PlayerAnimator registered: {CutsceneManager.Instance.PlayerCutsceneAnimator != null}");
+            _playerCutsceneAnimator = CutsceneManager.Instance.PlayerCutsceneAnimator;
         }
-    
+
         if (_playerCutsceneAnimator == null)
         {
-            Debug.LogWarning("Player animator reference not found on initialization. Will attempt dynamic binding.");
+            Debug.LogError("[HANDLER] Player Animator not found!");
         }
     }
 
@@ -39,6 +45,14 @@ public class CutsceneHandler : MonoBehaviour
 
         if (!ValidateDependencies(timelineAsset)) return;
 
+        StartCoroutine(PlayCutsceneDelayed(timelineAsset));
+    }
+
+    private IEnumerator PlayCutsceneDelayed(PlayableAsset timelineAsset)
+    {
+        yield return new WaitUntil((() => CutsceneManager.Instance.PlayerCutsceneAnimator 
+        != null && _playerCutsceneAnimator));
+        
         ConfigureTimeline(timelineAsset);
         StartCutscene();
     }
@@ -73,17 +87,30 @@ public class CutsceneHandler : MonoBehaviour
     private Animator FindPlayerAnimator()
     {
         if (CutsceneManager.Instance != null && 
-            CutsceneManager.Instance.PlayerController != null)
+            CutsceneManager.Instance.PlayerCutsceneAnimator != null)
         {
-            return CutsceneManager.Instance.PlayerController.PlayerAnimator;
+            return CutsceneManager.Instance.PlayerCutsceneAnimator;
         }
 
         var playerObj = GameObject.FindGameObjectWithTag("Player");
-        return playerObj?.GetComponentInChildren<Animator>();
+        if (playerObj == null)
+        {
+            Debug.LogError("Player object not found in scene!");
+            return null;
+        }
+        else
+        {
+            Debug.Log($"Player object found by tag {playerObj.name}"); 
+        }
+        return playerObj.GetComponent<Animator>();
     }
 
     private void ConfigureTimeline(PlayableAsset timelineAsset)
     {
+        Debug.Log($"[Cutscene] Timeline Asset: {timelineAsset != null}");
+        Debug.Log($"[Cutscene] Director: {_director != null}");
+        Debug.Log($"[Cutscene] Animator: {_playerCutsceneAnimator != null}");
+
         _director.playableAsset = timelineAsset;
         
         foreach (var output in _director.playableAsset.outputs)
@@ -91,6 +118,9 @@ public class CutsceneHandler : MonoBehaviour
             if (output.outputTargetType == typeof(Animator))
             {
                 _director.SetGenericBinding(output.sourceObject, _playerCutsceneAnimator);
+                Debug.Log($"Bound {_playerCutsceneAnimator} to track: {output.streamName}");
+                Debug.Log($"[Cutscene] Animator Bound: {_playerCutsceneAnimator.gameObject.name}");
+
             }
         }
     }
@@ -99,7 +129,14 @@ public class CutsceneHandler : MonoBehaviour
     {
         _isCutsceneActive = true;
         _director.stopped += OnCutsceneFinished;
+
+        #if !UNITY_EDITOR
+        _director.timeUpdateMode = DirectorUpdateMode.GameTime;
+        #endif
+        
         OnCutsceneStart?.Invoke();
+        //log the start of the cutscene
+        Debug.Log("Cutscene started Event invoked");
         _director.Play();
     }
 

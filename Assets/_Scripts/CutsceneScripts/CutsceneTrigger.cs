@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -17,13 +18,26 @@ public class CutsceneTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player") && !cutscenePlayed)
         {
-            cutscenePlayed = true;
-            // Access the singleton instance directly
-            CutsceneManager.Instance.PlayCutsceneByName(cutsceneName);
+            // Access the singleton instance 
+            StartCoroutine(TriggerCutsceneDelayed());
         }
         else if (other.CompareTag("Player") && cutscenePlayed)
         {
-            Destroy(gameObject);
+            StartCoroutine(DestroyTrigger());
         }
+    }
+    
+    private IEnumerator TriggerCutsceneDelayed()
+    {
+        yield return null;
+        CutsceneManager.Instance.PlayCutsceneByName(cutsceneName);
+        cutscenePlayed = true;
+    }
+    
+    //destroy the trigger after seconds 
+    private IEnumerator DestroyTrigger()
+    {
+        yield return new WaitForSeconds(2f);
+        Destroy(gameObject);
     }
 }

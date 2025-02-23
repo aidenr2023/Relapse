@@ -7,7 +7,14 @@ public class CutsceneManager : MonoBehaviour
     #region Singleton
     public static CutsceneManager Instance { get; private set; }
     
-    public PlayerMovementV2 PlayerController { get; private set; }
+    //public PlayerMovementV2 PlayerController { get; private set; }
+    
+    //public GameObject PlayerGameObject { get; private set; }
+    
+    //public Animator PlayerAnimator { get; private set; }
+    
+    //get the player animator from cutscene subscriber
+    public Animator PlayerCutsceneAnimator { get; private set; }
     
     #endregion
     
@@ -21,16 +28,19 @@ public class CutsceneManager : MonoBehaviour
     [Header("Configuration")]
     [SerializeField] private List<CutsceneMapping> cutsceneMappings = new List<CutsceneMapping>();
     [SerializeField] private CutsceneHandler cutsceneHandler;
+    public CutsceneHandler CutsceneHandler => cutsceneHandler;
 
     private Dictionary<string, PlayableAsset> cutsceneDictionary;
     private PlayableDirector activeDirector;
 
     #region Lifecycle
     
-    public void RegisterPlayer(PlayerMovementV2 player)
+    public void RegisterPlayer(Animator playerAnimator)
     {
-        PlayerController = player;
-        Debug.Log($"Player registered  + {player.name}");
+        PlayerCutsceneAnimator = playerAnimator;
+        Debug.Log($"Player registered: {playerAnimator.name} " +
+                  $"| Animator: {playerAnimator} != null");
+        //player.GetComponent<Animator>();
     }
     private void Awake()
     {
@@ -82,15 +92,18 @@ public class CutsceneManager : MonoBehaviour
         if (!cutsceneDictionary.TryGetValue(cutsceneName, out PlayableAsset asset))
         {
             Debug.LogError($"Cutscene not found: {cutsceneName}");
+            
             return;
         }
+        
 
         if (activeDirector == null)
         {
             Debug.LogError("No active PlayableDirector found!");
             return;
         }
-
+        //log asset name 
+        Debug.Log($"Playing cutscene asset: {asset.name}");
         StartCutsceneSequence(asset);
     }
     #endregion

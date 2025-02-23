@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -6,30 +7,54 @@ using UnityEngine;
 public class CutsceneSubscriber : MonoBehaviour
 {
     #region References
-    public CutsceneHandler cutsceneHandler;
+    private CutsceneHandler _cutsceneHandler;
     PlayerMovementV2 playerMovementV2;
     private PlayerActions playerActions;
     public GameObject playerUI;
     private PlayerLook playerCameraMovement;
+    private Animator _playerCutsceneAnimator;
     private WeaponManager weaponManager;
     private Quaternion storedRotation;
     #endregion
 
+    public Animator PlayerCutsceneAnimatorRef => _playerCutsceneAnimator;
     [Tooltip("Reset player rotation to (0,0,0) instead of stored rotation?")]
     [SerializeField] private bool resetRotationToZero = true;
 
+    private void Awake()
+    {
+        
+    }
+
     private void Start()
     {
+    
         playerMovementV2 = GetComponent<PlayerMovementV2>();
         playerCameraMovement = GetComponent<PlayerLook>();
         weaponManager = GetComponent<WeaponManager>();
-
-        if (cutsceneHandler != null)
+    
+        _playerCutsceneAnimator = GetComponent<Animator>();
+        if (CutsceneManager.Instance != null)
         {
-            cutsceneHandler.OnCutsceneStart.AddListener(DisableMovement);
-            cutsceneHandler.OnCutsceneEnd.AddListener(EnableMovement);
-            cutsceneHandler.OnCutsceneStart.AddListener(DisableUI);
-            cutsceneHandler.OnCutsceneEnd.AddListener(EnableUI);
+            Debug.Log("[PLAYER Animator] Registering player with CutsceneManager");
+            CutsceneManager.Instance.RegisterPlayer(_playerCutsceneAnimator);
+        }
+        else
+        {
+            Debug.LogError("CutsceneManager not found");
+        }
+        
+        if (CutsceneManager.Instance != null)
+        {
+            _cutsceneHandler = CutsceneManager.Instance.CutsceneHandler;
+        }
+
+        if (_cutsceneHandler != null)
+        {
+            _cutsceneHandler.OnCutsceneStart.AddListener(DisableMovement);
+            _cutsceneHandler.OnCutsceneEnd.AddListener(EnableMovement);
+            _cutsceneHandler.OnCutsceneStart.AddListener(DisableUI);
+            _cutsceneHandler.OnCutsceneEnd.AddListener(EnableUI);
         }
         else
         {
@@ -40,10 +65,10 @@ public class CutsceneSubscriber : MonoBehaviour
     public void DisableMovement()
     {
         // Store rotation WHEN CUTSCENE STARTS, not at Start()
-        //force player rotation to 0,0,0
-        storedRotation = playerMovementV2.transform.rotation.eulerAngles.y == 0 ? Quaternion.identity : playerMovementV2.transform.rotation;
+        // Apply rotation based on the reset flag
+        
         Debug.Log("Stored Rotation: " + storedRotation);
-
+        storedRotation = playerMovementV2.transform.rotation;
         playerMovementV2.DisablePlayerControls();
         weaponManager.enabled = false;
     }
@@ -51,7 +76,9 @@ public class CutsceneSubscriber : MonoBehaviour
     public void EnableMovement()
     {
         // Restore to stored rotation or zero based on setting
-        playerMovementV2.transform.rotation = resetRotationToZero ? Quaternion.identity : storedRotation;
+        playerMovementV2.transform.rotation = resetRotationToZero 
+            ? Quaternion.identity 
+            : storedRotation;
         Debug.Log("Restored Rotation: " + playerMovementV2.transform.rotation);
 
         playerMovementV2.EnablePlayerControls();
@@ -63,7 +90,7 @@ public class CutsceneSubscriber : MonoBehaviour
     /// </summary>
     public void DisableUI()
     {
-        playerUI.SetActive(false);
+       // playerUI.SetActive(false);
     }
     
     /// <summary>
@@ -71,18 +98,18 @@ public class CutsceneSubscriber : MonoBehaviour
     /// </summary>
     public void EnableUI()
     {
-        playerUI.SetActive(true);
+       // playerUI.SetActive(true);
     }
     
     private void OnDestroy()
     {
         // Clean up subscriptions to prevent memory leaks.
-        if (cutsceneHandler != null)
+        if (_cutsceneHandler != null)
         {
-            cutsceneHandler.OnCutsceneStart.RemoveListener(DisableMovement);
-            cutsceneHandler.OnCutsceneEnd.RemoveListener(EnableMovement);
-            cutsceneHandler.OnCutsceneStart.RemoveListener(DisableUI);
-            cutsceneHandler.OnCutsceneEnd.RemoveListener(EnableUI);
+            _cutsceneHandler.OnCutsceneStart.RemoveListener(DisableMovement);
+            _cutsceneHandler.OnCutsceneEnd.RemoveListener(EnableMovement);
+            _cutsceneHandler.OnCutsceneStart.RemoveListener(DisableUI);
+            _cutsceneHandler.OnCutsceneEnd.RemoveListener(EnableUI);
         }
     }
 }

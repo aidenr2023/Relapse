@@ -46,14 +46,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b44c5c348cee8a5488aa28f0b28fdc23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playableDirector: {fileID: 8518434691970240673}
   OnCutsceneStart:
     m_PersistentCalls:
       m_Calls: []
   OnCutsceneEnd:
     m_PersistentCalls:
       m_Calls: []
-  playerAnimator: {fileID: 0}
 --- !u!114 &1573529953418011309
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68,7 +66,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cutsceneMappings:
   - cutsceneName: Cutscenetest
-    cutsceneData: {fileID: 11400000, guid: 35d06561f6430284a8187c91a21d781f, type: 2}
+    timelineAsset: {fileID: 11400000, guid: a5ab8128e1a7d0d4d9705f55ca6c818f, type: 2}
   cutsceneHandler: {fileID: 1013551616924425515}
 --- !u!320 &8518434691970240673
 PlayableDirector:
@@ -79,7 +77,7 @@ PlayableDirector:
   m_GameObject: {fileID: 1353195829919808630}
   m_Enabled: 1
   serializedVersion: 3
-  m_PlayableAsset: {fileID: 0}
+  m_PlayableAsset: {fileID: 11400000, guid: a2fff443215143b4ca7a31b9cb9870be, type: 2}
   m_InitialState: 0
   m_WrapMode: 2
   m_DirectorUpdateMode: 1

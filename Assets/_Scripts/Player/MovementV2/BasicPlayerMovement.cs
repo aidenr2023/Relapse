@@ -188,9 +188,9 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
             }
         }
 
-        // set walking true in animator
-        if (PlayerAnimator != null)
-            PlayerAnimator?.SetBool("Walking", true);
+        // // set walking true in animator
+        // if (PlayerAnimator != null)
+        //     PlayerAnimator?.SetBool("Walking", true);
 
         // Reset the parent component's isSprintToggled flag if there is no forward input
         if (_movementInput == Vector2.zero)
