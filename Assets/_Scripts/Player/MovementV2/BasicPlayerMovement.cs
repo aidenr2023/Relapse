@@ -29,8 +29,6 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
     [SerializeField] private Sound jumpSound;
 
-    [SerializeField] private Transform tempCameraPivot;
-
     #endregion
 
     #region Private Fields
@@ -119,7 +117,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     {
         // Unregister this script with the input manager
         InputManager.Instance.Unregister(this);
-        
+
         _movementInput = Vector2.zero;
     }
 
@@ -178,7 +176,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     {
         // Get the movement input
         _movementInput = obj.ReadValue<Vector2>();
-        
+
         // If the current control scheme is controller
         if (InputManager.Instance.CurrentControlScheme == InputManager.ControlSchemeType.Gamepad)
         {
@@ -249,33 +247,24 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         UpdateFootsteps();
 
         //check if the player is on the ground
-        float heightAboveGround = GetHeightAboveGround();
+        var heightAboveGround = GetHeightAboveGround();
         PlayerAnimator?.SetFloat("JumpHeight", heightAboveGround);
 
-        //REMOVE LATER - FLIGHT DEBUG
-        if (Input.GetKey("f"))
-        {
-            flight();
-        }
-        else
-        {
-            stopFlight();
-        }
+        // TODO: REMOVE LATER - FLIGHT DEBUG
+        if (Input.GetKey(KeyCode.F))
+            Flight();
     }
-    public void flight()
-    {
-        ParentComponent.Rigidbody.useGravity = false;
-        var cameraTransform = tempCameraPivot.transform;
 
+    private void Flight()
+    {
         // Get the camera's forward without the y component
-        var cameraForward = new Vector3(cameraTransform.forward.x, cameraTransform.forward.y, cameraTransform.forward.z).normalized;
-        //Debug.Log("F Pressed");
-        ParentComponent.Rigidbody.position += cameraForward * Time.deltaTime * 20;
-    }
-    public void stopFlight()
-    {
-        ParentComponent.Rigidbody.useGravity = true;
+        var cameraForward = ParentComponent.CameraPivot.transform.forward;
 
+        // Stop the velocity
+        ParentComponent.Rigidbody.velocity = Vector3.zero;
+
+        // Move the player forward
+        ParentComponent.Rigidbody.position += cameraForward * (Time.deltaTime * 20);
     }
 
     private float GetHeightAboveGround()
@@ -464,7 +453,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
                 _footstepTimer.ForcePercent(1);
         }
     }
-    
+
     private void ApplyLateralSpeedLimit()
     {
         var vel = ParentComponent.Rigidbody.velocity;
