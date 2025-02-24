@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Explosion : MonoBehaviour, IPower
@@ -38,38 +39,29 @@ public class Explosion : MonoBehaviour, IPower
 
     public void Use(PlayerPowerManager powerManager, PowerToken pToken)
     {
-        // Get the caster's collider
-        var casterCollider = powerManager.Player.GetComponent<Collider>();
-
-        // Get the explosion position
-        var explosionPosition = powerManager.Player.PlayerController.CameraPivot.transform.position;
-
-        // Create a sphere cast that checks for all colliders within the explosion radius
-        var colliders = Physics.OverlapSphere(explosionPosition, explosionRadius);
-
-        // Loop through all colliders
-        foreach (var cCollider in colliders)
+        // Create a new list to avoid concurrent modification
+        var enemies = new List<Enemy>(Enemy.Enemies);
+        
+        // Add enemies to the list if they are within the explosion radius
+        foreach (var enemy in enemies)
         {
-            // Skip the caster's collider
-            if (cCollider == casterCollider)
+            // Continue if the enemy is null
+            if (enemy == null)
                 continue;
 
-            // Add an explosion force to the collider
-            if (cCollider.TryGetComponentInParent(out Rigidbody rb))
-                rb.AddExplosionForce(explosionForce, explosionPosition, explosionRadius);
+            // Get the distance between the player and the enemy
+            var distance = Vector3.Distance(powerManager.Player.transform.position, enemy.transform.position);
 
-            // Get the Actor component of the collider
-            if (!cCollider.TryGetComponentInParent(out IActor actor))
+            // Skip the enemy if it is out of range
+            if (distance > explosionRadius)
                 continue;
-
-            Debug.Log($"Explosion: {actor.GameObject.name}");
-
-            // If the collider has a health component
-            // Deal damage to the health component
-            // TODO: Increase damage & make it scale with distance
-            actor.ChangeHealth(-explosionDamage, powerManager.Player.PlayerInfo, this,
-                actor.GameObject.transform.position
-            );
+            
+            // Deal damage to the enemy
+            enemy.EnemyInfo.ChangeHealth(-explosionDamage, powerManager.Player.PlayerInfo, this, enemy.transform.position);
+            
+            // Add an explosion force to the enemy
+            if (enemy.TryGetComponent(out Rigidbody rb))
+                rb.AddExplosionForce(explosionForce, powerManager.Player.transform.position, explosionRadius);
         }
 
         // Create the explosion particles
