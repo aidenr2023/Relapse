@@ -178,7 +178,8 @@ public class PlayerLook : MonoBehaviour, IUsesInput
     {
         // Calculate the constant sensitivity multiplier that does not
         // depend on x or y sensitivity / input
-        var constantSense = sensitivityMultiplier * Time.deltaTime;
+        // var constantSense = sensitivityMultiplier * Time.deltaTime;
+        var constantSense = sensitivityMultiplier * Time.unscaledDeltaTime;
 
         // If the player's selected enemy is not null, 
         // Apply the aim assist
@@ -302,7 +303,7 @@ public class PlayerLook : MonoBehaviour, IUsesInput
         desiredLookRotation =
             Quaternion.Slerp(
                 desiredLookRotation, acceptedRotation,
-                CustomFunctions.FrameAmount(wallRunLookLockLerpAmount)
+                CustomFunctions.FrameAmount(wallRunLookLockLerpAmount, false, true)
             );
         // desiredLookRotation = acceptedRotation;
 

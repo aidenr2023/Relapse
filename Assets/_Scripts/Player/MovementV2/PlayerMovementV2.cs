@@ -61,6 +61,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     [SerializeField, Range(0, 1)] private float enemyNearbySpeedMult = 1;
 
+    [Header("Bullet Time")] [SerializeField, Range(0, 1)]
+    private float bulletTimeSpeedMult = .5f;
+
     #endregion
 
     #region Private Fields
@@ -94,6 +97,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     private CountdownTimer _staminaRegenDelayTimer;
 
     private float _midAirTime;
+
+    private TokenManager<float>.ManagedToken _bulletTimeToken;
 
     #endregion
 
@@ -226,6 +231,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Add this object to the debug manager
         DebugManager.Instance.AddDebuggedObject(this);
 
+        // Create the bullet time token
+        _bulletTimeToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(1, -1, true);
+
         // Create the movement scripts stack
         _movementScripts = new CustomStack<PlayerMovementScript>();
 
@@ -322,6 +330,25 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             _midAirTime += Time.fixedDeltaTime;
         else
             _midAirTime = 0;
+
+        // Update the bullet time
+        UpdateBulletTime();
+    }
+
+    private void UpdateBulletTime()
+    {
+        // Determine the desired amount of bullet time
+        float desiredAmount = 1;
+
+        if (ParentComponent.AreEnemiesNearby && !IsGrounded)
+            desiredAmount = bulletTimeSpeedMult;
+
+        // Set the bullet time token value
+        _bulletTimeToken.Value =
+            Mathf.Lerp(_bulletTimeToken.Value, desiredAmount, CustomFunctions.FrameAmount(.1f, true, true));
+        
+        if (Mathf.Abs(_bulletTimeToken.Value - desiredAmount) < .001f)
+            _bulletTimeToken.Value = desiredAmount;
     }
 
     private void UpdateGroundCheck()
@@ -878,7 +905,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         InputManager.Instance.IsExternallyDisabled = true;
         Debug.Log("Player Controls Disabled");
     }
-    
+
     public void EnablePlayerControls()
     {
         InputManager.Instance.IsExternallyDisabled = false;
