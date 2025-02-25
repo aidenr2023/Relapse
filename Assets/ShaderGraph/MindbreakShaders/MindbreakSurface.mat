@@ -28,6 +28,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: 4fe012b870bf35d4fadbb7987cd59977, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_9b71323e6cb841059b891a9ffc850def_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: bf7601c498292b34d9e9f47cbf38cfbc, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _TexBaseColor:
         m_Texture: {fileID: 2800000, guid: c079bb6f43ef2a743ba9b64130472048, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -45,7 +49,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Texture:
-        m_Texture: {fileID: 2800000, guid: f6e8e034125c35548b88a78a3445eca8, type: 3}
+        m_Texture: {fileID: 2800000, guid: bf7601c498292b34d9e9f47cbf38cfbc, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Texture2DAsset_06217d9c6e5045b0957ffbaf7ad51fe4_Out_0_Texture2D:
@@ -70,11 +74,17 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AlphaClip: 0
+    - _AlphaToMask: 0
+    - _Blend: 0
     - _Brightness: 3
+    - _CastShadows: 1
     - _Contrast: 131.68
+    - _Cull: 2
     - _Density: 0.02
+    - _DstBlend: 0
     - _FlickerSpeed: 3
-    - _FloatSpeed: 0.5
+    - _FloatSpeed: 0.01
     - _FresnelPower: 0
     - _IntersectPower: 1.09
     - _Max: 0.4
@@ -83,7 +93,12 @@ Material:
     - _Power: 3
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _SrcBlend: 1
+    - _Surface: 0
     - _Tiling: 0
+    - _ZTest: 4
+    - _ZWrite: 1
+    - _ZWriteControl: 0
     - _contrast: 0
     - _tmp: 1
     m_Colors:
@@ -91,7 +106,7 @@ Material:
     - _Color: {r: 0.53333336, g: 0.92156863, b: 0.7176471, a: 1}
     - _Color_1: {r: 0.25943398, g: 0.99274844, b: 1, a: 0}
     - _IntersectColor: {r: 0.7490195, g: 0.7490195, b: 0.7490195, a: 0}
-    - _Tiling: {r: 0, g: 0.5, b: 0, a: 0}
+    - _Tiling: {r: 5, g: 5, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &7229746274556451154
 MonoBehaviour:
