@@ -57,7 +57,7 @@ public class TimeScaleManager : IDebugged
         _menuPauseToken.Value = MenuManager.Instance.IsGamePausedInMenus ? 0 : 1;
     }
 
-    private float GetCalculatedValue()
+    public float GetCalculatedValue()
     {
         var value = 1f;
 

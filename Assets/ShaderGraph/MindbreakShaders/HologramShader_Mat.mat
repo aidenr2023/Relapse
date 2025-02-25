@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: HologramShader
+  m_Name: HologramShader_Mat
   m_Shader: {fileID: -6465566751694194690, guid: b111b4f1bf7b6cf4a9f471ea1329633d,
     type: 3}
   m_Parent: {fileID: 0}
@@ -68,10 +68,13 @@ Material:
     - _CastShadows: 1
     - _Cull: 2
     - _DstBlend: 10
-    - _FlickerSpeed: 0
+    - _FPS: 12
+    - _FlickerSpeed: 1
     - _FresnelPower: 3
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _RandMax: 0.05
+    - _RandMin: -0.05
     - _SrcBlend: 5
     - _Surface: 1
     - _VertexOffset: 0.05

@@ -15,7 +15,7 @@ public class UILookAtCam : MonoBehaviour
     private void Start()
     {
         // Look at the camera
-        if (useStart)
+        // if (useStart)
             LookAtCamera();
     }
 

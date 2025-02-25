@@ -34,14 +34,13 @@ public class PowerIconController : MonoBehaviour
     {
         var desiredAlpha = _isVisible ? 1 : 0;
 
-        const float defaultFrameTime = 1 / 60f;
-        var frameAmount = Time.unscaledDeltaTime / defaultFrameTime;
-
         // Lerp the alpha
-        canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, desiredAlpha, visibilityLerpAmount * frameAmount);
+        canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, desiredAlpha,
+            CustomFunctions.FrameAmount(visibilityLerpAmount, false, true));
 
         // Lerp the color
-        bgImage.color = Color.Lerp(bgImage.color, _targetColor, colorLerpAmount * frameAmount);
+        bgImage.color = Color.Lerp(bgImage.color, _targetColor,
+            CustomFunctions.FrameAmount(colorLerpAmount, false, true));
     }
 
     public void SetFill(float amount)
@@ -50,7 +49,6 @@ public class PowerIconController : MonoBehaviour
 
         // Set the fill amount
         bgImage.fillAmount = amount;
-        // fgImage.fillAmount = amount;
     }
 
     public void SetForeground(Sprite sprite)
@@ -74,11 +72,17 @@ public class PowerIconController : MonoBehaviour
         // Lerp the scale
         const float defaultFrameTime = 1 / 60f;
         var frameAmount = Time.unscaledDeltaTime / defaultFrameTime;
-        
+
         transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * scale, lerpSpeed * frameAmount);
 
         // If the scale is within a certain range, set scale to the scale
         if (Mathf.Abs(transform.localScale.x - scale) < .01f)
             transform.localScale = Vector3.one * scale;
+    }
+
+    public void SetRotation(float rotation)
+    {
+        // Set the rotation
+        fgImage.transform.localEulerAngles = new Vector3(0, 0, rotation);
     }
 }
