@@ -15,7 +15,7 @@ Material:
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 2
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -38,6 +38,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _FPS: 12
     - _Frequency: 1
     - _IsOutlined: 1
     - _IsSelected: 1
@@ -45,11 +46,14 @@ Material:
     - _MinAmplitude: 1
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _RandMax: 12
+    - _RandMin: 0
     - _Scale: 1
     - _SelectedFrequencyMult: 2
     - _SelectedScaleMult: 1.25
+    - _Width: 0.5
     m_Colors:
-    - _Color: {r: 1, g: 0.57758063, b: 0.03433981, a: 1}
+    - _Color: {r: 5.9921575, g: 3.4609542, b: 0.21332875, a: 0.06666667}
     - _SelectedColor: {r: 1, g: 0.57758063, b: 0.035601325, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &7813508282442182575
