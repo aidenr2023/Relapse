@@ -2,15 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.Timeline;
 
 public class GroundCrumbling : MonoBehaviour
 {
     //reference to the timeline component
-    [SerializeField] PlayableAsset crumble;
+    [SerializeField] public PlayableDirector crumble;
    
    //floor object that is shrunk to a invisible state
-   [SerializeField] private GameObject floor;
+   [SerializeField] private GameObject crumblingfloor;
    
+   [SerializeField] private GameObject originalfloor;
    //delay before the floor animation is reversed
    [SerializeField] private float delay = 3f;
    
@@ -18,18 +20,24 @@ public class GroundCrumbling : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        Turnoff();
     }
 
     // as the player enters the trigger, the floor will play an animation
-    private void OnTriggerEnter(Collider other)
+    public void OnTriggerEnter(Collider other)
     {
         if(other.tag =="Player")
         {
-               
-               //floor.SetActive(false);
+            Play();
+            Turnon();
+            //floor.SetActive(false);
         }
     }
-    
+
+    public void Play()
+    {
+        crumble.Play();
+    }
     //once the player exits the trigger, the floor will play a reverse animation
     private void OnTriggerExit(Collider other)
     {
@@ -42,13 +50,15 @@ public class GroundCrumbling : MonoBehaviour
     //turn off the floor object function (optional)
     public void Turnoff()
     {
-        floor.SetActive(false);
+        crumblingfloor.SetActive(false);
+        originalfloor.SetActive(true);
     }
 
     //turn on the floor object function (optional)
     public void Turnon()
     {
-        floor.SetActive(true);
+        crumblingfloor.SetActive(true);
+        originalfloor.SetActive(false);
     }
     
     // Reverse the animation
