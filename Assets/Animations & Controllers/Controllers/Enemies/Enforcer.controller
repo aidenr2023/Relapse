@@ -382,7 +382,7 @@ AnimatorController:
   - serializedVersion: 5
     m_Name: Hurt
     m_StateMachine: {fileID: -7267139449786748733}
-    m_Mask: {fileID: 31900000, guid: d69d06e697d4c31448a465b86240f3ad, type: 2}
+    m_Mask: {fileID: 31900000, guid: beaf463b32f86e64d9275cf3907f2944, type: 2}
     m_Motions: []
     m_Behaviours: []
     m_BlendingMode: 1
@@ -397,7 +397,7 @@ AnimatorController:
     m_Mask: {fileID: 31900000, guid: eaf30450931b14a42b250dcdc986032d, type: 2}
     m_Motions: []
     m_Behaviours: []
-    m_BlendingMode: 1
+    m_BlendingMode: 0
     m_SyncedLayerIndex: -1
     m_DefaultWeight: 1
     m_IKPass: 1
@@ -430,7 +430,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Enforcer_Idle
-  m_Speed: 1
+  m_Speed: 0.5
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 3569492944194187720}
@@ -466,19 +466,10 @@ BlendTree:
     m_CycleOffset: 0
     m_DirectBlendParameter: Speed
     m_Mirror: 0
-  - serializedVersion: 2
-    m_Motion: {fileID: 1827226128182048838, guid: ecbc2964231791b4d9cc55fccff0d124,
-      type: 3}
-    m_Threshold: 1
-    m_Position: {x: 0, y: 0}
-    m_TimeScale: 1
-    m_CycleOffset: 0
-    m_DirectBlendParameter: Speed
-    m_Mirror: 0
   m_BlendParameter: AttackBlend
   m_BlendParameterY: Speed
   m_MinThreshold: 0
-  m_MaxThreshold: 1
+  m_MaxThreshold: 0
   m_UseAutomaticThresholds: 0
   m_NormalizedBlendValues: 0
   m_BlendType: 0
