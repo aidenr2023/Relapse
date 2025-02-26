@@ -8,6 +8,7 @@ public class MeleeAttackHitbox : MonoBehaviour
     [SerializeField] private MeleeEnemyAttack meleeEnemyAttack;
     [SerializeField] private ManagedAudioSource attackSound;
     [SerializeField] private Sound attackSoundClip;
+    [SerializeField] private TrailRenderer trailRenderer;
 
     #endregion
 
@@ -24,6 +25,9 @@ public class MeleeAttackHitbox : MonoBehaviour
         
         // Set the attack sound to be permanent
         attackSound.SetPermanent(true);
+        
+        // Stop the trail renderer
+        StopTrail();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -68,5 +72,23 @@ public class MeleeAttackHitbox : MonoBehaviour
     {
         attackSound.SetPermanent(true);
         attackSound.Play(attackSoundClip);
+    }
+    
+    public void PlayTrail()
+    {
+        // Return if the trail renderer is null
+        if (trailRenderer == null)
+            return;
+        
+        trailRenderer.emitting = true;
+    }
+    
+    public void StopTrail()
+    {
+        // Return if the trail renderer is null
+        if (trailRenderer == null)
+            return;
+        
+        trailRenderer.emitting = false;
     }
 }
