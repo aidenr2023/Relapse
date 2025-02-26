@@ -56,6 +56,10 @@ public class ShootingEnemyProjectile : MonoBehaviour
         // Return if the other collider is not an actor
         if (!other.TryGetComponent(out IActor actor))
             return;
+        
+        // Return if the actor is the shooter
+        if (actor as EnemyInfo == _shootingEnemyAttack.Enemy.EnemyInfo)
+            return;
 
         // Damage the player
         actor.ChangeHealth(-damage, actor, _shootingEnemyAttack, transform.position);
