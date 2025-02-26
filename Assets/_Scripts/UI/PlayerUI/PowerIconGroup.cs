@@ -17,6 +17,8 @@ public class PowerIconGroup : MonoBehaviour
 
     [Space, SerializeField] private TMP_FontAsset font;
 
+    [SerializeField] private Color disabledColor = Color.HSVToRGB(0, 0, .25f);
+
     #endregion
 
     #region Private Fields
@@ -109,9 +111,9 @@ public class PowerIconGroup : MonoBehaviour
 
             // Set the color of the image
             if (currentPower != null && cPower == currentPower)
-                powerImages[i].SetColor(controller.SelectedColor);
+                powerImages[i].SetBgColor(controller.SelectedColor);
             else
-                powerImages[i].SetColor(controller.UnselectedColor);
+                powerImages[i].SetBgColor(controller.UnselectedColor);
 
             // Get the power token
             var powerToken = powerManager.GetPowerToken(cPower);
@@ -122,9 +124,24 @@ public class PowerIconGroup : MonoBehaviour
 
             // Set the fill amount
             else
+            {
                 powerImages[i].SetFill((powerToken.CooldownPercentage != 0)
                     ? powerToken.CooldownPercentage
                     : 1);
+                
+                // If the power is currently cooling down, set the color to the disabled color
+                if (powerToken.IsCoolingDown)
+                {
+                    powerImages[i].SetFgColor(disabledColor);
+                    powerImages[i].SetBgOpacity(1f);
+                    
+                }
+                else
+                {
+                    powerImages[i].SetFgColor(Color.white);
+                    powerImages[i].SetBgOpacity(0f);
+                }
+            }
 
             // Set the sprite of the image
             powerImages[i].SetForeground(cPower.Icon);

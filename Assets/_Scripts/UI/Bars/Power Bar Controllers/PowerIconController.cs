@@ -21,13 +21,15 @@ public class PowerIconController : MonoBehaviour
 
     private bool _isVisible = true;
 
-    private Color _targetColor;
+    private Color _targetBgColor;
+    private Color _targetFgColor;
+    private float _targetBgOpacity = 1;
 
     #endregion
 
     private void Start()
     {
-        _targetColor = bgImage.color;
+        _targetBgColor = bgImage.color;
     }
 
     private void Update()
@@ -38,8 +40,13 @@ public class PowerIconController : MonoBehaviour
         canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, desiredAlpha,
             CustomFunctions.FrameAmount(visibilityLerpAmount, false, true));
 
+        var lerpBgColor = new Color(_targetBgColor.r, _targetBgColor.g, _targetBgColor.b, _targetBgOpacity);
+
         // Lerp the color
-        bgImage.color = Color.Lerp(bgImage.color, _targetColor,
+        bgImage.color = Color.Lerp(bgImage.color, lerpBgColor,
+            CustomFunctions.FrameAmount(colorLerpAmount, false, true));
+
+        fgImage.color = Color.Lerp(fgImage.color, _targetFgColor,
             CustomFunctions.FrameAmount(colorLerpAmount, false, true));
     }
 
@@ -61,10 +68,22 @@ public class PowerIconController : MonoBehaviour
         _isVisible = visible;
     }
 
-    public void SetColor(Color color)
+    public void SetBgColor(Color color)
     {
         // Set the target color
-        _targetColor = new Color(color.r, color.g, color.b, bgImage.color.a);
+        _targetBgColor = new Color(color.r, color.g, color.b);
+    }
+
+    public void SetBgOpacity(float opacity)
+    {
+        _targetBgOpacity = opacity;
+    }
+
+    public void SetFgColor(Color color)
+    {
+        // Set the target color
+        // _targetFgColor = new Color(color.r, color.g, color.b, fgImage.color.a);
+        _targetFgColor = new Color(color.r, color.g, color.b, 1);
     }
 
     public void LerpScale(float scale, float lerpSpeed)
