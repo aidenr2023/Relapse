@@ -37,6 +37,25 @@ public class Regeneration : MonoBehaviour, IPower
 
     public void Use(PlayerPowerManager powerManager, PowerToken pToken)
     {
+        // Add the regeneration amount to the player's health
+        powerManager.Player.PlayerInfo.ChangeHealth(
+            regenerationAmount,
+            powerManager.Player.PlayerInfo,
+            this,
+            powerManager.Player.transform.position
+        );
+        
+        // Instantiate the regeneration particles
+        var particles = Instantiate(regenerationParticles, powerManager.transform);
+
+        // Set the regeneration particles to follow the player
+        particles.transform.localPosition = Vector3.zero;
+
+        // Play the regeneration particles
+        particles.Emit(250);
+        
+        // Destroy the particles' game object after the duration of the particle system
+        Destroy(particles.gameObject, particles.main.duration);
     }
 
     public void StartActiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
@@ -54,7 +73,7 @@ public class Regeneration : MonoBehaviour, IPower
     private void CreateEffectToken(PlayerPowerManager powerManager, PowerToken pToken)
     {
         // Instantiate the regeneration particles
-        var particles = Instantiate(regenerationParticles, powerManager.transform);
+        var particles = Instantiate(regenerationParticles, powerManager.transform.position, Quaternion.identity);
 
         // Set the regeneration particles to follow the player
         particles.transform.localPosition = Vector3.zero;
@@ -68,39 +87,39 @@ public class Regeneration : MonoBehaviour, IPower
 
     public void StartPassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
-        CreateEffectToken(powerManager, pToken);
+        // CreateEffectToken(powerManager, pToken);
     }
 
     public void UpdatePassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
-        // Return if the player's health is less than or equal to 0
-        if (powerManager.Player.PlayerInfo.CurrentHealth <= 0)
-            return;
-
-        var hasData = pToken.TryGetData<ParticleSystem>(REGENERATION_KEY, out var particles);
-
-        // Ensure the player has the regeneration particles
-        if (!hasData)
-            CreateEffectToken(powerManager, pToken);
-
-        powerManager.Player.PlayerInfo.ChangeHealth(
-            regenerationAmount / PowerScriptableObject.PassiveEffectDuration * Time.deltaTime,
-            powerManager.Player.PlayerInfo,
-            this,
-            powerManager.Player.transform.position
-        );
+        // // Return if the player's health is less than or equal to 0
+        // if (powerManager.Player.PlayerInfo.CurrentHealth <= 0)
+        //     return;
+        //
+        // var hasData = pToken.TryGetData<ParticleSystem>(REGENERATION_KEY, out var particles);
+        //
+        // // Ensure the player has the regeneration particles
+        // if (!hasData)
+        //     CreateEffectToken(powerManager, pToken);
+        //
+        // powerManager.Player.PlayerInfo.ChangeHealth(
+        //     regenerationAmount / PowerScriptableObject.PassiveEffectDuration * Time.deltaTime,
+        //     powerManager.Player.PlayerInfo,
+        //     this,
+        //     powerManager.Player.transform.position
+        // );
     }
 
     public void EndPassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
-        // Get the particles from the power token's data dictionary
-        // Remove the particles from the power token's data dictionary
-        _ = pToken.RemoveData<ParticleSystem>(REGENERATION_KEY, out var particles);
-
-        // Stop the particle system
-        particles.Stop();
-
-        // Destroy the particles' game object after the duration of the particle system
-        Destroy(particles.gameObject, particles.main.duration);
+        // // Get the particles from the power token's data dictionary
+        // // Remove the particles from the power token's data dictionary
+        // _ = pToken.RemoveData<ParticleSystem>(REGENERATION_KEY, out var particles);
+        //
+        // // Stop the particle system
+        // particles.Stop();
+        //
+        // // Destroy the particles' game object after the duration of the particle system
+        // Destroy(particles.gameObject, particles.main.duration);
     }
 }

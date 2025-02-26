@@ -104,6 +104,9 @@ public class VirusProjectile : MonoBehaviour, IPowerProjectile
             yield return new WaitForSeconds(tickRate);
         }
         
+        // Remove the actor from the infected actors list
+        Virus.RemoveInfectedActor(actor);
+        
         // Remove the infection VFX
         Destroy(infectionVfx.gameObject);
     }

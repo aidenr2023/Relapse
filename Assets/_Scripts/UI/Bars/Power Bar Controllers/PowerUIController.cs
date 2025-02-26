@@ -25,6 +25,8 @@ public class PowerUIController : MonoBehaviour
     [Space, SerializeField] private Color selectedColor = Color.white;
     [SerializeField] private Color unselectedColor = Color.black;
 
+    [SerializeField] private Color disabledColor = Color.HSVToRGB(0, 0, .25f);
+
     [Space, SerializeField] private TMP_FontAsset font;
 
     #endregion
@@ -53,11 +55,19 @@ public class PowerUIController : MonoBehaviour
         if (Player.Instance.PlayerPowerManager.Powers.Count == 0)
             canvasGroup.alpha = 0;
         else
-            canvasGroup.alpha = 1;        
-        
+            canvasGroup.alpha = 1;
+
         // If the current power is not null
         if (Player.Instance.PlayerPowerManager.CurrentPower != null)
+        {
             currentPowerImage.sprite = Player.Instance.PlayerPowerManager.CurrentPower.Icon;
+
+            if (Player.Instance.PlayerPowerManager.CurrentPowerToken.IsCoolingDown)
+                currentPowerImage.color = new Color(disabledColor.r, disabledColor.g, disabledColor.b,
+                    currentPowerImage.color.a);
+            else
+                currentPowerImage.color = new Color(1, 1, 1, currentPowerImage.color.a);
+        }
 
         powerIconGroup?.UpdateIcons(this);
         powerIconGroupMiddle?.UpdateIcons(this);
