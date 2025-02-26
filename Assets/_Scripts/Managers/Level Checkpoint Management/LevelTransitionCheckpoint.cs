@@ -1,20 +1,25 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class LevelTransitionCheckpoint : LevelCheckpointReset
 {
     private const float TRANSITION_TIME = .5f;
     private const float HOLD_TIME = 1f;
-    
+
+    [SerializeField] private LevelSectionSceneInfo[] scenesToLoad;
+
     protected override void CustomOnTriggerEnter(Collider other, Player player)
     {
         Debug.Log($"Entered the level transition checkpoint with player {player.name}");
 
         // Run the transition to the next scene coroutine
-        DebugManagerHelper.Instance.StartCoroutine(TransitionToNextScene());
+        DebugManagerHelper.Instance.StartCoroutine(TransitionToNextScene(scenesToLoad));
     }
 
-    private static IEnumerator TransitionToNextScene()
+    private static IEnumerator TransitionToNextScene(LevelSectionSceneInfo[] scenesToLoad)
     {
         // Disable the player's controls
         SetPlayerControls(Player.Instance, false);
@@ -33,15 +38,23 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
 
         TransitionOverlay.Instance.SetOpacity(1);
 
+        var loadStartTime = Time.unscaledTime;
+        
+        // Unload the current scene
+        var operations = LoadNextScenes(scenesToLoad);
+
         // Move the player, reset the player to the checkpoint
         LevelCheckpointManager.Instance.ResetToCheckpoint(LevelCheckpointManager.Instance.CurrentCheckpoint);
 
         // Wait for the hold time
-        yield return new WaitForSecondsRealtime(HOLD_TIME);
-
+        yield return new WaitUntil(() => Time.unscaledTime - loadStartTime >= HOLD_TIME);
+        
+        // Wait until all the operations are done
+        yield return new WaitUntil(() => operations.All(operation => operation?.isDone ?? true));
+        
         // Enable the player's controls
         SetPlayerControls(Player.Instance, true);
-        
+
         startTime = Time.unscaledTime;
 
         // While transitioning, fade the screen to black
@@ -52,23 +65,70 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
 
             yield return null;
         }
-        
+
         TransitionOverlay.Instance.SetOpacity(0);
+    }
+
+    private static List<AsyncOperation> LoadNextScenes(LevelSectionSceneInfo[] levelInfo)
+    {
+        // If the array is empty or null, return
+        if (levelInfo == null || levelInfo.Length == 0)
+            return new List<AsyncOperation>();
+
+        // If there is no player, return
+        if (Player.Instance == null)
+            return new List<AsyncOperation>();
+
+        // Move the player back to their original scene
+        Player.Instance.transform.parent = Player.Instance.OriginalSceneObject.transform;
+
+        // Find the scene the player is in
+        var playerSceneField = (SceneField)Player.Instance.gameObject.scene.name;
+
+        // Get the currently managed scenes from the AsyncSceneManager
+        var managedScenes = AsyncSceneManager.Instance.GetManagedScenes();
+
+        // Create a level section scene info array with all the managed scenes EXCEPT the player's scene
+        var scenesToUnload = new List<string>();
+        foreach (var scene in managedScenes)
+        {
+            if (scene == playerSceneField.SceneName)
+                continue;
+
+            scenesToUnload.Add(scene);
+
+            Debug.Log($"Unload: {scene}");
+        }
+
+        // Convert the scenes to unload to a LevelSectionSceneInfo array
+        var scenesToUnloadInfo = scenesToUnload.Select(scene => LevelSectionSceneInfo.Create(null, scene)).ToArray();
+
+        // Create a new SceneLoaderInformation based on the input
+        var sceneLoaderInformation = SceneLoaderInformation.Create(levelInfo, scenesToUnloadInfo);
+
+        // Load the scene
+        // AsyncSceneManager.Instance.DebugLoadSceneSynchronous(sceneLoaderInformation);
+        var operations = AsyncSceneManager.Instance.LoadSceneAsync(sceneLoaderInformation, true);
+
+        // Set the parent of the player back to null
+        Player.Instance.transform.parent = null;
+
+        return operations;
     }
 
     private static void SetPlayerControls(Player player, bool isOn)
     {
         var playerMovementV2 = player.PlayerController as PlayerMovementV2;
-        
+
         // Return if the player movement is null
         if (playerMovementV2 == null)
             return;
-        
+
         if (isOn)
             playerMovementV2.EnablePlayerControls();
         else
             playerMovementV2.DisablePlayerControls();
-        
+
         player.WeaponManager.enabled = isOn;
     }
 }
