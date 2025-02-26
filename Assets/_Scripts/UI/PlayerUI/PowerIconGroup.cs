@@ -51,6 +51,10 @@ public class PowerIconGroup : MonoBehaviour
 
     public void UpdateIcons(PowerUIController controller)
     {
+        // Return if the object is disabled
+        if (!gameObject.activeInHierarchy)
+            return;
+        
         // Update the stay on screen timer
         _powerIconsStayOnScreenTimer.SetMaxTime(powerIconsStayOnScreenTime);
 
