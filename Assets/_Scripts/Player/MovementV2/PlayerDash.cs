@@ -159,7 +159,8 @@ public class PlayerDash : PlayerMovementScript, IDashScript, IUsesInput
         // );
 
         // ParentComponent.Rigidbody.velocity = _dashDirection * dashExitVelocity;
-        ParentComponent.Rigidbody.velocity = _dashDirection * _previousVelocity.magnitude;
+        // ParentComponent.Rigidbody.velocity = _dashDirection * _previousVelocity.magnitude;
+        ParentComponent.Rigidbody.velocity = _dashDirection * (Mathf.Max(ParentComponent.HardSpeedLimit, _previousVelocity.magnitude));
     }
 
     #endregion
