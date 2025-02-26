@@ -159,6 +159,9 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         // Debug.Log($"Activating Hit Box {index}");
 
         meleeAttackHitboxes[index]?.SetEnabled(true);
+        
+        // Play the c
+        meleeAttackHitboxes[index]?.PlayTrail();
     }
 
     public void DeactivateHitBox(int index)
@@ -167,6 +170,9 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
             return;
 
         meleeAttackHitboxes[index]?.SetEnabled(false);
+        
+        // Stop the trail
+        meleeAttackHitboxes[index]?.StopTrail();
     }
 
     #region Debugging
