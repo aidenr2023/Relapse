@@ -46,7 +46,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 1827226128182048838, guid: d1d038d1fcf02bd4bb9a82b18247c124,
+  m_Motion: {fileID: 1827226128182048838, guid: 3dce0df2ced6245488fcd261a8936429,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 
@@ -111,7 +111,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Lesion_Walking TMP
+  m_Name: EnforcerWalking
   m_Speed: 1.75
   m_CycleOffset: 0
   m_Transitions:
@@ -138,7 +138,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Lesion_Idle
+  m_Name: Enforcer_Idle
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -164,7 +164,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Lesion_Attack
+  m_Name: Enforcer_Attack
   m_Speed: 2
   m_CycleOffset: 0
   m_Transitions:
@@ -200,12 +200,6 @@ AnimatorStateMachine:
   - serializedVersion: 1
     m_State: {fileID: -6331599964582779654}
     m_Position: {x: 210, y: -270, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: 7906631825253945109}
-    m_Position: {x: 400, y: -220, z: 0}
-  - serializedVersion: 1
-    m_State: {fileID: 4588207196848138913}
-    m_Position: {x: 450, y: -140, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -240,7 +234,8 @@ BlendTree:
   m_Name: Blend Tree
   m_Childs:
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: d1c08250ac992e9499195a6cf9757221, type: 2}
+    m_Motion: {fileID: 1827226128182048838, guid: 8768cbb8f0679394c89e70ce24c5c5a5,
+      type: 3}
     m_Threshold: 0
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
@@ -248,7 +243,8 @@ BlendTree:
     m_DirectBlendParameter: Speed
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 59e2764d70513f749bc394a4959fe6bc, type: 2}
+    m_Motion: {fileID: 1827226128182048838, guid: 4735302a00cc61840a5421136d3e769a,
+      type: 3}
     m_Threshold: 1
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
@@ -307,7 +303,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Lesion (Creature2)
+  m_Name: Enforcer
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: Attack
@@ -402,7 +398,7 @@ AnimatorState:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Lesion_Idle
+  m_Name: Enforcer_Idle
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -416,7 +412,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 1827226128182048838, guid: 94700a3eb42799f41b9d77a32963b0e1,
+  m_Motion: {fileID: 1827226128182048838, guid: d88d933a1b1e59449bab0bb328d51ce5,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 
@@ -432,7 +428,8 @@ BlendTree:
   m_Name: Blend Tree
   m_Childs:
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: ef8dea3b3a70b664eb54557412ae333d, type: 2}
+    m_Motion: {fileID: 1827226128182048838, guid: c96ef52a4742f3845b3408b7bd35ca00,
+      type: 3}
     m_Threshold: 0
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
@@ -440,7 +437,8 @@ BlendTree:
     m_DirectBlendParameter: Speed
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: aac343b7f458f49418ecc503e0201c37, type: 2}
+    m_Motion: {fileID: 1827226128182048838, guid: ecbc2964231791b4d9cc55fccff0d124,
+      type: 3}
     m_Threshold: 1
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
@@ -526,32 +524,6 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
---- !u!1102 &4588207196848138913
-AnimatorState:
-  serializedVersion: 6
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Stepping
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 59e2764d70513f749bc394a4959fe6bc, type: 2}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
 --- !u!1101 &4795615159981030920
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -577,29 +549,3 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
---- !u!1102 &7906631825253945109
-AnimatorState:
-  serializedVersion: 6
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: newWalk
-  m_Speed: 1
-  m_CycleOffset: 0
-  m_Transitions: []
-  m_StateMachineBehaviours: []
-  m_Position: {x: 50, y: 50, z: 0}
-  m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
-  m_Mirror: 0
-  m_SpeedParameterActive: 0
-  m_MirrorParameterActive: 0
-  m_CycleOffsetParameterActive: 0
-  m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: d1c08250ac992e9499195a6cf9757221, type: 2}
-  m_Tag: 
-  m_SpeedParameter: 
-  m_MirrorParameter: 
-  m_CycleOffsetParameter: 
-  m_TimeParameter: 
