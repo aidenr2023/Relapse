@@ -1,15 +1,19 @@
 using UnityEngine;
 
-public class HeadTracking : MonoBehaviour
+public class EnemyHeadTracking : MonoBehaviour
 {
+    /// <summary>
+    /// This script is used to make the enemy's head & hip track the player
+    /// </summary>
     #region Serialized Fields
-    [SerializeField][Range(0,1)] public float lookAtWeight = 1.0f;
-    [SerializeField] float headHeight = 1.5f;
-    [SerializeField][Range(0,10)] float smoothSpeed = 10f;
-    [SerializeField] private GameObject targetPosition;
-    
+    [SerializeField][Range(0,1)] private float lookAtWeight = 1.0f;
+    [SerializeField] private float headHeight = 1.5f;
+    [SerializeField][Range(0,10)] private float smoothSpeed = 10f;
+    // Assign the target (e.g., player's transform) in the Inspector
+    [SerializeField] private Transform target;
+
     // Hip/Body tracking parameters
-    [SerializeField][Range(0,10)] float bodyRotationSpeed = 5f;
+    [SerializeField][Range(0,10)] private float bodyRotationSpeed = 5f;
     [SerializeField] private bool trackBody = true;
     #endregion
 
@@ -20,33 +24,46 @@ public class HeadTracking : MonoBehaviour
 
     void Start()
     {
-        targetPosition.transform.position = new Vector3(transform.position.x, transform.position.y + headHeight, transform.position.z);
         animator = GetComponent<Animator>();
-    }
 
+        // Optionally adjust the target's position to be at head height.
+        if (target == null && Player.Instance != null)
+        {
+            target = Player.Instance.transform;
+        }
+        
+        {
+            target.position = new Vector3(target.position.x, transform.position.y + headHeight, target.position.z);
+        }
+    }
+    
+    //using Unity Mechanim's IK system to make the enemy's head track the player
     void OnAnimatorIK(int layerIndex)
     {
-        if (animator)
+        if (animator && target != null)
         {
-            // Head tracking
+            // Smooth the look-at position for head tracking.
             smoothLookAtPosition = Vector3.Lerp(
                 smoothLookAtPosition,
-                targetPosition.transform.position,
+                target.position,
                 Time.deltaTime * smoothSpeed
             );
 
             animator.SetLookAtWeight(lookAtWeight);
             animator.SetLookAtPosition(smoothLookAtPosition);
 
-            // Body (hip) rotation tracking
+            // Body (hip) rotation tracking: make the enemy's upper body turn toward the target.
             if (trackBody)
             {
-                Vector3 bodyLookDir = targetPosition.transform.position - transform.position;
-                bodyLookDir.y = 0; // Optional: Remove vertical component
+                // Calculate direction to target, ignoring vertical differences.
+                Vector3 bodyLookDir = target.position - transform.position;
+                bodyLookDir.y = 0;
 
                 if (bodyLookDir != Vector3.zero)
                 {
                     Quaternion targetBodyRotation = Quaternion.LookRotation(bodyLookDir);
+
+                    // Smoothly interpolate the IK-driven body rotation toward the target rotation.
                     animator.bodyRotation = Quaternion.Slerp(
                         animator.bodyRotation,
                         targetBodyRotation,

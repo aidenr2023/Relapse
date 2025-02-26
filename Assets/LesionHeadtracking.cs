@@ -10,7 +10,7 @@ public class LesionHeadtracking : MonoBehaviour
     [SerializeField] private StandardEnemyDetection enemyDetection;
     [Range(0, 1)] [SerializeField] private float weight = 1;
 
-    private void Start()
+    private void Awake()
     {
         // Start a coroutine to find the Player and assign constraints once it's ready
         StartCoroutine(WaitForPlayerAndAssignConstraints());
@@ -21,7 +21,8 @@ public class LesionHeadtracking : MonoBehaviour
         // Wait for the Player object to be present in the scene
         // Wait one frame before retrying
         while (Player.Instance == null)
-            yield return null;
+        
+            yield return new WaitForSeconds(0.1f);
 
         // Debug.Log("Player found. Assigning constraints.");
 
@@ -39,6 +40,8 @@ public class LesionHeadtracking : MonoBehaviour
         // Continuously update the constraint weights based on the enemy detection state
         SetWeight();
     }
+    
+    
 
     private void SetWeight()
     {
@@ -65,12 +68,13 @@ public class LesionHeadtracking : MonoBehaviour
 
     private void SetSourceWeight(MultiAimConstraint constraint, Transform targetTransform)
     {
-        if (targetTransform == null)
-            return;
-        
-        var sources = constraint.data.sourceObjects;
+        if (constraint == null || targetTransform == null) return;
+    
+        var data = constraint.data; // Get a copy of the struct
+        var sources = data.sourceObjects;
         sources.SetTransform(0, targetTransform);
         sources.SetWeight(0, 1f);
-        constraint.data.sourceObjects = sources;
+        data.sourceObjects = sources;
+        constraint.data = data; // Reassign the modified struct
     }
 }
