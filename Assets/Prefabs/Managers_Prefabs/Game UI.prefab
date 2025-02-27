@@ -26264,19 +26264,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canvasGroup: {fileID: 1876464397239733209}
   currentPowerImage: {fileID: 8544188305378369650}
-  powerIconsCanvasGroup: {fileID: 6458104702157909360}
-  powerImages:
-  - {fileID: 8421285658283982582}
-  - {fileID: 1518906092168193207}
-  - {fileID: 3009811812302502454}
-  - {fileID: 2541425144055989595}
+  powerIconGroup: {fileID: 0}
+  powerIconGroupMiddle: {fileID: 0}
   powerIconsMinOpacity: 0.75
   powerIconsOpacityLerpAmount: 0.4
   powerIconsStayOnScreenTime: 1
   powerNameText: {fileID: 274842565618594413}
-  powerIconFadeInOffset: {x: -250, y: 0, z: 0}
+  drugRotation: -45
+  medRotation: 45
   selectedColor: {r: 1, g: 1, b: 1, a: 1}
   unselectedColor: {r: 0, g: 0, b: 0, a: 1}
+  disabledColor: {r: 0.25, g: 0.25, b: 0.25, a: 1}
   font: {fileID: 11400000, guid: 0bc19927327f9834abba8c39c7b043b3, type: 2}
 --- !u!1 &4155249219540250827
 GameObject:
@@ -57961,7 +57959,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5099a84e26384b5cb32f4a9e286326d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  outlineMaterial: {fileID: 2100000, guid: 924af0cc88dad9d41a4da7d3e377c214, type: 2}
+  outlineMaterial: {fileID: 2100000, guid: f404948266f51b54e9c0ce9c7e8b4f67, type: 2}
 --- !u!1 &8890183546392816376
 GameObject:
   m_ObjectHideFlags: 0
