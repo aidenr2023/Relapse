@@ -18,7 +18,7 @@ public class FragmentAppears : MonoBehaviour
         if(other.tag =="Player")
         {
                 fragment.SetActive(true);
-               anim.Play("Fragment"); 
+               anim.Play("Fragment Movement"); 
         }
     }
 }

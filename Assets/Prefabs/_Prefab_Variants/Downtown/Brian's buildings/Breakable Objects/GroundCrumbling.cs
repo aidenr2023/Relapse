@@ -16,11 +16,14 @@ public class GroundCrumbling : MonoBehaviour
    //delay before the floor animation is reversed
    [SerializeField] private float delay = 3f;
    
+   [SerializeField] private Collider collider;
+   
    static string isTriggered = "isTriggered";
     // Start is called before the first frame update
     void Awake()
     {
         Turnoff();
+        collider = GetComponent<Collider>();
     }
 
     // as the player enters the trigger, the floor will play an animation
@@ -37,6 +40,7 @@ public class GroundCrumbling : MonoBehaviour
     public void Play()
     {
         crumble.Play();
+        
     }
     //once the player exits the trigger, the floor will play a reverse animation
     private void OnTriggerExit(Collider other)
@@ -59,12 +63,14 @@ public class GroundCrumbling : MonoBehaviour
     {
         crumblingfloor.SetActive(true);
         originalfloor.SetActive(false);
+        collider.enabled = true;
     }
     
     // Reverse the animation
     IEnumerator Reverse()
     {
         yield return new WaitForSeconds(delay);
+        collider.enabled = false;
         //floor.SetActive(true);
         
         
