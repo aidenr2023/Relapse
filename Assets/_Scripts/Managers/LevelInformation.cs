@@ -42,4 +42,16 @@ public class LevelInformation : MonoBehaviour
     {
         return Instances.TryGetValue(sceneName, out levelInformation);
     }
+
+    private void OnDrawGizmos()
+    {
+        // Return if the starting checkpoint is not null
+        if (startingCheckpoint != null)
+            return;
+
+        // Draw a line from the starting checkpoint to the player
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(transform.position, 0.5f);
+        CustomFunctions.DrawArrow(transform.position + Vector3.up * 1, transform.forward, 0.5f);
+    }
 }

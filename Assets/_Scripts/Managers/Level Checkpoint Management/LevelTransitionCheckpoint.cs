@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelTransitionCheckpoint : LevelCheckpointReset
 {
     private const float TRANSITION_TIME = .5f;
     private const float HOLD_TIME = 1f;
 
+    [SerializeField] private bool useLevelInformation;
     [SerializeField] private LevelSectionSceneInfo[] scenesToLoad;
 
     protected override void CustomOnTriggerEnter(Collider other, Player player)
@@ -19,7 +21,7 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
         DebugManagerHelper.Instance.StartCoroutine(TransitionToNextScene(scenesToLoad));
     }
 
-    private static IEnumerator TransitionToNextScene(LevelSectionSceneInfo[] scenesToLoad)
+    private IEnumerator TransitionToNextScene(LevelSectionSceneInfo[] scenesToLoad)
     {
         // Disable the player's controls
         SetPlayerControls(Player.Instance, false);
@@ -39,19 +41,49 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
         TransitionOverlay.Instance.SetOpacity(1);
 
         var loadStartTime = Time.unscaledTime;
-        
+
         // Unload the current scene
         var operations = LoadNextScenes(scenesToLoad);
 
         // Move the player, reset the player to the checkpoint
         LevelCheckpointManager.Instance.ResetToCheckpoint(LevelCheckpointManager.Instance.CurrentCheckpoint);
 
+        // Get the position and rotation of the checkpoint
+        var checkpointPosition = LevelCheckpointManager.Instance.CurrentCheckpoint.transform.position;
+        var checkpointRotation = LevelCheckpointManager.Instance.CurrentCheckpoint.transform.rotation;
+
         // Wait for the hold time
         yield return new WaitUntil(() => Time.unscaledTime - loadStartTime >= HOLD_TIME);
-        
+
         // Wait until all the operations are done
         yield return new WaitUntil(() => operations.All(operation => operation?.isDone ?? true));
-        
+
+        if (useLevelInformation)
+        {
+            // Get the level information for the active scene
+            var hasLevelInformation =
+                LevelInformation.GetLevelInformation(SceneManager.GetActiveScene().name, out var levelInfo);
+            
+            // If the level information exists, set the player's position and rotation to the starting checkpoint
+            if (hasLevelInformation)
+            {
+                if (levelInfo.StartingCheckpoint != null)
+                    LevelCheckpointManager.Instance.ResetToCheckpoint(levelInfo.StartingCheckpoint);
+                else
+                {
+                    Player.Instance.Rigidbody.Move(levelInfo.transform.position, Player.Instance.Rigidbody.rotation);
+                    Player.Instance.PlayerLook.ApplyRotation(levelInfo.transform.rotation);
+                }
+            }
+
+            // If the level information does not exist, set the player's position and rotation to the starting checkpoint
+            else
+            {
+                Player.Instance.Rigidbody.Move(checkpointPosition, Player.Instance.Rigidbody.rotation);
+                Player.Instance.PlayerLook.ApplyRotation(checkpointRotation);
+            }
+        }
+
         // Enable the player's controls
         SetPlayerControls(Player.Instance, true);
 

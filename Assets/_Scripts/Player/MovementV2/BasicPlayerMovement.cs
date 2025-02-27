@@ -263,8 +263,10 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         // Stop the velocity
         ParentComponent.Rigidbody.velocity = Vector3.zero;
 
+        const float flySpeed = 50;
+        
         // Move the player forward
-        ParentComponent.Rigidbody.position += cameraForward * (Time.deltaTime * 20);
+        ParentComponent.Rigidbody.position += cameraForward * (Time.deltaTime * flySpeed);
     }
 
     private float GetHeightAboveGround()
