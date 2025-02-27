@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SelectionHightlight2_Shader
+  m_Name: ExitSign_Mat
   m_Shader: {fileID: -6465566751694194690, guid: 0b75ff6742179634383782eb5ae8beee,
     type: 3}
   m_Parent: {fileID: 0}
@@ -51,17 +51,23 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _FPS: 12
     - _Frequency: 5
     - _IsOutlined: 1
     - _IsSelected: 0
     - _MaxAmplitude: 2
+    - _MaxDistance: 60
     - _MinAmplitude: 1
+    - _MinDistance: 20
     - _QueueControl: 0
     - _QueueOffset: 0
+    - _RandMax: 0.1
+    - _RandMin: 0.04
     - _Scale: 0.43
     - _SelectedFrequencyMult: 2
     - _SelectedScaleMult: 1.25
+    - _Width: 0.25
     m_Colors:
-    - _Color: {r: 0.05724919, g: 1, b: 0, a: 1}
+    - _Color: {r: 3.9999995, g: 0, b: 0, a: 0.2}
     - _SelectedColor: {r: 0.091415405, g: 1, b: 0, a: 1}
   m_BuildTextureStacks: []
