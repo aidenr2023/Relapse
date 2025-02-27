@@ -173,12 +173,12 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         // Update the tolerance and health
         UpdateToleranceAndHealth();
 
-        if (Input.GetKeyDown(KeyCode.Comma))
-            UserSettings.Instance.SetGamma(UserSettings.Instance.Gamma - 0.1f);
-        if (Input.GetKeyDown(KeyCode.Period))
-            UserSettings.Instance.SetGamma(UserSettings.Instance.Gamma + 0.1f);
-        if (Input.GetKeyDown(KeyCode.Slash))
-            UserSettings.Instance.SetGamma(0);
+        // if (Input.GetKeyDown(KeyCode.Comma))
+        //     UserSettings.Instance.SetGamma(UserSettings.Instance.Gamma - 0.1f);
+        // if (Input.GetKeyDown(KeyCode.Period))
+        //     UserSettings.Instance.SetGamma(UserSettings.Instance.Gamma + 0.1f);
+        // if (Input.GetKeyDown(KeyCode.Slash))
+        //     UserSettings.Instance.SetGamma(0);
 
         if (Input.GetKeyDown(KeyCode.Z))
             FindBadInteractableMaterials();
@@ -208,11 +208,11 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
                 DebugLoadScene(levelInfo10);
         }
 
-        // Deadzone
-        if (Input.GetKeyDown(KeyCode.Semicolon))
-            InputManager.Instance.minimumDeadzone = Mathf.Clamp01(InputManager.Instance.minimumDeadzone - 0.1f);
-        if (Input.GetKeyDown(KeyCode.Quote))
-            InputManager.Instance.minimumDeadzone = Mathf.Clamp01(InputManager.Instance.minimumDeadzone + 0.1f);
+        // // Deadzone
+        // if (Input.GetKeyDown(KeyCode.Semicolon))
+        //     UserSettings.Instance.MinimumLookDeadzone = Mathf.Clamp01(UserSettings.Instance.MinimumLookDeadzone - 0.1f);
+        // if (Input.GetKeyDown(KeyCode.Quote))
+        //     UserSettings.Instance.MinimumLookDeadzone = Mathf.Clamp01(UserSettings.Instance.MinimumLookDeadzone + 0.1f);
     }
 
     private void DebugLoadScene(LevelSectionSceneInfo[] levelInfo)
@@ -349,7 +349,10 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         //         sb.Append($"\t\t{data.Key}: {data.Value}\n");
         // }
 
-        sb.Append($"Minimum Deadzone: {InputManager.Instance.minimumDeadzone}\n");
+        sb.Append(
+            $"Look Deadzone: [{UserSettings.Instance.MinimumLookDeadzone:0.00}, {UserSettings.Instance.MaximumLookDeadzone:0.00}]\n");
+        sb.Append(
+            $"Move Deadzone: [{UserSettings.Instance.MinimumMoveDeadzone:0.00}, {UserSettings.Instance.MaximumMoveDeadzone:0.00}]\n");
 
         return sb.ToString();
     }

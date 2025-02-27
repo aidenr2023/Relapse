@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Processors;
 using UnityEngine.PlayerLoop;
 
 [RequireComponent(typeof(PlayerInput))]
@@ -18,7 +19,7 @@ public class InputManagerHelper : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        
+
         // Set the instance to this
         Instance = this;
 
@@ -51,6 +52,14 @@ public class InputManagerHelper : MonoBehaviour
             InputManager.Instance.SetCurrentControlScheme(InputManager.ControlSchemeType.Gamepad);
         else
             InputManager.Instance.SetCurrentControlScheme(InputManager.ControlSchemeType.Keyboard);
+
+        // Set the minimum deadzones
+        InputManager.Instance.PControls.Player.LookController.ApplyParameterOverride(
+            (StickDeadzoneProcessor d) => d.min, UserSettings.Instance.MinimumLookDeadzone
+        );
+        InputManager.Instance.PControls.PlayerMovementBasic.Move.ApplyParameterOverride(
+            (StickDeadzoneProcessor d) => d.min, UserSettings.Instance.MinimumMoveDeadzone
+        );
     }
 
     /// <summary>

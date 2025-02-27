@@ -3,11 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Processors;
 
 public class InputManager
 {
-    public float minimumDeadzone = 0f;
-    
     #region Singleton Pattern
 
     private static InputManager _instance;
@@ -42,12 +41,13 @@ public class InputManager
 
     public DefaultInputActions DefaultInputActions { get; }
 
-    public bool IsCursorActive => MenuManager.Instance.IsCursorActiveInMenus && CurrentControlScheme == ControlSchemeType.Keyboard;
+    public bool IsCursorActive =>
+        MenuManager.Instance.IsCursorActiveInMenus && CurrentControlScheme == ControlSchemeType.Keyboard;
 
     public bool IsControlsDisabled => MenuManager.Instance.IsControlsDisabledInMenus || IsExternallyDisabled;
 
     public ControlSchemeType CurrentControlScheme => _currentControlScheme;
-    
+
     public bool IsExternallyDisabled { get; set; }
 
     #endregion
@@ -63,7 +63,7 @@ public class InputManager
         // Enable the PlayerControls
         PControls = new PlayerControls();
         PControls.Enable();
-        
+
         // Create a new instance of the OtherControls
         // Enable the OtherControls
         OtherControls = new PlayerControls();
@@ -165,7 +165,7 @@ public class InputManager
     }
 
     #endregion
-    
+
     public enum ControlSchemeType
     {
         Keyboard,
