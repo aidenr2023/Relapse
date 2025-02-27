@@ -177,17 +177,6 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         // Get the movement input
         _movementInput = obj.ReadValue<Vector2>();
 
-        // If the current control scheme is controller
-        if (InputManager.Instance.CurrentControlScheme == InputManager.ControlSchemeType.Gamepad)
-        {
-            // If the magnitude of the movement input is less than the deadzone, set it to zero
-            if (_movementInput.magnitude < InputManager.Instance.minimumDeadzone)
-            {
-                _movementInput = Vector2.zero;
-                Debug.Log($"Setting movement input to zero");
-            }
-        }
-
         // // set walking true in animator
         // if (PlayerAnimator != null)
         //     PlayerAnimator?.SetBool("Walking", true);

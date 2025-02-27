@@ -94,15 +94,6 @@ public class PlayerLook : MonoBehaviour, IUsesInput
         // read the value of the look input
         var value = obj.ReadValue<Vector2>();
         
-        Debug.Log($"Value: {value}");
-        
-        // If the magnitude of the value is less than the deadzone, return
-        if (value.magnitude / 50 < InputManager.Instance.minimumDeadzone)
-        {
-            Debug.Log($"Returning: {value.magnitude}");
-            value = Vector2.zero;
-        }
-        
         // Call the look performed function
         OnLookPerformed(value);
     }
