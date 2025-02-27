@@ -13,8 +13,9 @@ public class CutsceneHandler : MonoBehaviour
     private PlayableDirector _director;
     private Animator _playerCutsceneAnimator;
     private bool _isCutsceneActive;
-    
+    public bool IsPlayerMovementNeeded { get; private set; }
 
+    
     private void Start()
     {
         _director = GetComponent<PlayableDirector>();
@@ -38,13 +39,15 @@ public class CutsceneHandler : MonoBehaviour
             Debug.LogError("[HANDLER] Player Animator not found!");
         }
     }
-
-    public void PlayCutscene(PlayableAsset timelineAsset)
+    
+    
+    public void PlayCutscene(PlayableAsset timelineAsset, bool isMovementNeeded)
     {
         if (_isCutsceneActive) return;
 
         if (!ValidateDependencies(timelineAsset)) return;
-
+        
+        IsPlayerMovementNeeded = isMovementNeeded;
         StartCoroutine(PlayCutsceneDelayed(timelineAsset));
     }
 

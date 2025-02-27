@@ -281,7 +281,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
                 MovementInput.magnitude < .125f ||
                 !BasicPlayerMovement.CanSprint ||
                 Rigidbody.velocity.magnitude < 1f
-            )
+            ) &&
+            CurrentMovementScript == BasicPlayerMovement &&
+            IsGrounded
            )
         {
             _isSprinting = false;
@@ -346,7 +348,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Set the bullet time token value
         _bulletTimeToken.Value =
             Mathf.Lerp(_bulletTimeToken.Value, desiredAmount, CustomFunctions.FrameAmount(.1f, true, true));
-        
+
         if (Mathf.Abs(_bulletTimeToken.Value - desiredAmount) < .001f)
             _bulletTimeToken.Value = desiredAmount;
     }

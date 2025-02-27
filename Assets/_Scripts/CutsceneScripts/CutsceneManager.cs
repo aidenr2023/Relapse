@@ -87,7 +87,7 @@ public class CutsceneManager : MonoBehaviour
     #endregion
 
     #region Public API
-    public void PlayCutsceneByName(string cutsceneName)
+    public void PlayCutsceneByName(string cutsceneName, bool isPlayerMovementNeeded)
     {
         if (!cutsceneDictionary.TryGetValue(cutsceneName, out PlayableAsset asset))
         {
@@ -95,6 +95,7 @@ public class CutsceneManager : MonoBehaviour
             
             return;
         }
+        cutsceneHandler.PlayCutscene(asset, !isPlayerMovementNeeded);
         
 
         if (activeDirector == null)
@@ -113,7 +114,7 @@ public class CutsceneManager : MonoBehaviour
     {
         try
         {
-           cutsceneHandler.PlayCutscene(asset);// pass the asset directly
+           cutsceneHandler.PlayCutscene(asset, cutsceneHandler.IsPlayerMovementNeeded);// pass the asset directly
         }
         catch (System.Exception e)
         {
