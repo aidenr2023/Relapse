@@ -19,6 +19,8 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
     [SerializeField] private CountdownTimer searchDetectionTimer;
     [SerializeField] private CountdownTimer pursuitDetectionTimer;
 
+    [SerializeField] private LayerMask layersToIgnore;
+
     [Header("Debugging")] [SerializeField] private Canvas debugCanvas;
     [SerializeField] private Slider pursuitDetectionSlider;
     [SerializeField] private TMP_Text pursuitDetectionText;
@@ -338,7 +340,7 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
             return false;
 
         // Create a layerMask to ignore the NonPhysical layer
-        var layerMask = ~(1 << LayerMask.NameToLayer("NonPhysical"));
+        var layerMask = ~layersToIgnore;
 
         var currentVisionDistance = visionDistance;
 
