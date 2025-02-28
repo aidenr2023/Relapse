@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 8153961576159755247}
   - component: {fileID: 6662130356791514520}
   - component: {fileID: 4024274575373556860}
+  - component: {fileID: 6197095761067471324}
+  - component: {fileID: 3644546563798120321}
   m_Layer: 0
   m_Name: ElectricalCabinet_Low
   m_TagString: Untagged
@@ -115,6 +117,31 @@ MonoBehaviour:
           m_StringArgument: AnimatedWall1
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 6197095761067471324}
+        m_TargetAssemblyTypeName: DynamicMaterialManager, Assembly-CSharp
+        m_MethodName: ChangeMaterial
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 2100000, guid: dd87e515cfc11934aa0e89d1e61da18e,
+            type: 2}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Material, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: AnimatedWall2_anim
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 3644546563798120321}
+        m_TargetAssemblyTypeName: CameraShakeHelper, Assembly-CSharp
+        m_MethodName: ShakeCamera
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: AnimatedWall2_anim
+          m_BoolArgument: 0
+        m_CallState: 2
   hasBeenActivated: 0
 --- !u!64 &4024274575373556860
 MeshCollider:
@@ -138,3 +165,34 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 8329140447030603302, guid: f0b4051d5d67c984594132e98b437971, type: 3}
+--- !u!114 &6197095761067471324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7649448260880308794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94eab057769841bb9c0e4980280b3da5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 2100000, guid: 22dd4d8cd8751df479a26194e0f34955, type: 2}
+  renderersToExclude: []
+--- !u!114 &3644546563798120321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7649448260880308794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd570b33a22545959510a588bca9de67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  noiseToken:
+    pivotOffset: {x: 0, y: 0, z: 0}
+    amplitudeGain: 0.5
+    frequencyGain: 1
+  shakeDuration: 4

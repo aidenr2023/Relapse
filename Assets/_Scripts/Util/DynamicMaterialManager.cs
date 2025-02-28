@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class DynamicMaterialManager : MonoBehaviour
@@ -62,7 +63,9 @@ public class DynamicMaterialManager : MonoBehaviour
 
     public void AddMaterial()
     {
-        foreach (var cRenderer in _materials.Keys)
+        var renderers = _materials.Keys.ToArray();
+        
+        foreach (var cRenderer in renderers)
         {
             // If the cRenderer is null, continue
             if (cRenderer == null)
