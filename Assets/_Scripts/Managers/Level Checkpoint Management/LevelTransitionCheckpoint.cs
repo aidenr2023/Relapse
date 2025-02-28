@@ -10,7 +10,7 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
     private const float TRANSITION_TIME = .5f;
     private const float HOLD_TIME = 1f;
 
-    [SerializeField] private bool useLevelInformation;
+    [SerializeField] private bool useLevelInformation = true;
     [SerializeField] private LevelSectionSceneInfo[] scenesToLoad;
 
     protected override void CustomOnTriggerEnter(Collider other, Player player)
@@ -21,7 +21,7 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
         DebugManagerHelper.Instance.StartCoroutine(TransitionToNextScene(scenesToLoad));
     }
 
-    private IEnumerator TransitionToNextScene(LevelSectionSceneInfo[] scenesToLoad)
+    private IEnumerator TransitionToNextScene(LevelSectionSceneInfo[] scenes)
     {
         // Disable the player's controls
         SetPlayerControls(Player.Instance, false);
@@ -32,7 +32,7 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
         // While transitioning, fade the screen to black
         while (Time.unscaledTime - startTime < TRANSITION_TIME)
         {
-            var lerpValue = (Time.unscaledTime - startTime) / TRANSITION_TIME;
+            var lerpValue = Mathf.InverseLerp(startTime, startTime + TRANSITION_TIME, Time.unscaledTime);
             TransitionOverlay.Instance.SetOpacity(lerpValue);
 
             yield return null;
@@ -42,22 +42,33 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
 
         var loadStartTime = Time.unscaledTime;
 
+        //  // Move the player, reset the player to the checkpoint
+        // LevelCheckpointManager.Instance.ResetToCheckpoint(LevelCheckpointManager.Instance.CurrentCheckpoint);
+
+        // // Get the position and rotation of the checkpoint
+        // var checkpointPosition = LevelCheckpointManager.Instance.CurrentCheckpoint.transform.position;
+        // var checkpointRotation = LevelCheckpointManager.Instance.CurrentCheckpoint.transform.rotation;
+
+        // Kill the player's velocity
+        Player.Instance.Rigidbody.velocity = Vector3.zero;
+        
         // Unload the current scene
-        var operations = LoadNextScenes(scenesToLoad);
+        var operations = LoadNextScenes(scenes);
+        // LoadNextSceneSync(scenes);
 
-        // Move the player, reset the player to the checkpoint
-        LevelCheckpointManager.Instance.ResetToCheckpoint(LevelCheckpointManager.Instance.CurrentCheckpoint);
-
-        // Get the position and rotation of the checkpoint
-        var checkpointPosition = LevelCheckpointManager.Instance.CurrentCheckpoint.transform.position;
-        var checkpointRotation = LevelCheckpointManager.Instance.CurrentCheckpoint.transform.rotation;
-
+        yield return null;
+        
+        Debug.Log($"After Yield - {useLevelInformation}");
+        
         // Wait for the hold time
         yield return new WaitUntil(() => Time.unscaledTime - loadStartTime >= HOLD_TIME);
 
         // Wait until all the operations are done
         yield return new WaitUntil(() => operations.All(operation => operation?.isDone ?? true));
 
+        // Kill the player's velocity again
+        Player.Instance.Rigidbody.velocity = Vector3.zero;
+        
         if (useLevelInformation)
         {
             // Get the level information for the active scene
@@ -68,9 +79,13 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
             if (hasLevelInformation)
             {
                 if (levelInfo.StartingCheckpoint != null)
+                {
+                    Debug.Log($"Resetting to checkpoint {levelInfo.StartingCheckpoint.name}");
                     LevelCheckpointManager.Instance.ResetToCheckpoint(levelInfo.StartingCheckpoint);
+                }
                 else
                 {
+                    Debug.Log($"Resetting to level info position {levelInfo.transform.position}");
                     Player.Instance.Rigidbody.Move(levelInfo.transform.position, Player.Instance.Rigidbody.rotation);
                     Player.Instance.PlayerLook.ApplyRotation(levelInfo.transform.rotation);
                 }
@@ -79,8 +94,9 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
             // If the level information does not exist, set the player's position and rotation to the starting checkpoint
             else
             {
-                Player.Instance.Rigidbody.Move(checkpointPosition, Player.Instance.Rigidbody.rotation);
-                Player.Instance.PlayerLook.ApplyRotation(checkpointRotation);
+                Debug.Log($"Resetting to checkpoint Old Checkpoint???");
+                // Player.Instance.Rigidbody.Move(checkpointPosition, Player.Instance.Rigidbody.rotation);
+                // Player.Instance.PlayerLook.ApplyRotation(checkpointRotation);
             }
         }
 
