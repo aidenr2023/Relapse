@@ -12,6 +12,7 @@ public class CutsceneTrigger : MonoBehaviour
     private CutsceneHandler cutsceneHandler;
     
     [SerializeField] private bool isCamChangeNeeded = true;
+    
     [SerializeField] private bool isPlayerMovementNeeded = true;
     public bool IsCamChangeNeeded => isCamChangeNeeded;
 
@@ -20,6 +21,7 @@ public class CutsceneTrigger : MonoBehaviour
     private void Start()
     {
         cutsceneHandler = CutsceneManager.Instance.CutsceneHandler;
+        cutsceneHandler.IsPlayerMovementNeeded = isPlayerMovementNeeded;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -38,7 +40,7 @@ public class CutsceneTrigger : MonoBehaviour
     private IEnumerator TriggerCutsceneDelayed()
     {
         yield return null;
-        CutsceneManager.Instance.PlayCutsceneByName(cutsceneName, cutsceneHandler.IsPlayerMovementNeeded);
+        CutsceneManager.Instance.PlayCutsceneByName(cutsceneName, isPlayerMovementNeeded);
         cutscenePlayed = true;
     }
     

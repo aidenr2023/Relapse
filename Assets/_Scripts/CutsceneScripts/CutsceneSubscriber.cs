@@ -2,90 +2,80 @@ using System;
 using UnityEngine;
 using System.Collections;
 
-/// <summary>
-/// Listens to cutscene events from the CutsceneHandler and disables or enables player movement and UI accordingly.
-/// </summary>
 public class CutsceneSubscriber : MonoBehaviour
 {
     #region References
+
     private CutsceneHandler _cutsceneHandler;
-    PlayerMovementV2 _playerMovementV2;
-    private PlayerActions _playerActions;
-    public GameObject playerUI;
+    private PlayerMovementV2 _playerMovementV2;
     private PlayerLook _playerCameraMovement;
     private Animator _playerCutsceneAnimator;
     private WeaponManager _weaponManager;
-    private readonly Quaternion _storedRotation = Quaternion.identity;
-    //[SerializeField] CutsceneTrigger cutsceneTrigger;
-    [SerializeField]private GameObject _playerTransform;
+    
+    [Header("References")]
+    
+    [Header("Player Reference")]
+    [SerializeField] private Transform _playerTransform;
+    [SerializeField] private Animator _playerAnimator;
+
+    [Header("Rotation Settings")]
+    [SerializeField] private float _rotationResetDelay = 0.1f;
+    [SerializeField] private float _maxRotationCheckTime = 2f;
+    private Quaternion _initialRotation;
+
+    [Header("Rotation Validation")] 
+    [SerializeField] private float _checkInterval = 0.3f;
+    [SerializeField] private float _maxCheckDuration = 3f;
+    [SerializeField] private float _angleThreshold = 1f;
+
     #endregion
 
-    public Animator PlayerCutsceneAnimatorRef => _playerCutsceneAnimator;
-    [Tooltip("Reset player rotation to (0,0,0) instead of stored rotation?")]
+    [Tooltip("Reset player rotation to (0,0,0) instead of stored rotation?")] 
     [SerializeField] private bool resetRotationToZero = true;
 
-    private void Awake()
-    {
-        
-    }
+    private Coroutine _rotationCheckCoroutine;
+    private Quaternion _storedRotation;
 
     private void Start()
     {
-        // Get your references as before.
+        _initialRotation = _playerTransform.rotation;
+        InitializeComponents();
+        SetupCutsceneListeners();
+    }
+
+    private void InitializeComponents()
+    {
         _playerMovementV2 = GetComponent<PlayerMovementV2>();
         _playerCameraMovement = GetComponent<PlayerLook>();
         _weaponManager = GetComponent<WeaponManager>();
         _playerCutsceneAnimator = GetComponent<Animator>();
-        //get the player gameobject
-        _playerTransform = GameObject.FindGameObjectWithTag("Player");
 
         if (CutsceneManager.Instance != null)
         {
-            Debug.Log("[PLAYER Animator] Registering player with CutsceneManager");
             CutsceneManager.Instance.RegisterPlayer(_playerCutsceneAnimator);
             _cutsceneHandler = CutsceneManager.Instance.CutsceneHandler;
-
         }
         else
         {
             Debug.LogError("CutsceneManager not found");
         }
-            // When isPlayerMovementNeeded is false, disable movement.
-            if (!_cutsceneHandler.IsPlayerMovementNeeded)
-            {
-                _cutsceneHandler.OnCutsceneStart.AddListener(DisableListener);
-                _cutsceneHandler.OnCutsceneEnd.AddListener(EnableListener);
-              //  _cutsceneHandler.OnCutsceneStart.AddListener(DisableUI);
-               // _cutsceneHandler.OnCutsceneEnd.AddListener(EnableUI);
-            }
-            else
-            {
-                // Optionally handle other cutscene events if player movement remains enabled.
-                Debug.Log("Player movement is allowed during cutscene; controls remain enabled.");
-                _cutsceneHandler.OnCutsceneStart.AddListener(PlayScriptedEvents);
-                _cutsceneHandler.OnCutsceneEnd.AddListener(StopScriptedEvents);
-            }
     }
 
-    public void PlayScriptedEvents()
+    private void SetupCutsceneListeners()
     {
-        // Play scripted events here
+        if (_cutsceneHandler == null) return;
+
+        _cutsceneHandler.OnCutsceneStart.AddListener(OnCutsceneStart);
+        _cutsceneHandler.OnCutsceneEnd.AddListener(OnCutsceneEnd);
+    }
+
+    private void OnCutsceneStart()
+    {
+        _initialRotation = _playerTransform.rotation;
         
-    }
-    
-    public void StopScriptedEvents()
-    {
-        // Stop scripted events here
-    }
-    
-
-    public void DisableListener()
-    {
-        // Dynamic check of the movement flag
         if (!_cutsceneHandler.IsPlayerMovementNeeded)
         {
-            DisableMovement();
-            DisableUI();
+            DisablePlayerSystems();
         }
         else
         {
@@ -93,91 +83,114 @@ public class CutsceneSubscriber : MonoBehaviour
         }
     }
 
-    public void EnableListener()
+    private void OnCutsceneEnd()
     {
+        
         if (!_cutsceneHandler.IsPlayerMovementNeeded)
         {
-            EnableMovement();
-            EnableUI();
+            if (_rotationCheckCoroutine != null)
+            {
+                StopCoroutine(_rotationCheckCoroutine);
+            }
+            _rotationCheckCoroutine = StartCoroutine(ValidatePlayerRotation());
+            EnablePlayerSystems();
         }
         else
         {
             StopScriptedEvents();
         }
     }
-    
-    public void DisableMovement()
+
+    private void DisablePlayerSystems()
     {
-        // Store rotation WHEN CUTSCENE STARTS, not at Start()
-        // Apply rotation based on the reset flag
+        _storedRotation = _playerTransform.rotation;
         _playerCameraMovement.enabled = false;
-        Debug.Log("Stored Rotation: " + _storedRotation);
         _playerMovementV2.DisablePlayerControls();
         _weaponManager.enabled = false;
+        Debug.Log("Player systems disabled");
     }
-    
-    public void EnableMovement()
+
+    private void EnablePlayerSystems()
     {
-        // Restore to stored rotation or zero based on setting
-        _playerTransform.transform.rotation = resetRotationToZero 
-            ? Quaternion.identity 
-            : _storedRotation;
-        Debug.Log("Restored Rotation: " + _playerTransform.transform.rotation);
+        _playerTransform.rotation = resetRotationToZero ? Quaternion.identity : _storedRotation;
         _playerCameraMovement.enabled = true;
         _playerMovementV2.EnablePlayerControls();
         _weaponManager.enabled = true;
-        StartCoroutine(CheckPlayerRotationCoroutine());
+        Debug.Log("Player systems enabled");
     }
 
-    /// <summary>
-    /// Disables the player's UI during the cutscene.
-    /// </summary>
-    public void DisableUI()
+    private void StartRotationValidation()
     {
-       // playerUI.SetActive(false);
+        if (_rotationCheckCoroutine != null)
+            StopCoroutine(_rotationCheckCoroutine);
+        
+        _rotationCheckCoroutine = StartCoroutine(ValidatePlayerRotation());
     }
-    
-    /// <summary>
-    /// Re-enables the player's UI after the cutscene.
-    /// </summary>
-    public void EnableUI()
+
+    private IEnumerator ValidatePlayerRotation()
     {
-       // playerUI.SetActive(true);
-    }
     
-    /// <summary>
-    /// Operations to clean up subscriptions and references and rotaion
-    /// </summary>
-    private IEnumerator CheckPlayerRotationCoroutine(float checkInterval = 5f, float threshold = .0001f)
-    {
-        // Optional: wait a brief moment after the cutscene ends
-        yield return new WaitForSeconds(1.5f);
-    
-        while (true)
+        // Wait for final animation frame
+        yield return new WaitForEndOfFrame();
+        
+        // Disable animator to stop animation overrides
+        if (_playerAnimator != null)
         {
-            // Check if the angle between the player's current rotation and zero (Quaternion.identity) is within a small threshold.
-            if (Quaternion.Angle(_playerMovementV2.transform.rotation, Quaternion.identity) < threshold)
+            _playerAnimator.enabled = false;
+        }
+        
+        float elapsedTime = 0f;
+        bool needsReset = true;
+    
+        float elapsed = 0f;
+        while (elapsed < _maxRotationCheckTime)
+        {
+            // Directly set rotation and ignore animations
+            _playerTransform.rotation = _initialRotation;
+            
+            // Force immediate physics update
+            Physics.SyncTransforms();
+            
+            // Check if rotation stuck
+            if (Quaternion.Angle(_playerTransform.rotation, _initialRotation) < 0.001f)
             {
-                Debug.Log("Player rotation is now effectively zero.");
                 break;
             }
-            else
-            {
-                Debug.Log("Player rotation not zero yet. Checking again in " + checkInterval + " seconds.");
-            }
-            yield return new WaitForSeconds(checkInterval);
+
+            elapsed += _rotationResetDelay;
+            yield return new WaitForSeconds(_rotationResetDelay);
+        }
+
+        // Final guarantee
+        _playerTransform.rotation = _initialRotation;
+        
+        // Re-enable components if needed
+        if (_playerAnimator != null)
+        {
+            _playerAnimator.enabled = true;
         }
     }
-    
+
+    private bool IsRotationValid(Vector3 currentRotation)
+    {
+        return Mathf.Abs(currentRotation.y) > 0.1f || Mathf.Abs(currentRotation.y) < 0.1f;
+    }
+
+    private void PlayScriptedEvents()
+    {
+        // Implement scripted event logic
+    }
+
+    private void StopScriptedEvents()
+    {
+        // Implement scripted event cleanup
+    }
+
     private void OnDestroy()
     {
-        // Clean up subscriptions to prevent memory leaks.
-        if (_cutsceneHandler != null)
-        {
-            _cutsceneHandler.OnCutsceneStart.RemoveListener(DisableMovement);
-            _cutsceneHandler.OnCutsceneEnd.RemoveListener(EnableMovement);
-            _cutsceneHandler.OnCutsceneStart.RemoveListener(DisableUI);
-            _cutsceneHandler.OnCutsceneEnd.RemoveListener(EnableUI);
-        }
+        if (_cutsceneHandler == null) return;
+        
+        _cutsceneHandler.OnCutsceneStart.RemoveListener(OnCutsceneStart);
+        _cutsceneHandler.OnCutsceneEnd.RemoveListener(OnCutsceneEnd);
     }
 }

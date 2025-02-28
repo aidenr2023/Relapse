@@ -13,7 +13,8 @@ public class CutsceneHandler : MonoBehaviour
     private PlayableDirector _director;
     private Animator _playerCutsceneAnimator;
     private bool _isCutsceneActive;
-    public bool IsPlayerMovementNeeded { get; private set; }
+    public bool IsPlayerMovementNeeded { get;  set; }
+    
 
     
     private void Start()
