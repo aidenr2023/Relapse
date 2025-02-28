@@ -73,6 +73,7 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         OnDamaged += AddDamageThisFrame;
         OnDamaged += SetDamagePositionOnDamaged;
         OnDamaged += PlaySoundOnDamaged;
+        
         OnDeath += DetachVFXOnDeath;
         OnDeath += PlaySoundOnDeath;
 
