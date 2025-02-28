@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Processors;
 
 public class UserSettings
 {
@@ -38,13 +40,58 @@ public class UserSettings
     public Vector2 MouseSens { get; private set; } = new(.5f, .5f);
     public Vector2 ControllerSens { get; private set; } = new(.5f, .5f);
 
-    public float MinimumLookDeadzone { get; set; }
+    private float _minimumLookDeadzone;
+    private float _maximumLookDeadzone;
+    private float _minimumMoveDeadzone;
+    private float _maximumMoveDeadzone;
 
-    public float MaximumLookDeadzone { get; set; } = 1;
+    public float MinimumLookDeadzone
+    {
+        get => _minimumLookDeadzone;
+        set
+        {
+            _minimumLookDeadzone = Mathf.Clamp(value, 0, 1);
+            InputManager.Instance.PControls.Player.LookController.ApplyParameterOverride(
+                (StickDeadzoneProcessor d) => d.min, _minimumLookDeadzone
+            );
+        }
+    }
 
-    public float MinimumMoveDeadzone { get; set; }
+    public float MaximumLookDeadzone
+    {
+        get => _maximumLookDeadzone;
+        set
+        {
+            _maximumLookDeadzone = Mathf.Clamp(value, 0, 1);
+            InputManager.Instance.PControls.Player.LookController.ApplyParameterOverride(
+                (StickDeadzoneProcessor d) => d.max, _maximumLookDeadzone
+            );
+        }
+    }
 
-    public float MaximumMoveDeadzone { get; set; } = 1;
+    public float MinimumMoveDeadzone
+    {
+        get => _minimumMoveDeadzone;
+        set
+        {
+            _minimumMoveDeadzone = Mathf.Clamp(value, 0, 1);
+            InputManager.Instance.PControls.PlayerMovementBasic.Move.ApplyParameterOverride(
+                (StickDeadzoneProcessor d) => d.min, _minimumMoveDeadzone
+            );
+        }
+    }
+
+    public float MaximumMoveDeadzone
+    {
+        get => _maximumMoveDeadzone;
+        set
+        {
+            _maximumMoveDeadzone = Mathf.Clamp(value, 0, 1);
+            InputManager.Instance.PControls.PlayerMovementBasic.Move.ApplyParameterOverride(
+                (StickDeadzoneProcessor d) => d.max, _maximumMoveDeadzone
+            );
+        }
+    }
 
     public float Gamma { get; private set; }
 
@@ -90,7 +137,7 @@ public class UserSettings
         Gamma = value;
     }
 
-    //Volume settings individual
+// Volume settings individual
     public void SetSoundMasterVolume(float value)
     {
         value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
@@ -141,7 +188,7 @@ public class UserSettings
     }
 
 
-    //This is probably better to use than the above methods
+//This is probably better to use than the above methods
     public void SetAllVolumes(float Master, float Music, float GameSFX, float Player, float Enemies, float Other,
         float UISFX)
     {

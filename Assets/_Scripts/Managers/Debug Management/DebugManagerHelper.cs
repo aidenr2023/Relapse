@@ -28,18 +28,10 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     [Header("Debug Scene Skips")] [SerializeField]
     private LevelSectionSceneInfo[] levelInfo1;
 
-    // [SerializeField] private LevelSectionSceneInfo[] levelInfo2;
-    // [SerializeField] private LevelSectionSceneInfo[] levelInfo3;
-    // [SerializeField] private LevelSectionSceneInfo[] levelInfo4;
-    // [SerializeField] private LevelSectionSceneInfo[] levelInfo5;
-    // [SerializeField] private LevelSectionSceneInfo[] levelInfo6;
-    // [SerializeField] private LevelSectionSceneInfo[] levelInfo7;
-    // [SerializeField] private LevelSectionSceneInfo[] levelInfo8;
-    // [SerializeField] private LevelSectionSceneInfo[] levelInfo9;
-    // [SerializeField] private LevelSectionSceneInfo[] levelInfo10;
-
     [SerializeField] private DebugSceneLevelInfo[] debugSceneLevelInfos;
 
+    [SerializeField, Min(0)] private float textUpdateRate = 1 / 10f; 
+    
     #endregion
 
     #region Private Fields
@@ -95,6 +87,9 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     {
         // Set the visibility of the debug text
         SetDebugVisibility(DebugManager.Instance.IsDebugMode);
+        
+        // Start the text routine
+        StartCoroutine(SetTextRoutine());
     }
 
     private void OnEnable()
@@ -169,8 +164,8 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     // Update is called once per frame
     private void Update()
     {
-        // Update the text
-        UpdateText();
+        // // Update the text
+        // UpdateText();
 
         // Update the tolerance and health
         UpdateToleranceAndHealth();
@@ -317,11 +312,11 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
             playerInfo.ChangeTolerance(_toleranceChange * Time.unscaledDeltaTime * toleranceMult);
     }
 
-    private void UpdateText()
+    private string UpdateText()
     {
         // If the debug text is null, return
         if (debugText == null)
-            return;
+            return "";
 
         // Create a new string from the debug managed objects
         StringBuilder textString = new();
@@ -332,7 +327,19 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         }
 
         // Set the text
-        debugText.text = textString.ToString();
+        return textString.ToString();
+    }
+
+    private IEnumerator SetTextRoutine()
+    {
+        while (true)
+        {
+            // Update the text
+            debugText.text = UpdateText();
+
+            // Wait for the text update rate
+            yield return new WaitForSecondsRealtime(textUpdateRate);
+        }
     }
 
     private void SetDebugVisibility(bool isVisible)

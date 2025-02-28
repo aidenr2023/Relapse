@@ -53,13 +53,13 @@ public class InputManagerHelper : MonoBehaviour
         else
             InputManager.Instance.SetCurrentControlScheme(InputManager.ControlSchemeType.Keyboard);
 
-        // Set the minimum deadzones
-        InputManager.Instance.PControls.Player.LookController.ApplyParameterOverride(
-            (StickDeadzoneProcessor d) => d.min, UserSettings.Instance.MinimumLookDeadzone
-        );
-        InputManager.Instance.PControls.PlayerMovementBasic.Move.ApplyParameterOverride(
-            (StickDeadzoneProcessor d) => d.min, UserSettings.Instance.MinimumMoveDeadzone
-        );
+        // // Set the minimum deadzones
+        // InputManager.Instance.PControls.Player.LookController.ApplyParameterOverride(
+        //     (StickDeadzoneProcessor d) => d.min, UserSettings.Instance.MinimumLookDeadzone
+        // );
+        // InputManager.Instance.PControls.PlayerMovementBasic.Move.ApplyParameterOverride(
+        //     (StickDeadzoneProcessor d) => d.min, UserSettings.Instance.MinimumMoveDeadzone
+        // );
     }
 
     /// <summary>

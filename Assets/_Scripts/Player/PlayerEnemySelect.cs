@@ -68,7 +68,7 @@ public class PlayerEnemySelect : ComponentScript<Player>
             if (enemy == null)
                 continue;
 
-            var renderers = enemy.transform.GetComponentsInChildren<Renderer>();
+            var renderers = enemy.Renderers;
 
             var center = Vector3.zero;
             foreach (var cRenderer in renderers)

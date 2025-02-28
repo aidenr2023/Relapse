@@ -24,6 +24,8 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
     public IEnemyMovementBehavior MovementBehavior { get; private set; }
 
     public IEnemyAbilityBehavior AbilityBehavior { get; private set; }
+    
+    public Renderer[] Renderers { get; private set; }
 
     #endregion
 
@@ -70,6 +72,9 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
 
         // Assert that the IEnemyAttackBehavior component is not null
         Debug.Assert(AttackBehavior != null, "The IEnemyAttackBehavior component is null.");
+        
+        // Get the renderers
+        Renderers = GetComponentsInChildren<Renderer>();
     }
 
     private void OnDestroy()

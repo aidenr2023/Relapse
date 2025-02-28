@@ -117,7 +117,7 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
             return;
 
         // Set the destination to the closest checkpoint
-        NavMeshAgent.SetDestination(patrolCheckpoints[_currentCheckpointIndex].position);
+        CustomSetDestination(patrolCheckpoints[_currentCheckpointIndex].position);
     }
 
     #endregion
@@ -191,7 +191,7 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
 
                 // Set the destination to the current checkpoint
                 if (NavMeshAgent.destination != CurrentCheckpoint.position)
-                    NavMeshAgent.SetDestination(CurrentCheckpoint.position);
+                    CustomSetDestination(CurrentCheckpoint.position);
 
                 break;
 
@@ -199,7 +199,7 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
 
                 // Set the destination to the last known player position
                 if (NavMeshAgent.destination != Enemy.DetectionBehavior.LastKnownTargetPosition)
-                    NavMeshAgent.SetDestination(Enemy.DetectionBehavior.LastKnownTargetPosition);
+                    CustomSetDestination(Enemy.DetectionBehavior.LastKnownTargetPosition);
 
                 break;
 
@@ -207,9 +207,9 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
 
                 // Set the destination to the player's current position
                 if (Enemy.DetectionBehavior.IsTargetDetected)
-                    NavMeshAgent.SetDestination(Enemy.DetectionBehavior.Target.GameObject.transform.position);
+                    CustomSetDestination(Enemy.DetectionBehavior.Target.GameObject.transform.position);
                 else
-                    NavMeshAgent.SetDestination(Enemy.DetectionBehavior.LastKnownTargetPosition);
+                    CustomSetDestination(Enemy.DetectionBehavior.LastKnownTargetPosition);
 
                 break;
 
@@ -263,7 +263,7 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
 
         // Set the destination to the next checkpoint
         if (CurrentCheckpoint != null)
-            NavMeshAgent.SetDestination(CurrentCheckpoint.position);
+            CustomSetDestination(CurrentCheckpoint.position);
     }
 
     private int DetermineClosestCheckpoint()
@@ -316,6 +316,25 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
 
         // Set the position
         transform.position = pos;
+    }
+
+    private void CustomSetDestination(Vector3 position)
+    {
+        const float distanceThreshold = 5f;
+        
+        // Return if the NavMeshAgent is null or disabled
+        if (NavMeshAgent == null || !NavMeshAgent.enabled)
+            return;
+        
+        var currentDestination = NavMeshAgent.destination;
+        
+        // Return if the distance to the destination is less than the threshold
+        if (Vector3.Distance(currentDestination, position) < distanceThreshold)
+            return;
+
+        // Set the destination to the position
+        NavMeshAgent.SetDestination(position);
+        
     }
 
     #region Debugging
