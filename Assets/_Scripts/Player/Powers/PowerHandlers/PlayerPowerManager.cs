@@ -744,6 +744,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     public void RemovePower(PowerScriptableObject powerScriptableObject)
     {
+        var isCurrentPower = CurrentPower == powerScriptableObject;
+        var isLastPower = powers.Length == 1;
+        
         // Check if the power is already in one of the hash sets
         var powerSet = powerScriptableObject.PowerType switch
         {
@@ -778,8 +781,31 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Update the power collections
         UpdatePowerCollections();
+
+        if (isCurrentPower)
+        {
+            _currentPowerIndex = Mathf.Clamp(_currentPowerIndex, 0, powers.Length - 1);
+            ChangePower(_currentPowerIndex);
+        }
+
+        if (isLastPower)
+        {
+            _drugsSet.Clear();
+            _medsSet.Clear();
+            _powerTokens.Clear();
+            powers = Array.Empty<PowerScriptableObject>();
+        }
     }
 
+    public void ClearPowers()
+    {
+        // Clear the power tokens, the drugs set, the meds set, and the powers array
+        _powerTokens.Clear();
+        _drugsSet.Clear();
+        _medsSet.Clear();
+        powers = Array.Empty<PowerScriptableObject>();
+    }
+    
     public bool HasPower(PowerScriptableObject powerScriptableObject)
     {
         // Check if the power is already in one of the hash sets
@@ -937,7 +963,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         _drugsSet.Clear();
         _medsSet.Clear();
         powers = Array.Empty<PowerScriptableObject>();
-
 
         // Load the power scriptable objects
         foreach (var pso in PowerScriptableObject.PowerScriptableObjects)

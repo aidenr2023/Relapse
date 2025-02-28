@@ -28,15 +28,17 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     [Header("Debug Scene Skips")] [SerializeField]
     private LevelSectionSceneInfo[] levelInfo1;
 
-    [SerializeField] private LevelSectionSceneInfo[] levelInfo2;
-    [SerializeField] private LevelSectionSceneInfo[] levelInfo3;
-    [SerializeField] private LevelSectionSceneInfo[] levelInfo4;
-    [SerializeField] private LevelSectionSceneInfo[] levelInfo5;
-    [SerializeField] private LevelSectionSceneInfo[] levelInfo6;
-    [SerializeField] private LevelSectionSceneInfo[] levelInfo7;
-    [SerializeField] private LevelSectionSceneInfo[] levelInfo8;
-    [SerializeField] private LevelSectionSceneInfo[] levelInfo9;
-    [SerializeField] private LevelSectionSceneInfo[] levelInfo10;
+    // [SerializeField] private LevelSectionSceneInfo[] levelInfo2;
+    // [SerializeField] private LevelSectionSceneInfo[] levelInfo3;
+    // [SerializeField] private LevelSectionSceneInfo[] levelInfo4;
+    // [SerializeField] private LevelSectionSceneInfo[] levelInfo5;
+    // [SerializeField] private LevelSectionSceneInfo[] levelInfo6;
+    // [SerializeField] private LevelSectionSceneInfo[] levelInfo7;
+    // [SerializeField] private LevelSectionSceneInfo[] levelInfo8;
+    // [SerializeField] private LevelSectionSceneInfo[] levelInfo9;
+    // [SerializeField] private LevelSectionSceneInfo[] levelInfo10;
+
+    [SerializeField] private DebugSceneLevelInfo[] debugSceneLevelInfos;
 
     #endregion
 
@@ -173,13 +175,6 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         // Update the tolerance and health
         UpdateToleranceAndHealth();
 
-        // if (Input.GetKeyDown(KeyCode.Comma))
-        //     UserSettings.Instance.SetGamma(UserSettings.Instance.Gamma - 0.1f);
-        // if (Input.GetKeyDown(KeyCode.Period))
-        //     UserSettings.Instance.SetGamma(UserSettings.Instance.Gamma + 0.1f);
-        // if (Input.GetKeyDown(KeyCode.Slash))
-        //     UserSettings.Instance.SetGamma(0);
-
         if (Input.GetKeyDown(KeyCode.Z))
             FindBadInteractableMaterials();
 
@@ -187,32 +182,26 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         if (DebugManager.Instance.IsDebugMode)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
-                DebugLoadScene(levelInfo1);
+                DebugLoadScene(debugSceneLevelInfos[0]);
             if (Input.GetKeyDown(KeyCode.Alpha2))
-                DebugLoadScene(levelInfo2);
+                DebugLoadScene(debugSceneLevelInfos[1]);
             if (Input.GetKeyDown(KeyCode.Alpha3))
-                DebugLoadScene(levelInfo3);
+                DebugLoadScene(debugSceneLevelInfos[2]);
             if (Input.GetKeyDown(KeyCode.Alpha4))
-                DebugLoadScene(levelInfo4);
+                DebugLoadScene(debugSceneLevelInfos[3]);
             if (Input.GetKeyDown(KeyCode.Alpha5))
-                DebugLoadScene(levelInfo5);
+                DebugLoadScene(debugSceneLevelInfos[4]);
             if (Input.GetKeyDown(KeyCode.Alpha6))
-                DebugLoadScene(levelInfo6);
+                DebugLoadScene(debugSceneLevelInfos[5]);
             if (Input.GetKeyDown(KeyCode.Alpha7))
-                DebugLoadScene(levelInfo7);
+                DebugLoadScene(debugSceneLevelInfos[6]);
             if (Input.GetKeyDown(KeyCode.Alpha8))
-                DebugLoadScene(levelInfo8);
+                DebugLoadScene(debugSceneLevelInfos[7]);
             if (Input.GetKeyDown(KeyCode.Alpha9))
-                DebugLoadScene(levelInfo9);
+                DebugLoadScene(debugSceneLevelInfos[8]);
             if (Input.GetKeyDown(KeyCode.Alpha0))
-                DebugLoadScene(levelInfo10);
+                DebugLoadScene(debugSceneLevelInfos[9]);
         }
-
-        // // Deadzone
-        // if (Input.GetKeyDown(KeyCode.Semicolon))
-        //     UserSettings.Instance.MinimumLookDeadzone = Mathf.Clamp01(UserSettings.Instance.MinimumLookDeadzone - 0.1f);
-        // if (Input.GetKeyDown(KeyCode.Quote))
-        //     UserSettings.Instance.MinimumLookDeadzone = Mathf.Clamp01(UserSettings.Instance.MinimumLookDeadzone + 0.1f);
     }
 
     private void DebugLoadScene(LevelSectionSceneInfo[] levelInfo)
@@ -258,6 +247,25 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         // Set the parent of the player back to null
         Player.Instance.transform.parent = null;
     }
+
+    private void DebugLoadScene(DebugSceneLevelInfo sceneLevelInfo)
+    {
+        // If the scene level info is null, return
+        DebugLoadScene(sceneLevelInfo.LevelInfo);
+
+        // If the powers are null, return
+        if (sceneLevelInfo.Powers == null)
+            return;
+
+        // Clear the player's powers and add the new powers
+        var powers = Player.Instance.PlayerPowerManager.Powers;
+
+        Player.Instance.PlayerPowerManager.ClearPowers();
+
+        foreach (var power in sceneLevelInfo.Powers)
+            Player.Instance.PlayerPowerManager.AddPower(power);
+    }
+
 
     private void FindBadInteractableMaterials()
     {
@@ -355,5 +363,15 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
             $"Move Deadzone: [{UserSettings.Instance.MinimumMoveDeadzone:0.00}, {UserSettings.Instance.MaximumMoveDeadzone:0.00}]\n");
 
         return sb.ToString();
+    }
+
+    [Serializable]
+    private struct DebugSceneLevelInfo
+    {
+        [SerializeField] private LevelSectionSceneInfo[] levelInfo;
+        [SerializeField] private PowerScriptableObject[] powers;
+
+        public LevelSectionSceneInfo[] LevelInfo => levelInfo;
+        public PowerScriptableObject[] Powers => powers;
     }
 }
