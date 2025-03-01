@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class ToxicityBarController : TransparentBarController
 {
+    [SerializeField] private UIJitter jitter;
+    [SerializeField, Range(0, 1)] private float maxJitterPercent = .75f;
+    
     #region Private Fields
 
     private Player _player;
@@ -28,6 +31,19 @@ public class ToxicityBarController : TransparentBarController
     protected override void SetCurrentValue()
     {
         CurrentValue = _player.PlayerInfo.CurrentTolerance;
+
+        if (jitter == null) 
+            return;
+
+        // If the player is relapsing, set the jitter lerp amount to 1
+        if (_player?.PlayerInfo.IsRelapsing ?? false)
+        {
+            jitter.SetLerpAmount(1);
+            return;
+        }
+        
+        var lerpAmount = Mathf.InverseLerp(0, maxJitterPercent, CalculatePercentage());
+        jitter.SetLerpAmount(lerpAmount);
     }
 
     protected override void SetPreviousValue()

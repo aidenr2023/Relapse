@@ -10,6 +10,8 @@ public class PowerUIController : MonoBehaviour
 
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private Image currentPowerImage;
+    [SerializeField] private Image currentPowerImageBg;
+    [SerializeField] private UIJitter[] currentPowerJitters;
 
     [SerializeField] private PowerIconGroup powerIconGroup;
     [SerializeField] private PowerIconGroup powerIconGroupMiddle;
@@ -61,8 +63,14 @@ public class PowerUIController : MonoBehaviour
         if (Player.Instance.PlayerPowerManager.CurrentPower != null)
         {
             currentPowerImage.sprite = Player.Instance.PlayerPowerManager.CurrentPower.Icon;
+            currentPowerImageBg.sprite = Player.Instance.PlayerPowerManager.CurrentPower.Icon;
 
-            if (Player.Instance.PlayerPowerManager.CurrentPowerToken.IsCoolingDown)
+            var pToken = Player.Instance.PlayerPowerManager.CurrentPowerToken;
+
+            foreach (var jitter in currentPowerJitters)
+                jitter.enabled = !pToken.IsCoolingDown && !pToken.IsActiveEffectOn && !pToken.IsPassiveEffectOn;
+
+            if (pToken.IsCoolingDown)
                 currentPowerImage.color = new Color(disabledColor.r, disabledColor.g, disabledColor.b,
                     currentPowerImage.color.a);
             else

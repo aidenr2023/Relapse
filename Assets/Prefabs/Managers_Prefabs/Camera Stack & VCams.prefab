@@ -802,6 +802,116 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &721486585584159844
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4486643903433736920}
+  - component: {fileID: 8261308385363404072}
+  - component: {fileID: 7602062805883682285}
+  - component: {fileID: 8251276721068516584}
+  - component: {fileID: 8704028527622453685}
+  m_Layer: 17
+  m_Name: Drug Image FG
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &4486643903433736920
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 721486585584159844}
+  m_LocalRotation: {x: 0, y: 0, z: 0.13052616, w: 0.9914449}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7450264193012799262}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 15}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &8261308385363404072
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 721486585584159844}
+  m_CullTransparentMesh: 1
+--- !u!114 &7602062805883682285
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 721486585584159844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: b3b20282e58c7b64fb3b0f90b3616a03, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!114 &8251276721068516584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 721486585584159844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 2, y: -2}
+  m_UseGraphicAlpha: 1
+--- !u!114 &8704028527622453685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 721486585584159844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f30d54fd27fa4471bee5c1700a3bb975, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: 12
+  jitterLerpAmount: 1
+  minJitterRotation: -2
+  maxJitterRotation: 2
+  minJitterScale: 0.975
+  maxJitterScale: 1.025
 --- !u!1 &772083087480149025
 GameObject:
   m_ObjectHideFlags: 0
@@ -2446,6 +2556,7 @@ MonoBehaviour:
   fgImage: {fileID: 5890481550900627780}
   visibilityLerpAmount: 0.1
   colorLerpAmount: 0.25
+  jitters: []
 --- !u!1 &2287381599401409302
 GameObject:
   m_ObjectHideFlags: 0
@@ -2515,6 +2626,7 @@ MonoBehaviour:
   fgImage: {fileID: 8109930030352290375}
   visibilityLerpAmount: 0.1
   colorLerpAmount: 0.25
+  jitters: []
 --- !u!1 &2387535496315329745
 GameObject:
   m_ObjectHideFlags: 0
@@ -2527,6 +2639,7 @@ GameObject:
   - component: {fileID: 2367122741132361993}
   - component: {fileID: 5562578876730675062}
   - component: {fileID: 5983014784216259231}
+  - component: {fileID: 6384484396063574390}
   m_Layer: 17
   m_Name: Drug Image 3
   m_TagString: Untagged
@@ -2541,13 +2654,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2387535496315329745}
-  m_LocalRotation: {x: 0, y: 0, z: -0.38268343, w: 0.92387956}
+  m_LocalRotation: {x: 0, y: 0, z: 0.13052616, w: 0.9914449}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 5423166339763909342}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -45}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 15}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -2606,6 +2719,24 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 2, y: -2}
   m_UseGraphicAlpha: 1
+--- !u!114 &6384484396063574390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2387535496315329745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f30d54fd27fa4471bee5c1700a3bb975, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: 12
+  jitterLerpAmount: 1
+  minJitterRotation: -2
+  maxJitterRotation: 2
+  minJitterScale: 0.95
+  maxJitterScale: 1.05
 --- !u!1 &2552952701582746197
 GameObject:
   m_ObjectHideFlags: 0
@@ -2636,6 +2767,7 @@ RectTransform:
   m_Children:
   - {fileID: 8082532892927632348}
   - {fileID: 9094910037110782687}
+  - {fileID: 4486643903433736920}
   m_Father: {fileID: 7405114354864105790}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3707,6 +3839,7 @@ GameObject:
   - component: {fileID: 1078105328093008069}
   - component: {fileID: 8974887139722360247}
   - component: {fileID: 5264302187597253038}
+  - component: {fileID: 2427782348088645441}
   m_Layer: 17
   m_Name: Drug Image 1
   m_TagString: Untagged
@@ -3721,13 +3854,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3435689718133675459}
-  m_LocalRotation: {x: 0, y: 0, z: -0.38268343, w: 0.92387956}
+  m_LocalRotation: {x: 0, y: 0, z: 0.13052616, w: 0.9914449}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2356175901814890897}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -45}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 15}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -3786,6 +3919,24 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 2, y: -2}
   m_UseGraphicAlpha: 1
+--- !u!114 &2427782348088645441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3435689718133675459}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f30d54fd27fa4471bee5c1700a3bb975, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: 12
+  jitterLerpAmount: 1
+  minJitterRotation: -2
+  maxJitterRotation: 2
+  minJitterScale: 0.95
+  maxJitterScale: 1.05
 --- !u!1 &3436719299825145714
 GameObject:
   m_ObjectHideFlags: 0
@@ -3891,6 +4042,8 @@ MonoBehaviour:
   fgImage: {fileID: 5562578876730675062}
   visibilityLerpAmount: 0.1
   colorLerpAmount: 0.25
+  jitters:
+  - {fileID: 6384484396063574390}
 --- !u!1 &3546573466793913407
 GameObject:
   m_ObjectHideFlags: 0
@@ -4334,6 +4487,7 @@ GameObject:
   - component: {fileID: 5054779790973405695}
   - component: {fileID: 3932433960651266522}
   - component: {fileID: 6406351695600255230}
+  - component: {fileID: 2350564120026801804}
   m_Layer: 17
   m_Name: Drug Image 4
   m_TagString: Untagged
@@ -4348,13 +4502,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4159323329784821532}
-  m_LocalRotation: {x: 0, y: 0, z: -0.38268343, w: 0.92387956}
+  m_LocalRotation: {x: 0, y: 0, z: 0.13052616, w: 0.9914449}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 5749615084081409078}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -45}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 15}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -4413,6 +4567,24 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 2, y: -2}
   m_UseGraphicAlpha: 1
+--- !u!114 &2350564120026801804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4159323329784821532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f30d54fd27fa4471bee5c1700a3bb975, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: 12
+  jitterLerpAmount: 1
+  minJitterRotation: -2
+  maxJitterRotation: 2
+  minJitterScale: 0.95
+  maxJitterScale: 1.05
 --- !u!1 &4279152524226317690
 GameObject:
   m_ObjectHideFlags: 0
@@ -4482,6 +4654,7 @@ MonoBehaviour:
   fgImage: {fileID: 8198875983260274458}
   visibilityLerpAmount: 0.1
   colorLerpAmount: 0.25
+  jitters: []
 --- !u!1 &4373491402234065955
 GameObject:
   m_ObjectHideFlags: 0
@@ -4623,17 +4796,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvasGroup: {fileID: 2868937017171625339}
-  currentPowerImage: {fileID: 847502938209957195}
+  currentPowerImage: {fileID: 7602062805883682285}
+  currentPowerImageBg: {fileID: 847502938209957195}
+  currentPowerJitters:
+  - {fileID: 7091994182691886775}
+  - {fileID: 8704028527622453685}
   powerIconGroup: {fileID: 8598042847736389610}
   powerIconGroupMiddle: {fileID: 2525245858909502687}
   powerIconsMinOpacity: 0
   powerIconsOpacityLerpAmount: 0.4
   powerIconsStayOnScreenTime: 1
   powerNameText: {fileID: 3067645224678041380}
-  drugRotation: -45
-  medRotation: 45
+  drugRotation: 15
+  medRotation: -15
   selectedColor: {r: 1, g: 1, b: 1, a: 1}
   unselectedColor: {r: 1, g: 1, b: 1, a: 1}
+  disabledColor: {r: 0.25, g: 0.25, b: 0.25, a: 1}
   font: {fileID: 11400000, guid: 0bc19927327f9834abba8c39c7b043b3, type: 2}
 --- !u!1 &4482250784300818540
 GameObject:
@@ -6493,6 +6671,8 @@ MonoBehaviour:
   fgImage: {fileID: 3706437278757789710}
   visibilityLerpAmount: 0.1
   colorLerpAmount: 0.25
+  jitters:
+  - {fileID: 6261267278054719445}
 --- !u!1 &6699043514751844845
 GameObject:
   m_ObjectHideFlags: 0
@@ -6772,6 +6952,7 @@ GameObject:
   - component: {fileID: 8236967410282412942}
   - component: {fileID: 3706437278757789710}
   - component: {fileID: 5219523278466235404}
+  - component: {fileID: 6261267278054719445}
   m_Layer: 17
   m_Name: Drug Image 2
   m_TagString: Untagged
@@ -6786,13 +6967,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7037088409068085456}
-  m_LocalRotation: {x: 0, y: 0, z: -0.38268343, w: 0.92387956}
+  m_LocalRotation: {x: 0, y: 0, z: 0.13052616, w: 0.9914449}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 5157637925755809166}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -45}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 15}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -6851,6 +7032,24 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 2, y: -2}
   m_UseGraphicAlpha: 1
+--- !u!114 &6261267278054719445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7037088409068085456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f30d54fd27fa4471bee5c1700a3bb975, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: 12
+  jitterLerpAmount: 1
+  minJitterRotation: -2
+  maxJitterRotation: 2
+  minJitterScale: 0.95
+  maxJitterScale: 1.05
 --- !u!1 &7097669942408772509
 GameObject:
   m_ObjectHideFlags: 0
@@ -7008,6 +7207,7 @@ MonoBehaviour:
   fgImage: {fileID: 2893356484867884553}
   visibilityLerpAmount: 0.1
   colorLerpAmount: 0.25
+  jitters: []
 --- !u!1 &7339556545265543988
 GameObject:
   m_ObjectHideFlags: 0
@@ -7841,6 +8041,8 @@ MonoBehaviour:
   fgImage: {fileID: 8974887139722360247}
   visibilityLerpAmount: 0.1
   colorLerpAmount: 0.25
+  jitters:
+  - {fileID: 2427782348088645441}
 --- !u!1 &8185056672973267729
 GameObject:
   m_ObjectHideFlags: 0
@@ -7853,6 +8055,7 @@ GameObject:
   - component: {fileID: 2750342726316362332}
   - component: {fileID: 3596981767219780625}
   - component: {fileID: 7860032948421328326}
+  - component: {fileID: 3911365275855911416}
   m_Layer: 17
   m_Name: Toxicity Bar
   m_TagString: Untagged
@@ -7912,7 +8115,7 @@ MonoBehaviour:
   sliderLerpAmount: 0.1
   backgroundSliderLerpMultiplier: 0.25
   stayOnScreenTime: 1
-  minOpacity: 0.125
+  minOpacity: 0.5
   maxOpacity: 1
   opacityLerpAmount: 0.05
   showWhenDecreasing: 1
@@ -7933,6 +8136,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3147a324deaa4c3a9f201f9f8d31e22d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  jitter: {fileID: 3911365275855911416}
+  maxJitterPercent: 0.75
+--- !u!114 &3911365275855911416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8185056672973267729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f30d54fd27fa4471bee5c1700a3bb975, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: 12
+  jitterLerpAmount: 1
+  minJitterRotation: -2.5
+  maxJitterRotation: 2.5
+  minJitterScale: 0.95
+  maxJitterScale: 1.05
 --- !u!1 &8470495535782639255
 GameObject:
   m_ObjectHideFlags: 0
@@ -8288,6 +8511,8 @@ MonoBehaviour:
   fgImage: {fileID: 3932433960651266522}
   visibilityLerpAmount: 0.1
   colorLerpAmount: 0.25
+  jitters:
+  - {fileID: 2350564120026801804}
 --- !u!1 &8796561057048371902
 GameObject:
   m_ObjectHideFlags: 0
@@ -8459,8 +8684,9 @@ GameObject:
   - component: {fileID: 8907783660864030301}
   - component: {fileID: 847502938209957195}
   - component: {fileID: 9012602204669644427}
+  - component: {fileID: 7091994182691886775}
   m_Layer: 17
-  m_Name: Drug Image
+  m_Name: Drug Image BG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8476,7 +8702,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0.13052616, w: 0.9914449}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 7450264193012799262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 15}
@@ -8506,7 +8732,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.16, g: 0.16, b: 0.16, a: 0.2509804}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -8538,6 +8764,24 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 2, y: -2}
   m_UseGraphicAlpha: 1
+--- !u!114 &7091994182691886775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8925371050926161738}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f30d54fd27fa4471bee5c1700a3bb975, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: 12
+  jitterLerpAmount: 1
+  minJitterRotation: -2
+  maxJitterRotation: 2
+  minJitterScale: 0.975
+  maxJitterScale: 1.025
 --- !u!1 &8941949728857381838
 GameObject:
   m_ObjectHideFlags: 0

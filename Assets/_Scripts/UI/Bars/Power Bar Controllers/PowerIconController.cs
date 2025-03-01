@@ -15,6 +15,8 @@ public class PowerIconController : MonoBehaviour
     [SerializeField, Min(0)] private float visibilityLerpAmount = .1f;
     [SerializeField, Min(0)] private float colorLerpAmount = .1f;
 
+    [SerializeField] private UIJitter[] jitters;
+
     #endregion
 
     #region Private Fields
@@ -103,5 +105,11 @@ public class PowerIconController : MonoBehaviour
     {
         // Set the rotation
         fgImage.transform.localEulerAngles = new Vector3(0, 0, rotation);
+    }
+
+    public void SetJitters(bool isOn)
+    {
+        foreach (var uiJitter in jitters)
+            uiJitter.enabled = isOn;
     }
 }

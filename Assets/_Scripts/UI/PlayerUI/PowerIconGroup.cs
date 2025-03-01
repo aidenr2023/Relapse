@@ -149,6 +149,9 @@ public class PowerIconGroup : MonoBehaviour
 
             // Set the sprite of the image
             powerImages[i].SetForeground(cPower.Icon);
+            
+            // Jitter the sprite if the power is the current power & the power is not cooling down
+            powerImages[i].SetJitters(currentPower == cPower && (!powerToken?.IsCoolingDown ?? false));
 
             // var angle = cPower.PowerType == PowerType.Drug
             //     ? drugRotation
