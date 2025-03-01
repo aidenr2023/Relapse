@@ -37,7 +37,7 @@ public class Fireball : MonoBehaviour, IPower
         var fireForward = (aimTargetPoint - firePosition).normalized;
         
         // Instantiate the projectile prefab
-        var projectile = Instantiate(projectilePrefab, firePosition, Quaternion.identity);
+        var projectile = Instantiate(projectilePrefab, firePosition, Quaternion.LookRotation(fireForward));
 
         // Get the IPowerProjectile component from the projectile
         var powerProjectile = projectile.GetComponent<IPowerProjectile>();
