@@ -6,12 +6,8 @@ using UnityEngine.Serialization;
 [CreateAssetMenu(fileName = "New Power", menuName = "Power")]
 public class PowerScriptableObject : ScriptableObject
 {
-    private static readonly HashSet<PowerScriptableObject> powerScriptableObjects = new();
-
-    public static IReadOnlyCollection<PowerScriptableObject> PowerScriptableObjects => powerScriptableObjects;
-
     private static GameObject _logicParent;
-    
+
     [Header("Overview Information")] [SerializeField]
     private string powerName;
 
@@ -86,12 +82,6 @@ public class PowerScriptableObject : ScriptableObject
 
     #endregion
 
-    public PowerScriptableObject()
-    {
-        // Add the power to the list of power scriptable objects
-        powerScriptableObjects.Add(this);
-    }
-
     private void InitializeComponents()
     {
         // If the logic parent is null, create a new GameObject
@@ -100,7 +90,7 @@ public class PowerScriptableObject : ScriptableObject
             _logicParent = new GameObject("PowerLogic");
             DontDestroyOnLoad(_logicParent);
         }
-        
+
         // Get the PowerLogic component
         _powerLogic = Instantiate(powerLogicPrefab, _logicParent.transform).GetComponent<IPower>();
 

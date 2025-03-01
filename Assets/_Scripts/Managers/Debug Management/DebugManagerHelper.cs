@@ -30,8 +30,8 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
     [SerializeField] private DebugSceneLevelInfo[] debugSceneLevelInfos;
 
-    [SerializeField, Min(0)] private float textUpdateRate = 1 / 10f; 
-    
+    [SerializeField, Min(0)] private float textUpdateRate = 1 / 10f;
+
     #endregion
 
     #region Private Fields
@@ -87,7 +87,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     {
         // Set the visibility of the debug text
         SetDebugVisibility(DebugManager.Instance.IsDebugMode);
-        
+
         // Start the text routine
         StartCoroutine(SetTextRoutine());
     }
@@ -196,6 +196,15 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
                 DebugLoadScene(debugSceneLevelInfos[8]);
             if (Input.GetKeyDown(KeyCode.Alpha0))
                 DebugLoadScene(debugSceneLevelInfos[9]);
+
+            if (Input.GetKeyDown(KeyCode.Keypad0))
+                ChangePower(0);
+            if (Input.GetKeyDown(KeyCode.Keypad1))
+                ChangePower(1);
+            if (Input.GetKeyDown(KeyCode.Keypad2))
+                ChangePower(2);
+            if (Input.GetKeyDown(KeyCode.Keypad3))
+                ChangePower(3);
         }
     }
 
@@ -261,7 +270,6 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
             Player.Instance.PlayerPowerManager.AddPower(power);
     }
 
-
     private void FindBadInteractableMaterials()
     {
         // Return if the interactable material is null
@@ -292,6 +300,52 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         }
     }
 
+    private void ChangePower(int eqippedPowerIndex)
+    {
+        var pso = PowerHelper.Instance.Powers;
+
+        var allPowers = new List<PowerScriptableObject>(pso);
+
+        // get the power at the given index
+        var indexedPower = Player.Instance.PlayerPowerManager.GetPowerAtIndex(eqippedPowerIndex);
+        
+        // For each of the player's currently equipped powers,
+        // remove them from the allPowersHashSet
+        foreach (var power in Player.Instance.PlayerPowerManager.Powers)
+        {
+            // Skip if the power is the indexed power
+            if (power == indexedPower)
+                continue;
+            
+            allPowers.Remove(power);
+        }
+        
+        // If the indexed power is null, just add the first power
+        if (indexedPower == null)
+        {
+            Player.Instance.PlayerPowerManager.AddPower(allPowers[0]);
+            return;
+        }
+        
+        // Store the current Power index
+        var currentPowerIndex = Player.Instance.PlayerPowerManager.CurrentPowerIndex;
+
+        var nextIndex = -1;
+
+        if (indexedPower != null)
+            nextIndex = allPowers.IndexOf(indexedPower);
+
+        nextIndex++;
+
+        var nextPower = allPowers[nextIndex % allPowers.Count];
+
+        // Set the power at that powerIndex to the nextPower
+        Player.Instance.PlayerPowerManager.SetPowerAtIndex(nextPower, eqippedPowerIndex);
+        
+        // Set the current power index to the current power index
+        Player.Instance.PlayerPowerManager.ChangePower(currentPowerIndex);
+    }
+
     private void UpdateToleranceAndHealth()
     {
         // If there is no player, return
@@ -314,6 +368,10 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
     private string UpdateText()
     {
+        // Return if not in debug mode
+        if (!DebugManager.Instance.IsDebugMode)
+            return "";
+
         // If the debug text is null, return
         if (debugText == null)
             return "";

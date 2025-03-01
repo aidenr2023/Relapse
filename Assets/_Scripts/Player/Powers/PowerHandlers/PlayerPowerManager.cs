@@ -18,7 +18,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     [SerializeField] private Transform powerFirePoint;
 
     [SerializeField] private LayerMask powerAimIgnoreLayers;
-    
+
     [SerializeField] private PowerScriptableObject[] powers;
 
     [Header("Power Charged Vignette"), SerializeField, Range(0, 1)]
@@ -255,7 +255,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         ChangePower(_currentPowerIndex + direction);
     }
 
-    private void ChangePower(int index)
+    public void ChangePower(int index)
     {
         // Return if the powers array is empty
         if (powers.Length == 0)
@@ -685,7 +685,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     #region Public Methods
 
-    public void AddPower(PowerScriptableObject powerScriptableObject)
+    public void AddPower(PowerScriptableObject powerScriptableObject, bool toolTip = true)
     {
         // Check if the power is already in one of the hash sets
         var powerSet = powerScriptableObject.PowerType switch
@@ -713,9 +713,10 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         };
 
         // Display a tooltip for the power
-        JournalTooltipManager.Instance.AddTooltip(
-            $"New {powerTypeName}: {powerScriptableObject.PowerName}"
-        );
+        if (toolTip)
+            JournalTooltipManager.Instance.AddTooltip(
+                $"New {powerTypeName}: {powerScriptableObject.PowerName}"
+            );
     }
 
     private void AddPower(PowerToken powerToken)
@@ -746,7 +747,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     {
         var isCurrentPower = CurrentPower == powerScriptableObject;
         var isLastPower = powers.Length == 1;
-        
+
         // Check if the power is already in one of the hash sets
         var powerSet = powerScriptableObject.PowerType switch
         {
@@ -805,7 +806,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         _medsSet.Clear();
         powers = Array.Empty<PowerScriptableObject>();
     }
-    
+
     public bool HasPower(PowerScriptableObject powerScriptableObject)
     {
         // Check if the power is already in one of the hash sets
@@ -865,6 +866,34 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Stop the audio source
         powerAudioSource.Stop();
+    }
+
+    public PowerScriptableObject GetPowerAtIndex(int index)
+    {
+        return index >= 0 && index < powers.Length ? powers[index] : null;
+    }
+
+    public void SetPowerAtIndex(PowerScriptableObject power, int index)
+    {
+        if (index < 0 || index >= powers.Length)
+            return;
+
+        // Create an array that represents the new powers array
+        var newPowers = new PowerScriptableObject[powers.Length];
+
+        // Populate the array with the current powers
+        for (int i = 0; i < powers.Length; i++)
+            newPowers[i] = powers[i];
+
+        // Replace the power at the index
+        newPowers[index] = power;
+
+        // Clear the powers array
+        ClearPowers();
+
+        // Add back the powers
+        foreach (var cPower in newPowers)
+            AddPower(cPower, false);
     }
 
     public string GetDebugText()
@@ -965,7 +994,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         powers = Array.Empty<PowerScriptableObject>();
 
         // Load the power scriptable objects
-        foreach (var pso in PowerScriptableObject.PowerScriptableObjects)
+        foreach (var pso in PowerHelper.Instance.Powers)
         {
             // Check if the id is in the player loader's memory
             if (!playerLoader.TryGetDataFromMemory(Id, pso.UniqueId, out bool _))
