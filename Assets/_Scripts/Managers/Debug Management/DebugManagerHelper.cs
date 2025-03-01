@@ -300,15 +300,15 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         }
     }
 
-    private void ChangePower(int eqippedPowerIndex)
+    private void ChangePower(int equippedPowerIndex)
     {
         var pso = PowerHelper.Instance.Powers;
 
         var allPowers = new List<PowerScriptableObject>(pso);
 
         // get the power at the given index
-        var indexedPower = Player.Instance.PlayerPowerManager.GetPowerAtIndex(eqippedPowerIndex);
-        
+        var indexedPower = Player.Instance.PlayerPowerManager.GetPowerAtIndex(equippedPowerIndex);
+
         // For each of the player's currently equipped powers,
         // remove them from the allPowersHashSet
         foreach (var power in Player.Instance.PlayerPowerManager.Powers)
@@ -316,17 +316,17 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
             // Skip if the power is the indexed power
             if (power == indexedPower)
                 continue;
-            
+
             allPowers.Remove(power);
         }
-        
+
         // If the indexed power is null, just add the first power
         if (indexedPower == null)
         {
             Player.Instance.PlayerPowerManager.AddPower(allPowers[0]);
             return;
         }
-        
+
         // Store the current Power index
         var currentPowerIndex = Player.Instance.PlayerPowerManager.CurrentPowerIndex;
 
@@ -340,8 +340,8 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         var nextPower = allPowers[nextIndex % allPowers.Count];
 
         // Set the power at that powerIndex to the nextPower
-        Player.Instance.PlayerPowerManager.SetPowerAtIndex(nextPower, eqippedPowerIndex);
-        
+        Player.Instance.PlayerPowerManager.SetPowerAtIndex(nextPower, equippedPowerIndex);
+
         // Set the current power index to the current power index
         Player.Instance.PlayerPowerManager.ChangePower(currentPowerIndex);
     }
@@ -392,8 +392,9 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     {
         while (true)
         {
-            // Update the text
-            debugText.text = UpdateText();
+            // Update the text if in debug mode
+            if (DebugManager.Instance.IsDebugMode)
+                debugText.text = UpdateText();
 
             // Wait for the text update rate
             yield return new WaitForSecondsRealtime(textUpdateRate);
@@ -410,22 +411,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     {
         var sb = new StringBuilder();
 
-        // sb.Append($"Serialization Data Info:\n");
-        //
-        // foreach (var keyValue in LevelLoader.Instance.Data)
-        // {
-        //     var uniqueId = keyValue.Key;
-        //
-        //     sb.Append($"\tUniqueId: {uniqueId}\n");
-        //
-        //     foreach (var data in keyValue.Value)
-        //         sb.Append($"\t\t{data.Key}: {data.Value}\n");
-        // }
-
-        sb.Append(
-            $"Look Deadzone: [{UserSettings.Instance.MinimumLookDeadzone:0.00}, {UserSettings.Instance.MaximumLookDeadzone:0.00}]\n");
-        sb.Append(
-            $"Move Deadzone: [{UserSettings.Instance.MinimumMoveDeadzone:0.00}, {UserSettings.Instance.MaximumMoveDeadzone:0.00}]\n");
+        sb.Append($"Current Movement Type: {AsyncSceneManager.Instance._movementType}");
 
         return sb.ToString();
     }

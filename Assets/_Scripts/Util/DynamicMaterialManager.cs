@@ -33,7 +33,7 @@ public class DynamicMaterialManager : MonoBehaviour
             // Add the renderer and the material to the dictionary
             _materials.Add(cRenderer, singleMaterial);
             
-            Debug.Log($"Material added to {cRenderer.name}. Material: {singleMaterial.name}", cRenderer);
+            // Debug.Log($"Material added to {cRenderer.name}. Material: {singleMaterial.name}", cRenderer);
         }
     }
 

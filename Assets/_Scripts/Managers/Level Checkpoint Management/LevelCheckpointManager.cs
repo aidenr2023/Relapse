@@ -41,8 +41,8 @@ public class LevelCheckpointManager
         // Set the current checkpoint
         CurrentCheckpoint = checkpoint;
         
-        // Log the checkpoint
-        Debug.Log($"Checkpoint set to {checkpoint.name}");
+        // // Log the checkpoint
+        // Debug.Log($"Checkpoint set to {checkpoint.name}");
     }
 
     public void ResetToCheckpoint(LevelCheckpointCheckpoint checkpoint)

@@ -33,7 +33,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
     #region Private Fields
 
-    static readonly int HasJumped = Animator.StringToHash("hasJumped");
+    private static readonly int HasJumped = Animator.StringToHash("hasJumped");
 
     private Vector2 _movementInput;
 

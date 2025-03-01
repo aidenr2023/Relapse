@@ -10,6 +10,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 {
     private const int MAX_SPHERECAST_HITS = 128;
 
+    private static readonly int IsRunningAnimationID = Animator.StringToHash("IsSprinting");
+
     #region Serialized Fields
 
     [Header("Important Transforms")]
@@ -39,6 +41,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     [SerializeField, Min(0)] private float slideInterpolationMultiplier = 10;
     [SerializeField, Range(0, 1)] private float sphereCastRadius = .9f;
     [SerializeField, Range(0, 90)] private float maxSlopeAngle = 60;
+    
+    [SerializeField] private PlayerMovementTypeSettings cityMovementSettings;
+    [SerializeField] private PlayerMovementTypeSettings apartmentMovementSettings;
 
     [Header("Locomotion")] [SerializeField]
     private float maxSpeed = 10;
@@ -67,8 +72,6 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     #endregion
 
     #region Private Fields
-
-    static readonly int isRunning = Animator.StringToHash("IsSprinting");
 
     private Rigidbody _rigidbody;
 
@@ -295,12 +298,12 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         {
             OnSprintStart?.Invoke();
 
-            playerAnimator.SetBool(isRunning, true);
+            playerAnimator.SetBool(IsRunningAnimationID, true);
         }
         else if (!IsSprinting && _wasPreviouslySprinting)
         {
             OnSprintEnd?.Invoke();
-            playerAnimator.SetBool(isRunning, false);
+            playerAnimator.SetBool(IsRunningAnimationID, false);
         }
     }
 
@@ -912,5 +915,29 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     {
         InputManager.Instance.IsExternallyDisabled = false;
         Debug.Log("Player Controls Enabled");
+    }
+
+    public void ApplyMovementTypeSettings(PlayerMovementType movementType)
+    {
+        Debug.Log($"Applying settings for {movementType}");
+        
+        // Determine which settings to use
+        var cSettings = movementType switch
+        {
+            PlayerMovementType.City => cityMovementSettings,
+            PlayerMovementType.Apartment => apartmentMovementSettings,
+            _ => throw new ArgumentOutOfRangeException(nameof(movementType), movementType, null)
+        };
+        
+        // Apply the settings
+        desiredCapsuleHeightOffset = cSettings.desiredCapsuleHeightOffset;
+        sphereCastRadius = cSettings.sphereCastRadius;
+    }
+
+    [Serializable]
+    private struct PlayerMovementTypeSettings
+    {
+        public float desiredCapsuleHeightOffset;
+        [Range(0, 1)] public float sphereCastRadius;
     }
 }

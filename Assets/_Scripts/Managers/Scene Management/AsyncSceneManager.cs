@@ -228,7 +228,7 @@ public class AsyncSceneManager : IDebugged
                     persistentDataScene.isLoaded
                    )
                 {
-                    Debug.Log($"Saving data for {sceneInfo.SectionPersistentData.SceneName} to memory.");
+                    // Debug.Log($"Saving data for {sceneInfo.SectionPersistentData.SceneName} to memory.");
                     levelLoaderInstance.SaveDataSceneToMemory(persistentDataScene);
                 }
 
@@ -237,7 +237,7 @@ public class AsyncSceneManager : IDebugged
                 // Save the section scene to memory
                 if (sceneInfo.SectionScene != null && sceneInfo.SectionScene.SceneName != "" && sectionScene.isLoaded)
                 {
-                    Debug.Log($"Saving data for {sceneInfo.SectionScene.SceneName} to memory.");
+                    // Debug.Log($"Saving data for {sceneInfo.SectionScene.SceneName} to memory.");
                     levelLoaderInstance.SaveDataSceneToMemory(sectionScene);
                 }
             }
@@ -288,6 +288,9 @@ public class AsyncSceneManager : IDebugged
 
             if (activeScene.IsValid())
                 SceneManager.SetActiveScene(activeScene);
+            
+            // Set the player movement type
+            SetPlayerMovementType(levelSectionSceneInfo.PlayerMovementType);
         };
 
         // Return the operations
@@ -330,6 +333,10 @@ public class AsyncSceneManager : IDebugged
         // Load the section persistent data
         if (levelSectionSceneInfo.SectionPersistentData != null)
             LoadSceneSynchronous(levelSectionSceneInfo.SectionPersistentData);
+        
+        // If the scene is an active scene, set the player movement type
+        if (levelSectionSceneInfo.SetActiveSceneToSectionScene)
+            SetPlayerMovementType(levelSectionSceneInfo.PlayerMovementType);
     }
 
     public void LoadScenesSynchronous(SceneLoaderInformation loaderInformation)
@@ -441,9 +448,6 @@ public class AsyncSceneManager : IDebugged
         // Unload the section persistent data
         if (levelSectionSceneInfo.SectionPersistentData != null)
         {
-            Debug.Log(
-                $"Unloading Persistent Data: {levelSectionSceneInfo.SectionPersistentData.SceneName} - {levelSectionSceneInfo}");
-
             // Create a scene unload field that disables the scene instead of unloading it
             var sceneUnloadField = SceneUnloadField.Create(levelSectionSceneInfo.SectionPersistentData, true);
 
@@ -877,6 +881,28 @@ public class AsyncSceneManager : IDebugged
 
     #endregion
 
+    // TODO: Remove
+    public PlayerMovementType _movementType;
+    
+    private void SetPlayerMovementType(PlayerMovementType movementType)
+    {
+        _movementType = movementType;
+        
+        // If the player instance is not null
+        if (Player.Instance != null)
+        {
+            // Get the player movement
+            var playerMovement = Player.Instance.PlayerController as PlayerMovementV2;
+
+            // If the player movement is null, return
+            if (playerMovement == null)
+                return;
+
+            // Set the movement type
+            playerMovement.ApplyMovementTypeSettings(movementType);
+        }
+    }
+    
     public string GetDebugText()
     {
         return $"Managed Scenes: {string.Join(", ", _asyncSceneRecords.Keys)}";

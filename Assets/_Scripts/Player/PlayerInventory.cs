@@ -45,9 +45,9 @@ public class PlayerInventory : MonoBehaviour, IPlayerLoaderInfo
         // Force the money object to be in the inventory
         ForceItem(moneyObject, 0);
 
-        // Get all instance of the inventory objects
-        foreach (var obj in InventoryObject.InventoryObjects)
-            Debug.Log($"Found {obj.ItemName} in the scene!");
+        // // Get all instance of the inventory objects
+        // foreach (var obj in InventoryObject.InventoryObjects)
+        //     Debug.Log($"Found {obj.ItemName} in the scene!");
     }
 
     private InventoryEntry GetInventoryEntry(InventoryObject inventoryObject)

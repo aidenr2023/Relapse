@@ -58,8 +58,8 @@ public class InteractableMaterialManager : MonoBehaviour
 
         var isSelected = playerInteraction.SelectedInteractable == Interactable;
 
-        if (isSelected)
-            Debug.Log($"Selected {Interactable.GameObject.name}");
+        // if (isSelected)
+        //     Debug.Log($"Selected {Interactable.GameObject.name}");
 
         // Set the selected property of the interactable
         SetSelected(isSelected || IsForceSelected);

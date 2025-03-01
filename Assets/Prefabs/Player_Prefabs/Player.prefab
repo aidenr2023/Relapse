@@ -8891,7 +8891,7 @@ MonoBehaviour:
   orientation: {fileID: 5224293575626551686}
   playerAnimator: {fileID: 4298942248171799672}
   desiredCapsuleHeightOffset: 0.5
-  defaultPlayerHeight: 2.5
+  defaultPlayerHeight: 2.2
   rideSpringStrength: 512
   rideSpringDamper: 32
   downwardInterpolation: 1
@@ -8901,6 +8901,12 @@ MonoBehaviour:
   slideInterpolationMultiplier: 10
   sphereCastRadius: 0.6
   maxSlopeAngle: 60
+  cityMovementSettings:
+    desiredCapsuleHeightOffset: 0.75
+    sphereCastRadius: 0.6
+  apartmentMovementSettings:
+    desiredCapsuleHeightOffset: 0.25
+    sphereCastRadius: 0.3
   maxSpeed: 12
   acceleration: 24
   accelerationFactorFromDot:
@@ -18652,7 +18658,7 @@ Transform:
   m_GameObject: {fileID: 7387237685649892998}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.77419937, z: 0, w: 0.63294184}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

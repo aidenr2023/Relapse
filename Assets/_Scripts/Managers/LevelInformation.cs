@@ -29,8 +29,6 @@ public class LevelInformation : MonoBehaviour
     {
         _sceneName = gameObject.scene.name;
         Instances.Add(_sceneName, this);
-
-        Debug.Log($"LevelInformation for {_sceneName} has been created.");
     }
 
     private void OnDestroy()

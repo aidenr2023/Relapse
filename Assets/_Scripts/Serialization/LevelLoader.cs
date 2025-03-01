@@ -267,7 +267,7 @@ public class LevelLoader : MonoBehaviour
         // Load the data
         foreach (var levelLoaderInfo in levelLoaderInfos)
         {
-            Debug.Log($"Loading data for {levelLoaderInfo.GameObject.name} {levelLoaderInfo.UniqueId.UniqueIdValue}");
+            // Debug.Log($"Loading data for {levelLoaderInfo.GameObject.name} {levelLoaderInfo.UniqueId.UniqueIdValue}");
             levelLoaderInfo.LoadData(this);
         }
     }
@@ -425,7 +425,7 @@ public class LevelLoader : MonoBehaviour
 
         System.IO.File.WriteAllText(dataFileName, jsonDataObjects);
 
-        Debug.Log($"Saved the data to {dataFileName}");
+        // Debug.Log($"Saved the data to {dataFileName}");
     }
 
     public void AddDataToMemory(UniqueId id, IDataInfo dataInfo)

@@ -60,6 +60,13 @@ public class SceneFieldPropertyDrawer : PropertyDrawer
 {
     public override void OnGUI(Rect _position, SerializedProperty _property, GUIContent _label)
     {
+        // Don't draw the property if this is being multi-edited
+        if (_property.serializedObject.isEditingMultipleObjects)
+        {
+            EditorGUI.LabelField(_position, _label.text, "Multi-object editing not supported");
+            return;
+        }
+        
         // Begin drawing the property
         EditorGUI.BeginProperty(_position, GUIContent.none, _property);
 

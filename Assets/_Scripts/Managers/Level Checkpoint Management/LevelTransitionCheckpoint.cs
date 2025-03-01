@@ -79,13 +79,9 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
             if (hasLevelInformation)
             {
                 if (levelInfo.StartingCheckpoint != null)
-                {
-                    Debug.Log($"Resetting to checkpoint {levelInfo.StartingCheckpoint.name}");
                     LevelCheckpointManager.Instance.ResetToCheckpoint(levelInfo.StartingCheckpoint);
-                }
                 else
                 {
-                    Debug.Log($"Resetting to level info position {levelInfo.transform.position}");
                     Player.Instance.Rigidbody.Move(levelInfo.transform.position, Player.Instance.Rigidbody.rotation);
                     Player.Instance.PlayerLook.ApplyRotation(levelInfo.transform.rotation);
                 }
@@ -94,7 +90,7 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
             // If the level information does not exist, set the player's position and rotation to the starting checkpoint
             else
             {
-                Debug.Log($"Resetting to checkpoint Old Checkpoint???");
+                Debug.LogError($"Resetting to checkpoint Old Checkpoint???");
                 // Player.Instance.Rigidbody.Move(checkpointPosition, Player.Instance.Rigidbody.rotation);
                 // Player.Instance.PlayerLook.ApplyRotation(checkpointRotation);
             }
@@ -144,8 +140,6 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
                 continue;
 
             scenesToUnload.Add(scene);
-
-            Debug.Log($"Unload: {scene}");
         }
 
         // Convert the scenes to unload to a LevelSectionSceneInfo array
