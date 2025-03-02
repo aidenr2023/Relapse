@@ -828,10 +828,11 @@ MonoBehaviour:
   enemyHitSound:
     clip: {fileID: 8300000, guid: 94981910bbf34bb43a109bca992410c3, type: 3}
     soundType: 2
-    volume: 0.0625
+    volume: 0.03125
     isPersistent: 0
     isLooping: 0
     pitch: 1
+    spatialBlend: 0.5
   enemyDeathSound:
     clip: {fileID: 8300000, guid: 94981910bbf34bb43a109bca992410c3, type: 3}
     soundType: 2
@@ -839,6 +840,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 1
+    spatialBlend: 1
   enemyMoanSource: {fileID: 4761777531960735672}
   moanSounds:
   - clip: {fileID: 8300000, guid: fb282b04bff6174458bff6d8ec3924d2, type: 3}
@@ -847,6 +849,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 0.8
+    spatialBlend: 1
   moanSoundChance: 0.4
   moanSoundMinCooldown: 8
   moanSoundMaxCooldown: 15
@@ -3953,6 +3956,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 1
+    spatialBlend: 1
   trailRenderer: {fileID: 1019097002468178072}
 --- !u!1 &1015013408037622929 stripped
 GameObject:
@@ -4033,6 +4037,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 1
+    spatialBlend: 1
   trailRenderer: {fileID: 46309677068348920}
 --- !u!1 &1727173218753201258 stripped
 GameObject:

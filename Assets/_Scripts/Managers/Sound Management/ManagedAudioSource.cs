@@ -85,6 +85,7 @@ public class ManagedAudioSource : MonoBehaviour
         _audioSource.clip = sound.Clip;
         _audioSource.volume = sound.Volume;
         _audioSource.pitch = sound.Pitch;
+        _audioSource.spatialBlend = sound.SpatialBlend;
 
         // If the sound is persistent, set the priority to the max
         if (sound.IsPersistent)

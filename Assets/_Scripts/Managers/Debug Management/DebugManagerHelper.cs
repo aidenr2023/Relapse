@@ -378,7 +378,9 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
         // Create a new string from the debug managed objects
         StringBuilder textString = new();
-        foreach (var obj in DebugManager.Instance.DebuggedObjects)
+
+        var debuggedObjects = DebugManager.Instance.DebuggedObjects.ToArray();
+        foreach (var obj in debuggedObjects)
         {
             textString.Append(obj.GetDebugText());
             textString.Append('\n');
@@ -392,7 +394,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     {
         while (true)
         {
-            // Update the text if in debug mode
+            // Set the text if in debug mode
             if (DebugManager.Instance.IsDebugMode)
                 debugText.text = UpdateText();
 

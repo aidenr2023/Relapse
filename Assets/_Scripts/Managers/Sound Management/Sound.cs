@@ -14,7 +14,8 @@ public class Sound
     [SerializeField] private bool isPersistent;
     [SerializeField] private bool isLooping;
     [SerializeField, Range(.01f, 2f)] private float pitch = 1;
-
+    [SerializeField, Range(0, 1)] private float spatialBlend = 1;
+    
     #endregion
 
     #region Getters
@@ -31,6 +32,8 @@ public class Sound
     public bool IsLooping => isLooping;
     
     public float Pitch => pitch;
+    
+    public float SpatialBlend => spatialBlend;
 
     #endregion
 
