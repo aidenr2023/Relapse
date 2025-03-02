@@ -111,7 +111,7 @@ public class RelapseScreen : GameMenu
     public void LoadScene(string sceneName)
     {
         // Load the scene
-        UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+        SceneManager.LoadScene(sceneName);
     }
 
     public void RespawnAtLatestCheckpoint()
