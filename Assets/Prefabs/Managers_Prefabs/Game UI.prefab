@@ -26634,7 +26634,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -27273,6 +27273,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fps: 12
+  playWhilePaused: 0
   jitterLerpAmount: 1
   minJitterRotation: -2
   maxJitterRotation: 2
@@ -57071,6 +57072,7 @@ MonoBehaviour:
   pausesGame: 1
   pausesGameMusic: 1
   mufflesMusic: 0
+  slowDownTime: 1
   videoPlayer: {fileID: 8585155619892785079}
   titleText: {fileID: 5484742482570002265}
   subtitleText: {fileID: 201004763218317029}

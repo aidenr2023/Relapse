@@ -9708,6 +9708,7 @@ GameObject:
   - component: {fileID: 6354231094210747280}
   - component: {fileID: 5555513626659338803}
   - component: {fileID: 8220811610589850471}
+  - component: {fileID: 5415466635592684216}
   m_Layer: 14
   m_Name: Comic Bubble BG
   m_TagString: Untagged
@@ -9784,6 +9785,25 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &5415466635592684216
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3860509257329745480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f30d54fd27fa4471bee5c1700a3bb975, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: 12
+  playWhilePaused: 0
+  jitterLerpAmount: 1
+  minJitterRotation: -2
+  maxJitterRotation: 2
+  minJitterScale: 0.9
+  maxJitterScale: 1.1
 --- !u!1 &3865475500622332377
 GameObject:
   m_ObjectHideFlags: 0
@@ -21107,7 +21127,7 @@ MonoBehaviour:
   maxOpacity: 0.6
   opacityLerpAmount: 0.15
   positionLerpAmount: 0.75
-  offset: {x: 0.25, y: 0, z: 0.25}
+  offset: {x: 0.1, y: 0.1, z: 0.5}
   text: {fileID: 9143859640615491488}
   rotationSpeed: 2
   ammoCountFillImage: {fileID: 6826163348256811965}
@@ -21187,7 +21207,6 @@ GameObject:
   - component: {fileID: 9056502664580960956}
   - component: {fileID: 2973293244438298658}
   - component: {fileID: 6571337078618509929}
-  - component: {fileID: 156027141659142940}
   m_Layer: 14
   m_Name: FG
   m_TagString: Untagged
@@ -21256,24 +21275,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &156027141659142940
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8628748767043369499}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f30d54fd27fa4471bee5c1700a3bb975, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fps: 12
-  jitterLerpAmount: 1
-  minJitterRotation: -2
-  maxJitterRotation: 2
-  minJitterScale: 0.9
-  maxJitterScale: 1.1
 --- !u!1 &8699895578895347657
 GameObject:
   m_ObjectHideFlags: 0

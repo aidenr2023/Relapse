@@ -5,6 +5,7 @@ using UnityEngine;
 public class UIJitter : MonoBehaviour
 {
     [SerializeField] private float fps = 12;
+    [SerializeField] private bool playWhilePaused = false;
     [SerializeField, Range(0, 1)] private float jitterLerpAmount = 1;
 
     [SerializeField] private float minJitterRotation = -10f;
@@ -45,7 +46,7 @@ public class UIJitter : MonoBehaviour
         while (_isRunning)
         {
             // Return if the game is paused
-            if (MenuManager.Instance.IsGamePausedInMenus)
+            if (MenuManager.Instance.IsGamePausedInMenus && !playWhilePaused)
             {
                 yield return new WaitForSecondsRealtime(1f / fps);
                 continue;
