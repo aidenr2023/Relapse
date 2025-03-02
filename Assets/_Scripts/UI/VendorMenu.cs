@@ -146,12 +146,12 @@ public class VendorMenu : GameMenu
         // If the player can upgrade with the vendor, show the upgrade notification
         upgradeNotification.enabled = Player.Instance.PlayerInventory.MoneyCount >= _currentVendor.UpgradeCost;
 
-        var scaleAdd = Mathf.Sin(Time.time * Mathf.PI * 2) * 0.1f;
-        var newScale = Vector3.one + new Vector3(scaleAdd, scaleAdd, 0);
-
-        shopNotification.transform.localScale = newScale;
-        gossipNotification.transform.localScale = newScale;
-        upgradeNotification.transform.localScale = newScale;
+        // var scaleAdd = Mathf.Sin(Time.time * Mathf.PI * 2) * 0.1f;
+        // var newScale = Vector3.one + new Vector3(scaleAdd, scaleAdd, 0);
+        //
+        // shopNotification.transform.localScale = newScale;
+        // gossipNotification.transform.localScale = newScale;
+        // upgradeNotification.transform.localScale = newScale;
     }
 
     public void StartDialogue()
