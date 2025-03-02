@@ -122,10 +122,11 @@ MonoBehaviour:
   enemyHitSound:
     clip: {fileID: 8300000, guid: 94981910bbf34bb43a109bca992410c3, type: 3}
     soundType: 2
-    volume: 0.25
+    volume: 0.0625
     isPersistent: 0
     isLooping: 0
     pitch: 1
+    spatialBlend: 0.5
   enemyDeathSound:
     clip: {fileID: 8300000, guid: 94981910bbf34bb43a109bca992410c3, type: 3}
     soundType: 2
@@ -133,6 +134,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 1
+    spatialBlend: 1
   enemyMoanSource: {fileID: 4122662994728057661}
   moanSounds:
   - clip: {fileID: 8300000, guid: fb282b04bff6174458bff6d8ec3924d2, type: 3}
@@ -141,6 +143,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 0.8
+    spatialBlend: 1
   moanSoundChance: 0.4
   moanSoundMinCooldown: 8
   moanSoundMaxCooldown: 15
@@ -166,6 +169,9 @@ MonoBehaviour:
     maxTime: 0.5
   pursuitDetectionTimer:
     maxTime: 3
+  layersToIgnore:
+    serializedVersion: 2
+    m_Bits: 0
   debugCanvas: {fileID: 6841824085872832636}
   pursuitDetectionSlider: {fileID: 2997066024447565357}
   pursuitDetectionText: {fileID: 5941867519774747849}

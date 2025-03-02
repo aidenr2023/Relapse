@@ -8776,6 +8776,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 0.75
+    spatialBlend: 1
   deathSound:
     clip: {fileID: 8300000, guid: a07d4a0a361f338429c6b98e1d8a4499, type: 3}
     soundType: 1
@@ -8783,6 +8784,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 0.75
+    spatialBlend: 1
 --- !u!114 &5203053287727495698
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8854,9 +8856,9 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  chargedVignetteStrength: 0.25
+  chargedVignetteStrength: 0.125
   chargedVignetteLerpAmount: 0.125
-  chargedVignetteFlashesPerSecond: 2
+  chargedVignetteFlashesPerSecond: 0
   gauntletChargeVfx: {fileID: 2999638700446178697}
   powerAudioSource: {fileID: 5017651248909335848}
 --- !u!114 &-7043807009064224948
@@ -8994,12 +8996,14 @@ MonoBehaviour:
       isPersistent: 0
       isLooping: 0
       pitch: 1
+      spatialBlend: 1
     - clip: {fileID: 8300000, guid: 5aa5e09256a042147921c24a52b741ae, type: 3}
       soundType: 1
       volume: 0.0625
       isPersistent: 0
       isLooping: 0
       pitch: 1
+      spatialBlend: 1
   walkingFootstepInterval: 0.35
   sprintingFootstepInterval: 0.25
   jumpSound:
@@ -9009,6 +9013,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 1
+    spatialBlend: 1
 --- !u!114 &-2300652163101954379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9048,6 +9053,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 1
+    spatialBlend: 1
   inwardLookLockAngle: 15
   outwardLookLockAngle: 40
   wallClimbLayer:
@@ -9087,6 +9093,7 @@ MonoBehaviour:
     isPersistent: 1
     isLooping: 0
     pitch: 1
+    spatialBlend: 1
 --- !u!114 &936152737596805865
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -53,6 +53,12 @@ public class ShootingEnemyProjectile : MonoBehaviour
         // Return if the actor is the shooter
         if (actor as EnemyInfo == _shootingEnemyAttack.Enemy.EnemyInfo)
             return;
+
+        // Return if the actor is an enemy
+        if (actor is EnemyInfo)
+        {
+            return;
+        }
         
         // // Mark this for destruction
         // _isMarkedForDestruction = true;
