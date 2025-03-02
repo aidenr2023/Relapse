@@ -119,9 +119,6 @@ public abstract class GameMenu : MonoBehaviour
 
         // Set the desired opacity to 0
         _desiredOpacity = 0;
-
-        // Set the activate flag to false
-        _isActive = false;
         
         // // Update the event system
         // UpdateEventSystem();
@@ -131,6 +128,9 @@ public abstract class GameMenu : MonoBehaviour
 
         // Custom Deactivate
         CustomDeactivate();
+        
+        // Set the activate flag to false
+        _isActive = false;
     }
 
     protected void OnDestroy()

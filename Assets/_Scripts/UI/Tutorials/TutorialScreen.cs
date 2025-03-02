@@ -18,6 +18,8 @@ public class TutorialScreen : GameMenu, IUsesInput
 
     #region Serialized Fields
 
+    [SerializeField, Min(0)] private float slowDownTime = 1;
+
     [SerializeField] private VideoPlayer videoPlayer;
     [SerializeField] private TMP_Text titleText;
     [SerializeField] private TMP_Text subtitleText;
@@ -27,7 +29,7 @@ public class TutorialScreen : GameMenu, IUsesInput
     [SerializeField] private CanvasGroup exitCanvasGroup;
     [SerializeField] private Button nextButton;
     [SerializeField] private Button prevButton;
-    
+
     [Header("Tutorial Buttons")] [SerializeField]
     private GameObject buttonsParent;
 
@@ -84,7 +86,7 @@ public class TutorialScreen : GameMenu, IUsesInput
     {
         // Register the input
         InputManager.Instance.Register(this);
-        
+
         // Set the selected game object to the exit button
         eventSystem.SetSelectedGameObject(null);
     }
@@ -96,13 +98,35 @@ public class TutorialScreen : GameMenu, IUsesInput
 
         // Unregister the input
         InputManager.Instance.Unregister(this);
+
+        // Run the resume game coroutine
+        if (IsActive)
+            StartCoroutine(ResumeGame());
+    }
+
+    private IEnumerator ResumeGame()
+    {
+        // Create a new time scale token
+        var timeToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(0, -1, true);
+
+        var startTime = Time.unscaledTime;
+
+        while (Time.unscaledTime - startTime < slowDownTime)
+        {
+            timeToken.Value = Mathf.Clamp01((Time.unscaledTime - startTime) / slowDownTime);
+
+            yield return null;
+        }
+
+        // Remove the time token
+        TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(timeToken);
     }
 
     protected override void CustomUpdate()
     {
-        if (CurrentTutorial == null) 
+        if (CurrentTutorial == null)
             return;
-        
+
         // Set the button image to the current tutorial page
         SetButtonImage(CurrentTutorial.TutorialPages[_currentTutorialPage].Button);
 
@@ -123,7 +147,7 @@ public class TutorialScreen : GameMenu, IUsesInput
         // Return if the exit button is not active
         if (!_hasReachedEnd)
             return;
-        
+
         Deactivate();
     }
 
@@ -135,7 +159,7 @@ public class TutorialScreen : GameMenu, IUsesInput
         // If the tutorial is the same as the previous tutorial, return
         if (_currentTutorial == previousTutorial && IsActive)
             return;
-        
+
         // Reset the has reached end flag
         _hasReachedEnd = false;
 
@@ -278,7 +302,7 @@ public class TutorialScreen : GameMenu, IUsesInput
 
         // Set the button image
         SetButtonImage(CurrentTutorial.TutorialPages[index].Button);
-        
+
         // Update the exit button
         UpdateExitButton();
     }
@@ -310,10 +334,50 @@ public class TutorialScreen : GameMenu, IUsesInput
             return;
 
         var isTutorialCompleted = TutorialManager.Instance.IsTutorialCompleted(tutorial);
-        
+
         // Return if the tutorial has already been completed and we are not replaying it
         if (isTutorialCompleted && !replay)
             return;
+
+        // Start the coroutine
+        StartCoroutine(TutorialCoroutine(tutorial, replay, isTutorialCompleted));
+
+        // ChangeTutorial(tutorial);
+        // Activate();
+        //
+        // // Hacky solution to force the exit button to pop up if the tutorial has already been completed
+        // if (replay && isTutorialCompleted)
+        // {
+        //     // Set the current page to the last page
+        //     SetTutorialPage(tutorial.TutorialPages.Count - 1);
+        //
+        //     // Force an update of the exit button
+        //     UpdateExitButton();
+        //
+        //     // Reset the current page to the first page
+        //     SetTutorialPage(0);
+        // }
+        //
+        // // Get the instance of the player tutorial manager & complete the tutorial
+        // Player.Instance.PlayerTutorialManager.CompleteTutorial(tutorial);
+    }
+
+    private IEnumerator TutorialCoroutine(Tutorial tutorial, bool replay, bool isTutorialCompleted)
+    {
+        // Create a time scale token
+        var timeToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(1, -1, true);
+
+        var startTime = Time.unscaledTime;
+
+        while (Time.unscaledTime - startTime < slowDownTime)
+        {
+            timeToken.Value = 1 - Mathf.Clamp01((Time.unscaledTime - startTime) / slowDownTime);
+
+            yield return null;
+        }
+
+        // Remove the time token
+        TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(timeToken);
 
         ChangeTutorial(tutorial);
         Activate();
@@ -323,16 +387,18 @@ public class TutorialScreen : GameMenu, IUsesInput
         {
             // Set the current page to the last page
             SetTutorialPage(tutorial.TutorialPages.Count - 1);
-            
+
             // Force an update of the exit button
             UpdateExitButton();
-            
+
             // Reset the current page to the first page
             SetTutorialPage(0);
         }
 
         // Get the instance of the player tutorial manager & complete the tutorial
         Player.Instance.PlayerTutorialManager.CompleteTutorial(tutorial);
+
+        yield return null;
     }
 
     public static void Play(MonoBehaviour script, Tutorial tutorial, bool replay = true)
@@ -374,25 +440,25 @@ public class TutorialScreen : GameMenu, IUsesInput
     {
         if (!_hasReachedEnd)
             exitButton.gameObject.SetActive(false);
-        
+
         // If the current tutorial page is not the last page, return
         if (_currentTutorialPage < _currentTutorial.TutorialPages.Count - 1)
             return;
-        
+
         // If the flag is already set, return
         if (_hasReachedEnd)
             return;
-        
+
         // Set the flag to true
         _hasReachedEnd = true;
-        
+
         // Set the exit button to active
         exitButton.gameObject.SetActive(true);
 
         // Select the exit button
         eventSystem.SetSelectedGameObject(exitButton.gameObject);
     }
-    
+
     #region IUsesInput
 
     public HashSet<InputData> InputActions { get; } = new();

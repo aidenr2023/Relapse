@@ -97,10 +97,7 @@ public class VendorMenu : GameMenu
     {
         // If the tutorial should be played after the menu is closed, play the tutorial
         if (_playTutorialAfterClose && _purchasedPower != null && _purchasedPower.Tutorial != null)
-        {
-            Debug.Log($"PLAYING TUTORIAL: {_purchasedPower.Tutorial.TutorialName}");
             TutorialScreen.Play(this, _purchasedPower.Tutorial, false);
-        }
         
         // Reset the flags
         _playTutorialAfterClose = false;
