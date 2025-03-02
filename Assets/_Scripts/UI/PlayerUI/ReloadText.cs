@@ -2,6 +2,7 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class ReloadText : MonoBehaviour
 {
@@ -26,6 +27,7 @@ public class ReloadText : MonoBehaviour
     [SerializeField] private float lowAmmoBlinkFrequency = 1;
     [SerializeField] private float lowAmmoGradientStop = 0.1f;
     [SerializeField] private Color reloadColor = Color.red;
+    [SerializeField] private CanvasGroup bgImage;
 
     [SerializeField] private string lowAmmoText = "LOW AMMO!";
     [SerializeField] private string reloadText = "RELOAD!";
@@ -68,11 +70,19 @@ public class ReloadText : MonoBehaviour
         // Update the text of the reload text
         UpdateText();
 
+        // Update the image behind the reload text
+        UpdateBgImage();
+
         // Update the position of the reload text
         UpdatePosition();
 
         // Update the buttons
         UpdateButtons();
+    }
+
+    private void UpdateBgImage()
+    {
+        bgImage.alpha = text.text.Trim().Equals(string.Empty) ? 0 : text.alpha;
     }
 
     private void UpdateButtons()
@@ -103,7 +113,8 @@ public class ReloadText : MonoBehaviour
 
         // Set the buttons based on the current control scheme
         gamepadButtons.SetActive(InputManager.Instance.CurrentControlScheme == InputManager.ControlSchemeType.Gamepad);
-        keyboardButtons.SetActive(InputManager.Instance.CurrentControlScheme == InputManager.ControlSchemeType.Keyboard);
+        keyboardButtons.SetActive(InputManager.Instance.CurrentControlScheme ==
+                                  InputManager.ControlSchemeType.Keyboard);
     }
 
     private void UpdateInformation()
