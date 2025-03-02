@@ -26,7 +26,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     [SerializeField] private Material interactableMaterial;
 
     [Header("Debug Scene Skips")] [SerializeField]
-    private LevelSectionSceneInfo[] levelInfo1;
+    private GenericGun levelSkipGun;
 
     [SerializeField] private DebugSceneLevelInfo[] debugSceneLevelInfos;
 
@@ -261,13 +261,23 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         if (sceneLevelInfo.Powers == null)
             return;
 
-        // Clear the player's powers and add the new powers
-        var powers = Player.Instance.PlayerPowerManager.Powers;
+        var player = Player.Instance;
 
-        Player.Instance.PlayerPowerManager.ClearPowers();
+        // Clear the player's powers and add the new powers
+        var powers = player.PlayerPowerManager.Powers;
+
+        player.PlayerPowerManager.ClearPowers();
 
         foreach (var power in sceneLevelInfo.Powers)
-            Player.Instance.PlayerPowerManager.AddPower(power);
+            player.PlayerPowerManager.AddPower(power);
+
+        // If the player has no gun, add the level skip gun
+        if (player.WeaponManager.EquippedGun == null && levelSkipGun != null)
+        {
+            // Instantiate the gun
+            var gun = Instantiate(levelSkipGun);
+            player.WeaponManager.EquipGun(gun);
+        }
     }
 
     private void FindBadInteractableMaterials()
