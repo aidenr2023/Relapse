@@ -60,6 +60,9 @@ public class VendorMenu : GameMenu
     private PowerScriptableObject[] _drugPowers;
 
     private GameObject _isolatedMenu;
+    private bool _playTutorialAfterClose;
+    private PowerScriptableObject _purchasedPower;
+    
 
     #endregion
 
@@ -92,6 +95,16 @@ public class VendorMenu : GameMenu
 
     protected override void CustomDeactivate()
     {
+        // If the tutorial should be played after the menu is closed, play the tutorial
+        if (_playTutorialAfterClose && _purchasedPower != null && _purchasedPower.Tutorial != null)
+        {
+            Debug.Log($"PLAYING TUTORIAL: {_purchasedPower.Tutorial.TutorialName}");
+            TutorialScreen.Play(this, _purchasedPower.Tutorial, false);
+        }
+        
+        // Reset the flags
+        _playTutorialAfterClose = false;
+        _purchasedPower = null;
     }
 
     protected override void CustomDestroy()
@@ -411,6 +424,10 @@ public class VendorMenu : GameMenu
 
         // Set the introduced flag in the vendor information
         vendor.HasIntroduced = true;
+        
+        // Reset the play tutorial after close flag
+        _playTutorialAfterClose = false;
+        _purchasedPower = null;
     }
 
     public void EndVendor()
@@ -452,6 +469,12 @@ public class VendorMenu : GameMenu
                     $"You have bought a toxicity upgrade. Your max toxicity is now {playerInfo.MaxTolerance}.");
                 break;
         }
+    }
+    
+    public void SetPurchasedPower(PowerScriptableObject power)
+    {
+        _purchasedPower = power;
+        _playTutorialAfterClose = true;
     }
 
     public void SetSelectedGameObject(GameObject element)

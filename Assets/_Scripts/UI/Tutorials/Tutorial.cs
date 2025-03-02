@@ -9,10 +9,12 @@ public class Tutorial : ScriptableObject
     public static IReadOnlyCollection<Tutorial> Tutorials => tutorials;
 
     [SerializeField] private string tutorialName;
+    [SerializeField] private TutorialType tutorialType;
     [SerializeField, UniqueIdentifier] private string uniqueId;
     [SerializeField] private TutorialPage[] tutorialPages;
 
     public string TutorialName => tutorialName;
+    public TutorialType TutorialType => tutorialType;
     public IReadOnlyList<TutorialPage> TutorialPages => tutorialPages;
     public int TotalPages => tutorialPages.Length;
 

@@ -129,7 +129,6 @@ public abstract class GameMenu : MonoBehaviour
         foreach (var menu in MenuManager.Instance.ActiveMenus)
             menu.UpdateEventSystem();
 
-        
         // Custom Deactivate
         CustomDeactivate();
     }

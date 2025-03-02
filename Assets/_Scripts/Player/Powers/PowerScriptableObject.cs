@@ -16,6 +16,7 @@ public class PowerScriptableObject : ScriptableObject
     [SerializeField] private bool usesReticle;
     [SerializeField] [TextArea(3, 10)] private string description;
     [SerializeField] private PowerFovZoomBehavior fovZoomBehavior;
+    [SerializeField] private Tutorial tutorial;
 
     [Header("Stats")] [SerializeField] private float chargeDuration;
     [SerializeField] private float activeEffectDuration;
@@ -49,6 +50,8 @@ public class PowerScriptableObject : ScriptableObject
     public string Description => description;
 
     public PowerFovZoomBehavior FovZoomBehavior => fovZoomBehavior;
+
+    public Tutorial Tutorial => tutorial;
     public float ChargeDuration => chargeDuration;
     public float Cooldown => cooldown;
     public float ActiveEffectDuration => activeEffectDuration;

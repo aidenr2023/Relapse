@@ -99,6 +99,9 @@ public class VendorShopButton : MonoBehaviour
 
         JournalTooltipManager.Instance.AddTooltip($"You can no longer buy from {vendorMenu.CurrentVendor.VendorName}.");
 
+        // Set the purchased power
+        VendorMenu.Instance.SetPurchasedPower(power);
+        
         // Add the power clicked
         Player.Instance.PlayerPowerManager.AddPower(power);
     }
