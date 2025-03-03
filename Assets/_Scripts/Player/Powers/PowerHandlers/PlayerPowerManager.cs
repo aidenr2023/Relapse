@@ -11,6 +11,8 @@ using UnityEngine.VFX;
 [RequireComponent(typeof(Player))]
 public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerLoaderInfo
 {
+    private const float MAX_FADE_TIME = .25f;
+    
     public static PlayerPowerManager Instance { get; private set; }
 
     #region Serialized Fields
@@ -52,6 +54,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     private bool _isPowerAimHitting;
     private RaycastHit _powerAimHit;
+
+    private float _fadeTime;
 
     #endregion
 
@@ -552,6 +556,14 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Set the "ChargeState" uint property of the VFX graph
         gauntletChargeVfx.SetUInt("ChargeState", chargeState);
+        
+        if (IsChargingPower)
+            _fadeTime = Mathf.Clamp(_fadeTime + Time.deltaTime, 0, MAX_FADE_TIME);
+        else
+            _fadeTime = Mathf.Clamp(_fadeTime - Time.deltaTime, 0, MAX_FADE_TIME);
+        
+        // Set the FadeTime float of the VFX graph
+        gauntletChargeVfx.SetFloat("FadeTime", _fadeTime / MAX_FADE_TIME);
     }
 
     private void LateUpdate()
