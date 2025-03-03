@@ -12,7 +12,7 @@ using UnityEngine.VFX;
 public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerLoaderInfo
 {
     private const float MAX_FADE_TIME = .25f;
-    
+
     public static PlayerPowerManager Instance { get; private set; }
 
     #region Serialized Fields
@@ -30,7 +30,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     [SerializeField, Min(0)] private float chargedVignetteFlashesPerSecond = 1f;
 
     [Header("Visual Effects")] [SerializeField]
-    private VisualEffect gauntletChargeVfx;
+    private VisualEffect fireballChargeVfx;
+
+    [SerializeField] private VisualEffect electricChargeVfx;
 
     [Header("Sound Effects")] [SerializeField]
     private ManagedAudioSource powerAudioSource;
@@ -86,6 +88,21 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         ? _powerAimHit.point
         : Player.PlayerController.CameraPivot.transform.position +
           Player.PlayerController.CameraPivot.transform.forward * 1000;
+
+    private VisualEffect CurrentChargeVfx
+    {
+        get
+        {
+            // If the current power is null, return the fireball charge VFX
+            if (CurrentPower == null)
+                return fireballChargeVfx;
+
+            return GetChargeVfx(CurrentPower);
+        }
+    }
+
+    // TODO: UPDATE THIS TOO
+    private VisualEffect[] AllChargeVfx => new[] { fireballChargeVfx, electricChargeVfx };
 
     #endregion
 
@@ -541,12 +558,49 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     private void UpdateGauntletChargeVFX()
     {
+        // Make a hash set for the power vfx that have already been processed
+        var processedVfx = new HashSet<VisualEffect>();
+
+        // Process the current power's charge VFX first
+        UpdateGauntletChargeVFXHelper(CurrentPower, CurrentPowerToken, CurrentChargeVfx, processedVfx);
+
+        // For each power the player has equipped
+        foreach (var power in powers)
+        {
+            // Continue if the power is the current power
+            if (power == CurrentPower)
+                continue;
+
+            var pToken = GetPowerToken(power);
+
+            // Process the power's charge VFX
+            UpdateGauntletChargeVFXHelper(power, pToken, GetChargeVfx(power), processedVfx);
+        }
+    }
+
+    private void UpdateGauntletChargeVFXHelper(
+        PowerScriptableObject power,
+        PowerToken pToken,
+        VisualEffect chargeVfx,
+        HashSet<VisualEffect> processedVfx
+    )
+    {
+        // Return if the power is null
+        if (power == null)
+            return;
+
+        // If the vfx has already been processed, return
+        if (processedVfx.Contains(chargeVfx))
+            return;
+
         uint chargeState = 0;
 
-        if (_isChargingPower && CurrentPower != null && CurrentPowerToken != null)
+        var isCurrentPower = power != null && power == CurrentPower;
+
+        if (_isChargingPower && isCurrentPower && pToken != null)
         {
             // If the player is currently charging power, but it is not fully complete, set the charge state to 1
-            if (CurrentPowerToken.ChargePercentage < 1)
+            if (pToken.ChargePercentage < 1)
                 chargeState = 1;
 
             // If the player's power is currently fully charged, set the charge state to 2
@@ -555,15 +609,18 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         }
 
         // Set the "ChargeState" uint property of the VFX graph
-        gauntletChargeVfx.SetUInt("ChargeState", chargeState);
-        
-        if (IsChargingPower)
+        chargeVfx.SetUInt("ChargeState", chargeState);
+
+        if (isCurrentPower && IsChargingPower)
             _fadeTime = Mathf.Clamp(_fadeTime + Time.deltaTime, 0, MAX_FADE_TIME);
         else
             _fadeTime = Mathf.Clamp(_fadeTime - Time.deltaTime, 0, MAX_FADE_TIME);
-        
-        // Set the FadeTime float of the VFX graph
-        gauntletChargeVfx.SetFloat("FadeTime", _fadeTime / MAX_FADE_TIME);
+
+        // Set the FadeTime float of the VFX graph for all charge effects
+        chargeVfx.SetFloat("FadeTime", _fadeTime / MAX_FADE_TIME);
+
+        // Add the VFX to the processed VFX hash set
+        processedVfx.Add(chargeVfx);
     }
 
     private void LateUpdate()
@@ -680,6 +737,16 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Set the current power index
         _currentPowerIndex = powerIndex;
+    }
+
+    private VisualEffect GetChargeVfx(PowerScriptableObject power)
+    {
+        return power.ChargeVfxType switch
+        {
+            PowerVfxType.Fireball => fireballChargeVfx,
+            PowerVfxType.Electric => electricChargeVfx,
+            _ => null
+        };
     }
 
     #region Event Functions

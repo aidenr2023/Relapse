@@ -8863,7 +8863,8 @@ MonoBehaviour:
   chargedVignetteStrength: 0.125
   chargedVignetteLerpAmount: 0.125
   chargedVignetteFlashesPerSecond: 0
-  gauntletChargeVfx: {fileID: 3105757193461017536}
+  fireballChargeVfx: {fileID: 3105757193461017536}
+  electricChargeVfx: {fileID: 2999638700446178697}
   powerAudioSource: {fileID: 5017651248909335848}
 --- !u!114 &-7043807009064224948
 MonoBehaviour:
@@ -22415,6 +22416,12 @@ PrefabInstance:
 --- !u!4 &2387691261983933059 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2772283204555910787, guid: d948999c8957cae4189597d24181439c,
+    type: 3}
+  m_PrefabInstance: {fileID: 530272947664677888}
+  m_PrefabAsset: {fileID: 0}
+--- !u!2083052967 &2999638700446178697 stripped
+VisualEffect:
+  m_CorrespondingSourceObject: {fileID: 3385356646171980169, guid: d948999c8957cae4189597d24181439c,
     type: 3}
   m_PrefabInstance: {fileID: 530272947664677888}
   m_PrefabAsset: {fileID: 0}

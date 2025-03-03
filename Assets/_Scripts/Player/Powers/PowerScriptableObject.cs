@@ -17,7 +17,8 @@ public class PowerScriptableObject : ScriptableObject
     [SerializeField] [TextArea(3, 10)] private string description;
     [SerializeField] private PowerFovZoomBehavior fovZoomBehavior;
     [SerializeField] private Tutorial tutorial;
-
+    [SerializeField] private PowerVfxType chargeVfxType;
+    
     [Header("Stats")] [SerializeField] private float chargeDuration;
     [SerializeField] private float activeEffectDuration;
     [SerializeField] private float passiveEffectDuration;
@@ -52,6 +53,9 @@ public class PowerScriptableObject : ScriptableObject
     public PowerFovZoomBehavior FovZoomBehavior => fovZoomBehavior;
 
     public Tutorial Tutorial => tutorial;
+    
+    public PowerVfxType ChargeVfxType => chargeVfxType;
+    
     public float ChargeDuration => chargeDuration;
     public float Cooldown => cooldown;
     public float ActiveEffectDuration => activeEffectDuration;
