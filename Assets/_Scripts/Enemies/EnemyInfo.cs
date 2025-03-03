@@ -22,6 +22,8 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
     [SerializeField, Min(0)] private float maxVFXRangeDamage = 50f;
     [SerializeField, Min(0)] private float minVFXDamage = 5f;
 
+    [SerializeField] private VisualEffect enemyDeathVfxPrefab;
+
     [Space, SerializeField] private Sound enemyHitSound;
     [SerializeField] private Sound enemyDeathSound;
 
@@ -76,6 +78,7 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         
         OnDeath += DetachVFXOnDeath;
         OnDeath += PlaySoundOnDeath;
+        OnDeath += CreateDeathVfx;
 
         // Activate the animator's hit trigger
         OnDamaged += (_, _) =>
@@ -95,6 +98,20 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
         // Set the moan sound source to be permanent
         enemyMoanSource.SetPermanent(true);
+    }
+
+    private void CreateDeathVfx(object sender, HealthChangedEventArgs e)
+    {
+        // Return if there is no death VFX prefab
+        if (enemyDeathVfxPrefab == null)
+            return;
+        
+        // Instantiate the death VFX prefab
+        var deathVfx = Instantiate(enemyDeathVfxPrefab, transform.position, Quaternion.identity);
+        deathVfx.Play();
+        
+        // Destroy the death VFX after 10 seconds
+        Destroy(deathVfx.gameObject, 10f);
     }
 
     private void LogOnHealed(object _, HealthChangedEventArgs args)

@@ -2729,6 +2729,8 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 1
+    spatialBlend: 1
+  trailRenderer: {fileID: 0}
 --- !u!1 &3114743595129920588
 GameObject:
   m_ObjectHideFlags: 0
@@ -3408,6 +3410,8 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 1
+    spatialBlend: 1
+  trailRenderer: {fileID: 0}
 --- !u!1 &3798809128205738732
 GameObject:
   m_ObjectHideFlags: 0
@@ -5236,6 +5240,8 @@ MonoBehaviour:
   minVFXRangeDamage: 10
   maxVFXRangeDamage: 50
   minVFXDamage: 10
+  enemyDeathVfxPrefab: {fileID: 1316523376902277534, guid: dfc4fc5f6b6f93f47a16e7a3853a4f57,
+    type: 3}
   enemyHitSound:
     clip: {fileID: 8300000, guid: 94981910bbf34bb43a109bca992410c3, type: 3}
     soundType: 2
@@ -5243,6 +5249,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 1
+    spatialBlend: 1
   enemyDeathSound:
     clip: {fileID: 8300000, guid: 94981910bbf34bb43a109bca992410c3, type: 3}
     soundType: 2
@@ -5250,6 +5257,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 1
+    spatialBlend: 1
   enemyMoanSource: {fileID: 6128881449656524930}
   moanSounds:
   - clip: {fileID: 8300000, guid: fb282b04bff6174458bff6d8ec3924d2, type: 3}
@@ -5258,6 +5266,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 0.8
+    spatialBlend: 1
   moanSoundChance: 0.4
   moanSoundMinCooldown: 8
   moanSoundMaxCooldown: 15
@@ -5283,6 +5292,9 @@ MonoBehaviour:
     maxTime: 0.5
   pursuitDetectionTimer:
     maxTime: 3
+  layersToIgnore:
+    serializedVersion: 2
+    m_Bits: 0
   debugCanvas: {fileID: 4592423118662678683}
   pursuitDetectionSlider: {fileID: 8862122484519928981}
   pursuitDetectionText: {fileID: 4179028603228321017}

@@ -334,6 +334,8 @@ MonoBehaviour:
   minVFXRangeDamage: 10
   maxVFXRangeDamage: 50
   minVFXDamage: 5
+  enemyDeathVfxPrefab: {fileID: 1316523376902277534, guid: dfc4fc5f6b6f93f47a16e7a3853a4f57,
+    type: 3}
   enemyHitSound:
     clip: {fileID: 0}
     soundType: 1
@@ -341,6 +343,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 1
+    spatialBlend: 1
   enemyDeathSound:
     clip: {fileID: 0}
     soundType: 1
@@ -348,6 +351,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 1
+    spatialBlend: 1
   enemyMoanSource: {fileID: 2659537494469221325}
   moanSounds: []
   moanSoundChance: 1
@@ -375,6 +379,9 @@ MonoBehaviour:
     maxTime: 0.5
   pursuitDetectionTimer:
     maxTime: 3
+  layersToIgnore:
+    serializedVersion: 2
+    m_Bits: 0
   debugCanvas: {fileID: 0}
   pursuitDetectionSlider: {fileID: 0}
   pursuitDetectionText: {fileID: 0}
