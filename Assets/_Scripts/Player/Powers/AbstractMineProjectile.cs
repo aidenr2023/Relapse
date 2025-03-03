@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
 {
@@ -330,23 +331,43 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, explosionRadius);
     }
-    
-        protected static void CreateExplosionParticles(ParticleSystem explosionParticles, Vector3 position, int explosionParticlesCount)
+
+    protected static void CreateExplosionParticles(ParticleSystem explosionParticles, Vector3 position,
+        int explosionParticlesCount)
+    {
+        // Return if the explosion particles prefab is null
+        if (explosionParticles == null)
+            return;
+        
+        // Instantiate the explosion particles at the projectile's position
+        var explosion = Instantiate(explosionParticles, position, Quaternion.identity);
+
+        // Create emit parameters for the explosion particles
+        var emitParams = new ParticleSystem.EmitParams
         {
-            // Instantiate the explosion particles at the projectile's position
-            var explosion = Instantiate(explosionParticles, position, Quaternion.identity);
-    
-            // Create emit parameters for the explosion particles
-            var emitParams = new ParticleSystem.EmitParams
-            {
-                applyShapeToPosition = true,
-                position = position
-            };
-    
-            // Emit the explosion particles
-            explosion.Emit(emitParams, explosionParticlesCount);
-            
-            // Destroy the explosion particles after the duration of the main explosion particle system
-            Destroy(explosion.gameObject, explosion.main.duration);
-        }
+            applyShapeToPosition = true,
+            position = position
+        };
+
+        // Emit the explosion particles
+        explosion.Emit(emitParams, explosionParticlesCount);
+
+        // Destroy the explosion particles after the duration of the main explosion particle system
+        Destroy(explosion.gameObject, explosion.main.duration);
+    }
+
+    protected static void CreateExplosionVfx(VisualEffect explosionVfxPrefab, Vector3 position)
+    {
+        // Return if the explosion VFX prefab is null
+        if (explosionVfxPrefab == null)
+            return;
+
+        // Instantiate the explosion VFX at the projectile's position
+        var explosion = Instantiate(explosionVfxPrefab, position, Quaternion.identity);
+
+        explosion.Play();
+
+        // Destroy the explosion VFX after 10 seconds
+        Destroy(explosion.gameObject, 10);
+    }
 }

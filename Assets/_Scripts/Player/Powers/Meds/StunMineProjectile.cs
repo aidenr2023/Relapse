@@ -12,6 +12,7 @@ public class StunMineProjectile : AbstractMineProjectile
     [SerializeField] private ParticleSystem explosionParticles;
     [SerializeField, Min(0)] private int particleCount = 50;
     
+    [SerializeField] private VisualEffect explosionVfxPrefab;
     
     protected override void CustomAwake()
     {
@@ -44,6 +45,9 @@ public class StunMineProjectile : AbstractMineProjectile
         
         // Create the explosion particles
         CreateExplosionParticles(explosionParticles, transform.position, particleCount);
+        
+        // Create the explosion VFX
+        CreateExplosionVfx(explosionVfxPrefab, transform.position);
     }
 
     private IEnumerator ApplyStun(IEnemyMovementBehavior movementBehavior, IEnemyAttackBehavior attackBehavior)
