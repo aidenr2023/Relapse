@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 4465589881162092546}
   - component: {fileID: 5074726822055609948}
   - component: {fileID: 6664068473711133815}
+  - component: {fileID: 8756966642331545968}
   m_Layer: 8
   m_Name: Mag7 1
   m_TagString: Untagged
@@ -143,11 +144,28 @@ MonoBehaviour:
     m_Bits: 33032
   bulletTrailRenderer: {fileID: 2243305969124483986, guid: 0805996d0f4a28d41bb3ae64d3c979e3,
     type: 3}
-  bulletHoleDecal: {fileID: 897063514554204210, guid: 7858f0785a3edd24a9d8daf6a699cf72,
-    type: 3}
+  bulletHoleDecals:
+  - {fileID: 897063514554204210, guid: 7858f0785a3edd24a9d8daf6a699cf72, type: 3}
+  - {fileID: 897063514554204210, guid: ea846cf5d90b27c4480fef12969090bb, type: 3}
+  onInteract:
+    m_PersistentCalls:
+      m_Calls: []
   muzzleParticles: {fileID: 6388012898772878341}
   muzzleParticlesCount: 70
   pelletsPerShot: 8
+--- !u!114 &8756966642331545968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1049920777318549282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 068ce04631044bf9bcc1d7f44c7c5f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showOutline: 1
 --- !u!1001 &642519195306453636
 PrefabInstance:
   m_ObjectHideFlags: 0

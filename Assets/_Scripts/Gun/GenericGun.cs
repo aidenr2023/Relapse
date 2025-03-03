@@ -37,7 +37,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     [SerializeField] protected LayerMask layersToIgnore;
 
     [SerializeField] protected TrailRenderer bulletTrailRenderer;
-    [SerializeField] protected DecalProjector bulletHoleDecal;
+    [SerializeField] protected DecalProjector[] bulletHoleDecals;
 
     [SerializeField] private UnityEvent onInteract;
 
@@ -433,6 +433,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Instantiate the bullet hole decal
         if (hit.collider != null)
         {
+            // Choose a random decal from the array
+            var bulletHoleDecal = bulletHoleDecals[Random.Range(0, bulletHoleDecals.Length)];
+            
             var decal = Instantiate(bulletHoleDecal, hit.point, Quaternion.LookRotation(hit.normal));
 
             // Set the parent of the decal to the object that was hit

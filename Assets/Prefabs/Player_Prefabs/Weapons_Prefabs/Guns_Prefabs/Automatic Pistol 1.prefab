@@ -131,6 +131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 068ce04631044bf9bcc1d7f44c7c5f60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  showOutline: 1
 --- !u!114 &2917225923522862026
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -155,8 +156,9 @@ MonoBehaviour:
     m_Bits: 33032
   bulletTrailRenderer: {fileID: 2243305969124483986, guid: 0805996d0f4a28d41bb3ae64d3c979e3,
     type: 3}
-  bulletHoleDecal: {fileID: 897063514554204210, guid: 7858f0785a3edd24a9d8daf6a699cf72,
-    type: 3}
+  bulletHoleDecals:
+  - {fileID: 897063514554204210, guid: 7858f0785a3edd24a9d8daf6a699cf72, type: 3}
+  - {fileID: 897063514554204210, guid: ea846cf5d90b27c4480fef12969090bb, type: 3}
   onInteract:
     m_PersistentCalls:
       m_Calls: []
