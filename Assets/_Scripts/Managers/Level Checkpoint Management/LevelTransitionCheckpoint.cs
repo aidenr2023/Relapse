@@ -134,6 +134,9 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
             yield return null;
         }
         
+        // Set the opacity of the transition overlay to 0
+        TransitionOverlay.Instance.SetOpacity(0);
+        
         startTime = Time.unscaledTime;
         
         // While transitioning, fade the screen to black
@@ -150,9 +153,6 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
         
         // Remove the chromatic aberration token
         PostProcessingVolumeController.Instance.ScreenVolume.ChromaticAberrationModule.Tokens.RemoveToken(caToken);
-
-        // Reset the opacity of the transition overlay
-        TransitionOverlay.Instance.SetOpacity(0);
     }
 
     private static List<AsyncOperation> LoadNextScenes(LevelSectionSceneInfo[] levelInfo)
