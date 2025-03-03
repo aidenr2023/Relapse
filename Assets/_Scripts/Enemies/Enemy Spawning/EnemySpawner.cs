@@ -10,6 +10,8 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
 
     [SerializeField] protected bool isActiveOnStart = false;
 
+    [SerializeField] protected GameObject itemToDropWhenComplete;
+    
     [SerializeField] protected UnityEvent onEnemyKilled;
     [SerializeField] protected UnityEvent onSpawnerStart;
     [SerializeField] protected UnityEvent onSpawnerComplete;

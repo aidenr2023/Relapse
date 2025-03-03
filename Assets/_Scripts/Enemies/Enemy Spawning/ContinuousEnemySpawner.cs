@@ -32,7 +32,6 @@ public class ContinuousEnemySpawner : EnemySpawner
 
     #endregion
 
-
     protected override void CustomStart()
     {
         // Initialize the spawn timer
@@ -47,7 +46,6 @@ public class ContinuousEnemySpawner : EnemySpawner
 
     protected override void CustomDestroy()
     {
-        
     }
 
     private void Update()
@@ -69,7 +67,7 @@ public class ContinuousEnemySpawner : EnemySpawner
         // Return if there are no spawn points or enemy prefabs
         if (spawnPoints.Length == 0 || enemyPrefabs.Length == 0)
             return;
-        
+
         // Return if the current scene is not loaded
         if (!gameObject.scene.isLoaded)
             return;
@@ -108,6 +106,14 @@ public class ContinuousEnemySpawner : EnemySpawner
 
         // Invoke the spawner complete event
         onSpawnerComplete?.Invoke();
+
+        // Drop the item to spawn
+        if (itemToDropWhenComplete != null)
+            Instantiate(
+                itemToDropWhenComplete,
+                healthChangedEventArgs.Actor.GameObject.transform.position,
+                Quaternion.identity
+            );
     }
 
     protected override void CustomStartSpawning()
@@ -132,13 +138,13 @@ public class ContinuousEnemySpawner : EnemySpawner
         // Return if the spawn points is null
         if (spawnPoints == null)
             return;
-        
+
         foreach (var spawnPoint in spawnPoints)
         {
             // continue if the spawn point is null
             if (spawnPoint == null)
                 continue;
-            
+
             // Draw a green sphere for each spawn point
             Gizmos.color = Color.green;
             Gizmos.DrawSphere(spawnPoint.position, sphereSize);
