@@ -129,7 +129,9 @@ public sealed class DynamicFOVModule : DynamicVCamModule
 
         var targetValue = 1f;
 
-        if (_sprintStart && moveMagnitude >= .75f)
+        if ((_sprintStart && moveMagnitude >= .75f) ||
+            (Player.Instance.PlayerController is PlayerMovementV2 movementV2 && movementV2.PlayerSlide.IsSliding)
+           )
             targetValue = sprintFOVMultiplier;
 
         _sprintToken.Value = Mathf.Lerp(_sprintToken.Value, targetValue, CustomFunctions.FrameAmount(sprintLerpAmount));
