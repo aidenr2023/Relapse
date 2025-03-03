@@ -10,18 +10,33 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 90d38517133c1204ea9d5151bde54924,
         type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.005917176
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 90d38517133c1204ea9d5151bde54924,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.005917176
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 90d38517133c1204ea9d5151bde54924,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.005917176
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 90d38517133c1204ea9d5151bde54924,
+        type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -202.71
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 90d38517133c1204ea9d5151bde54924,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -274.31
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 90d38517133c1204ea9d5151bde54924,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 2300.43
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 90d38517133c1204ea9d5151bde54924,
         type: 3}
@@ -76,6 +91,14 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 804255540297268905}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 90d38517133c1204ea9d5151bde54924,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2255683314157865736}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 90d38517133c1204ea9d5151bde54924,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9198145726992342673}
   m_SourcePrefab: {fileID: 100100000, guid: 90d38517133c1204ea9d5151bde54924, type: 3}
 --- !u!1 &7658937809434924624 stripped
 GameObject:
@@ -105,3 +128,48 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -2958186495718855520, guid: 90d38517133c1204ea9d5151bde54924, type: 3}
+--- !u!114 &2255683314157865736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7658937809434924624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ec92d3ee73a4546975e2b7794c7d350, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitsToActivate: 1
+  destroyOnActivation: 1
+  onActivation:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 9198145726992342673}
+        m_TargetAssemblyTypeName: ExplosionHelper, Assembly-CSharp
+        m_MethodName: Explode
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
+  hasBeenActivated: 0
+--- !u!114 &9198145726992342673
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7658937809434924624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fbc585a1fd4484ab8536e5987e9b051, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explosionRadius: 6
+  explosionDamage: 100
+  explosionVfxPrefab: {fileID: 0}
