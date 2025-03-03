@@ -25,10 +25,16 @@ public class MemoryManager
     private MemoryManager()
     {
         // Add to the memory added event
-        OnMemoryAdded += memory =>
-            JournalTooltipManager.Instance.AddTooltip(
-                $"Memory Added: {memory.MemoryName}\nCheck the Journal For Details!"
-            );
+        OnMemoryAdded += TooltipOnMemoryAdded;
+    }
+
+    private void TooltipOnMemoryAdded(MemoryScriptableObject memory)
+    {
+        // Return if the memory is null
+        if (memory == null)
+            return;
+        
+        JournalTooltipManager.Instance.AddTooltip($"Memory Added: {memory.MemoryName}\nCheck the Journal For Details!");
     }
 
     public void AddMemory(MemoryScriptableObject memory)
