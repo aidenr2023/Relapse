@@ -18120,6 +18120,7 @@ GameObject:
   - component: {fileID: 8042367680752193931}
   - component: {fileID: 7946999186169831268}
   - component: {fileID: 7646520874298776930}
+  - component: {fileID: 1037525467970641}
   m_Layer: 9
   m_Name: Relapse Image
   m_TagString: Untagged
@@ -18208,6 +18209,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b879d435b7b43bbbbec87af0f7be7e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1037525467970641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2870985847390455403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f30d54fd27fa4471bee5c1700a3bb975, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fps: 60
+  playWhilePaused: 0
+  jitterLerpAmount: 1
+  minJitterRotation: -0.5
+  maxJitterRotation: 0.5
+  minJitterScale: 1
+  maxJitterScale: 1.025
 --- !u!1 &2890534092986380111
 GameObject:
   m_ObjectHideFlags: 0
@@ -27219,8 +27239,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -14.9, y: 61}
-  m_SizeDelta: {x: 325.1, y: 192}
+  m_AnchoredPosition: {x: 17.7, y: 61}
+  m_SizeDelta: {x: 274.95, y: 192}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7434697194455145180
 CanvasRenderer:
@@ -27250,7 +27270,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f98245f0370eba04f9d6934615771bce, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 98d75dbe4c04c844aa309f07ca915643, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -34654,8 +34674,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 31.45, y: 70.299995}
-  m_SizeDelta: {x: -283.1, y: -102.59999}
+  m_AnchoredPosition: {x: 44.549995, y: 70.299995}
+  m_SizeDelta: {x: -256.9, y: -102.59999}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8526081530944037440
 CanvasRenderer:
@@ -49710,7 +49730,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18.4
+  m_fontSize: 21.95
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
