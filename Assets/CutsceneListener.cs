@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CutsceneListener : MonoBehaviour
 {
@@ -12,12 +13,16 @@ public class CutsceneListener : MonoBehaviour
     //hash to store the animation
     private readonly int _cinematicBarsHash = Animator.StringToHash("Cinematic");
     
+    //create a instance of the listener
+    public static CutsceneListener Instance { get;  set; }
+    
     private void Start()
     {
         //get the animator component
         _cinematicAnimator = GetComponent<Animator>();
-        cutsceneManager = CutsceneManager.Instance;
-        cutsceneHandler = cutsceneManager.CutsceneHandler;
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        //cutsceneManager = CutsceneManager.Instance;
+        //cutsceneHandler = cutsceneManager.CutsceneHandler;
         OnCutsceneStart();
         OnCutsceneEnd();
     }
@@ -25,18 +30,24 @@ public class CutsceneListener : MonoBehaviour
     //start the animation when the cutscene starts
     private void OnCutsceneStart()
     {
-        cutsceneHandler.OnCutsceneStart.AddListener(PlayAnimation);
+        //cutsceneHandler.OnCutsceneStart.AddListener(PlayAnimation);
     }
     
     
     //stop the animation when the cutscene ends
     private void OnCutsceneEnd()
     {
-        cutsceneHandler.OnCutsceneEnd.AddListener(StopAnimation);
+        //cutsceneHandler.OnCutsceneEnd.AddListener(StopAnimation);
+    }
+    
+    //on Scene load play animation
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        _cinematicAnimator.SetTrigger("SceneLoadLayer");
     }
     
     //play the animation
-    private void PlayAnimation()
+    public void PlayAnimation()
     {
         _cinematicAnimator.SetBool(_cinematicBarsHash, true);
     }
