@@ -57,7 +57,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     private bool _isPowerAimHitting;
     private RaycastHit _powerAimHit;
 
-    private float _fadeTime;
+    private readonly Dictionary<VisualEffect, float> _fadeTimes = new();
 
     #endregion
 
@@ -593,6 +593,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         if (processedVfx.Contains(chargeVfx))
             return;
 
+        // Try to add the vfx to the fade times dictionary
+        _fadeTimes.TryAdd(chargeVfx, 0);
+        
         uint chargeState = 0;
 
         var isCurrentPower = power != null && power == CurrentPower;
@@ -611,13 +614,14 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         // Set the "ChargeState" uint property of the VFX graph
         chargeVfx.SetUInt("ChargeState", chargeState);
 
-        if (isCurrentPower && IsChargingPower)
-            _fadeTime = Mathf.Clamp(_fadeTime + Time.deltaTime, 0, MAX_FADE_TIME);
+        if (isCurrentPower && (IsChargingPower || pToken?.ChargePercentage >= 1))
+            _fadeTimes[chargeVfx] = Mathf.Clamp(_fadeTimes[chargeVfx] + Time.deltaTime, 0, MAX_FADE_TIME);
         else
-            _fadeTime = Mathf.Clamp(_fadeTime - Time.deltaTime, 0, MAX_FADE_TIME);
+            _fadeTimes[chargeVfx] = Mathf.Clamp(_fadeTimes[chargeVfx] - Time.deltaTime, 0, MAX_FADE_TIME);
 
         // Set the FadeTime float of the VFX graph for all charge effects
-        chargeVfx.SetFloat("FadeTime", _fadeTime / MAX_FADE_TIME);
+        chargeVfx.SetFloat("FadeTime", Mathf.InverseLerp(0, MAX_FADE_TIME, _fadeTimes[chargeVfx]));
+        // chargeVfx.SetFloat("FadeTime", 1);
 
         // Add the VFX to the processed VFX hash set
         processedVfx.Add(chargeVfx);
