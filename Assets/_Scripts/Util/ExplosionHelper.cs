@@ -12,6 +12,7 @@ public class ExplosionHelper : MonoBehaviour, IDamager
     [SerializeField, Min(0)] private float explosionRadius;
     [SerializeField, Min(0)] private float explosionDamage;
 
+    [SerializeField] private ParticleSystem explosionParticlePrefab;
     [SerializeField] private VisualEffect explosionVfxPrefab;
 
     #endregion
@@ -46,21 +47,6 @@ public class ExplosionHelper : MonoBehaviour, IDamager
             if (!actors.Add(actor))
                 continue;
 
-            // // Ray cast to see if the collider is in the line of sight
-            // var hit = Physics.Raycast(
-            //     transform.position,
-            //     cCollider.transform.position - transform.position,
-            //     out var hitInfo,
-            //     explosionRadius
-            // );
-            //
-            // // If the hit collider is not the collider we are checking, continue
-            // if (hit && hitInfo.collider != cCollider)
-            //     continue;
-            //
-            // // Now, I can calculate damage
-            // actor.ChangeHealth(-explosionDamage, null, this, hitInfo.point);
-            
             // Now, I can calculate damage
             actor.ChangeHealth(-explosionDamage, null, this, actor.GameObject.transform.position);
         }
@@ -69,6 +55,20 @@ public class ExplosionHelper : MonoBehaviour, IDamager
         if (explosionVfxPrefab != null)
         {
             var explosionVfx = Instantiate(explosionVfxPrefab, transform.position, Quaternion.identity);
+            
+            explosionVfx.Play();
+            
+            Destroy(explosionVfx, 10);
+        }
+        
+        // Instantiate the explosion particle system
+        if (explosionParticlePrefab != null)
+        {
+            var explosionParticle = Instantiate(explosionParticlePrefab, transform.position, Quaternion.identity);
+            explosionParticle.Play();
+            
+            // Set it to destroy itself after the duration of the particle system
+            Destroy(explosionParticle.gameObject, explosionParticle.main.duration);
         }
     }
 
