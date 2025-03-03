@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 8367263377423116450}
   - component: {fileID: 4870869479674204491}
   - component: {fileID: 2067702273895070415}
-  - component: {fileID: 6177436789695903346}
   m_Layer: 6
   m_Name: Runnable Plank (6)
   m_TagString: Untagged
@@ -85,13 +84,45 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &6177436789695903346
+--- !u!1 &1249944113925552855
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2812443211618239453}
+  - component: {fileID: 7491387158877914885}
+  m_Layer: 6
+  m_Name: Box Collider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2812443211618239453
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1249944113925552855}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.30577016, z: -0, w: 0.9521054}
+  m_LocalPosition: {x: -6.81, y: 1.11, z: -21.57}
+  m_LocalScale: {x: 9.3439, y: 9.3439, z: 9.3439}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3688599017754851274}
+  m_LocalEulerAnglesHint: {x: 0, y: 35.609, z: 0}
+--- !u!65 &7491387158877914885
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 76964087926307157}
+  m_GameObject: {fileID: 1249944113925552855}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -104,8 +135,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.020000188, y: 0.020000001, z: 0.020000024}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.88026756, y: 1.3841609, z: 0.8884751}
+  m_Center: {x: -0.0065676053, y: 0.061483055, z: 0.026749173}
 --- !u!1 &4194485805306594084
 GameObject:
   m_ObjectHideFlags: 0
@@ -115,7 +146,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3688599017754851274}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Runnable Construction Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -132,7 +163,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -12.45, y: 0, z: 3.35}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5736726, y: 0.5736726, z: 0.5736726}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4175176849721985642}
@@ -143,6 +174,7 @@ Transform:
   - {fileID: 7732966041611939602}
   - {fileID: 6711346179275223034}
   - {fileID: 3780527028820457465}
+  - {fileID: 2812443211618239453}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4373455034885494219
@@ -156,7 +188,6 @@ GameObject:
   - component: {fileID: 2210753149024491130}
   - component: {fileID: 1458937802675650418}
   - component: {fileID: 5403540633098365232}
-  - component: {fileID: 8134816001500117004}
   m_Layer: 6
   m_Name: Runnable Plank (4)
   m_TagString: Untagged
@@ -230,27 +261,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &8134816001500117004
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4373455034885494219}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.020000188, y: 0.020000001, z: 0.020000024}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6799579724039994648
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,7 +272,6 @@ GameObject:
   - component: {fileID: 2235806885452202415}
   - component: {fileID: 38449929816032757}
   - component: {fileID: 5622644585851340835}
-  - component: {fileID: 3561674465596050107}
   m_Layer: 6
   m_Name: Runnable Plank (5)
   m_TagString: Untagged
@@ -336,27 +345,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &3561674465596050107
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6799579724039994648}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.020000188, y: 0.020000001, z: 0.020000024}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7562845551264059180
 GameObject:
   m_ObjectHideFlags: 0
@@ -368,7 +356,6 @@ GameObject:
   - component: {fileID: 4175176849721985642}
   - component: {fileID: 457748592534738339}
   - component: {fileID: 6818306527753105994}
-  - component: {fileID: 3098968336630529350}
   m_Layer: 6
   m_Name: Runnable Plank
   m_TagString: Untagged
@@ -442,27 +429,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &3098968336630529350
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7562845551264059180}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.020000188, y: 0.020000001, z: 0.020000024}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &4465266402627546971
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -541,7 +507,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: V_Plank (5)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 4667356789461713016, guid: 92121ec6d25c9cb41b9af7d91973c072,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 3326138208275867018, guid: 92121ec6d25c9cb41b9af7d91973c072, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -630,7 +602,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: V_Plank (9)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 4667356789461713016, guid: 92121ec6d25c9cb41b9af7d91973c072,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 3326138208275867018, guid: 92121ec6d25c9cb41b9af7d91973c072, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -719,7 +697,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: V_Plank (10)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 4667356789461713016, guid: 92121ec6d25c9cb41b9af7d91973c072,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 3326138208275867018, guid: 92121ec6d25c9cb41b9af7d91973c072, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -808,7 +792,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: V_Plank (8)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 4667356789461713016, guid: 92121ec6d25c9cb41b9af7d91973c072,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 3326138208275867018, guid: 92121ec6d25c9cb41b9af7d91973c072, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
