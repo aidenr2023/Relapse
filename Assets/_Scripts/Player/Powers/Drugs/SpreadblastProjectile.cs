@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class SpreadblastProjectile : MonoBehaviour, IPowerProjectile
 {
@@ -15,6 +16,7 @@ public class SpreadblastProjectile : MonoBehaviour, IPowerProjectile
 
     [SerializeField] private ParticleSystem explosionParticles;
     [SerializeField] [Range(0, 500)] private int explosionParticlesCount = 200;
+    [SerializeField] private VisualEffect explosionVfxPrefab;
 
     [SerializeField] private float despawnTimer;
 
@@ -93,6 +95,9 @@ public class SpreadblastProjectile : MonoBehaviour, IPowerProjectile
         // Create explosion particles
         CreateExplosionParticles();
 
+        // Create the explosion VFX
+        CreateExplosionVfx();
+
         // Destroy the projectile
         Destroy(gameObject);
     }
@@ -111,8 +116,23 @@ public class SpreadblastProjectile : MonoBehaviour, IPowerProjectile
 
         // Emit the explosion particles
         explosion.Emit(emitParams, explosionParticlesCount);
-        
+
         // Destroy the explosion particles after the duration of the main explosion particle system
         Destroy(explosion.gameObject, explosion.main.duration);
+    }
+
+    private void CreateExplosionVfx()
+    {
+        // Return if the explosion VFX prefab is null
+        if (explosionVfxPrefab == null)
+            return;
+        
+        // Instantiate the explosion VFX at the projectile's position
+        var explosion = Instantiate(explosionVfxPrefab, transform.position, Quaternion.identity);
+
+        explosion.Play();
+        
+        // Destroy the explosion VFX after the duration of the main explosion VFX
+        Destroy(explosion.gameObject, 10);
     }
 }
