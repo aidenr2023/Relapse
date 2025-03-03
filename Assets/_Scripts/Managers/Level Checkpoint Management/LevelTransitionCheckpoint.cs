@@ -4,12 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 public class LevelTransitionCheckpoint : LevelCheckpointReset
 {
     private const float TRANSITION_TIME = .5f;
+    private const float TRANSITION_TIME2 = .5f;
     private const float HOLD_TIME = 1f;
-
+    private const float CA_JITTER = 0.1f;
+    
     [SerializeField] private bool useLevelInformation = true;
     [SerializeField] private LevelSectionSceneInfo[] scenesToLoad;
 
@@ -26,11 +29,32 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
         // Disable the player's controls
         SetPlayerControls(Player.Instance, false);
 
+        // Create a chromatic aberration token
+        var caToken =
+            PostProcessingVolumeController.Instance.ScreenVolume.ChromaticAberrationModule.Tokens.AddToken(0, -1, true);
+        
         // Get the unscaled start time
         var startTime = Time.unscaledTime;
 
-        // While transitioning, fade the screen to black
+        // While transitioning, fade the screen
         while (Time.unscaledTime - startTime < TRANSITION_TIME)
+        {
+            var lerpValue = Mathf.InverseLerp(startTime, startTime + TRANSITION_TIME, Time.unscaledTime);
+            // TransitionOverlay.Instance.SetOpacity(lerpValue);
+            
+            var randomValue = Random.Range(-CA_JITTER, CA_JITTER);
+            
+            caToken.Value = lerpValue + randomValue;
+
+            yield return null;
+        }
+        
+        caToken.Value = 1;
+        
+        startTime = Time.unscaledTime;
+        
+        // While transitioning, fade the screen
+        while (Time.unscaledTime - startTime < TRANSITION_TIME2)
         {
             var lerpValue = Mathf.InverseLerp(startTime, startTime + TRANSITION_TIME, Time.unscaledTime);
             TransitionOverlay.Instance.SetOpacity(lerpValue);
@@ -51,15 +75,15 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
 
         // Kill the player's velocity
         Player.Instance.Rigidbody.velocity = Vector3.zero;
-        
+
         // Unload the current scene
         var operations = LoadNextScenes(scenes);
         // LoadNextSceneSync(scenes);
 
         yield return null;
-        
+
         Debug.Log($"After Yield - {useLevelInformation}");
-        
+
         // Wait for the hold time
         yield return new WaitUntil(() => Time.unscaledTime - loadStartTime >= HOLD_TIME);
 
@@ -68,13 +92,13 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
 
         // Kill the player's velocity again
         Player.Instance.Rigidbody.velocity = Vector3.zero;
-        
+
         if (useLevelInformation)
         {
             // Get the level information for the active scene
             var hasLevelInformation =
                 LevelInformation.GetLevelInformation(SceneManager.GetActiveScene().name, out var levelInfo);
-            
+
             // If the level information exists, set the player's position and rotation to the starting checkpoint
             if (hasLevelInformation)
             {
@@ -104,12 +128,30 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
         // While transitioning, fade the screen to black
         while (Time.unscaledTime - startTime < TRANSITION_TIME)
         {
-            var lerpValue = (Time.unscaledTime - startTime) / TRANSITION_TIME;
-            TransitionOverlay.Instance.SetOpacity(1 - lerpValue);
-
+            var lerpValue = 1 - (Time.unscaledTime - startTime) / TRANSITION_TIME;
+            TransitionOverlay.Instance.SetOpacity(lerpValue);
+            
             yield return null;
         }
+        
+        startTime = Time.unscaledTime;
+        
+        // While transitioning, fade the screen to black
+        while (Time.unscaledTime - startTime < TRANSITION_TIME)
+        {
+            var lerpValue = 1 - (Time.unscaledTime - startTime) / TRANSITION_TIME;
 
+            var randomValue = Random.Range(-CA_JITTER, CA_JITTER);
+            
+            caToken.Value = lerpValue + randomValue;
+            
+            yield return null;
+        }
+        
+        // Remove the chromatic aberration token
+        PostProcessingVolumeController.Instance.ScreenVolume.ChromaticAberrationModule.Tokens.RemoveToken(caToken);
+
+        // Reset the opacity of the transition overlay
         TransitionOverlay.Instance.SetOpacity(0);
     }
 
