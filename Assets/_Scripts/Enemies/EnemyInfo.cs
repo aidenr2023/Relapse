@@ -47,6 +47,8 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
     private CountdownTimer _moanSoundTimer;
 
+    private CountdownTimer _comicImpactTimer;
+
     #endregion
 
     #region Getters
@@ -75,6 +77,7 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         OnDamaged += AddDamageThisFrame;
         OnDamaged += SetDamagePositionOnDamaged;
         OnDamaged += PlaySoundOnDamaged;
+        OnDamaged += ComicImpactOnDamaged;
         
         OnDeath += DetachVFXOnDeath;
         OnDeath += PlaySoundOnDeath;
@@ -98,6 +101,31 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
         // Set the moan sound source to be permanent
         enemyMoanSource.SetPermanent(true);
+        
+        _comicImpactTimer = new(0.5f, true, true);
+    }
+
+    private void ComicImpactOnDamaged(object sender, HealthChangedEventArgs e)
+    {
+        // Return if the comic impact manager is null
+        if (ComicImpactManager.Instance == null)
+            return;
+        
+        // Return if the damager is not a power
+        if (e.DamagerObject is not IPower && e.DamagerObject is not Shotgun)
+            return;
+        
+        // Return if the comic impact timer is not complete
+        if (!_comicImpactTimer.IsComplete)
+            return;
+
+        // Reset the comic impact timer
+        _comicImpactTimer.Reset();
+        
+        var ui = ComicImpactManager.Instance.SpawnImpact(e.Position);
+        
+        // // Make the UI a child of the enemy
+        // ui.transform.SetParent(transform);
     }
 
     private void CreateDeathVfx(object sender, HealthChangedEventArgs e)
@@ -199,6 +227,9 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         // Update the moan sound timer
         _moanSoundTimer.Update(Time.deltaTime);
 
+        // Update the comic pow timer
+        _comicImpactTimer.Update(Time.deltaTime);
+        
         // If the enemy took damage this frame, play the visual effect
         PlayVFXAfterDamage();
     }
