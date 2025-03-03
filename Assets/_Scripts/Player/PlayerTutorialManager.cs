@@ -12,6 +12,7 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
     [Header("Tutorials")] [SerializeField] private Tutorial gunPickupTutorial;
     [SerializeField] private Tutorial interactWithCheckpointTutorial;
     [SerializeField] private Tutorial respawnTutorial;
+    [SerializeField] private Tutorial relapseTutorial;
 
     #endregion
 
@@ -27,6 +28,9 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
 
     private bool _hasRespawned;
     private const string HAS_RESPAWNED_FLAG = "HasRespawned";
+
+    private bool _hasRelapsed;
+    private const string HAS_RELAPSED_FLAG = "HasRelapsed";
 
     #endregion
 
@@ -48,6 +52,17 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
     {
         // ParentComponent.WeaponManager.OnGunEquipped += OnGunEquipped;
         // ParentComponent.PlayerDeathController.onRespawn += OnRespawn;
+        ParentComponent.PlayerInfo.onRelapseStart += OnRelapseStart;
+    }
+
+    private void OnRelapseStart(PlayerInfo obj)
+    {
+        // Play the relapse tutorial
+        if (_hasRelapsed) 
+            return;
+        
+        TutorialScreen.Play(this, relapseTutorial);
+        _hasRelapsed = true;
     }
 
     private void OnRespawn(PlayerDeathController obj)
@@ -141,7 +156,7 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
     public void SaveData(PlayerLoader playerLoader)
     {
         var tutorials = TutorialManager.Instance.CompletedTutorials;
-        
+
         // For each completed tutorial, save the data
         // foreach (var tutorial in _completedTutorials)
         foreach (var tutorial in tutorials)

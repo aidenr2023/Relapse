@@ -7,15 +7,21 @@ public class DynamicVignetteModule : DynamicPostProcessingModule
 {
     #region Serialized Fields
 
-    [Header("Speed Vignette")]
-    [SerializeField, Min(0)] private float speedVignetteMaxValue = 0.5f;
+    [Header("Speed Vignette")] [SerializeField, Min(0)]
+    private float speedVignetteMaxValue = 0.5f;
+
     [SerializeField, Min(0)] private float speedVignetteMaxSpeed = 20;
     [SerializeField, Range(0, 1)] private float speedVignetteLerpAmount = 0.5f;
-    
-    [Header("Slide Vignette")]
-    [SerializeField, Min(0)] private float slideVignetteMaxValue = 0.5f;
+
+    [Header("Slide Vignette")] [SerializeField, Min(0)]
+    private float slideVignetteMaxValue = 0.5f;
+
     [SerializeField, Range(0, 1)] private float slideVignetteLerpAmount = 0.5f;
 
+    [Header("Relapse Vignette")] [SerializeField, Min(0)]
+    private float relapseVignetteMaxValue = 0.5f;
+
+    [SerializeField, Range(0, 1)] private float relapseVignetteLerpAmount = 0.5f;
 
     #endregion
 
@@ -25,6 +31,7 @@ public class DynamicVignetteModule : DynamicPostProcessingModule
 
     private TokenManager<float>.ManagedToken _speedVignetteToken;
     private TokenManager<float>.ManagedToken _slideVignetteToken;
+    private TokenManager<float>.ManagedToken _relapseVignetteToken;
 
     #endregion
 
@@ -43,15 +50,19 @@ public class DynamicVignetteModule : DynamicPostProcessingModule
         // Create the speed vignette token
         _speedVignetteToken = _tokens.AddToken(0, -1, true);
         _slideVignetteToken = _tokens.AddToken(0, -1, true);
+        _relapseVignetteToken = _tokens.AddToken(0, -1, true);
     }
 
     public override void Update()
     {
         // Update the speed vignette
         UpdateSpeedVignette();
-        
+
         // Update the slide vignette
         UpdateSlideVignette();
+
+        // Update the relapse vignette
+        UpdateRelapseVignette();
 
         // Get the actual screen vignette component
         dynamicVolume.GetActualComponent(out Vignette actualVignette);
@@ -65,6 +76,20 @@ public class DynamicVignetteModule : DynamicPostProcessingModule
 
         // Set the vignette intensity on the screen volume
         actualVignette.intensity.value = vignetteSettings.intensity.value + CurrentTokenValue();
+    }
+
+    private void UpdateRelapseVignette()
+    {
+        var player = Player.Instance;
+
+        var targetValue = 0f;
+
+        if (player != null && player.PlayerInfo.IsRelapsing)
+            targetValue = relapseVignetteMaxValue;
+
+        // lerp the relapse vignette token to the target value
+        _relapseVignetteToken.Value = Mathf.Lerp(_relapseVignetteToken.Value, targetValue,
+            CustomFunctions.FrameAmount(relapseVignetteLerpAmount));
     }
 
     private void UpdateSpeedVignette()
@@ -81,9 +106,10 @@ public class DynamicVignetteModule : DynamicPostProcessingModule
             );
 
         // Lerp the speed vignette token to the target value
-        _speedVignetteToken.Value = Mathf.Lerp(_speedVignetteToken.Value, targetValue, CustomFunctions.FrameAmount(speedVignetteLerpAmount));
+        _speedVignetteToken.Value = Mathf.Lerp(_speedVignetteToken.Value, targetValue,
+            CustomFunctions.FrameAmount(speedVignetteLerpAmount));
     }
-    
+
     private void UpdateSlideVignette()
     {
         // Get the instance of the player
@@ -98,13 +124,14 @@ public class DynamicVignetteModule : DynamicPostProcessingModule
             _slideVignetteToken.Value = 0;
             return;
         }
-        
+
         // If the player is sliding, set the target value to the slide vignette max value
         if (movementV2.PlayerSlide.IsSliding)
             targetValue = slideVignetteMaxValue;
 
         // Lerp the speed vignette token to the target value
-        _slideVignetteToken.Value = Mathf.Lerp(_slideVignetteToken.Value, targetValue, CustomFunctions.FrameAmount(slideVignetteLerpAmount));
+        _slideVignetteToken.Value = Mathf.Lerp(_slideVignetteToken.Value, targetValue,
+            CustomFunctions.FrameAmount(slideVignetteLerpAmount));
     }
 
     private float CurrentTokenValue()

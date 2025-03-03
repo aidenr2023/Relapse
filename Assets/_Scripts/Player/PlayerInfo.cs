@@ -278,7 +278,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         var opacity = relapseOpacityCurve.Evaluate(relapseOpacityTimer.OutputValue);
 
         if (!_isRelapsing)
-            opacity = 0;
+            opacity = Mathf.Lerp(RelapseOverlayUI.Instance.CanvasGroup.alpha, 0, CustomFunctions.FrameAmount(.1f));
         
         // Set the opacity of the relapse image
         RelapseOverlayUI.Instance.CanvasGroup.alpha = opacity;
