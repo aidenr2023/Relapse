@@ -17,9 +17,9 @@ public class NPCBlendAnim : StateMachineBehaviour
         idleAnimationTimer = 0f;
 
         // Initialize IdleBlend parameter
-       // animator.SetFloat(IdleBlendHash, 0f);
+       animator.SetFloat(IdleBlendHash, 0f);
 
-        Debug.Log("Entered Idle State.");
+       Debug.Log("Entered Idle State.");
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
@@ -29,20 +29,20 @@ public class NPCBlendAnim : StateMachineBehaviour
         boredTimer += Time.deltaTime;
         idleAnimationTimer += Time.deltaTime;
 
-        // // Check if it's time to change the idle animation
-        // if (idleAnimationTimer >= timeBetweenIdleChanges)
-        // {
-        //     // Randomize the idle animation
-        //     //float randomBlendValue = Random.Range(0, numberOfIdleAnimations);
-        //
-        //     // Smoothly transition to the new idle animation
-        //     //animator.SetFloat(IdleBlendHash, randomBlendValue, 0.1f, Time.deltaTime);
-        //
-        //    // Debug.Log($"Idle animation changed with blend value: {randomBlendValue}");
-        //
-        //     // Reset idle animation timer
-        //     idleAnimationTimer = 0f;
-        // }
+        // Check if it's time to change the idle animation
+        if (idleAnimationTimer >= timeBetweenIdleChanges)
+        {
+            // Randomize the idle animation
+            float randomBlendValue = Random.Range(0, numberOfIdleAnimations);
+        
+            // Smoothly transition to the new idle animation
+            animator.SetFloat(IdleBlendHash, randomBlendValue, 0.1f, Time.deltaTime);
+        
+           // Debug.Log($"Idle animation changed with blend value: {randomBlendValue}");
+        
+            // Reset idle animation timer
+            idleAnimationTimer = 0f;
+        }
 
         // Check if the NPC should become bored
         if (boredTimer >= timeUntilBored)
