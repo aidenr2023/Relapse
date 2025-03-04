@@ -541,6 +541,7 @@ GameObject:
   - component: {fileID: 5377700300686321622}
   - component: {fileID: 9143735429684707639}
   - component: {fileID: 4579348370096720100}
+  - component: {fileID: 4129140736765711558}
   m_Layer: 9
   m_Name: Melee-Patrol Drunkard Enemy
   m_TagString: Enemy
@@ -629,8 +630,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f5f533b130e40eca5347083903f3682, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uniqueId: 
-  originalScene: Melee-Patrol Drunkard Enemy
+  uniqueId: d995ece7-38b2-4ebe-a33e-e4051bb9b897
+  originalScene: NAB_Combat3
 --- !u!114 &6464986997511297437
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -655,10 +656,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1f2f7014adf46a88a0579b47084cca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 300
   currentHealth: 100
   moneyReward: 50
-  animator: {fileID: 0}
+  animator: {fileID: 6055747906437765735}
   enemyHitEffect: {fileID: 6330953936467945152}
   minVFXRangeDamage: 10
   maxVFXRangeDamage: 50
@@ -705,7 +706,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6db7d14cf168478bacea0720a538d891, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectionOrigin: {fileID: 0}
+  detectionOrigin: {fileID: 2268080611341460869}
   visionDistance: 30
   autoDetectionDistance: 7
   visionAngle: 150
@@ -741,7 +742,7 @@ MonoBehaviour:
   patrolCheckpoints: []
   checkpointProximityThreshold: 0.5
   stoppingDistance: 2.5
-  animator: {fileID: 0}
+  animator: {fileID: 6055747906437765735}
   walkAnimationThreshold: 1
   runAnimationThreshold: 6
   animationSpeedCoefficient: 0.125
@@ -764,6 +765,29 @@ MonoBehaviour:
   meleeAttackHitboxes:
   - {fileID: 0}
   - {fileID: 0}
+--- !u!136 &4129140736765711558
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5397329162327813186}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.7330447
+  m_Height: 3.0031068
+  m_Direction: 1
+  m_Center: {x: -0.0294008, y: -0.007594613, z: 7.6873063e-10}
 --- !u!1 &6318990487789589755
 GameObject:
   m_ObjectHideFlags: 0
@@ -1102,6 +1126,12 @@ Animator:
 --- !u!4 &2071608277189522144 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: e1056e5bb78d41f4fa8eb2296ef5e521,
+    type: 3}
+  m_PrefabInstance: {fileID: 1960593875284169995}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2268080611341460869 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 309828020610003086, guid: e1056e5bb78d41f4fa8eb2296ef5e521,
     type: 3}
   m_PrefabInstance: {fileID: 1960593875284169995}
   m_PrefabAsset: {fileID: 0}
