@@ -17,6 +17,8 @@ public class PauseMenuManager : GameMenu
 
     #region Serialized Fields
 
+    [SerializeField] private string mainMenuScene = "MainMenu";
+
     [SerializeField] private GameObject pauseMenuParent;
 
     [SerializeField] private GameObject pauseMenuPanel;
@@ -365,8 +367,7 @@ public class PauseMenuManager : GameMenu
         ChangeClickColor(textObject);
 
         // Go back to main menu
-        // TODO: Use a scene field
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene(mainMenuScene);
     }
 
     public void GoBack()

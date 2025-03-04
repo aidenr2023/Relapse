@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class EpilepsyMenu : GameMenu
@@ -9,6 +10,21 @@ public class EpilepsyMenu : GameMenu
     {
         // Additively load the main menu scene
         SceneManager.LoadScene(mainMenuSceneName, LoadSceneMode.Additive);
+        
+        // Start the coroutine to set the main menu scene to active
+        StartCoroutine(SetMainMenuSceneToActive());
+    }
+
+    private IEnumerator SetMainMenuSceneToActive()
+    {
+        // Wait for the next frame
+        yield return null;
+
+        // Get the main menu scene
+        var mainMenuScene = SceneManager.GetSceneByName(mainMenuSceneName);
+
+        // Set the main menu scene to active
+        SceneManager.SetActiveScene(mainMenuScene);
     }
 
     protected override void CustomStart()

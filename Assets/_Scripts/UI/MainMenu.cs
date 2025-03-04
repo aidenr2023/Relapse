@@ -13,6 +13,9 @@ public class MainMenu : GameMenu
 
     [SerializeField] private LevelStartupSceneInfo levelStartupSceneInfo;
 
+    [SerializeField] private CanvasGroup blackOverlayGroup;
+    [SerializeField, Min(0)] private float blackOverlayTransitionTime = .5f;
+
     #endregion
 
     #region Private Fields
@@ -22,13 +25,15 @@ public class MainMenu : GameMenu
     private bool _startedLoading;
 
     private bool _clickedButton;
+    
+    private bool _showLoadingBar;
 
     #endregion
 
     protected override void CustomAwake()
     {
     }
-    
+
     protected override void CustomStart()
     {
     }
@@ -54,8 +59,9 @@ public class MainMenu : GameMenu
     protected override void CustomUpdate()
     {
         // Set the loading bar's visibility based on whether the scene is loading
-        loadingBar.gameObject.SetActive(_clickedButton);
-        
+        // loadingBar.gameObject.SetActive(_clickedButton);
+        loadingBar.gameObject.SetActive(_showLoadingBar);
+
         // If the opacity is 0, unload the scene
         if (canvasGroup.alpha == 0)
             UnloadSceneAfterDeactivate();
@@ -65,7 +71,7 @@ public class MainMenu : GameMenu
     {
         // Get the scene that this object is in
         var scene = gameObject.scene;
-        
+
         // Unload the scene
         SceneManager.UnloadSceneAsync(scene);
     }
@@ -80,18 +86,42 @@ public class MainMenu : GameMenu
         // Load the scene asynchronously
         if (!_startedLoading)
         {
-            // StartCoroutine(LoadSceneAsync());
-            AsyncSceneManager.Instance.LoadStartupScene(
-                levelStartupSceneInfo, this, UpdateProgressBarPercent,
-                Deactivate
-            );
-
-            // Set the flag to true
-            _startedLoading = true;
+            // Start the start game coroutine
+            StartCoroutine(StartGameCoroutine());
         }
 
         // Set the flag to true
         _clickedButton = true;
+    }
+
+    private IEnumerator StartGameCoroutine()
+    {
+        // Set the flag to true
+        _startedLoading = true;
+
+        // Fade into the black overlay
+        var startTime = Time.unscaledTime;
+
+        while (Time.unscaledTime - startTime < blackOverlayTransitionTime)
+        {
+            var time = (Time.unscaledTime - startTime) / blackOverlayTransitionTime;
+            blackOverlayGroup.alpha = time;
+
+            yield return null;
+        }
+
+        blackOverlayGroup.alpha = 1;
+        
+        // Set the show loading bar flag to true
+        _showLoadingBar = true;
+
+        // StartCoroutine(LoadSceneAsync());
+        AsyncSceneManager.Instance.LoadStartupScene(
+            levelStartupSceneInfo, this, UpdateProgressBarPercent,
+            Deactivate
+        );
+
+        yield return null;
     }
 
     public void ExitButton()
@@ -120,13 +150,13 @@ public class MainMenu : GameMenu
     {
         // // Load the scene singularly
         // SceneManager.LoadScene(sceneName);
-        
+
         // Load the scene additively
         SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
-        
+
         // Deactivate the main menu
         Deactivate();
-        
+
         // Set the loaded scene as the active scene
         StartCoroutine(SetActiveScene(sceneName));
     }
@@ -135,7 +165,7 @@ public class MainMenu : GameMenu
     {
         // Wait 1 frame
         yield return null;
-        
+
         // Set the active scene
         SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
     }
@@ -143,19 +173,19 @@ public class MainMenu : GameMenu
     public void ActiveSettingsMenu()
     {
         var pauseMenuManager = PauseMenuManager.Instance;
-        
+
         // Throw an exception if the pause menu instance is null
         if (pauseMenuManager == null)
             return;
-        
+
         // Activate the settings menu
         pauseMenuManager.IsolateMenu(pauseMenuManager.SettingsPanel);
         pauseMenuManager.Activate();
-        
+
         // Update the event system
         UpdateEventSystem();
         pauseMenuManager.UpdateEventSystem();
-        
+
         // Set the event system's selected object to the first button
         pauseMenuManager.EventSystem.SetSelectedGameObject(pauseMenuManager.SettingsFirstSelected);
     }
