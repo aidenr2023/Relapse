@@ -44,6 +44,10 @@ public class ExplosionHelper : MonoBehaviour, IDamager
             if (!cCollider.TryGetComponentInParent(out IActor actor))
                 continue;
             
+            // Continue if the actor is a player
+            if (actor is PlayerInfo)
+                continue;
+            
             if (!actors.Add(actor))
                 continue;
 

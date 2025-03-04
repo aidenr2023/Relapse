@@ -449,7 +449,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             Destroy(decal.gameObject, 10);
             
             // Spawn the impact VFX
-            
+            PlayVisualEffect(impactVfxPrefab, hit.point + hit.normal * 0.5f);
         }
     }
 
@@ -551,7 +551,19 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         system.Emit(emitParams, count);
     }
 
-    // protected static void PlayVisualEffect(VisualEffect )
+    protected static void PlayVisualEffect(VisualEffect vfx, Vector3 position)
+    {
+        // Return if the VFX is null
+        if (vfx == null)
+            return;
+
+        // Instantiate the VFX
+        var vfxInstance = Instantiate(vfx, position, Quaternion.identity);
+        
+        // Destroy the VFX after the duration
+        Destroy(vfxInstance.gameObject, 10);
+
+    }
     
     protected void PlayMuzzleFlash()
     {
