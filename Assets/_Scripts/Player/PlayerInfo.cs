@@ -205,6 +205,12 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         relapseOpacityTimer.Reset();
     }
 
+    private void OnDestroy()
+    {
+        // Set the relapse overlay UI's alpha to 0
+        RelapseOverlayUI.Instance.CanvasGroup.alpha = 0;
+    }
+
     #endregion
 
     #region Update Functions
