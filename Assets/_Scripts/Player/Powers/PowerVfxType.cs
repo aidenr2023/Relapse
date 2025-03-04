@@ -1,5 +1,6 @@
 ﻿public enum PowerVfxType
 {
     Fireball,
-    Electric
+    Electric,
+    HealthHalo
 }

@@ -33,6 +33,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     private VisualEffect fireballChargeVfx;
 
     [SerializeField] private VisualEffect electricChargeVfx;
+    [SerializeField] private VisualEffect healthHaloChargeVfx;
 
     [Header("Sound Effects")] [SerializeField]
     private ManagedAudioSource powerAudioSource;
@@ -102,7 +103,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     }
 
     // TODO: UPDATE THIS TOO
-    private VisualEffect[] AllChargeVfx => new[] { fireballChargeVfx, electricChargeVfx };
+    private VisualEffect[] AllChargeVfx => new[] { fireballChargeVfx, electricChargeVfx, healthHaloChargeVfx };
 
     #endregion
 
@@ -749,6 +750,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         {
             PowerVfxType.Fireball => fireballChargeVfx,
             PowerVfxType.Electric => electricChargeVfx,
+            PowerVfxType.HealthHalo => healthHaloChargeVfx,
             _ => null
         };
     }
