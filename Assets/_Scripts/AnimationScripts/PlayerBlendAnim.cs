@@ -4,6 +4,7 @@ public class PlayerBlendAnim : StateMachineBehaviour
 {
     [SerializeField] private float _timeUntilIdle = 3f; // Time before transitioning to idle
     [SerializeField] private float _idleTime = 0; // Tracks time spent stationary
+    private static readonly int Movement = Animator.StringToHash("IdleBlend"); // Hash for the blend tree parameter
     private Rigidbody _rb; // Reference to Rigidbody for player movement
 
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
@@ -27,7 +28,7 @@ public class PlayerBlendAnim : StateMachineBehaviour
         if (playerSpeed > 0.1f)
         {
             _idleTime = 0f; // Reset idle time when moving
-            animator.SetFloat("Movement", 1, 0.1f, Time.deltaTime); 
+            animator.SetFloat(Movement, 1, 0.1f, Time.deltaTime); 
             // Debug.Log("Player is moving. Idle time reset to 0.");
         }
         else
@@ -39,7 +40,7 @@ public class PlayerBlendAnim : StateMachineBehaviour
         // Determine if idle animation should trigger
         if (_idleTime > _timeUntilIdle)
         {
-            animator.SetFloat("Movement", 0, 0.1f, Time.deltaTime); // Set velocity to 0 to trigger idle in the blend tree
+            animator.SetFloat(Movement, 0, 0.1f, Time.deltaTime); // Set velocity to 0 to trigger idle in the blend tree
             // Debug.Log("Idle time exceeded threshold. Setting playerSpeed to 0 for idle animation.");
         }
 
