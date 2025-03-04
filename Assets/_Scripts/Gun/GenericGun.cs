@@ -29,8 +29,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     [SerializeField] protected VisualEffect muzzleFlash;
 
-    [Header("Impact Particles")] [SerializeField]
-    protected ParticleSystem impactParticles;
+    [Header("Impact Particles")] 
+    [SerializeField] protected ParticleSystem impactParticles;
+    [SerializeField] protected VisualEffect impactVfxPrefab;
 
     [SerializeField] [Range(0, 500)] protected int impactParticlesCount = 200;
 
@@ -446,6 +447,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
             // Set the decal to destroy itself after 10 seconds
             Destroy(decal.gameObject, 10);
+            
+            // Spawn the impact VFX
+            
         }
     }
 
@@ -547,6 +551,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         system.Emit(emitParams, count);
     }
 
+    // protected static void PlayVisualEffect(VisualEffect )
+    
     protected void PlayMuzzleFlash()
     {
         // Return if the muzzle flash is null
