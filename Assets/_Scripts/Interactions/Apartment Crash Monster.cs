@@ -22,7 +22,7 @@ public class ApartmentCrashMonster : MonoBehaviour
 
     IEnumerator Delay()
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(delay);
         enemy.SetActive(true);
     }
 }
