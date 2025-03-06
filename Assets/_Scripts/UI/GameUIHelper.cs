@@ -9,6 +9,14 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
 {
     public static GameUIHelper Instance { get; private set; }
 
+    #region Serialized Fields
+
+    [SerializeField] private bool showUI = true;
+
+    [SerializeField] private GameObject[] uiElements;
+
+    #endregion
+
     #region Private Fields
 
     private bool _isInputRegistered;
@@ -44,6 +52,12 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
 
         // Connect to the scene loaded event
         SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void Start()
+    {
+        // Set the UI enabled state
+        SetUIEnabled(showUI);
     }
 
     private void InitializeGameUI()
@@ -100,5 +114,31 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
         // Unset this as the instance
         if (Instance == this)
             Instance = null;
+    }
+
+    public void ShowUI()
+    {
+        // Return if the UI is already shown
+        if (showUI)
+            return;
+
+        showUI = true;
+        SetUIEnabled(showUI);
+    }
+
+    public void HideUI()
+    {
+        // Return if the UI is already hidden
+        if (!showUI)
+            return;
+
+        showUI = false;
+        SetUIEnabled(showUI);
+    }
+
+    private void SetUIEnabled(bool isEnabled)
+    {
+        foreach (var uiElement in uiElements)
+            uiElement.SetActive(isEnabled);
     }
 }
