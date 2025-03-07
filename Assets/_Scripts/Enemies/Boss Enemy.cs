@@ -1,95 +1,105 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class BossEnemy : MonoBehaviour
+[RequireComponent(typeof(EnemyInfo))]
+public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 {
-    [SerializeField,Range(0,100)] private int[] healthPercents;
-    float bossHealthPercent;
-    int bossPhase;
+    #region Serialized Fields
 
-    UnityEvent PhaseOneEvent;
-    UnityEvent PhaseTwoEvent;
-    UnityEvent PhaseThreeEvent;
+    [SerializeField] private BossPhaseInfo[] bossPhases;
 
-    public EnemyInfo enemyInfo;
+    #endregion
+
+    #region Private Fields
+
+    private EnemyInfo _enemyInfo;
+
+    private int _currentPhase;
+
+    #endregion
+
+    #region Getters
+
+    public int CurrentPhase => _currentPhase;
+
+    #endregion
+
+    protected override void CustomAwake()
+    {
+        // Get the EnemyInfo component
+        _enemyInfo = GetComponent<EnemyInfo>();
+
+        // Order the boss phases descending order by their phaseEndPercent
+        bossPhases = bossPhases.OrderByDescending(phase => phase.phaseEndPercent).ToArray();
+    }
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         //Subscribe to the OnDamaged event
-        enemyInfo.OnDamaged +=ActivatePhaseChange;
+        _enemyInfo.OnDamaged += ActivatePhaseChange;
+    }
 
-        //Initialize the boss
-        InitializeBoss();
+    private void OnEnable()
+    {
+    }
 
-        //Initialize the UnityEvents
-        if (PhaseOneEvent == null)
-        {
-            PhaseOneEvent = new UnityEvent();
-        }
-        if(PhaseTwoEvent == null)
-        {
-            PhaseTwoEvent = new UnityEvent();
-        }
-        if (PhaseThreeEvent == null)
-        {
-            PhaseThreeEvent = new UnityEvent();
-        }
-
+    private void OnDisable()
+    {
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
     }
-    void InitializeBoss()
+
+    private void ActivatePhaseChange(object sender, HealthChangedEventArgs e)
     {
-        CalculateHealthPercent();
-    }
-    void CalculateHealthPercent()
-    {
-        //Calculate the boss's health percentage
-        bossHealthPercent = enemyInfo.CurrentHealth / enemyInfo.MaxHealth * 100;
-    }
-    void ActivatePhaseChange(object sender, HealthChangedEventArgs e)
-    {
-        //Debug.Log("Boss took damage");
-        CalculateHealthPercent();
-        if (bossHealthPercent <= healthPercents[0] && bossPhase==0)
+        var healthPercent = _enemyInfo.CurrentHealth / _enemyInfo.MaxHealth;
+
+        for (var i = bossPhases.Length - 1; i >= _currentPhase; i--)
         {
-            bossPhase++;
-            PhaseOneEvent.Invoke();
-            Debug.Log("Phase 1 activated");
-            PhaseOne();
-        }
-        if (bossHealthPercent <= healthPercents[1] && bossPhase == 1)
-        {
-            bossPhase++;
-            PhaseTwoEvent.Invoke();
-            Debug.Log("Phase 2 activated");
-            PhaseTwo();
-        }
-        if (bossHealthPercent <= healthPercents[2] && bossPhase == 2)
-        {
-            bossPhase++;
-            PhaseThreeEvent.Invoke();
-            Debug.Log("Phase 3 activated");
-            PhaseThree();
+            // If the current phase is completed,
+            // then that means the rest are completed. Break
+            if (_currentPhase > i)
+                break;
+
+            // If the health percent is lower than the phase end percent,
+            // Update the current phase and call the phase end event
+            if (healthPercent > bossPhases[i].phaseEndPercent)
+                continue;
+
+            // NOTE: This only activates the phase end event for the HIGHEST phase that is completed.
+            // If the player completes multiple phases in one frame,
+            // only the highest phase will be activated.
+
+            _currentPhase = i + 1;
+            bossPhases[i].phaseEndEvent.Invoke();
+
+            Debug.Log($"Phase {_currentPhase + 1} activated! {healthPercent} <= {bossPhases[i].phaseEndPercent}");
         }
     }
-    void PhaseOne()
+
+    [Serializable]
+    private struct BossPhaseInfo
     {
-        //Do code for phase one
+        [Range(0, 1)] public float phaseEndPercent;
+        public UnityEvent phaseEndEvent;
     }
-    void PhaseTwo()
+
+    public string GetDebugText()
     {
-        //Do code for phase two
-    }
-    void PhaseThree()
-    {
-        //Do code for phase three
+        StringBuilder sb = new();
+
+        sb.AppendLine($"Boss Enemy: {name}");
+        sb.AppendLine($"\tHealth: {(_enemyInfo.CurrentHealth / _enemyInfo.MaxHealth):0.00}");
+        sb.AppendLine($"\tCurrent Phase: {_currentPhase + 1}");
+
+        return sb.ToString();
     }
 }
