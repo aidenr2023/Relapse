@@ -87,6 +87,13 @@ public class LevelInformation : MonoBehaviour
 
         // Play the intro text
         Debug.Log($"Playing intro text for {levelInfo.levelName}");
+
+        // Return if the cutscene listener instance is null
+        if (CutsceneListener.Instance == null)
+        {
+            Debug.LogError("CutsceneListener instance not found!");
+            return;
+        }
         
         CutsceneListener.Instance.PlayBarsAnimation(true);
         CutsceneListener.Instance.LevelNameText.text = levelInfo.levelName;
