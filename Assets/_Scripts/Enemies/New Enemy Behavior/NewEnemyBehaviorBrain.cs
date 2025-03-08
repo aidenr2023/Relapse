@@ -10,7 +10,7 @@ public class NewEnemyBehaviorBrain : MonoBehaviour
     #region Serialized Fields
 
     [SerializeField, Range(.001f, 60)] private float updatesPerSecond = 4f;
-    [SerializeField] private EnemyMovementBehaviorState[] behaviorStates;
+    [SerializeField] private EnemyBehaviorStateBase[] behaviorStates;
 
     [SerializeField] private BehaviorActionAttack currentAttackAction;
     [SerializeField] private BehaviorActionMove currentMoveAction;
@@ -20,7 +20,7 @@ public class NewEnemyBehaviorBrain : MonoBehaviour
     #region Private Fields
 
     private Coroutine _behaviorStateCoroutine;
-    private EnemyMovementBehaviorState _currentBehaviorState;
+    private EnemyBehaviorState _currentBehaviorState;
 
     private readonly CountdownTimer _moveCooldown = new(10000, true, true);
     private readonly CountdownTimer _attackCooldown = new(10000, true, true);
@@ -41,6 +41,12 @@ public class NewEnemyBehaviorBrain : MonoBehaviour
 
     #endregion
 
+    #region Bool Variables
+    
+    public bool IsTargetDetected { get; set; }
+    
+    #endregion
+    
     #region Getters
 
     public BehaviorActionMove CurrentMoveAction => currentMoveAction;
@@ -70,29 +76,40 @@ public class NewEnemyBehaviorBrain : MonoBehaviour
     private void DetermineBehaviorState()
     {
         // Automatically set the best behavior state to the last one
-        var bestBehaviorState = behaviorStates[^1];
-
-        // Determine which behavior state should be used
-        for (var i = 0; i < behaviorStates.Length; i++)
-        {
-            // Test the conditions of the behavior state
-            // if the conditions are met, set the best behavior state to the current one and break the loop
-            if (!behaviorStates[i].TestConditions(this))
-                continue;
-
-            bestBehaviorState = behaviorStates[i];
-            break;
-        }
-
-        // If the new behavior state is the same as the current behavior state, return
-        if (bestBehaviorState == _currentBehaviorState)
-            return;
+        var bestBehaviorState = GetBehaviorStateRecursive(behaviorStates);
 
         // Reset the current action
         ResetCurrentAction();
 
         // Set the current behavior state to the best behavior state
         _currentBehaviorState = bestBehaviorState;
+    }
+
+    private EnemyBehaviorState GetBehaviorStateRecursive(EnemyBehaviorStateBase[] currentStates)
+    {
+        // Automatically set the best behavior state to the last one
+        var bestBehaviorState = currentStates[^1];
+
+        for (var i = 0; i < currentStates.Length; i++)
+        {
+            // Test the conditions of the behavior state
+            if (!currentStates[i].TestConditions(this))
+                continue;
+
+            // Set the best behavior state to the current one
+            bestBehaviorState = currentStates[i];
+
+            // If the current state is a SubStateHolder, recursively call this method
+            if (bestBehaviorState is EnemyBehaviorSubStateHolder subStateHolder)
+                return GetBehaviorStateRecursive(subStateHolder.subStates);
+
+            // Otherwise, return the current state
+            if (bestBehaviorState is EnemyBehaviorState behaviorState)
+                return behaviorState;
+        }
+
+        // This might be a SubStateHolder
+        return bestBehaviorState as EnemyBehaviorState;
     }
 
     private void ResetCurrentAction()
@@ -109,19 +126,19 @@ public class NewEnemyBehaviorBrain : MonoBehaviour
         // Generate a random number between 0 and the total weight
         var randomWeight = UnityEngine.Random.Range(0, totalWeight);
 
-        int index;
-
         // Keep subtracting the weight of the current action from the random weight until it's less than or equal to 0
-        for (index = 0; index < _currentBehaviorState.moveActions.Length; index++)
+        for (int index = 0; index < _currentBehaviorState.moveActions.Length; index++)
         {
             randomWeight -= _currentBehaviorState.moveActions[index].Weight;
 
             if (randomWeight <= 0)
+            {
+                // Update the current move action   
+                currentMoveAction = _currentBehaviorState.moveActions[index];
+                
                 break;
+            }
         }
-
-        // Update the current move action   
-        currentMoveAction = _currentBehaviorState.moveActions[index];
 
         // Start the current action
         currentMoveAction.Start(this, _currentBehaviorState);
@@ -211,7 +228,7 @@ public class NewEnemyBehaviorBrain : MonoBehaviour
                 DetermineAttackAction();
 
             // Log the current behavior state
-            Debug.Log($"{gameObject.name} Behavior State: {_currentBehaviorState.name}");
+            Debug.Log($"{gameObject.name} Behavior State: {_currentBehaviorState.stateName}");
 
             // Reset the last update time
             lastUpdateTime = Time.time;

@@ -99,6 +99,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         _brain.HealthPercentage = ParentComponent.EnemyInfo.CurrentHealth / ParentComponent.EnemyInfo.MaxHealth;
 
         // Update the bool variables
+        _brain.IsTargetDetected = ParentComponent.DetectionBehavior.CurrentDetectionState == EnemyDetectionState.Curious;
     }
 
     private bool DetermineNeedsToUpdateDestination(BehaviorActionMove.MoveAction moveAction)

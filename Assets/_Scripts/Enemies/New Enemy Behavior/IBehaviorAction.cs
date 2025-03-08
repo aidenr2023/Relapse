@@ -3,12 +3,12 @@ using UnityEngine;
 
 public interface IBehaviorAction
 {
-    public Action<IBehaviorAction, NewEnemyBehaviorBrain, EnemyMovementBehaviorState> OnEnd { get; set; }
+    public Action<IBehaviorAction, NewEnemyBehaviorBrain, EnemyBehaviorState> OnEnd { get; set; }
 
     public float Weight { get; }
 
-    public void Start(NewEnemyBehaviorBrain brain, EnemyMovementBehaviorState state);
-    public void End(NewEnemyBehaviorBrain brain, EnemyMovementBehaviorState state);
+    public void Start(NewEnemyBehaviorBrain brain, EnemyBehaviorState state);
+    public void End(NewEnemyBehaviorBrain brain, EnemyBehaviorState state);
 }
 
 [Serializable]
@@ -20,15 +20,15 @@ public struct BehaviorActionMove : IBehaviorAction
     [Min(1 / 60f)] public float minCooldown;
     [Min(1 / 60f)] public float maxCooldown;
 
-    public Action<IBehaviorAction, NewEnemyBehaviorBrain, EnemyMovementBehaviorState> OnEnd { get; set; }
+    public Action<IBehaviorAction, NewEnemyBehaviorBrain, EnemyBehaviorState> OnEnd { get; set; }
 
     public float Weight => weight;
 
-    public void Start(NewEnemyBehaviorBrain brain, EnemyMovementBehaviorState state)
+    public void Start(NewEnemyBehaviorBrain brain, EnemyBehaviorState state)
     {
     }
 
-    public void End(NewEnemyBehaviorBrain brain, EnemyMovementBehaviorState state)
+    public void End(NewEnemyBehaviorBrain brain, EnemyBehaviorState state)
     {
         OnEnd?.Invoke(this, brain, state);
     }
@@ -60,14 +60,14 @@ public struct BehaviorActionAttack : IBehaviorAction
     [Min(1 / 60f)] public float minCooldown;
     [Min(1 / 60f)] public float maxCooldown;
 
-    public Action<IBehaviorAction, NewEnemyBehaviorBrain, EnemyMovementBehaviorState> OnEnd { get; set; }
+    public Action<IBehaviorAction, NewEnemyBehaviorBrain, EnemyBehaviorState> OnEnd { get; set; }
     public float Weight => weight;
 
-    public void Start(NewEnemyBehaviorBrain brain, EnemyMovementBehaviorState state)
+    public void Start(NewEnemyBehaviorBrain brain, EnemyBehaviorState state)
     {
     }
 
-    public void End(NewEnemyBehaviorBrain brain, EnemyMovementBehaviorState state)
+    public void End(NewEnemyBehaviorBrain brain, EnemyBehaviorState state)
     {
         OnEnd?.Invoke(this, brain, state);
     }

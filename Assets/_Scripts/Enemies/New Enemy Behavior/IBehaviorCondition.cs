@@ -3,7 +3,6 @@ using UnityEngine;
 
 public interface IBehaviorCondition
 {
-    public bool IsInverted { get; }
     public bool TestCondition(NewEnemyBehaviorBrain brain);
 }
 
@@ -50,7 +49,7 @@ public struct BehaviorConditionFloat : IBehaviorCondition
         };
 
         // XOR the result with isInverted to invert the result if necessary
-        return conditionType switch
+        var returnValue = conditionType switch
         {
             ConditionType.LessThan => value < targetValue,
             ConditionType.LessThanOrEqualTo => value <= targetValue,
@@ -60,5 +59,37 @@ public struct BehaviorConditionFloat : IBehaviorCondition
             ConditionType.EqualToLoosely => value >= targetValue - EPSILON && value <= targetValue + EPSILON,
             _ => throw new ArgumentOutOfRangeException()
         } ^ isInverted;
+        
+        Debug.Log($"{conditionTarget} {conditionType} {targetValue}: {returnValue}");
+        
+        return returnValue;
+    }
+}
+
+[Serializable]
+public struct BehaviorConditionBool : IBehaviorCondition
+{
+    public ConditionTarget conditionTarget;
+    public bool targetValue;
+
+    public enum ConditionTarget
+    {
+        IsTargetDetected,
+    }
+
+    public bool TestCondition(NewEnemyBehaviorBrain brain)
+    {
+        var value = conditionTarget switch
+        {
+            ConditionTarget.IsTargetDetected => brain.IsTargetDetected,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        // XOR the result with isInverted to invert the result if necessary
+        var returnValue = value == targetValue;
+        
+        Debug.Log($"{conditionTarget} ({value}) == {targetValue}: {returnValue}");
+        
+        return returnValue;
     }
 }
