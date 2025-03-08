@@ -32,7 +32,8 @@ public struct BehaviorConditionFloat : IBehaviorCondition
 
     public enum ConditionTarget
     {
-        Distance,
+        DistanceFromTarget,
+        DistanceFromDestination,
         Speed,
         HealthPercentage,
     }
@@ -41,7 +42,8 @@ public struct BehaviorConditionFloat : IBehaviorCondition
     {
         var value = conditionTarget switch
         {
-            ConditionTarget.Distance => brain.Distance,
+            ConditionTarget.DistanceFromTarget => brain.DistanceFromTarget,
+            ConditionTarget.DistanceFromDestination => brain.DistanceFromDestination,
             ConditionTarget.Speed => brain.Speed,
             ConditionTarget.HealthPercentage => brain.HealthPercentage,
             _ => throw new ArgumentOutOfRangeException()

@@ -7,6 +7,7 @@ public class EnemyMovementBehaviorState
     [SerializeField] public string name;
     [SerializeField] public BehaviorConditionFloat[] floatConditions;
 
+    [SerializeField] public BehaviorActionAttack[] attackActions;
     [SerializeField] public BehaviorActionMove[] moveActions;
 
     public bool TestConditions(NewEnemyBehaviorBrain brain)
