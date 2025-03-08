@@ -2,22 +2,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class NewEnemyBehaviorBrain : MonoBehaviour
+public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
 {
     #region Serialized Fields
 
     [SerializeField, Range(.001f, 60)] private float updatesPerSecond = 4f;
     [SerializeField] private EnemyBehaviorStateBase[] behaviorStates;
 
-    [SerializeField] private BehaviorActionAttack currentAttackAction;
-    [SerializeField] private BehaviorActionMove currentMoveAction;
-
     #endregion
 
     #region Private Fields
+
+    private BehaviorActionAttack _currentAttackAction;
+    private BehaviorActionMove _currentMoveAction;
 
     private Coroutine _behaviorStateCoroutine;
     private EnemyBehaviorState _currentBehaviorState;
@@ -28,8 +29,6 @@ public class NewEnemyBehaviorBrain : MonoBehaviour
     private bool _isAttacking;
 
     #endregion
-
-    // TODO: Remove the inspector fields and replace them with properties
 
     #region Float Variables
 
@@ -42,33 +41,33 @@ public class NewEnemyBehaviorBrain : MonoBehaviour
     #endregion
 
     #region Bool Variables
-    
+
     public bool IsTargetDetected { get; set; }
-    
+
     #endregion
-    
+
     #region Getters
 
-    public BehaviorActionMove CurrentMoveAction => currentMoveAction;
-    public BehaviorActionAttack CurrentAttackAction => currentAttackAction;
+    public BehaviorActionMove CurrentMoveAction => _currentMoveAction;
+    public BehaviorActionAttack CurrentAttackAction => _currentAttackAction;
 
     #endregion
 
     #region Initialization Methods
 
-    private void Awake()
-    {
-    }
-
     private void OnEnable()
     {
         _behaviorStateCoroutine = StartCoroutine(BehaviorStateCoroutine());
+
+        DebugManager.Instance.AddDebuggedObject(this);
     }
 
     private void OnDisable()
     {
         StopCoroutine(_behaviorStateCoroutine);
         _behaviorStateCoroutine = null;
+
+        DebugManager.Instance.RemoveDebuggedObject(this);
     }
 
     #endregion
@@ -79,7 +78,8 @@ public class NewEnemyBehaviorBrain : MonoBehaviour
         var bestBehaviorState = GetBehaviorStateRecursive(behaviorStates);
 
         // Reset the current action
-        ResetCurrentAction();
+        if (_currentBehaviorState != bestBehaviorState)
+            ResetCurrentAction();
 
         // Set the current behavior state to the best behavior state
         _currentBehaviorState = bestBehaviorState;
@@ -127,24 +127,23 @@ public class NewEnemyBehaviorBrain : MonoBehaviour
         var randomWeight = UnityEngine.Random.Range(0, totalWeight);
 
         // Keep subtracting the weight of the current action from the random weight until it's less than or equal to 0
-        for (int index = 0; index < _currentBehaviorState.moveActions.Length; index++)
+        for (var index = 0; index < _currentBehaviorState.moveActions.Length; index++)
         {
             randomWeight -= _currentBehaviorState.moveActions[index].Weight;
 
-            if (randomWeight <= 0)
-            {
-                // Update the current move action   
-                currentMoveAction = _currentBehaviorState.moveActions[index];
-                
-                break;
-            }
+            if (randomWeight > 0)
+                continue;
+            
+            // Update the current move action   
+            _currentMoveAction = _currentBehaviorState.moveActions[index];
+            break;
         }
 
         // Start the current action
-        currentMoveAction.Start(this, _currentBehaviorState);
+        _currentMoveAction.Start(this, _currentBehaviorState);
 
         // Generate a random cooldown time between the min and max cooldown times
-        var cooldownTime = UnityEngine.Random.Range(currentMoveAction.minCooldown, currentMoveAction.maxCooldown);
+        var cooldownTime = UnityEngine.Random.Range(_currentMoveAction.minCooldown, _currentMoveAction.maxCooldown);
 
         // Update the move cooldown
         _moveCooldown.SetMaxTimeAndReset(cooldownTime);
@@ -177,13 +176,13 @@ public class NewEnemyBehaviorBrain : MonoBehaviour
         }
 
         // Update the current move action   
-        currentAttackAction = _currentBehaviorState.attackActions[index];
+        _currentAttackAction = _currentBehaviorState.attackActions[index];
 
         // Start the current action
-        currentAttackAction.Start(this, _currentBehaviorState);
+        _currentAttackAction.Start(this, _currentBehaviorState);
 
         // Generate a random cooldown time between the min and max cooldown times
-        var cooldownTime = UnityEngine.Random.Range(currentAttackAction.minCooldown, currentAttackAction.maxCooldown);
+        var cooldownTime = UnityEngine.Random.Range(_currentAttackAction.minCooldown, _currentAttackAction.maxCooldown);
 
         // Update the move cooldown
         _attackCooldown.SetMaxTimeAndReset(cooldownTime);
@@ -192,7 +191,7 @@ public class NewEnemyBehaviorBrain : MonoBehaviour
         _isAttacking = true;
 
         // Add an action to reset the attacking flag
-        currentAttackAction.OnEnd += (_, _, _) => _isAttacking = false;
+        _currentAttackAction.OnEnd += (_, _, _) => _isAttacking = false;
 
         // TODO: Remove this
         Invoke(nameof(StopAttack_DEBUG), 1);
@@ -207,15 +206,8 @@ public class NewEnemyBehaviorBrain : MonoBehaviour
 
     private IEnumerator BehaviorStateCoroutine()
     {
-        var lastUpdateTime = Time.time;
-
         while (true)
         {
-            // Update the countdown
-            var timeSinceLastUpdate = Time.time - lastUpdateTime;
-            _moveCooldown.Update(timeSinceLastUpdate);
-            _attackCooldown.Update(timeSinceLastUpdate);
-
             // Determine the behavior state
             DetermineBehaviorState();
 
@@ -230,10 +222,29 @@ public class NewEnemyBehaviorBrain : MonoBehaviour
             // Log the current behavior state
             Debug.Log($"{gameObject.name} Behavior State: {_currentBehaviorState.stateName}");
 
-            // Reset the last update time
-            lastUpdateTime = Time.time;
 
-            yield return new WaitForSeconds(1 / updatesPerSecond);
+            // Reset the last update time
+            var updateDelay = 1 / updatesPerSecond;
+
+            // Update the countdowns
+            _moveCooldown.Update(updateDelay);
+            _attackCooldown.Update(updateDelay);
+
+            yield return new WaitForSeconds(updateDelay);
         }
+    }
+
+    public string GetDebugText()
+    {
+        var sb = new StringBuilder();
+
+        sb.AppendLine($"{gameObject.name}");
+        sb.AppendLine($"\tBehavior State: {_currentBehaviorState.stateName}");
+        sb.AppendLine($"\tMove Cooldown: {_moveCooldown.TimeLeft:0.00} ({_moveCooldown.IsComplete})");
+        sb.AppendLine($"\t{_currentMoveAction.moveAction}");
+        sb.AppendLine($"\tTarget: {DistanceFromTarget:0.00}");
+        sb.AppendLine($"\tDestination: {DistanceFromDestination:0.00}");
+
+        return sb.ToString();
     }
 }

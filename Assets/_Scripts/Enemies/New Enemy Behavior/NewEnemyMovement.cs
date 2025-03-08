@@ -89,17 +89,17 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
     private void UpdateBrainVariables()
     {
-        // TODO: Find some way to get the target
         var targetPosition = ParentComponent.DetectionBehavior.LastKnownTargetPosition;
 
         // Update the float variables 
         _brain.DistanceFromTarget = Vector3.Distance(transform.position, targetPosition);
-        _brain.DistanceFromTarget = _navMeshAgent.remainingDistance;
+        _brain.DistanceFromDestination = _navMeshAgent.remainingDistance;
         _brain.Speed = _navMeshAgent.velocity.magnitude;
         _brain.HealthPercentage = ParentComponent.EnemyInfo.CurrentHealth / ParentComponent.EnemyInfo.MaxHealth;
 
         // Update the bool variables
-        _brain.IsTargetDetected = ParentComponent.DetectionBehavior.CurrentDetectionState == EnemyDetectionState.Curious;
+        _brain.IsTargetDetected =
+            ParentComponent.DetectionBehavior.CurrentDetectionState != EnemyDetectionState.Unaware;
     }
 
     private bool DetermineNeedsToUpdateDestination(BehaviorActionMove.MoveAction moveAction)
@@ -185,10 +185,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
         // Reset the force update destination
         _forceUpdateDestination = false;
-
-        Debug.Log($"Current Move Action: {_currentMoveAction}");
     }
-
 
     #region Update Functions
 
@@ -198,6 +195,37 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
     private void UpdateWander(bool needsToUpdateDestination)
     {
+        if (needsToUpdateDestination)
+        {
+            const float wanderRadius = 10f;
+
+            const int sampleTries = 5;
+
+            // Keep trying to sample the navmesh for a valid random position
+            for (var i = 0; i < sampleTries; i++)
+            {
+                var randomDirection = UnityEngine.Random.rotation.eulerAngles;
+                randomDirection.y = 0;
+
+                var randomPosition = transform.position +
+                                     Quaternion.Euler(randomDirection) * Vector3.forward * wanderRadius;
+
+                // Set the destination to the random position
+
+                // Sample the navmesh for a random position
+                NavMesh.SamplePosition(randomPosition, out var hitInfo, wanderRadius, NavMesh.AllAreas);
+                
+                // Retry if the position is not on the navmesh
+                if (!hitInfo.hit)
+                    continue;
+                
+                // Set the destination to the hit position
+                SetDestination(hitInfo.position);
+
+                break;
+            }
+            
+        }
     }
 
     private void UpdateMoveAwayFromTarget(bool needsToUpdateDestination)
@@ -206,6 +234,11 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
     private void UpdateMoveTowardTarget(bool needsToUpdateDestination)
     {
+        if (needsToUpdateDestination)
+        {
+            // Set the destination to the forward of the transform
+            SetDestination(ParentComponent.DetectionBehavior.LastKnownTargetPosition);
+        }
     }
 
     private void UpdateStrafeBackward(bool needsToUpdateDestination)
@@ -259,9 +292,9 @@ public class NewEnemyMovement : ComponentScript<Enemy>
     private void Strafe()
     {
         // Set the forward of the transform to the detection target
-        if (!ParentComponent.DetectionBehavior.IsTargetDetected) 
+        if (!ParentComponent.DetectionBehavior.IsTargetDetected)
             return;
-        
+
         var targetPosition = ParentComponent.DetectionBehavior.Target.GameObject.transform.position;
         var direction = targetPosition - transform.position;
         direction.y = 0;
