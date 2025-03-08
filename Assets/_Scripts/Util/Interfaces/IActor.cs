@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 
 public delegate void HealthChangedEventHandler(object sender, HealthChangedEventArgs e);
+public delegate void StunnedEventHandler(HealthChangedEventArgs e, float duration);
 
 public interface IActor : IInterfacedObject
 {

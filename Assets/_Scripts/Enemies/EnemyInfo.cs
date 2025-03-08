@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.VFX;
@@ -49,6 +50,8 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
     private CountdownTimer _comicImpactTimer;
 
+    private float _remainingStunTime;
+
     #endregion
 
     #region Getters
@@ -57,6 +60,8 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
     public float MaxHealth => maxHealth;
     public float CurrentHealth => currentHealth;
+    
+    public bool IsStunned => _remainingStunTime > 0;
 
     #endregion
 
@@ -65,8 +70,25 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
     public event HealthChangedEventHandler OnDamaged;
     public event HealthChangedEventHandler OnHealed;
     public event HealthChangedEventHandler OnDeath;
+    
+    public event StunnedEventHandler OnStunStart;
+    public event StunnedEventHandler OnStunEnd;
 
     #endregion
+
+    protected override void CustomAwake()
+    {
+        // Set up the cooldown timer for the moan sound
+        _moanSoundTimer = new CountdownTimer(UnityEngine.Random.Range(moanSoundMinCooldown, moanSoundMaxCooldown));
+        _moanSoundTimer.OnTimerEnd += () =>
+        {
+            PlayMoanSound();
+            _moanSoundTimer.SetMaxTimeAndReset(UnityEngine.Random.Range(moanSoundMinCooldown, moanSoundMaxCooldown));
+        };
+        _moanSoundTimer.Start();
+        
+        _comicImpactTimer = new(0.5f, true, true);
+    }
 
     private void Start()
     {
@@ -90,19 +112,22 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
                 animator.SetTrigger(HitAnimationID);
         };
 
-        // Set up the cooldown timer for the moan sound
-        _moanSoundTimer = new CountdownTimer(UnityEngine.Random.Range(moanSoundMinCooldown, moanSoundMaxCooldown));
-        _moanSoundTimer.OnTimerEnd += () =>
+        // Add the movement and attack disable tokens on stun start
+        OnStunStart += (_, _) =>
         {
-            PlayMoanSound();
-            _moanSoundTimer.SetMaxTimeAndReset(UnityEngine.Random.Range(moanSoundMinCooldown, moanSoundMaxCooldown));
+            ParentComponent.MovementBehavior.AddMovementDisableToken(this);
+            ParentComponent.AttackBehavior.AddAttackDisableToken(this);
         };
-        _moanSoundTimer.Start();
+        OnStunEnd += (_, _) =>
+        {
+            ParentComponent.MovementBehavior.RemoveMovementDisableToken(this);
+            ParentComponent.AttackBehavior.RemoveAttackDisableToken(this);
+        };
+
+        OnStunStart += (_, _) => Debug.Log($"END EEE");
 
         // Set the moan sound source to be permanent
-        enemyMoanSource.SetPermanent(true);
-        
-        _comicImpactTimer = new(0.5f, true, true);
+        enemyMoanSource?.SetPermanent(true);
     }
 
     private void ComicImpactOnDamaged(object sender, HealthChangedEventArgs e)
@@ -350,4 +375,58 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         // Implement death logic
         Destroy(gameObject);
     }
+
+    public void Stun(HealthChangedEventArgs e, float duration)
+    {
+        // Return if the duration is less than or equal to 0
+        if (duration <= 0)
+            return;
+        
+        // Return if the enemy is already stunned
+        if (_remainingStunTime > 0)
+            return;
+        
+        var isStunned = _remainingStunTime > 0;
+        
+        _remainingStunTime = Mathf.Max(_remainingStunTime, duration);
+
+        // TODO: Replace w/ coroutine
+        if (!isStunned)
+            OnStunStart?.Invoke(e, duration);
+        
+        // if (!isStunned)
+        //     StartCoroutine(StunCoroutine(e, duration));
+        
+    }
+
+    public void StopStun()
+    {
+        var isStunned = _remainingStunTime > 0;
+        
+        // Reset the remaining stun time
+        _remainingStunTime = 0;
+        
+        if (isStunned)
+            OnStunEnd?.Invoke(null, 0);
+    }
+
+    private IEnumerator StunCoroutine(HealthChangedEventArgs e, float duration)
+    {
+        // Invoke the OnStunned event
+        OnStunStart?.Invoke(e, duration);
+        
+        // Wait for the duration of the stun
+        var stunStartTime = Time.time;
+        
+        while (Time.time - stunStartTime < duration)
+        {
+            _remainingStunTime -= Time.deltaTime;
+            
+            yield return null;
+        }
+        
+        // Invoke the OnStunEnd event
+        OnStunEnd?.Invoke(e, duration);
+    }
+    
 }

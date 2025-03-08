@@ -41,28 +41,38 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
     // Start is called before the first frame update
     private void Start()
     {
-        //Subscribe to the OnDamaged event
+        _currentPhase = -1;
+        
+        // Subscribe to the OnDamaged event
         _enemyInfo.OnDamaged += ActivatePhaseChange;
+
+
+        _enemyInfo.OnDamaged += ChangeHealthBar;
+        _enemyInfo.OnHealed += ChangeHealthBar;
+    }
+
+    private void ChangeHealthBar(object sender, HealthChangedEventArgs e)
+    {
+        // TODO: Implement health bar change
+        
+        // Change the fill of the health bar
     }
 
     private void OnEnable()
     {
+        DebugManager.Instance.AddDebuggedObject(this);
     }
 
     private void OnDisable()
     {
-    }
-
-    // Update is called once per frame
-    private void Update()
-    {
+        DebugManager.Instance.RemoveDebuggedObject(this);
     }
 
     private void ActivatePhaseChange(object sender, HealthChangedEventArgs e)
     {
         var healthPercent = _enemyInfo.CurrentHealth / _enemyInfo.MaxHealth;
 
-        for (var i = bossPhases.Length - 1; i >= _currentPhase; i--)
+        for (var i = bossPhases.Length - 1; i > _currentPhase; i--)
         {
             // If the current phase is completed,
             // then that means the rest are completed. Break
@@ -78,18 +88,11 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
             // If the player completes multiple phases in one frame,
             // only the highest phase will be activated.
 
-            _currentPhase = i + 1;
+            _currentPhase = i;
             bossPhases[i].phaseEndEvent.Invoke();
 
             Debug.Log($"Phase {_currentPhase + 1} activated! {healthPercent} <= {bossPhases[i].phaseEndPercent}");
         }
-    }
-
-    [Serializable]
-    private struct BossPhaseInfo
-    {
-        [Range(0, 1)] public float phaseEndPercent;
-        public UnityEvent phaseEndEvent;
     }
 
     public string GetDebugText()
@@ -101,5 +104,12 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         sb.AppendLine($"\tCurrent Phase: {_currentPhase + 1}");
 
         return sb.ToString();
+    }
+
+    [Serializable]
+    private struct BossPhaseInfo
+    {
+        [Range(0, 1)] public float phaseEndPercent;
+        public UnityEvent phaseEndEvent;
     }
 }

@@ -110,7 +110,7 @@ public class ChainLightning : MonoBehaviour, IPower
                 currentEnemy.EnemyInfo.ChangeHealth(-damage, powerManager.Player.PlayerInfo, this, enemyPosition);
 
                 // Start the coroutine to stun the enemy
-                StartCoroutine(StunEnemy(currentEnemy, enemyStunTime));
+                StartCoroutine(StunEnemy(powerManager, currentEnemy, enemyStunTime));
             }
 
             // Decrement the remaining chain count
@@ -147,36 +147,50 @@ public class ChainLightning : MonoBehaviour, IPower
         Destroy(trail.gameObject);
     }
 
-    private IEnumerator StunEnemy(Enemy enemy, float stunTime)
+    private IEnumerator StunEnemy(PlayerPowerManager powerManager, Enemy enemy, float stunTime)
     {
-        // Add a movement disabled token to the enemy for the duration of the chain stop time
-        enemy.MovementBehavior.AddMovementDisableToken(this);
-        enemy.AttackBehavior.AddAttackDisableToken(this);
+        // Return if the enemy is already stunned
+        if (enemy.EnemyInfo.IsStunned)
+            yield break;
+        
+        // // Add a movement disabled token to the enemy for the duration of the chain stop time
+        // enemy.MovementBehavior.AddMovementDisableToken(this);
+        // enemy.AttackBehavior.AddAttackDisableToken(this);
+
+        // Create event args
+        var e = new HealthChangedEventArgs(
+            enemy.EnemyInfo, powerManager.Player.PlayerInfo, this,
+            0, enemy.transform.position
+        );
+
+        enemy.EnemyInfo.Stun(e, enemyStunTime);
 
         // Instantiate the lightning VFX prefab
         var lightningVfx = Instantiate(lightningVfxPrefab);
 
         var stunStartTime = Time.time;
-        
+
         while (Time.time - stunStartTime < stunTime)
         {
             if (enemy == null)
                 break;
-            
+
             // Set the position of the lightning VFX to the enemy position
             lightningVfx.transform.position = enemy.transform.position;
 
             // Wait for 1 frame
             yield return null;
         }
-        
+
         // Remove the movement disabled token from the enemy
         if (enemy != null)
         {
-            enemy.MovementBehavior.RemoveMovementDisableToken(this);
-            enemy.AttackBehavior.RemoveAttackDisableToken(this);
+            // enemy.MovementBehavior.RemoveMovementDisableToken(this);
+            // enemy.AttackBehavior.RemoveAttackDisableToken(this);
+
+            enemy.EnemyInfo.StopStun();
         }
-        
+
         // Destroy the lightning VFX
         if (lightningVfx != null)
         {
@@ -195,7 +209,7 @@ public class ChainLightning : MonoBehaviour, IPower
         {
             if (enemy == null)
                 continue;
-            
+
             var distance = Vector3.Distance(currentPosition,
                 enemy.EnemyInfo.ParentComponent.transform.position);
 

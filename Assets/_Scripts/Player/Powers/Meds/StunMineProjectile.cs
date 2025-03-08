@@ -52,9 +52,21 @@ public class StunMineProjectile : AbstractMineProjectile
 
     private IEnumerator ApplyStun(IEnemyMovementBehavior movementBehavior, IEnemyAttackBehavior attackBehavior)
     {
-        // Disable the movement & attack
-        movementBehavior.AddMovementDisableToken(this);
-        attackBehavior.AddAttackDisableToken(this);
+        // // Add a movement disabled token to the enemy for the duration of the chain stop time
+        // enemy.MovementBehavior.AddMovementDisableToken(this);
+        // enemy.AttackBehavior.AddAttackDisableToken(this);
+
+        var powerManager = (_shooter as PlayerInfo)!.ParentComponent.PlayerPowerManager;
+        
+        var enemy = movementBehavior.Enemy;
+        
+        // Create event args
+        var e = new HealthChangedEventArgs(
+            enemy.EnemyInfo, powerManager.Player.PlayerInfo, _power,
+            0, enemy.transform.position
+        );
+
+        enemy.EnemyInfo.Stun(e, stunDuration);
         
         // Instantiate the stun VFX
         var stunVfx = Instantiate(stunVfxPrefab, movementBehavior.GameObject.transform);
@@ -67,9 +79,11 @@ public class StunMineProjectile : AbstractMineProjectile
             yield return null;
         }
 
-        // Re-enable the movement & attack
-        movementBehavior?.RemoveMovementDisableToken(this);
-        attackBehavior?.RemoveAttackDisableToken(this);
+        enemy.EnemyInfo.StopStun();
+        
+        // // Re-enable the movement & attack
+        // movementBehavior?.RemoveMovementDisableToken(this);
+        // attackBehavior?.RemoveAttackDisableToken(this);
         
         // Destroy the stun VFX
         Destroy(stunVfx.gameObject);

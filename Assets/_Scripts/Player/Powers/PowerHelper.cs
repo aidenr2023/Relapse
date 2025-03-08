@@ -8,7 +8,11 @@ public class PowerHelper : MonoBehaviour
     
     [SerializeField] private PowerScriptableObject[] powers;
     
+    [SerializeField] private BossPowerScriptableObject[] bossPowers;
+    
     public IReadOnlyCollection<PowerScriptableObject> Powers => powers;
+    
+    public IReadOnlyCollection<BossPowerScriptableObject> BossPowers => bossPowers;
 
     private void Awake()
     {
