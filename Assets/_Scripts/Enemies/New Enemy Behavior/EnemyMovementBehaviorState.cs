@@ -2,13 +2,13 @@
 using UnityEngine;
 
 [Serializable]
-public struct EnemyMovementBehaviorState
+public class EnemyMovementBehaviorState
 {
     [SerializeField] public string name;
     [SerializeField] public BehaviorConditionFloat[] floatConditions;
 
     [SerializeField] public BehaviorActionMove[] moveActions;
-    
+
     public bool TestConditions(NewEnemyBehaviorBrain brain)
     {
         // Test the Float Conditions
@@ -18,4 +18,5 @@ public struct EnemyMovementBehaviorState
 
         return true;
     }
+
 }

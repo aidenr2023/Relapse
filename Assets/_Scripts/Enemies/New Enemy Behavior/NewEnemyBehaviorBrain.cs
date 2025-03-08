@@ -1,20 +1,26 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class NewEnemyBehaviorBrain : MonoBehaviour
 {
     #region Serialized Fields
-    
-    [SerializeField, Min(.001f)] private float behaviorStateUpdateInterval = 1 / 15f;
+
+    [SerializeField, Range(.001f, 60)] private float updatesPerSecond = 4f;
     [SerializeField] private EnemyMovementBehaviorState[] behaviorStates;
-    
+
+    [SerializeField] private BehaviorActionMove currentMoveAction;
+
     #endregion
-    
+
     #region Private Fields
 
     private Coroutine _behaviorStateCoroutine;
     private EnemyMovementBehaviorState _currentBehaviorState;
+
+    private readonly CountdownTimer _moveCooldown = new(10000, true, true);
 
     #endregion
 
@@ -31,6 +37,10 @@ public class NewEnemyBehaviorBrain : MonoBehaviour
     #endregion
 
     #region Initialization Methods
+
+    private void Awake()
+    {
+    }
 
     private void OnEnable()
     {
@@ -62,20 +72,80 @@ public class NewEnemyBehaviorBrain : MonoBehaviour
             break;
         }
 
+        // If the new behavior state is the same as the current behavior state, return
+        if (bestBehaviorState == _currentBehaviorState)
+            return;
+
+        // Reset the current action
+        ResetCurrentAction();
+
         // Set the current behavior state to the best behavior state
         _currentBehaviorState = bestBehaviorState;
     }
 
+    private void ResetCurrentAction()
+    {
+        // Force the move timer to be complete
+        _moveCooldown.ForcePercent(1);
+    }
+
+    // TODO: Account for attacks as well
+    private void DetermineMoveAction()
+    {
+        // Get the total weight of all the actions
+        var totalWeight = _currentBehaviorState.moveActions.Sum(n => n.Weight);
+
+        // Generate a random number between 0 and the total weight
+        var randomWeight = UnityEngine.Random.Range(0, totalWeight);
+
+        int index;
+
+        // Keep subtracting the weight of the current action from the random weight until it's less than or equal to 0
+        for (index = 0; index < _currentBehaviorState.moveActions.Length; index++)
+        {
+            randomWeight -= _currentBehaviorState.moveActions[index].Weight;
+
+            if (randomWeight <= 0)
+                break;
+        }
+
+        // Update the current move action   
+        currentMoveAction = _currentBehaviorState.moveActions[index];
+
+        // Start the current action
+        currentMoveAction.Start(this, _currentBehaviorState);
+
+        // Generate a random cooldown time between the min and max cooldown times
+        var cooldownTime = UnityEngine.Random.Range(currentMoveAction.minCooldown, currentMoveAction.maxCooldown);
+
+        // Update the move cooldown
+        _moveCooldown.SetMaxTimeAndReset(cooldownTime);
+    }
+
+
     private IEnumerator BehaviorStateCoroutine()
     {
+        var lastUpdateTime = Time.time;
+
         while (true)
         {
+            // Update the countdown
+            _moveCooldown.Update(Time.time - lastUpdateTime);
+
+            // Determine the behavior state
             DetermineBehaviorState();
-            
+
+            // Determine the move action
+            if (_moveCooldown.IsComplete)
+                DetermineMoveAction();
+
             // Log the current behavior state
             Debug.Log($"{gameObject.name} Behavior State: {_currentBehaviorState.name}");
+
+            // Reset the last update time
+            lastUpdateTime = Time.time;
             
-            yield return new WaitForSeconds(behaviorStateUpdateInterval);
+            yield return new WaitForSeconds(1 / updatesPerSecond);
         }
     }
 }
