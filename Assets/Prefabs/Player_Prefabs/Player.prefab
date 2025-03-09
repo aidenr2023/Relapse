@@ -835,6 +835,7 @@ Transform:
   - {fileID: 4207081896334962392}
   - {fileID: 572787537203001452}
   - {fileID: 2387691261983933059}
+  - {fileID: 4096136505258140587}
   m_Father: {fileID: 3278084301253282208}
   m_LocalEulerAnglesHint: {x: 44.472195, y: 66.97564, z: 58.510197}
 --- !u!1 &347820504774399609
@@ -8865,7 +8866,7 @@ MonoBehaviour:
   chargedVignetteLerpAmount: 0.125
   chargedVignetteFlashesPerSecond: 0
   fireballChargeVfx: {fileID: 3105757193461017536}
-  electricChargeVfx: {fileID: 2999638700446178697}
+  electricChargeVfx: {fileID: 3484226450149309601}
   healthHaloChargeVfx: {fileID: 2932217539034751971}
   powerAudioSource: {fileID: 5017651248909335848}
 --- !u!114 &-7043807009064224948
@@ -22298,7 +22299,7 @@ PrefabInstance:
     - target: {fileID: 182363870549833244, guid: d948999c8957cae4189597d24181439c,
         type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2772283204555910787, guid: d948999c8957cae4189597d24181439c,
         type: 3}
@@ -22410,6 +22411,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 14
       objectReference: {fileID: 0}
+    - target: {fileID: 6787781213607567633, guid: d948999c8957cae4189597d24181439c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -22421,11 +22427,110 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 530272947664677888}
   m_PrefabAsset: {fileID: 0}
---- !u!2083052967 &2999638700446178697 stripped
+--- !u!1001 &2207122884919151912
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 5923839874899613333}
+    m_Modifications:
+    - target: {fileID: 2772283204555910787, guid: 67deee24734a1ff46bb507f8874697c7,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.0498
+      objectReference: {fileID: 0}
+    - target: {fileID: 2772283204555910787, guid: 67deee24734a1ff46bb507f8874697c7,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.0004
+      objectReference: {fileID: 0}
+    - target: {fileID: 2772283204555910787, guid: 67deee24734a1ff46bb507f8874697c7,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.0227
+      objectReference: {fileID: 0}
+    - target: {fileID: 2772283204555910787, guid: 67deee24734a1ff46bb507f8874697c7,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.9886227
+      objectReference: {fileID: 0}
+    - target: {fileID: 2772283204555910787, guid: 67deee24734a1ff46bb507f8874697c7,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.020138457
+      objectReference: {fileID: 0}
+    - target: {fileID: 2772283204555910787, guid: 67deee24734a1ff46bb507f8874697c7,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.14758487
+      objectReference: {fileID: 0}
+    - target: {fileID: 2772283204555910787, guid: 67deee24734a1ff46bb507f8874697c7,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.020937577
+      objectReference: {fileID: 0}
+    - target: {fileID: 2772283204555910787, guid: 67deee24734a1ff46bb507f8874697c7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 2.636
+      objectReference: {fileID: 0}
+    - target: {fileID: 2772283204555910787, guid: 67deee24734a1ff46bb507f8874697c7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -16.934
+      objectReference: {fileID: 0}
+    - target: {fileID: 2772283204555910787, guid: 67deee24734a1ff46bb507f8874697c7,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 2.034
+      objectReference: {fileID: 0}
+    - target: {fileID: 3385356646171980169, guid: 67deee24734a1ff46bb507f8874697c7,
+        type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3385356646171980169, guid: 67deee24734a1ff46bb507f8874697c7,
+        type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[2].m_Name
+      value: FadeTime
+      objectReference: {fileID: 0}
+    - target: {fileID: 3385356646171980169, guid: 67deee24734a1ff46bb507f8874697c7,
+        type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[0].m_Value
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3385356646171980169, guid: 67deee24734a1ff46bb507f8874697c7,
+        type: 3}
+      propertyPath: m_PropertySheet.m_Float.m_Array.Array.data[2].m_Overridden
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6787781213607567633, guid: 67deee24734a1ff46bb507f8874697c7,
+        type: 3}
+      propertyPath: m_Name
+      value: New Electricity VFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 6787781213607567633, guid: 67deee24734a1ff46bb507f8874697c7,
+        type: 3}
+      propertyPath: m_Layer
+      value: 14
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 67deee24734a1ff46bb507f8874697c7, type: 3}
+--- !u!2083052967 &3484226450149309601 stripped
 VisualEffect:
-  m_CorrespondingSourceObject: {fileID: 3385356646171980169, guid: d948999c8957cae4189597d24181439c,
+  m_CorrespondingSourceObject: {fileID: 3385356646171980169, guid: 67deee24734a1ff46bb507f8874697c7,
     type: 3}
-  m_PrefabInstance: {fileID: 530272947664677888}
+  m_PrefabInstance: {fileID: 2207122884919151912}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4096136505258140587 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2772283204555910787, guid: 67deee24734a1ff46bb507f8874697c7,
+    type: 3}
+  m_PrefabInstance: {fileID: 2207122884919151912}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3202018442486852659
 PrefabInstance:
@@ -22523,6 +22628,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Health Halo VFX Prefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 2069351163449028812, guid: 251097c3bfff5f64e9ae5e2b38f22e48,
+        type: 3}
+      propertyPath: m_Layer
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 4842016495404275979, guid: 251097c3bfff5f64e9ae5e2b38f22e48,
         type: 3}
