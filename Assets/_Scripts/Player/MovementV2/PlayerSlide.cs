@@ -9,6 +9,8 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
     #region Serialized Fields
 
     [SerializeField] private Animator _playerAnimator;
+    
+    [SerializeField] private GameObject _slideMesh;
 
     [SerializeField] private bool isEnabled = true;
 
@@ -47,6 +49,8 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
     private bool _useLandVelocity;
 
     private bool _slideInputThisFrame;
+
+    private static string _isSlidingCheck = "Slide";
 
     #endregion
 
@@ -506,16 +510,21 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
 
         // Invoke the slide event
         OnSlideStart?.Invoke(this);
+        
+        //set the slide mesh to active
+        _slideMesh.SetActive(true);
 
         // trigger slide animation
         if (_playerAnimator != null)
-            _playerAnimator.SetTrigger("Slide");
+            _playerAnimator.SetBool(_isSlidingCheck, IsSliding);
     }
 
     private void EndSlide()
     {
         // Invoke the slide end event
         OnSlideEnd?.Invoke(this);
+        //_slideMesh.SetActive(false);
+        _playerAnimator.SetBool(_isSlidingCheck, IsSliding);
     }
 
     public void ResetSlidePreFire()
