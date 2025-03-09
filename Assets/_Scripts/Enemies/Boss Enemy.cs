@@ -13,6 +13,9 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 
     [SerializeField] private BossPhaseInfo[] bossPhases;
 
+    [SerializeField] private UnityEvent onGoodEnding;
+    [SerializeField] private UnityEvent onBadEnding;
+
     #endregion
 
     #region Private Fields
@@ -42,19 +45,39 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
     private void Start()
     {
         _currentPhase = -1;
-        
+
         // Subscribe to the OnDamaged event
         _enemyInfo.OnDamaged += ActivatePhaseChange;
 
-
         _enemyInfo.OnDamaged += ChangeHealthBar;
         _enemyInfo.OnHealed += ChangeHealthBar;
+
+        _enemyInfo.OnDeath += DetermineEndingOnDeath;
+    }
+
+    private void DetermineEndingOnDeath(object sender, HealthChangedEventArgs e)
+    {
+        // Get the instance of the player.
+        // If it has ANY neuros in the powers list, then the player has the bad ending.
+        var goodEnding =
+            Player.Instance == null && Player.Instance.PlayerPowerManager.Powers.All(n => n.PowerType != PowerType.Drug);
+
+        if (goodEnding)
+        {
+            Debug.Log("GOOD ENDING");
+            onGoodEnding.Invoke();
+        }
+        else
+        {
+            Debug.Log("BAD ENDING");
+            onBadEnding.Invoke();
+        }
     }
 
     private void ChangeHealthBar(object sender, HealthChangedEventArgs e)
     {
         // TODO: Implement health bar change
-        
+
         // Change the fill of the health bar
     }
 

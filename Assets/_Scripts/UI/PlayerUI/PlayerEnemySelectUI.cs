@@ -1,10 +1,12 @@
 ﻿using System;
 using UnityEngine;
 
-[RequireComponent(typeof(CanvasGroup))]
+[RequireComponent(typeof(CanvasGroup), typeof(DynamicMaterialManager))]
 public class PlayerEnemySelectUI : MonoBehaviour
 {
     private const float ALPHA_THRESHOLD = .001f;
+
+    #region Serialized Fields
 
     [SerializeField] private GameObject enemySelectUI;
     [SerializeField, Range(0, 1)] private float iconOpacity = .5f;
@@ -19,9 +21,13 @@ public class PlayerEnemySelectUI : MonoBehaviour
     [SerializeField] private float scaleBobAmount = 0.25f;
     [SerializeField] private float scaleBobFrequency = 1f;
 
-    private CanvasGroup _canvasGroup;
+    #endregion
 
-    private float _currentScaleBob = 0;
+    private CanvasGroup _canvasGroup;
+    private DynamicMaterialManager _dynamicMaterialManager;
+
+    private float _currentScaleBob;
+    private Enemy _previousEnemy;
 
     public static PlayerEnemySelectUI Instance { get; private set; }
 
@@ -35,35 +41,83 @@ public class PlayerEnemySelectUI : MonoBehaviour
 
         // Set the opacity to 0
         _canvasGroup.alpha = 0;
+
+        // Get the DynamicMaterialManager component
+        _dynamicMaterialManager = GetComponent<DynamicMaterialManager>();
+    }
+
+    private void Start()
+    {
+        _dynamicMaterialManager.ChangeRenderers(null);
     }
 
     private void Update()
     {
+        var isVisible = Player.Instance != null &&
+                        Player.Instance.PlayerEnemySelect.SelectedEnemy != null &&
+                        Player.Instance.PlayerPowerManager.CurrentPower != null &&
+                        Player.Instance.PlayerPowerManager.CurrentPower.UsesReticle;
+
+        var hasEnemy = Player.Instance != null && Player.Instance.PlayerEnemySelect.SelectedEnemy != null;
+
         // Update the opacity
-        UpdateOpacity();
+        UpdateOpacity(isVisible, hasEnemy);
 
         // Update the position
-        UpdatePosition();
+        UpdatePosition(isVisible, hasEnemy);
 
         // Update the scale bob
-        UpdateScaleBob();
+        UpdateScaleBob(isVisible, hasEnemy);
 
         // Update the scale
-        UpdateScale();
+        UpdateScale(isVisible, hasEnemy);
 
         // Update the rotation
-        UpdateRotation();
+        UpdateRotation(isVisible, hasEnemy);
+
+        // // Update the Material Manager
+        // UpdateMaterialManager(isVisible, hasEnemy);
+
+        // Update the previous enemy
+        _previousEnemy = Player.Instance.PlayerEnemySelect.SelectedEnemy;
     }
 
-    private void UpdateOpacity()
+    private void UpdateMaterialManager(bool isVisible, bool hasEnemy)
+    {
+        if (!isVisible)
+        {
+            _dynamicMaterialManager.ChangeRenderers(null);
+            return;
+        }
+        
+        var currentEnemy = Player.Instance.PlayerEnemySelect.SelectedEnemy;
+        
+        var needsToChangeRenderers = isVisible && _previousEnemy != currentEnemy;
+
+        if (!needsToChangeRenderers) 
+            return;
+        
+        Debug.Log($"Changing renderers from [{_previousEnemy}] to [{currentEnemy}]");
+        
+        // Remove the material from the previous enemy
+        if (currentEnemy != null)
+        {
+            _dynamicMaterialManager.ChangeRenderers(currentEnemy.gameObject);
+            _dynamicMaterialManager.AddMaterial();
+        }
+
+        // Set the material to the current enemy
+        else if (_previousEnemy != null)
+        {
+            _dynamicMaterialManager.ChangeRenderers(null);
+        }
+    }
+
+    private void UpdateOpacity(bool isVisible, bool hasEnemy)
     {
         var desiredOpacity = 0f;
 
-        if (Player.Instance != null &&
-            Player.Instance.PlayerEnemySelect.SelectedEnemy != null &&
-            Player.Instance.PlayerPowerManager.CurrentPower != null &&
-            Player.Instance.PlayerPowerManager.CurrentPower.UsesReticle
-           )
+        if (isVisible)
             desiredOpacity = iconOpacity;
 
         const float defaultFrameTime = 1 / 60f;
@@ -78,9 +132,9 @@ public class PlayerEnemySelectUI : MonoBehaviour
             _canvasGroup.alpha = desiredOpacity;
     }
 
-    private void UpdatePosition()
+    private void UpdatePosition(bool isVisible, bool hasEnemy)
     {
-        if (Player.Instance == null || Player.Instance.PlayerEnemySelect.SelectedEnemy == null)
+        if (!hasEnemy)
             return;
 
         var enemyScreenPosition = Player.Instance.PlayerEnemySelect.EnemyScreenPosition;
@@ -92,14 +146,14 @@ public class PlayerEnemySelectUI : MonoBehaviour
         enemySelectUI.transform.localPosition = enemyScreenPosition - screenDimensions / 2;
     }
 
-    private void UpdateScaleBob()
+    private void UpdateScaleBob(bool isVisible, bool hasEnemy)
     {
         _currentScaleBob = Mathf.Sin(Time.time * Mathf.PI * scaleBobFrequency) * scaleBobAmount;
     }
 
-    private void UpdateScale()
+    private void UpdateScale(bool isVisible, bool hasEnemy)
     {
-        if (Player.Instance == null || Player.Instance.PlayerEnemySelect.SelectedEnemy == null)
+        if (!hasEnemy)
             return;
 
         // Get the distance between the enemy and the player
@@ -122,7 +176,7 @@ public class PlayerEnemySelectUI : MonoBehaviour
         );
     }
 
-    private void UpdateRotation()
+    private void UpdateRotation(bool isVisible, bool hasEnemy)
     {
         // Rotate the enemy select UI
         enemySelectUI.transform.Rotate(Vector3.forward, rotationSpeed * Time.deltaTime);

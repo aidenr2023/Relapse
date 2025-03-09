@@ -14,7 +14,13 @@ public class DynamicMaterialManager : MonoBehaviour
     {
         // Get all the renderers on this object
         var renderers = GetComponentsInChildren<Renderer>();
+        
+        // Initialize the renderers
+        InitializeRenderers(renderers);
+    }
 
+    private void InitializeRenderers(Renderer[] renderers)
+    {
         // Loop through all the renderers
         foreach (var cRenderer in renderers)
         {
@@ -128,5 +134,23 @@ public class DynamicMaterialManager : MonoBehaviour
 
         // Add the material to all the renderers
         AddMaterial();
+    }
+
+    public void ChangeRenderers(GameObject obj)
+    {
+        // Remove the material from all the renderers
+        RemoveMaterial();
+        
+        // Clear the materials dictionary
+        _materials.Clear();
+        
+        // Return if the object is null
+        if (obj == null)
+            return;
+        
+        // Get all the renderers on the object
+        var renderers = obj.GetComponentsInChildren<Renderer>();
+        
+        InitializeRenderers(renderers);
     }
 }
