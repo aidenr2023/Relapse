@@ -6,9 +6,11 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NewEnemyBehaviorBrain), typeof(NavMeshAgent))]
 public class NewEnemyMovement : ComponentScript<Enemy>
 {
+    private const float STRAFE_DISTANCE = 2f;
+    private const float RANDOM_STRAFE_ANGLE = 25f;
+
     public delegate void MovementFunction(bool needsToUpdateDestination);
 
-    private const float STRAFE_DISTANCE = 2f;
 
     #region Serilized Fields
 
@@ -16,6 +18,13 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
     [SerializeField, Min(0)] private float movementSpeed = 14;
     [SerializeField, Range(0, 1)] private float strafeMultiplier = 0.5f;
+
+    [Header("Animations")] [SerializeField]
+    private Animator animator;
+
+    [SerializeField, Min(0)] private float walkAnimationThreshold;
+    [SerializeField, Min(0)] private float runAnimationThreshold;
+    [SerializeField, Min(0)] private float animationSpeedCoefficient = 1;
 
     #endregion
 
@@ -34,11 +43,14 @@ public class NewEnemyMovement : ComponentScript<Enemy>
     #endregion
 
     #region Getters
+    
+    public NavMeshAgent NavMeshAgent => _navMeshAgent;
 
-    private bool IsStrafing => _currentMoveAction == BehaviorActionMove.MoveAction.StrafeLeft ||
-                               _currentMoveAction == BehaviorActionMove.MoveAction.StrafeRight ||
-                               _currentMoveAction == BehaviorActionMove.MoveAction.StrafeForward ||
-                               _currentMoveAction == BehaviorActionMove.MoveAction.StrafeBackward;
+    private bool IsStrafing =>
+        _currentMoveAction == BehaviorActionMove.MoveAction.StrafeLeft ||
+        _currentMoveAction == BehaviorActionMove.MoveAction.StrafeRight ||
+        _currentMoveAction == BehaviorActionMove.MoveAction.StrafeForward ||
+        _currentMoveAction == BehaviorActionMove.MoveAction.StrafeBackward;
 
     #endregion
 
@@ -191,6 +203,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
     private void UpdateMovementScript(bool needsToUpdateDestination)
     {
+        _brain.MovementBehavior?.StateUpdateMovement(_brain, this, needsToUpdateDestination);
     }
 
     private void UpdateWander(bool needsToUpdateDestination)
@@ -214,17 +227,16 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
                 // Sample the navmesh for a random position
                 NavMesh.SamplePosition(randomPosition, out var hitInfo, wanderRadius, NavMesh.AllAreas);
-                
+
                 // Retry if the position is not on the navmesh
                 if (!hitInfo.hit)
                     continue;
-                
+
                 // Set the destination to the hit position
                 SetDestination(hitInfo.position);
 
                 break;
             }
-            
         }
     }
 
@@ -246,7 +258,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         if (needsToUpdateDestination)
         {
             // Get the forward direction of the transform
-            var forward = transform.forward;
+            var forward = RotateDirectionRandomly(transform.forward);
 
             // Set the destination to the forward of the transform
             SetDestination(transform.position + -forward * STRAFE_DISTANCE);
@@ -258,7 +270,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         if (needsToUpdateDestination)
         {
             // Get the forward direction of the transform
-            var forward = transform.forward;
+            var forward = RotateDirectionRandomly(transform.forward);
 
             // Set the destination to the forward of the transform
             SetDestination(transform.position + forward * STRAFE_DISTANCE);
@@ -270,7 +282,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         if (needsToUpdateDestination)
         {
             // Get the right direction of the transform
-            var right = transform.right;
+            var right = RotateDirectionRandomly(transform.right);
 
             // Set the destination to the right of the transform
             SetDestination(transform.position + right * STRAFE_DISTANCE);
@@ -282,7 +294,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         if (needsToUpdateDestination)
         {
             // Get the right direction of the transform
-            var right = transform.right;
+            var right = RotateDirectionRandomly(transform.right);
 
             // Set the destination to the right of the transform
             SetDestination(transform.position + -right * STRAFE_DISTANCE);
@@ -307,7 +319,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
     #endregion
 
-    private void SetDestination(Vector3 destination)
+    public void SetDestination(Vector3 destination)
     {
         // Set the target position to the destination
         _targetPosition = destination;
@@ -326,5 +338,15 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
         // Set the force update destination to true
         _forceUpdateDestination = true;
+    }
+
+    public static Vector3 RotateDirectionRandomly(Vector3 direction, float angle = RANDOM_STRAFE_ANGLE)
+    {
+        // Create a random angle from -angle to angle
+        var randomAngle = UnityEngine.Random.Range(-angle, angle);
+
+        var rotation = Quaternion.Euler(0, randomAngle, 0);
+
+        return rotation * direction;
     }
 }

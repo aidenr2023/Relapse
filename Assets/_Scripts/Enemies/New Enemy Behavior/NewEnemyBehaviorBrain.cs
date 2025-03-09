@@ -19,6 +19,7 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
 
     private BehaviorActionAttack _currentAttackAction;
     private BehaviorActionMove _currentMoveAction;
+    private INewEnemyMovementBehavior _movementBehavior;
 
     private Coroutine _behaviorStateCoroutine;
     private EnemyBehaviorState _currentBehaviorState;
@@ -29,6 +30,8 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
     private bool _isAttacking;
 
     #endregion
+    
+    public Action<BehaviorActionMove.MoveAction, NewEnemyBehaviorBrain> onPlayerMovementStateChange;
 
     #region Float Variables
 
@@ -50,10 +53,23 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
 
     public BehaviorActionMove CurrentMoveAction => _currentMoveAction;
     public BehaviorActionAttack CurrentAttackAction => _currentAttackAction;
+    
+    public INewEnemyMovementBehavior MovementBehavior => _movementBehavior;
+    
+    public BehaviorActionMove.MoveAction CurrentMoveActionType => _currentMoveAction.moveAction;
 
     #endregion
 
     #region Initialization Methods
+
+    private void Awake()
+    {
+        // Get the movement behavior
+        _movementBehavior = GetComponent<INewEnemyMovementBehavior>();
+        
+        // Assert that the movement behavior is not null
+        Debug.Assert(_movementBehavior != null, "The movement behavior is null!");
+    }
 
     private void OnEnable()
     {
@@ -77,12 +93,24 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
         // Automatically set the best behavior state to the last one
         var bestBehaviorState = GetBehaviorStateRecursive(behaviorStates);
 
-        // Reset the current action
+        var invokeEvent = false;
+
+        // Store the previous movement state
+        var previousMovementAction = _currentMoveAction;
+        
         if (_currentBehaviorState != bestBehaviorState)
+        {
+            // Reset the current action
             ResetCurrentAction();
+            
+            // Set the flag to invoke the event
+            invokeEvent = true;
+        }
 
         // Set the current behavior state to the best behavior state
         _currentBehaviorState = bestBehaviorState;
+        
+        onPlayerMovementStateChange?.Invoke(previousMovementAction.moveAction, this);
     }
 
     private EnemyBehaviorState GetBehaviorStateRecursive(EnemyBehaviorStateBase[] currentStates)

@@ -28,9 +28,8 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
     [Header("Animations")] [SerializeField]
     private Animator animator;
 
-    [SerializeField] [Min(0)] private float walkAnimationThreshold;
-    [SerializeField] [Min(0)] private float runAnimationThreshold;
-
+    [SerializeField, Min(0)] private float walkAnimationThreshold;
+    [SerializeField, Min(0)] private float runAnimationThreshold;
     [SerializeField, Min(0)] private float animationSpeedCoefficient = 1;
 
     #endregion
@@ -39,7 +38,6 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
 
     private int _currentCheckpointIndex;
 
-    private TokenManager<float>.ManagedToken _withinStoppingDistanceToken;
     private TokenManager<float>.ManagedToken _detectionStateToken;
 
     private float _targetVelocity;
@@ -87,9 +85,6 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
     {
         // Initialize the components
         InitializeComponents();
-
-        // Create the within stopping distance token
-        _withinStoppingDistanceToken = MovementSpeedTokens.AddToken(1, -1, true);
 
         // Create the detection state token
         _detectionStateToken = MovementSpeedTokens.AddToken(1, -1, true);
