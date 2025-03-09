@@ -29,8 +29,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     [SerializeField, Range(0, 1)] private float chargedVignetteLerpAmount = .25f;
     [SerializeField, Min(0)] private float chargedVignetteFlashesPerSecond = 1f;
 
-    [Header("Visual Effects")] [SerializeField]
-    private VisualEffect fireballChargeVfx;
+    [Header("Visual Effects")] 
+    [SerializeField] private VisualEffect fireballChargeVfx;
+    [SerializeField] private VisualEffect greenFireballChargeVfx;
 
     [SerializeField] private VisualEffect electricChargeVfx;
     [SerializeField] private VisualEffect healthHaloChargeVfx;
@@ -749,6 +750,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         return power.ChargeVfxType switch
         {
             PowerVfxType.Fireball => fireballChargeVfx,
+            PowerVfxType.GreenFireball => greenFireballChargeVfx,
             PowerVfxType.Electric => electricChargeVfx,
             PowerVfxType.HealthHalo => healthHaloChargeVfx,
             _ => null
