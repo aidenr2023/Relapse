@@ -6,11 +6,14 @@ using UnityEngine.AI;
 [RequireComponent(typeof(NewEnemyBehaviorBrain), typeof(NavMeshAgent))]
 public class NewEnemyMovement : ComponentScript<Enemy>
 {
+    private delegate void MovementFunction(bool needsToUpdateDestination);
+
     private const float STRAFE_DISTANCE = 2f;
     private const float RANDOM_STRAFE_ANGLE = 25f;
 
-    public delegate void MovementFunction(bool needsToUpdateDestination);
-
+    private static readonly int AnimatorIsMovingProperty = Animator.StringToHash("IsMoving");
+    private static readonly int AnimatorSpeedProperty = Animator.StringToHash("Speed");
+    private static readonly int AnimatorIsRunningProperty = Animator.StringToHash("IsRunning");
 
     #region Serilized Fields
 
@@ -39,12 +42,15 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
     private bool _forceUpdateDestination;
     private Vector3 _targetPosition;
+    private float _targetVelocity;
 
     #endregion
 
     #region Getters
-    
+
     public NavMeshAgent NavMeshAgent => _navMeshAgent;
+
+    public TokenManager<float> MovementSpeedTokens { get; private set; }
 
     private bool IsStrafing =>
         _currentMoveAction == BehaviorActionMove.MoveAction.StrafeLeft ||
@@ -58,6 +64,8 @@ public class NewEnemyMovement : ComponentScript<Enemy>
     {
         _brain = GetComponent<NewEnemyBehaviorBrain>();
         _navMeshAgent = GetComponent<NavMeshAgent>();
+
+        MovementSpeedTokens = new(false, null, 1);
     }
 
     private void OnEnable()
@@ -75,8 +83,42 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
     private void Update()
     {
+        // Update the movement speed tokens
+        MovementSpeedTokens.Update(Time.deltaTime);
+
+        // Determine the movement speed
+        DetermineMovementSpeed(_brain.CurrentMoveAction.moveAction);
+
         if (IsStrafing)
-            Strafe();
+            RotateWhileStrafing();
+
+        // Update the animator
+        UpdateMovementAnimation();
+    }
+
+    private void UpdateMovementAnimation()
+    {
+        // Return if there is no animator
+        if (animator == null)
+        {
+            Debug.LogError($"{gameObject.name} does not have an animator!", this);
+            return;
+        }
+
+        // Get the velocity of the NavMeshAgent
+        var velocity = _targetVelocity;
+        var isMoving = NavMeshAgent.velocity.magnitude > walkAnimationThreshold;
+        var isRunning = NavMeshAgent.velocity.magnitude >= runAnimationThreshold;
+
+        var speedValue = velocity * animationSpeedCoefficient;
+
+        // If the navmesh agent is disabled, set the speed value to 0
+        if (NavMeshAgent.enabled && NavMeshAgent.isOnNavMesh && NavMeshAgent.isStopped)
+            isMoving = false;
+
+        animator.SetBool(AnimatorIsMovingProperty, isMoving);
+        animator.SetFloat(AnimatorSpeedProperty, speedValue);
+        animator.SetBool(AnimatorIsRunningProperty, isRunning);
     }
 
     private IEnumerator CoroutineUpdate()
@@ -140,7 +182,8 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
     private void DetermineMovementSpeed(BehaviorActionMove.MoveAction moveAction)
     {
-        var newSpeed = moveAction switch
+        // Based on the current movement state, determine the speed
+        var stateSpeed = moveAction switch
         {
             BehaviorActionMove.MoveAction.StrafeLeft => movementSpeed * strafeMultiplier,
             BehaviorActionMove.MoveAction.StrafeRight => movementSpeed * strafeMultiplier,
@@ -149,8 +192,11 @@ public class NewEnemyMovement : ComponentScript<Enemy>
             _ => movementSpeed
         };
 
+        // Calculate the target velocity
+        _targetVelocity = stateSpeed * GetMovementSpeedTokenMultiplier();
+
         // Set the speed of the nav mesh agent
-        _navMeshAgent.speed = newSpeed;
+        _navMeshAgent.speed = _targetVelocity;
     }
 
     private void DetermineRotationMode(BehaviorActionMove.MoveAction moveAction)
@@ -301,7 +347,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         }
     }
 
-    private void Strafe()
+    private void RotateWhileStrafing()
     {
         // Set the forward of the transform to the detection target
         if (!ParentComponent.DetectionBehavior.IsTargetDetected)
@@ -338,6 +384,16 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
         // Set the force update destination to true
         _forceUpdateDestination = true;
+    }
+
+    private float GetMovementSpeedTokenMultiplier()
+    {
+        var multiplier = 1f;
+
+        foreach (var speedToken in MovementSpeedTokens.Tokens)
+            multiplier *= speedToken.Value;
+
+        return multiplier;
     }
 
     public static Vector3 RotateDirectionRandomly(Vector3 direction, float angle = RANDOM_STRAFE_ANGLE)

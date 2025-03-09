@@ -234,6 +234,9 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
 
     private IEnumerator BehaviorStateCoroutine()
     {
+        // Delay the first update by a frame to allow the other scripts to initialize
+        yield return null;
+        
         while (true)
         {
             // Determine the behavior state

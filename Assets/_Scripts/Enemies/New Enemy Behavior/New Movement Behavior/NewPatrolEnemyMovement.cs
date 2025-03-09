@@ -11,11 +11,15 @@ public class NewPatrolEnemyMovement : ComponentScript<Enemy>, INewEnemyMovementB
     [SerializeField] [Min(0)] [Tooltip("How close the enemy needs to be to the checkpoint to consider it reached.")]
     private float checkpointProximityThreshold = 0.5f;
 
+    [SerializeField, Range(0, 1)] private float unawareMovementMultiplier = .75f;
+
     #endregion
 
     #region Private Fields
 
     private int _currentCheckpointIndex = -1;
+
+    private TokenManager<float>.ManagedToken _detectionStateToken;
 
     #endregion
 
@@ -41,29 +45,54 @@ public class NewPatrolEnemyMovement : ComponentScript<Enemy>, INewEnemyMovementB
     {
         // If the brain's current state is script,
         // set the destination to the current checkpoint
-        if (brain.CurrentMoveActionType == BehaviorActionMove.MoveAction.MovementScript &&
+        if (
+            brain.CurrentMoveActionType == BehaviorActionMove.MoveAction.MovementScript &&
             (NewPatrolEnemyMovement)brain.MovementBehavior == this
-           )
+        )
+        {
             SetDestinationToCheckpoint(_currentCheckpointIndex);
+        }
+
+        else
+        {
+            // Reset the movement speed token
+            _detectionStateToken.Value = 1;
+        }
     }
 
     private void Start()
     {
         _currentCheckpointIndex = 0;
+
+        // Create the detection state token
+        _detectionStateToken = NewMovement.MovementSpeedTokens.AddToken(1, -1, true);
     }
 
     public void StateUpdateMovement(
         NewEnemyBehaviorBrain brain, NewEnemyMovement newMovement, bool needsToUpdateDestination
     )
     {
+        // Update the detection state token
+        UpdateDetectionStateToken();
+
         // Check if the enemy has reached the current checkpoint
         if (CheckForNewCheckpoint())
         {
             // Increment the checkpoint index
-            _currentCheckpointIndex = (_currentCheckpointIndex + 1) % patrolCheckpoints.Length;
-            
+            if (patrolCheckpoints.Length > 0)
+                _currentCheckpointIndex = (_currentCheckpointIndex + 1) % patrolCheckpoints.Length;
+
             SetDestinationToCheckpoint(_currentCheckpointIndex);
         }
+    }
+
+    private void UpdateDetectionStateToken()
+    {
+        _detectionStateToken.Value = Enemy.DetectionBehavior.CurrentDetectionState switch
+        {
+            EnemyDetectionState.Unaware => unawareMovementMultiplier,
+            _ => 1
+        };
     }
 
     private bool CheckForNewCheckpoint()
@@ -101,9 +130,9 @@ public class NewPatrolEnemyMovement : ComponentScript<Enemy>, INewEnemyMovementB
         // Draw spheres at the patrol checkpoints
         for (var i = 0; i < patrolCheckpoints.Length; i++)
         {
-            if (patrolCheckpoints[i] == null) 
+            if (patrolCheckpoints[i] == null)
                 continue;
-            
+
             if (i == _currentCheckpointIndex)
                 Gizmos.color = Color.green;
             else

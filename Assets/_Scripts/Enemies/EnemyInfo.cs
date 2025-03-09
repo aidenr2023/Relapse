@@ -196,7 +196,7 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
         // Play a random moan sound
         var randomSound = moanSounds[UnityEngine.Random.Range(0, moanSounds.Length)];
-        enemyMoanSource.Play(randomSound);
+        enemyMoanSource?.Play(randomSound);
     }
 
     private void SetDamagePositionOnDamaged(object sender, HealthChangedEventArgs args)
