@@ -10,9 +10,12 @@ GameObject:
   m_Component:
   - component: {fileID: 723301937455561176}
   - component: {fileID: 5359257001246125099}
+  - component: {fileID: 994055770434188748}
   - component: {fileID: 6547639258525959033}
   - component: {fileID: 5888956271656719663}
   - component: {fileID: 3553462818471823289}
+  - component: {fileID: 4664190417442151076}
+  - component: {fileID: 2441548165970090481}
   - component: {fileID: 2774274488318970656}
   - component: {fileID: 8555819339032373099}
   - component: {fileID: 6040333346591214386}
@@ -73,6 +76,28 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!195 &994055770434188748
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 724212810724251753}
+  m_Enabled: 1
+  m_AgentTypeID: -1372625422
+  m_Radius: 1
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 4
+  m_BaseOffset: 1.4
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!114 &6547639258525959033
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -86,7 +111,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uniqueId: 
-  originalScene: 
+  originalScene: Ranged-Stationary Lesions Enemy
 --- !u!114 &5888956271656719663
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,6 +174,41 @@ MonoBehaviour:
   moanSoundChance: 0.4
   moanSoundMinCooldown: 8
   moanSoundMaxCooldown: 15
+--- !u!114 &4664190417442151076
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 724212810724251753}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 974ab9e8920745e4b7b55551bbb4c7f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updatesPerSecond: 4
+  behaviorStates:
+  - {fileID: 11400000, guid: 99c028529df07b54aac2cab4884cfb6f, type: 2}
+--- !u!114 &2441548165970090481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 724212810724251753}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3da0582bbf24cb9a3edaf8ba55221eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updatesPerSecond: 4
+  movementSpeed: 10
+  strafeMultiplier: 0.5
+  strafeRotationLerpAmount: 0.075
+  animator: {fileID: 77801565629690777}
+  walkAnimationThreshold: 0
+  runAnimationThreshold: 0
+  animationSpeedCoefficient: 0.125
 --- !u!114 &2774274488318970656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1498,7 +1558,7 @@ PrefabInstance:
     - target: {fileID: 2567795178724217293, guid: d5ec369d78f59024f80f42e0d141d0f8,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2567795178724217293, guid: d5ec369d78f59024f80f42e0d141d0f8,
         type: 3}

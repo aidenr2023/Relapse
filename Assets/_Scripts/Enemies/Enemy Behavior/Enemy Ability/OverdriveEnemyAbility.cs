@@ -106,8 +106,9 @@ public class OverdriveEnemyAbility : ComponentScript<Enemy>, IEnemyAbilityBehavi
         _overdriveTimer = new CountdownTimer(overdriveDuration);
 
         // Create a new speed token
-        _speedToken = Enemy.MovementBehavior.MovementSpeedTokens.AddToken(speedMultiplier, -1, true);
-
+        // _speedToken = Enemy.MovementBehavior.MovementSpeedTokens.AddToken(speedMultiplier, -1, true);
+        _speedToken = Enemy.NewMovement.MovementSpeedTokens.AddToken(speedMultiplier, -1, true);
+        
         // Add the on timer end event
         _overdriveTimer.OnTimerEnd += StopOverdrive;
 
@@ -120,8 +121,9 @@ public class OverdriveEnemyAbility : ComponentScript<Enemy>, IEnemyAbilityBehavi
     private void StopOverdrive()
     {
         // Remove the speed token
-        Enemy.MovementBehavior.MovementSpeedTokens.RemoveToken(_speedToken);
-
+        // Enemy.MovementBehavior.MovementSpeedTokens.RemoveToken(_speedToken);
+        Enemy.NewMovement.MovementSpeedTokens.RemoveToken(_speedToken);
+        
         // Set the speed token to null
         _speedToken = null;
 

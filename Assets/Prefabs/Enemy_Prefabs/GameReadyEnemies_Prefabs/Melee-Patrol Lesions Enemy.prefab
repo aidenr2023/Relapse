@@ -729,6 +729,8 @@ GameObject:
   - component: {fileID: 7399838946944825037}
   - component: {fileID: 8932513790679332165}
   - component: {fileID: 5830201516360384326}
+  - component: {fileID: 743209099562729217}
+  - component: {fileID: 8607638295246163511}
   - component: {fileID: 1321240230866553819}
   - component: {fileID: 1562862804367130674}
   - component: {fileID: 8865007077112191545}
@@ -855,6 +857,42 @@ MonoBehaviour:
   moanSoundChance: 0.4
   moanSoundMinCooldown: 8
   moanSoundMaxCooldown: 15
+--- !u!114 &743209099562729217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8754773797763522373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 974ab9e8920745e4b7b55551bbb4c7f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updatesPerSecond: 4
+  behaviorStates:
+  - {fileID: 11400000, guid: 181b3fbcf07a09447987e8ff1c7eb299, type: 2}
+  - {fileID: 11400000, guid: 99c028529df07b54aac2cab4884cfb6f, type: 2}
+--- !u!114 &8607638295246163511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8754773797763522373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3da0582bbf24cb9a3edaf8ba55221eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updatesPerSecond: 4
+  movementSpeed: 10
+  strafeMultiplier: 0.75
+  strafeRotationLerpAmount: 0.075
+  animator: {fileID: 5835691382165057910}
+  walkAnimationThreshold: 0.25
+  runAnimationThreshold: 6
+  animationSpeedCoefficient: 0.125
 --- !u!114 &1321240230866553819
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -896,17 +934,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cc601c4836b49da97804b75a0eec5b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 11
-  angularSpeed: 400
-  unawareMovementMultiplier: 0.75
-  curiousMovementMultiplier: 0.9
   patrolCheckpoints: []
   checkpointProximityThreshold: 0.5
-  stoppingDistance: 2.5
-  animator: {fileID: 5835691382165057910}
-  walkAnimationThreshold: 1
-  runAnimationThreshold: 6
-  animationSpeedCoefficient: 0.125
+  unawareMovementMultiplier: 0.75
 --- !u!114 &8865007077112191545
 MonoBehaviour:
   m_ObjectHideFlags: 0

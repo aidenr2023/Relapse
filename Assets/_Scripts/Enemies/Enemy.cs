@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(EnemyInfo)), RequireComponent(typeof(UniqueId))]
+[RequireComponent(typeof(EnemyInfo), typeof(UniqueId), typeof(NewEnemyBehaviorBrain))]
+[RequireComponent(typeof(NewEnemyMovement))]
 public class Enemy : MonoBehaviour, ILevelLoaderInfo
 {
     private static readonly HashSet<Enemy> _enemies = new();
@@ -17,11 +18,15 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
 
     public EnemyInfo EnemyInfo { get; private set; }
 
+    public NewEnemyBehaviorBrain Brain { get; private set; }
+    
+    public NewEnemyMovement NewMovement { get; private set; }
+    
     public IEnemyDetectionBehavior DetectionBehavior { get; private set; }
 
     public IEnemyAttackBehavior AttackBehavior { get; private set; }
 
-    public IEnemyMovementBehavior MovementBehavior { get; private set; }
+    public INewEnemyMovementBehavior MovementBehavior => Brain.MovementBehavior;
 
     public IEnemyAbilityBehavior AbilityBehavior { get; private set; }
     
@@ -52,11 +57,16 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
         // Get the EnemyInfo component
         EnemyInfo = GetComponent<EnemyInfo>();
 
+        // Get the brain component
+        Brain = GetComponent<NewEnemyBehaviorBrain>();
+        
+        NewMovement = GetComponent<NewEnemyMovement>();
+        
         // Get the IEnemyDetectionBehavior component
         DetectionBehavior = GetComponent<IEnemyDetectionBehavior>();
 
-        // Get the IEnemyMovementBehavior component
-        MovementBehavior = GetComponent<IEnemyMovementBehavior>();
+        // // Get the IEnemyMovementBehavior component
+        // MovementBehavior = GetComponent<IEnemyMovementBehavior>();
 
         // Get the IEnemyAttackBehavior component
         AttackBehavior = GetComponent<IEnemyAttackBehavior>();
@@ -64,14 +74,20 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
         // Get the enemy ability behavior component
         AbilityBehavior = GetComponent<IEnemyAbilityBehavior>();
 
-        // Assert that the IEnemyDetectionBehavior component is not null
-        Debug.Assert(DetectionBehavior != null, "The IEnemyDetectionBehavior component is null.");
+        // // Assert that the IEnemyDetectionBehavior component is not null
+        // Debug.Assert(DetectionBehavior != null, "The IEnemyDetectionBehavior component is null.");
+        //
+        // // Assert that the IEnemyMovementBehavior component is not null
+        // Debug.Assert(MovementBehavior != null, "The IEnemyMovementBehavior component is null.");
+        //
+        // // Assert that the IEnemyAttackBehavior component is not null
+        // Debug.Assert(AttackBehavior != null, "The IEnemyAttackBehavior component is null.");
 
-        // Assert that the IEnemyMovementBehavior component is not null
-        Debug.Assert(MovementBehavior != null, "The IEnemyMovementBehavior component is null.");
-
-        // Assert that the IEnemyAttackBehavior component is not null
-        Debug.Assert(AttackBehavior != null, "The IEnemyAttackBehavior component is null.");
+        // Assert that the brain component is not null
+        Debug.Assert(Brain != null, "The brain component is null.");
+        
+        // Assert that the new movement component is not null
+        Debug.Assert(NewMovement != null, "The new movement component is null.");
         
         // Get the renderers
         Renderers = GetComponentsInChildren<Renderer>();
@@ -123,7 +139,7 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
 
         // Load the position and rotation
         if (levelLoader.TryGetDataFromMemory(UniqueId, POSITION_KEY, out Vector3 position))
-            MovementBehavior.SetPosition(position);
+            NewMovement.SetPosition(position);
 
         if (levelLoader.TryGetDataFromMemory(UniqueId, ROTATION_KEY, out Vector3 rotation))
             transform.rotation = Quaternion.Euler(rotation);

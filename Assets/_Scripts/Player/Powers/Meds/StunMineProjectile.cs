@@ -32,16 +32,16 @@ public class StunMineProjectile : AbstractMineProjectile
 
     protected override void ApplyExplosion(IActor actor)
     {
-        if (actor is not EnemyInfo enemy)
+        if (actor is not EnemyInfo enemyInfo)
             return;
 
-        var movementBehavior = enemy.GetComponent<IEnemyMovementBehavior>();
-        var attackBehavior = enemy.GetComponent<IEnemyAttackBehavior>();
+        var movement = enemyInfo.ParentComponent.NewMovement;
+        var attackBehavior = enemyInfo.ParentComponent.AttackBehavior;
 
         // Apply the stun effect
         // Call this from the power logic game object because this projectile is destroyed after the explosion
         ((MonoBehaviour)_power.PowerScriptableObject.PowerLogic)
-            .StartCoroutine(ApplyStun(movementBehavior, attackBehavior));
+            .StartCoroutine(ApplyStun(movement, attackBehavior));
         
         // Create the explosion particles
         CreateExplosionParticles(explosionParticles, transform.position, particleCount);
@@ -50,7 +50,7 @@ public class StunMineProjectile : AbstractMineProjectile
         CreateExplosionVfx(explosionVfxPrefab, transform.position);
     }
 
-    private IEnumerator ApplyStun(IEnemyMovementBehavior movementBehavior, IEnemyAttackBehavior attackBehavior)
+    private IEnumerator ApplyStun(NewEnemyMovement movement, IEnemyAttackBehavior attackBehavior)
     {
         // // Add a movement disabled token to the enemy for the duration of the chain stop time
         // enemy.MovementBehavior.AddMovementDisableToken(this);
@@ -58,18 +58,18 @@ public class StunMineProjectile : AbstractMineProjectile
 
         var powerManager = (_shooter as PlayerInfo)!.ParentComponent.PlayerPowerManager;
         
-        var enemy = movementBehavior.Enemy;
+        var enemy = movement.ParentComponent;
         
         // Create event args
-        var e = new HealthChangedEventArgs(
+        var args = new HealthChangedEventArgs(
             enemy.EnemyInfo, powerManager.Player.PlayerInfo, _power,
             0, enemy.transform.position
         );
 
-        enemy.EnemyInfo.Stun(e, stunDuration);
+        enemy.EnemyInfo.Stun(args, stunDuration);
         
         // Instantiate the stun VFX
-        var stunVfx = Instantiate(stunVfxPrefab, movementBehavior.GameObject.transform);
+        var stunVfx = Instantiate(stunVfxPrefab, movement.transform);
 
         // Wait until the stun duration is over
         var timeRemaining = stunDuration;

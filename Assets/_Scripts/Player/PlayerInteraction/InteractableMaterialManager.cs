@@ -39,7 +39,8 @@ public class InteractableMaterialManager : MonoBehaviour
         Interactable = GetComponent<IInteractable>();
 
         // Set the interactable material manager of the interactable
-        Interactable.InteractableMaterialManager = this;
+        if (Interactable != null)
+            Interactable.InteractableMaterialManager = this;
     }
 
     private void Start()

@@ -115,12 +115,12 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         // Add the movement and attack disable tokens on stun start
         OnStunStart += (_, _) =>
         {
-            ParentComponent.MovementBehavior.AddMovementDisableToken(this);
+            ParentComponent.NewMovement.AddMovementDisableToken(this);
             ParentComponent.AttackBehavior.AddAttackDisableToken(this);
         };
         OnStunEnd += (_, _) =>
         {
-            ParentComponent.MovementBehavior.RemoveMovementDisableToken(this);
+            ParentComponent.NewMovement.RemoveMovementDisableToken(this);
             ParentComponent.AttackBehavior.RemoveAttackDisableToken(this);
         };
 

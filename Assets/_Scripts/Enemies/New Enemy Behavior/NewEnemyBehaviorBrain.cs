@@ -75,7 +75,7 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
     {
         _behaviorStateCoroutine = StartCoroutine(BehaviorStateCoroutine());
 
-        DebugManager.Instance.AddDebuggedObject(this);
+        // DebugManager.Instance.AddDebuggedObject(this);
     }
 
     private void OnDisable()
@@ -83,7 +83,7 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
         StopCoroutine(_behaviorStateCoroutine);
         _behaviorStateCoroutine = null;
 
-        DebugManager.Instance.RemoveDebuggedObject(this);
+        // DebugManager.Instance.RemoveDebuggedObject(this);
     }
 
     #endregion

@@ -3,19 +3,9 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Serialization;
 
-public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
+public class PatrolEnemyMovement : ComponentScript<Enemy>, INewEnemyMovementBehavior
 {
-    private static readonly int AnimatorIsMovingProperty = Animator.StringToHash("IsMoving");
-    private static readonly int AnimatorSpeedProperty = Animator.StringToHash("Speed");
-    private static readonly int AnimatorIsRunningProperty = Animator.StringToHash("IsRunning");
-
     #region Serialized Fields
-
-    [SerializeField, Min(0)] private float movementSpeed = 8;
-    [SerializeField, Min(0)] private float angularSpeed = 1500f;
-
-    [SerializeField, Range(0, 1)] private float unawareMovementMultiplier = .5f;
-    [SerializeField, Range(0, 1)] private float curiousMovementMultiplier = .75f;
 
     [Header("Checkpoint Traversal")] [SerializeField] [Tooltip("The checkpoints that the enemy will traverse.")]
     private Transform[] patrolCheckpoints;
@@ -23,347 +13,132 @@ public class PatrolEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
     [SerializeField] [Min(0)] [Tooltip("How close the enemy needs to be to the checkpoint to consider it reached.")]
     private float checkpointProximityThreshold = 0.5f;
 
-    [SerializeField, Min(0)] private float stoppingDistance = 1.5f;
-
-    [Header("Animations")] [SerializeField]
-    private Animator animator;
-
-    [SerializeField, Min(0)] private float walkAnimationThreshold;
-    [SerializeField, Min(0)] private float runAnimationThreshold;
-    [SerializeField, Min(0)] private float animationSpeedCoefficient = 1;
+    [SerializeField, Range(0, 1)] private float unawareMovementMultiplier = .5f;
 
     #endregion
 
     #region Private Fields
 
-    private int _currentCheckpointIndex;
+    private int _currentCheckpointIndex = -1;
 
     private TokenManager<float>.ManagedToken _detectionStateToken;
-
-    private float _targetVelocity;
 
     #endregion
 
     #region Getters
 
-    public Enemy Enemy { get; private set; }
+    public NewEnemyBehaviorBrain Brain { get; private set; }
+    public NewEnemyMovement NewMovement { get; private set; }
 
     public GameObject GameObject => gameObject;
-
-    public HashSet<object> MovementDisableTokens { get; } = new();
-
-    public TokenManager<float> MovementSpeedTokens { get; } = new(false, null, 1);
-
-    public NavMeshAgent NavMeshAgent { get; private set; }
-
-    public IReadOnlyCollection<Transform> PatrolCheckpoints => patrolCheckpoints;
-
-    public Transform CurrentCheckpoint
-    {
-        get
-        {
-            if (patrolCheckpoints == null || patrolCheckpoints.Length == 0)
-                return null;
-
-            return patrolCheckpoints[_currentCheckpointIndex];
-        }
-    }
-
-    public bool IsMovementEnabled => this.IsMovementEnabled();
-
-    private bool IsWithinStoppingDistance =>
-        // NavMeshAgent.remainingDistance <= stoppingDistance &&
-        Enemy.DetectionBehavior.CurrentDetectionState == EnemyDetectionState.Aware &&
-        Vector3.Distance(transform.position, Enemy.DetectionBehavior.Target.GameObject.transform.position) <=
-        stoppingDistance;
+    public Enemy Enemy => gameObject.GetComponent<Enemy>();
 
     #endregion
 
-    #region Initialization Functions
-
-    private void Awake()
+    protected override void CustomAwake()
     {
-        // Initialize the components
-        InitializeComponents();
+        Brain = GetComponent<NewEnemyBehaviorBrain>();
+        NewMovement = GetComponent<NewEnemyMovement>();
 
-        // Create the detection state token
-        _detectionStateToken = MovementSpeedTokens.AddToken(1, -1, true);
+        Brain.onPlayerMovementStateChange += OnPlayerMovementStateChange;
     }
 
-    private void InitializeComponents()
+    private void OnPlayerMovementStateChange(BehaviorActionMove.MoveAction prevState, NewEnemyBehaviorBrain brain)
     {
-        // Get the enemy component
-        Enemy = GetComponent<Enemy>();
+        // If the brain's current state is script,
+        // set the destination to the current checkpoint
+        if (
+            brain.CurrentMoveActionType == BehaviorActionMove.MoveAction.MovementScript &&
+            (PatrolEnemyMovement)brain.MovementBehavior == this
+        )
+        {
+            SetDestinationToCheckpoint(_currentCheckpointIndex);
+        }
 
-        // Get the NavMeshAgent component
-        NavMeshAgent = GetComponent<NavMeshAgent>();
+        else
+        {
+            // Reset the movement speed token
+            _detectionStateToken.Value = 1;
+        }
     }
 
     private void Start()
     {
-        // // Add this to the debug manager
-        // DebugManager.Instance.AddDebuggedObject(this);
+        _currentCheckpointIndex = 0;
 
-        // Determine the closest checkpoint
-        _currentCheckpointIndex = DetermineClosestCheckpoint();
-
-        // Return if the closest checkpoint is invalid
-        if (_currentCheckpointIndex < 0 || _currentCheckpointIndex >= patrolCheckpoints.Length)
-            return;
-
-        // Set the destination to the closest checkpoint
-        CustomSetDestination(patrolCheckpoints[_currentCheckpointIndex].position);
+        // Create the detection state token
+        _detectionStateToken = NewMovement.MovementSpeedTokens.AddToken(1, -1, true);
     }
 
-    #endregion
-
-    private void Update()
+    public void StateUpdateMovement(
+        NewEnemyBehaviorBrain brain, NewEnemyMovement newMovement, bool needsToUpdateDestination
+    )
     {
-        // Set the NavMeshAgent enabled state
-        if (NavMeshAgent.enabled && NavMeshAgent.isOnNavMesh)
-            NavMeshAgent.isStopped = !IsMovementEnabled;
-
-        // If the navmesh agent is enabled, check if the enemy is within stopping distance
-        if (NavMeshAgent.enabled && NavMeshAgent.isOnNavMesh && IsWithinStoppingDistance)
-            this.AddMovementDisableToken(this);
-        else
-            this.RemoveMovementDisableToken(this);
-
         // Update the detection state token
+        UpdateDetectionStateToken();
+
+        // Check if the enemy has reached the current checkpoint
+        if (CheckForNewCheckpoint())
+        {
+            // Increment the checkpoint index
+            if (patrolCheckpoints.Length > 0)
+                _currentCheckpointIndex = (_currentCheckpointIndex + 1) % patrolCheckpoints.Length;
+
+            SetDestinationToCheckpoint(_currentCheckpointIndex);
+        }
+    }
+
+    private void UpdateDetectionStateToken()
+    {
         _detectionStateToken.Value = Enemy.DetectionBehavior.CurrentDetectionState switch
         {
             EnemyDetectionState.Unaware => unawareMovementMultiplier,
-            EnemyDetectionState.Curious => curiousMovementMultiplier,
-            EnemyDetectionState.Aware => 1,
             _ => 1
         };
-
-        var movementSpeedTokenMultiplier = this.GetMovementSpeedTokenMultiplier();
-
-        // Set the target velocity
-        _targetVelocity = movementSpeed * movementSpeedTokenMultiplier;
-
-        if (NavMeshAgent.enabled && NavMeshAgent.isOnNavMesh)
-        {
-            // Set the movement speed of the navmesh agent
-            NavMeshAgent.speed = _targetVelocity;
-
-            // Set the angular speed of the navmesh agent
-            NavMeshAgent.angularSpeed = angularSpeed * movementSpeedTokenMultiplier;
-        }
-
-        // Update the movement animation
-        UpdateMovementAnimation();
-
-        // Update the movement speed tokens
-        MovementSpeedTokens.Update(Time.deltaTime);
-
-        // Update the destination
-        UpdateDestination();
     }
 
-    private void UpdateDestination()
+    private bool CheckForNewCheckpoint()
     {
-        // Return if disabled
-        if (!IsMovementEnabled)
-            return;
-
-        if (!NavMeshAgent.enabled || !NavMeshAgent.isOnNavMesh)
-            return;
-
-        var currentDetectionState = Enemy.DetectionBehavior.CurrentDetectionState;
-
-        switch (currentDetectionState)
-        {
-            case EnemyDetectionState.Unaware:
-
-                // Check if the enemy has reached the checkpoint
-                CheckCheckpoint();
-
-                // Break if the current checkpoint is null
-                if (CurrentCheckpoint == null)
-                    return;
-
-                // Set the destination to the current checkpoint
-                if (NavMeshAgent.destination != CurrentCheckpoint.position)
-                    CustomSetDestination(CurrentCheckpoint.position);
-
-                break;
-
-            case EnemyDetectionState.Curious:
-
-                // Set the destination to the last known player position
-                if (NavMeshAgent.destination != Enemy.DetectionBehavior.LastKnownTargetPosition)
-                    CustomSetDestination(Enemy.DetectionBehavior.LastKnownTargetPosition);
-
-                break;
-
-            case EnemyDetectionState.Aware:
-
-                // Set the destination to the player's current position
-                if (Enemy.DetectionBehavior.IsTargetDetected)
-                    CustomSetDestination(Enemy.DetectionBehavior.Target.GameObject.transform.position);
-                else
-                    CustomSetDestination(Enemy.DetectionBehavior.LastKnownTargetPosition);
-
-                break;
-
-            default:
-                Debug.LogError($"Case not handled: {currentDetectionState}");
-                break;
-        }
+        return (NewMovement.NavMeshAgent.remainingDistance < checkpointProximityThreshold);
     }
 
-    private void UpdateMovementAnimation()
+    private void SetDestinationToCheckpoint(int index)
     {
-        // Return if the animator is null
-        if (animator == null)
-            return;
-
-        // Get the velocity of the NavMeshAgent
-        var velocity = _targetVelocity;
-        var isMoving = NavMeshAgent.velocity.magnitude > walkAnimationThreshold;
-        var isRunning = NavMeshAgent.velocity.magnitude >= runAnimationThreshold;
-
-        var speedValue = velocity * animationSpeedCoefficient;
-
-        // If the navmesh agent is disabled, set the speed value to 0
-        if (NavMeshAgent.enabled && NavMeshAgent.isOnNavMesh && NavMeshAgent.isStopped)
-            isMoving = false;
-
-        animator.SetBool(AnimatorIsMovingProperty, isMoving);
-        animator.SetFloat(AnimatorSpeedProperty, speedValue);
-        animator.SetBool(AnimatorIsRunningProperty, isRunning);
-    }
-
-    private void CheckCheckpoint()
-    {
-        // Return if the NavMeshAgent is disabled
-        if (!NavMeshAgent.enabled || !NavMeshAgent.isOnNavMesh)
-            return;
-
-        // Get the distance to the current checkpoint
-        var distanceToCheckpoint = NavMeshAgent.remainingDistance;
-
-        // If the enemy is close enough to the checkpoint, move to the next checkpoint
-        if (distanceToCheckpoint > checkpointProximityThreshold)
-            return;
-
-        // Return if there are no checkpoints
+        // Skip if there are no checkpoints
         if (patrolCheckpoints.Length == 0)
-            return;
-
-        // Increment the checkpoint index
-        _currentCheckpointIndex = (_currentCheckpointIndex + 1) % patrolCheckpoints.Length;
-
-        // Set the destination to the next checkpoint
-        if (CurrentCheckpoint != null)
-            CustomSetDestination(CurrentCheckpoint.position);
-    }
-
-    private int DetermineClosestCheckpoint()
-    {
-        // return -1 if there are no checkpoints
-        if (patrolCheckpoints.Length == 0)
-            return -1;
-
-        var closestCheckpointIndex = 0;
-        var closestDistance = Vector3.Distance(transform.position, patrolCheckpoints[0].position);
-
-        // Determine the closest checkpoint
-        for (var i = 1; i < patrolCheckpoints.Length; i++)
         {
-            // Break if the index is out of bounds
-            if (i >= patrolCheckpoints.Length)
-                break;
-
-            if (patrolCheckpoints[i] == null)
-                continue;
-            
-            var distance = Vector3.Distance(transform.position, patrolCheckpoints[i].position);
-
-            // Update the closest checkpoint if the current checkpoint is closer
-            if (distance >= closestDistance)
-                continue;
-
-            closestDistance = distance;
-            closestCheckpointIndex = i;
-        }
-
-        return closestCheckpointIndex;
-    }
-
-    public void SetPosition(Vector3 pos)
-    {
-        // If there is a nav mesh agent, set the position
-        if (NavMeshAgent != null)
-        {
-            NavMeshAgent.Warp(pos);
+            // Debug.LogError("No patrol checkpoints have been set for this enemy.", this);
             return;
         }
 
-        // If there is a rigidbody, set the position
-        if (TryGetComponent(out Rigidbody rb))
+        // Ensure that the index is within the bounds of the array
+        index %= patrolCheckpoints.Length;
+
+        // Skip if the checkpoint at the index is null
+        if (patrolCheckpoints[index] == null)
         {
-            rb.MovePosition(pos);
+            Debug.LogError($"The checkpoint at index {index} is null.", this);
             return;
         }
 
-        // Set the position
-        transform.position = pos;
+        // Set the destination to the checkpoint
+        NewMovement.SetDestination(patrolCheckpoints[index].position);
+
+        Debug.Log($"Setting destination to checkpoint {index}.");
     }
 
-    private void CustomSetDestination(Vector3 position)
+    private void OnDrawGizmos()
     {
-        const float distanceThreshold = 5f;
-        
-        // Return if the NavMeshAgent is null or disabled
-        if (NavMeshAgent == null || !NavMeshAgent.enabled)
-            return;
-        
-        var currentDestination = NavMeshAgent.destination;
-        
-        // Return if the distance to the destination is less than the threshold
-        if (Vector3.Distance(currentDestination, position) < distanceThreshold)
-            return;
-
-        // Set the destination to the position
-        NavMeshAgent.SetDestination(position);
-        
-    }
-
-    #region Debugging
-
-    private void OnDrawGizmosSelected()
-    {
-        //Make sure node list is not empty
-        if (patrolCheckpoints == null || patrolCheckpoints.Length == 0)
-            return;
-
-        //Draw gizmos between each node in the sequence
+        // Draw spheres at the patrol checkpoints
         for (var i = 0; i < patrolCheckpoints.Length; i++)
         {
-            var nextIndex = (i + 1) % patrolCheckpoints.Length;
-
             if (patrolCheckpoints[i] == null)
                 continue;
 
-            if (patrolCheckpoints[nextIndex] == null)
-                continue;
-
-            // Draw a line between the current node and the next node
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(patrolCheckpoints[i].position, patrolCheckpoints[nextIndex].position);
-
-            // Draw a sphere at the current node
-            Gizmos.color = Color.green;
-
             if (i == _currentCheckpointIndex)
-                Gizmos.color = Color.blue;
-
-            Gizmos.DrawSphere(patrolCheckpoints[i].position, 0.1f);
+                Gizmos.color = Color.green;
+            else
+                Gizmos.color = Color.red;
         }
     }
-
-    #endregion
 }

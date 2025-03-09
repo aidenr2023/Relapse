@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -21,6 +22,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
     [SerializeField, Min(0)] private float movementSpeed = 14;
     [SerializeField, Range(0, 1)] private float strafeMultiplier = 0.5f;
+    [SerializeField, Range(0, 1)] private float strafeRotationLerpAmount = 0.075f;
 
     [Header("Animations")] [SerializeField]
     private Animator animator;
@@ -43,6 +45,8 @@ public class NewEnemyMovement : ComponentScript<Enemy>
     private bool _forceUpdateDestination;
     private Vector3 _targetPosition;
     private float _targetVelocity;
+
+    private readonly HashSet<object> _movementDisableTokens = new();
 
     #endregion
 
@@ -192,8 +196,10 @@ public class NewEnemyMovement : ComponentScript<Enemy>
             _ => movementSpeed
         };
 
+        var movementEnabledSpeed = _movementDisableTokens.Count > 0 ? 0 : 1;
+
         // Calculate the target velocity
-        _targetVelocity = stateSpeed * GetMovementSpeedTokenMultiplier();
+        _targetVelocity = stateSpeed * GetMovementSpeedTokenMultiplier() * movementEnabledSpeed;
 
         // Set the speed of the nav mesh agent
         _navMeshAgent.speed = _targetVelocity;
@@ -249,7 +255,13 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
     private void UpdateMovementScript(bool needsToUpdateDestination)
     {
-        _brain.MovementBehavior?.StateUpdateMovement(_brain, this, needsToUpdateDestination);
+        if (_brain.MovementBehavior != null)
+            _brain.MovementBehavior.StateUpdateMovement(_brain, this, needsToUpdateDestination);
+        else
+        {
+            Debug.LogError("The movement behavior is null!", this);
+            UpdateIdle(needsToUpdateDestination);
+        }
     }
 
     private void UpdateWander(bool needsToUpdateDestination)
@@ -353,14 +365,28 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         if (!ParentComponent.DetectionBehavior.IsTargetDetected)
             return;
 
-        var targetPosition = ParentComponent.DetectionBehavior.Target.GameObject.transform.position;
-        var direction = targetPosition - transform.position;
-        direction.y = 0;
-        transform.forward = direction.normalized;
+        // Get the current rotation of the forward vector
+        var currentRotation = transform.rotation;
+
+        // Get the desired rotation of the forward vector
+        var difference = ParentComponent.DetectionBehavior.LastKnownTargetPosition - transform.position;
+        var desiredRotation = Quaternion.LookRotation(difference, Vector3.up);
+
+        // Rotate the forward of the transform towards the target forward
+        var newRotation = Quaternion.Lerp(currentRotation, desiredRotation,
+            CustomFunctions.FrameAmount(strafeRotationLerpAmount)
+        );
+        
+        // Create a new rotation WITHOUT a rotation around the x or z axis
+        var newRotationNoXZ = Quaternion.Euler(0, newRotation.eulerAngles.y, 0);
+
+        // Set the rotation of the transform
+        transform.rotation = newRotationNoXZ;
     }
 
     private void UpdateIdle(bool needsToUpdateDestination)
     {
+        // Do nothing
     }
 
     #endregion
@@ -394,6 +420,22 @@ public class NewEnemyMovement : ComponentScript<Enemy>
             multiplier *= speedToken.Value;
 
         return multiplier;
+    }
+
+    public void AddMovementDisableToken(object token)
+    {
+        _movementDisableTokens.Add(token);
+    }
+
+    public void RemoveMovementDisableToken(object token)
+    {
+        _movementDisableTokens.Remove(token);
+    }
+
+    public void SetPosition(Vector3 pos)
+    {
+        // Warp the nav mesh agent to the position
+        _navMeshAgent.Warp(pos);
     }
 
     public static Vector3 RotateDirectionRandomly(Vector3 direction, float angle = RANDOM_STRAFE_ANGLE)

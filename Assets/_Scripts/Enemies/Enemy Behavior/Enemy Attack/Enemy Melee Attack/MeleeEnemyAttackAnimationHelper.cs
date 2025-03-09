@@ -26,15 +26,15 @@ public class MeleeEnemyAttackAnimationHelper : EnemyAttackAnimationHelper
 
         // If a movement token already exists, remove it
         if (_movementSpeedToken != null)
-            meleeEnemyAttack.Enemy.MovementBehavior.MovementSpeedTokens.RemoveToken(_movementSpeedToken);
+            meleeEnemyAttack.Enemy.NewMovement.MovementSpeedTokens.RemoveToken(_movementSpeedToken);
 
-        _movementSpeedToken = meleeEnemyAttack.Enemy.MovementBehavior
+        _movementSpeedToken = meleeEnemyAttack.Enemy.NewMovement
             .MovementSpeedTokens.AddToken(MOVEMENT_SPEED_MULTIPLIER, -1, true);
     }
 
     public override void ReactivateMovement()
     {
         // meleeEnemyAttack.Enemy.EnemyMovementBehavior.RemoveMovementDisableToken(MovementDisableToken);
-        meleeEnemyAttack.Enemy.MovementBehavior.MovementSpeedTokens.RemoveToken(_movementSpeedToken);
+        meleeEnemyAttack.Enemy.NewMovement.MovementSpeedTokens.RemoveToken(_movementSpeedToken);
     }
 }

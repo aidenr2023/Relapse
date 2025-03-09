@@ -36,7 +36,7 @@ public class PositionSwap : MonoBehaviour, IPower
             return;
 
         // Get the enemy info
-        var enemyInfo = playerEnemySelect.SelectedEnemy;
+        var enemy = playerEnemySelect.SelectedEnemy;
 
         // Get the enemy controller
 
@@ -44,15 +44,17 @@ public class PositionSwap : MonoBehaviour, IPower
         var shooterPosition = powerManager.Player.Rigidbody.position;
 
         // Get the position of the actor
-        var actorPosition = enemyInfo.GameObject.transform.position;
+        var actorPosition = enemy.GameObject.transform.position;
 
-        // Swap the positions of the shooter and the actor
-        // Get the enemy controller
-        var enemyMovement = enemyInfo.MovementBehavior;
+        // // Swap the positions of the shooter and the actor
+        // // Get the enemy controller
+        // var enemyMovement = enemyInfo.MovementBehavior;
+        //
+        // // Swap the positions of the shooter and the actor
+        // enemyMovement.SetPosition(shooterPosition);
 
-        // Swap the positions of the shooter and the actor
-        enemyMovement.SetPosition(shooterPosition);
-
+        enemy.NewMovement.SetPosition(shooterPosition);
+        
         // Set the position of the actor to the shooter's position
         powerManager.Player.Rigidbody.MovePosition(actorPosition);
 

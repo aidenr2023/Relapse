@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class StationaryEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
+public class StationaryEnemyMovement : MonoBehaviour, INewEnemyMovementBehavior
 {
     #region Serialized Fields
 
@@ -20,6 +20,10 @@ public class StationaryEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
     #region Getters
 
     public Enemy Enemy { get; private set; }
+
+    public NewEnemyBehaviorBrain Brain { get; private set; }
+    public NewEnemyMovement NewMovement { get; private set; }
+
     public GameObject GameObject => gameObject;
 
     public HashSet<object> MovementDisableTokens { get; } = new();
@@ -32,76 +36,40 @@ public class StationaryEnemyMovement : MonoBehaviour, IEnemyMovementBehavior
         // Get the enemy component
         Enemy = GetComponent<Enemy>();
 
+        Brain = GetComponent<NewEnemyBehaviorBrain>();
+        NewMovement = GetComponent<NewEnemyMovement>();
+
         // Get the nav mesh agent component
         _navMeshAgent = GetComponent<NavMeshAgent>();
     }
 
     private void Update()
     {
-        // Update the movement speed tokens
-        MovementSpeedTokens.Update(Time.deltaTime);
-
-        // Return if the target is null
-        if (Enemy.DetectionBehavior.Target == null)
+        // Set the forward of the transform to the detection target
+        if (!Enemy.DetectionBehavior.IsTargetDetected)
             return;
+
+        // Get the current rotation of the forward vector
+        var currentRotation = transform.rotation;
+
+        // Get the desired rotation of the forward vector
+        var difference = Enemy.DetectionBehavior.LastKnownTargetPosition - transform.position;
+        var desiredRotation = Quaternion.LookRotation(difference, Vector3.up);
+
+        // Rotate the forward of the transform towards the target forward
+        var newRotation = Quaternion.Lerp(currentRotation, desiredRotation,
+            CustomFunctions.FrameAmount(rotationLerpAmount)
+        );
         
-        // If there are any movement disable tokens, return
-        if (MovementDisableTokens.Count > 0)
-            return;
+        // Create a new rotation WITHOUT a rotation around the x or z axis
+        var newRotationNoXZ = Quaternion.Euler(0, newRotation.eulerAngles.y, 0);
 
-        var oldRotation = transform.rotation;
-
-        var diff = Enemy.DetectionBehavior.LastKnownTargetPosition - transform.position;
-
-        // Set the y rotation to the desired rotation's y rotation
-        var desiredRotation = Quaternion.LookRotation(diff.normalized, Vector3.up);
-
-        // Lerp the rotation
-        transform.rotation = Quaternion.Lerp(oldRotation, desiredRotation, CustomFunctions.FrameAmount(rotationLerpAmount));
-
-        // Update the nav mesh agent
-        UpdateNavMeshAgent();
+        // Set the rotation of the transform
+        transform.rotation = newRotationNoXZ;
     }
 
-    private void UpdateNavMeshAgent()
+    public void StateUpdateMovement(NewEnemyBehaviorBrain brain, NewEnemyMovement newMovement,
+        bool needsToUpdateDestination)
     {
-        // Return if the nav mesh agent is null
-        if (_navMeshAgent == null)
-            return;
-
-        _navMeshAgent.enabled = false;
-
-        // _navMeshAgent.updateRotation = false;
-        // _navMeshAgent.updatePosition = false;
-
-        // Set the nav mesh agent's speed to 0
-        // _navMeshAgent.speed = 0;
-
-        // Return if the detection is unaware
-        if (Enemy.DetectionBehavior.CurrentDetectionState == EnemyDetectionState.Unaware)
-            return;
-
-        // Set the destination to the target's position
-        _navMeshAgent.SetDestination(Enemy.DetectionBehavior.LastKnownTargetPosition);
-    }
-
-    public void SetPosition(Vector3 pos)
-    {
-        // If there is a nav mesh agent, set the position
-        if (_navMeshAgent != null)
-        {
-            _navMeshAgent.Warp(pos);
-            return;
-        }
-
-        // If there is a rigidbody, set the position
-        if (TryGetComponent(out Rigidbody rb))
-        {
-            rb.MovePosition(pos);
-            return;
-        }
-
-        // Set the position
-        transform.position = pos;
     }
 }
