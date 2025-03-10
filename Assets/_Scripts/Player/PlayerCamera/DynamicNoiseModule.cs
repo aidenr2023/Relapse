@@ -194,6 +194,8 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
     [Serializable]
     public struct NoiseTokenValue
     {
+        public static NoiseTokenValue Zero => new(Vector3.zero, 0, 0);
+        
         [SerializeField] private Vector3 pivotOffset;
         [SerializeField] private float amplitudeGain;
         [SerializeField] private float frequencyGain;

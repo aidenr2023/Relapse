@@ -1,57 +1,53 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections;
 using UnityEngine;
 
 public class CameraShakeHelper : MonoBehaviour
 {
     [SerializeField] private DynamicNoiseModule.NoiseTokenValue noiseToken;
     [SerializeField] private float shakeDuration = 0.5f;
-
-    private readonly HashSet<TokenManager<DynamicNoiseModule.NoiseTokenValue>.ManagedToken> tokens =
-        new();
+    [SerializeField] private float shakeFadeDuration = 0.5f;
 
     public void ShakeCamera()
     {
-        // Add the token to the dynamic noise module
-        var token = Player.Instance
-            .PlayerVirtualCameraController
-            .DynamicNoiseModule
-            .NoiseTokens
-            .AddToken(noiseToken, shakeDuration);
+        var cameraController = Player.Instance.PlayerVirtualCameraController;
 
-        // Add the token to the list of tokens
-        tokens.Add(token);
+        // Start the coroutine
+        cameraController.StartCoroutine(
+            CameraShakeCoroutine(cameraController.DynamicNoiseModule, noiseToken, shakeDuration, shakeFadeDuration)
+        );
     }
 
-    private void Update()
+    private static IEnumerator CameraShakeCoroutine(
+        DynamicNoiseModule noiseModule, DynamicNoiseModule.NoiseTokenValue noiseToken,
+        float duration, float shakeFadeDuration
+    )
     {
-        // Convert the list of tokens to an array
-        var tokensArray = tokens.ToArray();
-        
-        // Update each token
-        foreach (var token in tokensArray)
+        // Create a copy of the token
+        var newTokenValue = new DynamicNoiseModule.NoiseTokenValue(
+            noiseToken.PivotOffset, noiseToken.AmplitudeGain, noiseToken.FrequencyGain
+        );
+
+        // Add the token to the dynamic noise module (INFINITE DURATION)
+        var token = noiseModule.NoiseTokens.AddToken(newTokenValue, -1, true);
+
+        // Wait for the duration
+        yield return new WaitForSeconds(duration);
+
+        var startTime = Time.time;
+
+        // Fade the token value to 0
+        while (Time.time - startTime < shakeFadeDuration)
         {
-            UpdateToken(token);
-            
-            // If the token has expired, remove it from the list of tokens
-            if (token.timer.IsComplete)
-                tokens.Remove(token);
+            var lerpValue = Mathf.InverseLerp(startTime, startTime + shakeFadeDuration, Time.time);
+
+            token.Value = DynamicNoiseModule.NoiseTokenValue.Lerp(
+                newTokenValue, DynamicNoiseModule.NoiseTokenValue.Zero, lerpValue
+            );
+
+            yield return null;
         }
-    }
 
-    private static void UpdateToken(TokenManager<DynamicNoiseModule.NoiseTokenValue>.ManagedToken token)
-    {
-        // Create a copy of the token, but with 0 amplitude
-        var zeroToken = new DynamicNoiseModule.NoiseTokenValue(
-            token.Value.PivotOffset, 0, token.Value.FrequencyGain
-        );
-
-        // Lerp the token value to 0
-        token.Value = DynamicNoiseModule.NoiseTokenValue.Lerp(
-            token.Value,
-            zeroToken,
-            token.timer.Percentage
-        );
+        // Remove the token from the dynamic noise module
+        noiseModule.NoiseTokens.RemoveToken(token);
     }
 }

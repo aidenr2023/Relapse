@@ -109,6 +109,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 9198145726992342673}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 90d38517133c1204ea9d5151bde54924,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9170504378154881915}
   m_SourcePrefab: {fileID: 100100000, guid: 90d38517133c1204ea9d5151bde54924, type: 3}
 --- !u!1 &7658937809434924624 stripped
 GameObject:
@@ -167,6 +171,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+      - m_Target: {fileID: 9170504378154881915}
+        m_TargetAssemblyTypeName: CameraShakeHelper, Assembly-CSharp
+        m_MethodName: ShakeCamera
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
   hasBeenActivated: 0
 --- !u!114 &9198145726992342673
 MonoBehaviour:
@@ -185,3 +201,21 @@ MonoBehaviour:
   explosionParticlePrefab: {fileID: 0}
   explosionVfxPrefab: {fileID: 1316523376902277534, guid: 9079a3342c2258b4da48a9df04e51dcc,
     type: 3}
+--- !u!114 &9170504378154881915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7658937809434924624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd570b33a22545959510a588bca9de67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  noiseToken:
+    pivotOffset: {x: 0, y: 0, z: 0}
+    amplitudeGain: 0.5
+    frequencyGain: 4
+  shakeDuration: 0.25
+  shakeFadeDuration: 1
