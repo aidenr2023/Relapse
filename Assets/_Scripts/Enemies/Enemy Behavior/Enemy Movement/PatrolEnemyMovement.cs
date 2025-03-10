@@ -51,15 +51,11 @@ public class PatrolEnemyMovement : ComponentScript<Enemy>, INewEnemyMovementBeha
             brain.CurrentMoveActionType == BehaviorActionMove.MoveAction.MovementScript &&
             (PatrolEnemyMovement)brain.MovementBehavior == this
         )
-        {
             SetDestinationToCheckpoint(_currentCheckpointIndex);
-        }
 
+        // Reset the movement speed token
         else
-        {
-            // Reset the movement speed token
             _detectionStateToken.Value = 1;
-        }
     }
 
     private void Start()

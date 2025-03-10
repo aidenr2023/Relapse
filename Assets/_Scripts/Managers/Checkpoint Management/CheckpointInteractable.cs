@@ -14,7 +14,10 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
     [SerializeField] private SceneLoaderInformation sceneLoaderInformation;
 
     [SerializeField] private UnityEvent onInteraction;
-    
+
+    [SerializeField] private bool isProximity = false;
+    [SerializeField, Min(0)] private float proximityRange = 15;
+
     #endregion
 
     #region Getters
@@ -23,7 +26,7 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
 
     public Transform RespawnPosition => respawnPosition;
 
-    public bool IsInteractable => true;
+    public bool IsInteractable => !isProximity;
 
     public GameObject GameObject => gameObject;
 
@@ -35,10 +38,29 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
     public SceneLoaderInformation SceneLoaderInformation => sceneLoaderInformation;
 
     public InteractionIcon InteractionIcon => InteractionIcon.Action;
-    
+
     public UnityEvent OnInteraction => onInteraction;
 
     #endregion
+
+    private void Update()
+    {
+        // Check if the player is nearby 
+        if (isProximity)
+        {
+            // Check if the player is nearby
+            if (Player.Instance == null)
+                return;
+
+            // Get the distance between the player and the checkpoint
+            var distance = Vector3.Distance(Player.Instance.transform.position, transform.position);
+
+            // Check if the player is within the proximity range
+            // Force an interaction
+            if (distance <= proximityRange && !HasBeenCollected)
+                Interact(Player.Instance.PlayerInteraction);
+        }
+    }
 
     public void Interact(PlayerInteraction playerInteraction)
     {
@@ -79,7 +101,7 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
 
             Debug.Log("Checkpoint saved the player data to memory and disk.");
         }
-        
+
         // Invoke the event
         onInteraction.Invoke();
     }
@@ -93,11 +115,6 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
     }
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)
-    {
-    }
-
-
-    private void OnDrawGizmosSelected()
     {
     }
 }
