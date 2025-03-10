@@ -11,6 +11,9 @@ public class Spreadblast : MonoBehaviour, IPower
 
     public PowerScriptableObject PowerScriptableObject { get; set; }
 
+    public Sound NormalHitSfx => PowerScriptableObject.NormalHitSfx;
+    public Sound CriticalHitSfx => PowerScriptableObject.CriticalHitSfx;
+
     public string PassiveEffectDebugText(PlayerPowerManager powerManager, PowerToken pToken)
     {
         return "";

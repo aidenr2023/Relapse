@@ -13,6 +13,9 @@ public class BillboardExplosion : MonoBehaviour, IDamager
     [SerializeField, Min(0)] private float explosionDamage;
 
     [SerializeField] private VisualEffect explosionVfxPrefab;
+    
+    public Sound NormalHitSfx => null;
+    public Sound CriticalHitSfx => null;
 
     #endregion
 

@@ -20,6 +20,9 @@ public class ExplosionHelper : MonoBehaviour, IDamager
     #region Getters
 
     public GameObject GameObject => gameObject;
+    
+    public Sound NormalHitSfx => null;
+    public Sound CriticalHitSfx => null;
 
     #endregion
 

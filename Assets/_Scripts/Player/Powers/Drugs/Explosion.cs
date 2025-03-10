@@ -19,6 +19,9 @@ public class Explosion : MonoBehaviour, IPower
     public GameObject GameObject => gameObject;
     public PowerScriptableObject PowerScriptableObject { get; set; }
 
+    public Sound NormalHitSfx => PowerScriptableObject.NormalHitSfx;
+    public Sound CriticalHitSfx => PowerScriptableObject.CriticalHitSfx;
+    
     public string PassiveEffectDebugText(PlayerPowerManager powerManager, PowerToken pToken) => string.Empty;
 
     #region IPower Methods

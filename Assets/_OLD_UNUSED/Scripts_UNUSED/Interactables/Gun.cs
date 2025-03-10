@@ -19,6 +19,9 @@ public class Gun : MonoBehaviour, IDamager
     public PlayerInfo pi;
 
     public GameObject GameObject => gameObject;
+    
+    public Sound NormalHitSfx => null;
+    public Sound CriticalHitSfx => null;
 
     public void Shoot()
     {

@@ -13,6 +13,11 @@ public class LevelCheckpointReset : MonoBehaviour, IDamager
     #endregion
 
     public GameObject GameObject => gameObject;
+    
+    
+    public Sound NormalHitSfx => null;
+    public Sound CriticalHitSfx => null;
+
 
     protected void OnTriggerEnter(Collider other)
     {

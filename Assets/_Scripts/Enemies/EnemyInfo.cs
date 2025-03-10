@@ -25,7 +25,6 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
     [SerializeField] private VisualEffect enemyDeathVfxPrefab;
 
-    [Space, SerializeField] private Sound enemyHitSound;
     [SerializeField] private Sound enemyDeathSound;
 
     [SerializeField] private ManagedAudioSource enemyMoanSource;
@@ -60,7 +59,7 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
     public float MaxHealth => maxHealth;
     public float CurrentHealth => currentHealth;
-    
+
     public bool IsStunned => _remainingStunTime > 0;
 
     #endregion
@@ -70,7 +69,7 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
     public event HealthChangedEventHandler OnDamaged;
     public event HealthChangedEventHandler OnHealed;
     public event HealthChangedEventHandler OnDeath;
-    
+
     public event StunnedEventHandler OnStunStart;
     public event StunnedEventHandler OnStunEnd;
 
@@ -86,7 +85,7 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
             _moanSoundTimer.SetMaxTimeAndReset(UnityEngine.Random.Range(moanSoundMinCooldown, moanSoundMaxCooldown));
         };
         _moanSoundTimer.Start();
-        
+
         _comicImpactTimer = new(0.5f, true, true);
     }
 
@@ -100,7 +99,7 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         OnDamaged += SetDamagePositionOnDamaged;
         OnDamaged += PlaySoundOnDamaged;
         OnDamaged += ComicImpactOnDamaged;
-        
+
         OnDeath += DetachVFXOnDeath;
         OnDeath += PlaySoundOnDeath;
         OnDeath += CreateDeathVfx;
@@ -135,20 +134,20 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         // Return if the comic impact manager is null
         if (ComicImpactManager.Instance == null)
             return;
-        
+
         // Return if the damager is not a power
         if (e.DamagerObject is not IPower && e.DamagerObject is not Shotgun)
             return;
-        
+
         // Return if the comic impact timer is not complete
         if (!_comicImpactTimer.IsComplete)
             return;
 
         // Reset the comic impact timer
         _comicImpactTimer.Reset();
-        
+
         var ui = ComicImpactManager.Instance.SpawnImpact(e.Position);
-        
+
         // // Make the UI a child of the enemy
         // ui.transform.SetParent(transform);
     }
@@ -158,11 +157,11 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         // Return if there is no death VFX prefab
         if (enemyDeathVfxPrefab == null)
             return;
-        
+
         // Instantiate the death VFX prefab
         var deathVfx = Instantiate(enemyDeathVfxPrefab, transform.position, Quaternion.identity);
         deathVfx.Play();
-        
+
         // Destroy the death VFX after 10 seconds
         Destroy(deathVfx.gameObject, 10f);
     }
@@ -206,8 +205,18 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
     private void PlaySoundOnDamaged(object sender, HealthChangedEventArgs e)
     {
+        // // Return if the sound is null
+        // if (enemyHitSound == null)
+        //     return;
+
+        // TODO: Determine which sound should be played
+        var sfx = 
+            e.IsCriticalHit && e.DamagerObject.CriticalHitSfx != null 
+            ? e.DamagerObject.CriticalHitSfx 
+            : e.DamagerObject.NormalHitSfx;
+
         // Return if the sound is null
-        if (enemyHitSound == null)
+        if (sfx == null)
             return;
 
         // Return if the enemy's health is less than or equal to 0
@@ -219,7 +228,7 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
             return;
 
         // Play the sound at the enemy's position
-        SoundManager.Instance.PlaySfxAtPoint(enemyHitSound, transform.position);
+        SoundManager.Instance.PlaySfxAtPoint(sfx, transform.position);
 
         // Set the hasPlayedHitSoundThisFrame flag to true
         _hasPlayedHitSoundThisFrame = true;
@@ -254,7 +263,7 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
         // Update the comic pow timer
         _comicImpactTimer.Update(Time.deltaTime);
-        
+
         // If the enemy took damage this frame, play the visual effect
         PlayVFXAfterDamage();
     }
@@ -381,31 +390,30 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         // Return if the duration is less than or equal to 0
         if (duration <= 0)
             return;
-        
+
         // Return if the enemy is already stunned
         if (_remainingStunTime > 0)
             return;
-        
+
         var isStunned = _remainingStunTime > 0;
-        
+
         _remainingStunTime = Mathf.Max(_remainingStunTime, duration);
 
         // TODO: Replace w/ coroutine
         if (!isStunned)
             OnStunStart?.Invoke(e, duration);
-        
+
         // if (!isStunned)
         //     StartCoroutine(StunCoroutine(e, duration));
-        
     }
 
     public void StopStun()
     {
         var isStunned = _remainingStunTime > 0;
-        
+
         // Reset the remaining stun time
         _remainingStunTime = 0;
-        
+
         if (isStunned)
             OnStunEnd?.Invoke(null, 0);
     }
@@ -414,19 +422,18 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
     {
         // Invoke the OnStunned event
         OnStunStart?.Invoke(e, duration);
-        
+
         // Wait for the duration of the stun
         var stunStartTime = Time.time;
-        
+
         while (Time.time - stunStartTime < duration)
         {
             _remainingStunTime -= Time.deltaTime;
-            
+
             yield return null;
         }
-        
+
         // Invoke the OnStunEnd event
         OnStunEnd?.Invoke(e, duration);
     }
-    
 }

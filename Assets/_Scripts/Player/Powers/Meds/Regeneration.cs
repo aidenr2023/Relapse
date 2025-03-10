@@ -6,11 +6,15 @@ public class Regeneration : MonoBehaviour, IPower
 {
     private const string REGENERATION_KEY = "RegenerationPower";
 
+    [SerializeField] private float regenerationAmount = 2f;
+    [SerializeField] private ParticleSystem regenerationParticles;
+    
     public GameObject GameObject => gameObject;
     public PowerScriptableObject PowerScriptableObject { get; set; }
 
-    [SerializeField] private float regenerationAmount = 2f;
-    [SerializeField] private ParticleSystem regenerationParticles;
+
+    public Sound NormalHitSfx => PowerScriptableObject.NormalHitSfx;
+    public Sound CriticalHitSfx => PowerScriptableObject.CriticalHitSfx;
 
     public string PassiveEffectDebugText(PlayerPowerManager powerManager, PowerToken pToken)
     {

@@ -32,13 +32,16 @@ public sealed class HealthChangedEventArgs : EventArgs
     public float Amount { get; }
 
     public Vector3 Position { get; }
+    
+    public bool IsCriticalHit { get; }
 
-    public HealthChangedEventArgs(IActor actor, IActor changer, IDamager damager, float amount, Vector3 position)
+    public HealthChangedEventArgs(IActor actor, IActor changer, IDamager damager, float amount, Vector3 position, bool isCriticalHit = false)
     {
         Actor = actor;
         Changer = changer;
         DamagerObject = damager;
         Amount = amount;
         Position = position;
+        IsCriticalHit = isCriticalHit;
     }
 }

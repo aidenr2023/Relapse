@@ -30,7 +30,10 @@ public class PowerScriptableObject : ScriptableObject
     [SerializeField] private GameObject powerLogicPrefab;
 
     [SerializeField, UniqueIdentifier] private string uniqueId;
-
+    
+    [SerializeField] private Sound normalHitSfx;
+    [SerializeField] private Sound criticalHitSfx;
+    
     private IPower _powerLogic;
 
     #region Sounds
@@ -79,6 +82,9 @@ public class PowerScriptableObject : ScriptableObject
     public int MaxLevel => toleranceMeterLevelMultiplier.Length - 1;
 
     public string UniqueId => uniqueId;
+    
+    public Sound NormalHitSfx => normalHitSfx;
+    public Sound CriticalHitSfx => criticalHitSfx;
 
     #region Sound
 

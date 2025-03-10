@@ -32,6 +32,8 @@ public class ProximityEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     [SerializeField] private VisualEffect explosionVFX;
 
+    [SerializeField] private Sound normalHitSfx;
+
     #endregion
 
     #region Private Fields
@@ -71,6 +73,10 @@ public class ProximityEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     public bool IsAttackEnabled => _isExternallyEnabled && this.IsAttackEnabledTokens();
 
     public HashSet<object> AttackDisableTokens { get; } = new();
+
+
+    public Sound NormalHitSfx => normalHitSfx;
+    public Sound CriticalHitSfx => null;
 
     #endregion
 

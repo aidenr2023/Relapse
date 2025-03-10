@@ -119,6 +119,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     }
 
     public Animator Animator => animator;
+    
+    public Sound NormalHitSfx => gunInformation.NormalHitSfx;
+    public Sound CriticalHitSfx => gunInformation.CriticalHitSfx;
 
     #region IInteractable
 

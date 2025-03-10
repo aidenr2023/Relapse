@@ -20,6 +20,9 @@ public class AndreEnemy : MonoBehaviour, IActor, IDamager
 
     public float MaxHealth => _maxHealth;
     public float CurrentHealth => enemyHealth;
+    
+    public Sound NormalHitSfx => null;
+    public Sound CriticalHitSfx => null;
 
     #region Events
 

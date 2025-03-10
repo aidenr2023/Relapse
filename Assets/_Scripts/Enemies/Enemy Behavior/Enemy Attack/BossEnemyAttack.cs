@@ -7,9 +7,11 @@ public class BossEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     #region Serialized Fields
 
     [SerializeField] private BossPowerScriptableObject[] powers;
-    
+
+    [SerializeField] private Sound normalHitSfx;
+
     #endregion
-    
+
     #region Getters
 
     public GameObject GameObject => gameObject;
@@ -17,6 +19,10 @@ public class BossEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     public HashSet<object> AttackDisableTokens { get; } = new();
 
     public bool IsAttackEnabled => _isExternallyEnabled && this.IsAttackEnabledTokens();
+
+
+    public Sound NormalHitSfx => normalHitSfx;
+    public Sound CriticalHitSfx => null;
 
     #endregion
 

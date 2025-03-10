@@ -5,11 +5,16 @@ public class DamageIncrease : MonoBehaviour, IPower
 {
     private const string DAMAGE_INCREASE_KEY = "DAMAGE_INCREASE_POWER";
 
-    public GameObject GameObject => gameObject;
-    public PowerScriptableObject PowerScriptableObject { get; set; }
-
     [SerializeField] [Min(0)] private float multiplier = 1.5f;
     [SerializeField] private ParticleSystem damageIncreaseParticles;
+
+    public GameObject GameObject => gameObject;
+    public PowerScriptableObject PowerScriptableObject { get; set; }
+    
+    
+    public Sound NormalHitSfx => PowerScriptableObject.NormalHitSfx;
+    public Sound CriticalHitSfx => PowerScriptableObject.CriticalHitSfx;
+
 
     public string PassiveEffectDebugText(PlayerPowerManager powerManager, PowerToken pToken)
     {

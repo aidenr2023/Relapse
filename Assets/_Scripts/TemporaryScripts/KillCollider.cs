@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class KillCollider : MonoBehaviour, IDamager
 {
+    
+    public Sound NormalHitSfx => null;
+    public Sound CriticalHitSfx => null;
+    
     public GameObject GameObject => gameObject;
 
     private void Awake()

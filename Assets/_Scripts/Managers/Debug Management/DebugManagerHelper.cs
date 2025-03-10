@@ -48,6 +48,11 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     public HashSet<InputData> InputActions { get; } = new();
 
     private Player Player => Player.Instance;
+    
+    
+    public Sound NormalHitSfx => null;
+    public Sound CriticalHitSfx => null;
+
 
     #endregion
 

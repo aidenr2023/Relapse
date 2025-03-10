@@ -14,6 +14,9 @@ public class ExplosiveMine : MonoBehaviour, IPower
     public GameObject GameObject => gameObject;
     public PowerScriptableObject PowerScriptableObject { get; set; }
 
+    public Sound NormalHitSfx => PowerScriptableObject.NormalHitSfx;
+    public Sound CriticalHitSfx => PowerScriptableObject.CriticalHitSfx;
+
     #endregion
 
     #region IPower Methods

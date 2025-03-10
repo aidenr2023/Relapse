@@ -44,6 +44,12 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     public HashSet<object> AttackDisableTokens { get; } = new();
 
     public IReadOnlyList<MeleeAttackHitbox> MeleeAttackHitboxes => meleeAttackHitboxes;
+    
+    
+    [SerializeField] private Sound normalHitSfx;
+    
+    public Sound NormalHitSfx => normalHitSfx;
+    public Sound CriticalHitSfx => null;
 
     #endregion
 

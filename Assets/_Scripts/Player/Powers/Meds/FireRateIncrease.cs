@@ -11,6 +11,9 @@ public class FireRateIncrease : MonoBehaviour, IPower
     [SerializeField, Min(0)] private float multiplier = 2f;
     [SerializeField] private ParticleSystem fireRateIncreaseParticles;
 
+    public Sound NormalHitSfx => PowerScriptableObject.NormalHitSfx;
+    public Sound CriticalHitSfx => PowerScriptableObject.CriticalHitSfx;
+
     public string PassiveEffectDebugText(PlayerPowerManager powerManager, PowerToken pToken)
     {
         var timeRemaining = pToken.PowerScriptableObject.PassiveEffectDuration - pToken.CurrentPassiveDuration;

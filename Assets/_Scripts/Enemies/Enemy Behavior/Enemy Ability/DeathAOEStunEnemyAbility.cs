@@ -24,6 +24,9 @@ public class DeathAOEStunEnemyAbility : ComponentScript<Enemy>, IEnemyAbilityBeh
 
     public Enemy Enemy => ParentComponent;
     public GameObject GameObject => gameObject;
+    
+    public Sound NormalHitSfx => null;
+    public Sound CriticalHitSfx => null;
 
     #endregion
 

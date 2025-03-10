@@ -18,6 +18,8 @@ public class TempShootingEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     [Space, SerializeField] private ShootingEnemyProjectile enemyBulletPrefab;
     [SerializeField] private Transform projectileSpawnPoint;
 
+    [SerializeField] private Sound normalHitSfx;
+
     #endregion
 
     #region Private Fields
@@ -37,13 +39,17 @@ public class TempShootingEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     public HashSet<object> AttackDisableTokens { get; } = new();
 
     public bool IsAttackEnabled => _isExternallyEnabled && this.IsAttackEnabledTokens();
-    
+
     private bool IsTargetInRange =>
         Enemy.DetectionBehavior.Target != null &&
         Vector3.Distance(
             transform.position,
             Enemy.DetectionBehavior.Target.GameObject.transform.position
         ) <= fireRange;
+
+
+    public Sound NormalHitSfx => normalHitSfx;
+    public Sound CriticalHitSfx => null;
 
     #endregion
 

@@ -19,6 +19,9 @@ public class Virus : MonoBehaviour, IPower
 
     public PowerScriptableObject PowerScriptableObject { get; set; }
 
+    public Sound NormalHitSfx => PowerScriptableObject.NormalHitSfx;
+    public Sound CriticalHitSfx => PowerScriptableObject.CriticalHitSfx;
+
     #endregion
 
     public string PassiveEffectDebugText(PlayerPowerManager powerManager, PowerToken pToken)

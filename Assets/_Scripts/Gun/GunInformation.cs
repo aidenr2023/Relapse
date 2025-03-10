@@ -41,6 +41,9 @@ public class GunInformation : ScriptableObject
 
     [SerializeField] private Sound reloadSound;
 
+    [SerializeField] private Sound normalHitSfx;
+    [SerializeField] private Sound criticalHitSfx;
+
     [Header("Recoil Settings")] [SerializeField] [Min(0)]
     private float horizontalRecoil;
 
@@ -79,6 +82,10 @@ public class GunInformation : ScriptableObject
     public int MagazineSize => magazineSize;
 
     public float ReloadTime => reloadTime;
+    
+    public Sound NormalHitSfx => normalHitSfx;
+    
+    public Sound CriticalHitSfx => criticalHitSfx;
 
     #region Sounds
 

@@ -7,6 +7,9 @@ public class FallingObstacle : MonoBehaviour, IDamager
 
     public GameObject GameObject => gameObject;
 
+    public Sound NormalHitSfx => null;
+    public Sound CriticalHitSfx => null;
+    
     private void OnCollisionEnter(Collision other)
     {
         // Get the actor component from the other object
