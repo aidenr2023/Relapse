@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
 {
@@ -237,6 +238,9 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
         // Delay the first update by a frame to allow the other scripts to initialize
         yield return null;
         
+        // Wait between 0 and 1 seconds to prevent too many enemies from updating at the same time
+        yield return new WaitForSeconds(Random.Range(0f, 1f));
+        
         while (true)
         {
             // Determine the behavior state
@@ -250,8 +254,8 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
             if (_attackCooldown.IsComplete && !_isAttacking)
                 DetermineAttackAction();
 
-            // Log the current behavior state
-            Debug.Log($"{gameObject.name} Behavior State: {_currentBehaviorState.stateName}");
+            // // Log the current behavior state
+            // Debug.Log($"{gameObject.name} Behavior State: {_currentBehaviorState.stateName}");
 
 
             // Reset the last update time

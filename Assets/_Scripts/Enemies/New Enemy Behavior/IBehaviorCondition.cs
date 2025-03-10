@@ -60,7 +60,7 @@ public struct BehaviorConditionFloat : IBehaviorCondition
             _ => throw new ArgumentOutOfRangeException()
         } ^ isInverted;
         
-        Debug.Log($"{conditionTarget} {conditionType} {targetValue}: {returnValue}");
+        // Debug.Log($"{conditionTarget} {conditionType} {targetValue}: {returnValue}");
         
         return returnValue;
     }
