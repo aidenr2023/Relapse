@@ -184,8 +184,8 @@ GameObject:
   - component: {fileID: 196078421133422189}
   - component: {fileID: 5833398543523106331}
   - component: {fileID: 6189453250225796007}
-  - component: {fileID: 7941888933449945891}
   - component: {fileID: 5489392568849754652}
+  - component: {fileID: 7430568650335134706}
   m_Layer: 0
   m_Name: DroneStationaryNew (3)
   m_TagString: Untagged
@@ -295,9 +295,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hoverSpeed: 2
-  hoverAmplitude: 0.02
-  driftRange: 0.2
-  hoverRandomOffset: 0.2
+  hoverAmplitude: 0.5
+  driftRange: 0.3
+  hoverRandomOffset: 0.3
   waypoints: []
   moveSpeed: 1
   curveSmoothing: 0.5
@@ -310,33 +310,6 @@ MonoBehaviour:
   lightDuration: 2.5
   droneAudioSource: {fileID: 5489392568849754652}
   warningLight: {fileID: 6673874365457150424}
---- !u!54 &7941888933449945891
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5241442466859498648}
-  serializedVersion: 4
-  m_Mass: 5
-  m_Drag: 0.5
-  m_AngularDrag: 0.5
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 0
 --- !u!82 &5489392568849754652
 AudioSource:
   m_ObjectHideFlags: 0
@@ -433,6 +406,33 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!54 &7430568650335134706
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5241442466859498648}
+  serializedVersion: 4
+  m_Mass: 5
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &8305915908258479334
 GameObject:
   m_ObjectHideFlags: 0
@@ -538,11 +538,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -5283598083007027166, guid: 9fe77a524aa0654439a9a667ada47dfa,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 22ba3aa898ed6a34694fd4e1f32ac2ef, type: 2}
+    - target: {fileID: 495975331598566030, guid: 9fe77a524aa0654439a9a667ada47dfa,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 22ba3aa898ed6a34694fd4e1f32ac2ef, type: 2}
     - target: {fileID: 919132149155446097, guid: 9fe77a524aa0654439a9a667ada47dfa,
         type: 3}
       propertyPath: m_Name
       value: drone
       objectReference: {fileID: 0}
+    - target: {fileID: 5474958667078625528, guid: 9fe77a524aa0654439a9a667ada47dfa,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 22ba3aa898ed6a34694fd4e1f32ac2ef, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -28,6 +28,7 @@ public class HoverDrone : MonoBehaviour
     public Light warningLight; // Light that turns on temporarily
 
     private Vector3 originalPosition;
+    private Vector3 basePosition; // Base position used for path following
     private Rigidbody rb;
     private bool isTriggered = false;
     private int currentWaypointIndex = 0;
@@ -36,6 +37,7 @@ public class HoverDrone : MonoBehaviour
     void Start()
     {
         originalPosition = transform.position;
+        basePosition = transform.position;
         rb = GetComponent<Rigidbody>();
         rb.isKinematic = true; // Initially hovering
 
@@ -51,24 +53,32 @@ public class HoverDrone : MonoBehaviour
     {
         if (!isTriggered)
         {
-            Hover();
-            FollowPath();
+            // Update the base position from the path (or keep it at originalPosition)
+            if (waypoints != null && waypoints.Length > 0)
+            {
+                FollowPath();
+            }
+            else
+            {
+                basePosition = originalPosition;
+            }
+
+            // Apply the hover offset on top of the base position
+            ApplyHoverOffset();
         }
     }
 
-    void Hover()
+    void ApplyHoverOffset()
     {
-        // Bobbing up and down with a randomized phase offset
-        float hoverHeight = Mathf.Sin(Time.time * hoverSpeed + hoverRandomOffset) * hoverAmplitude;
-
-        // Random drift
-        Vector3 randomDrift = new Vector3(
-            Mathf.PerlinNoise(Time.time, 0) * driftRange - driftRange / 2,
+        // Vertical bobbing
+        float verticalOffset = Mathf.Sin(Time.time * hoverSpeed + hoverRandomOffset) * hoverAmplitude;
+        // Horizontal drift that oscillates (centered around 0)
+        Vector3 driftOffset = new Vector3(
+            (Mathf.PerlinNoise(Time.time, 0) - 0.5f) * driftRange,
             0,
-            Mathf.PerlinNoise(0, Time.time) * driftRange - driftRange / 2
+            (Mathf.PerlinNoise(0, Time.time) - 0.5f) * driftRange
         );
-
-        transform.position += new Vector3(0, hoverHeight, 0) + randomDrift * Time.deltaTime;
+        transform.position = basePosition + new Vector3(0, verticalOffset, 0) + driftOffset;
     }
 
     void FollowPath()
@@ -80,20 +90,20 @@ public class HoverDrone : MonoBehaviour
 
         Transform targetWaypoint = waypoints[currentWaypointIndex];
 
-        // Calculate smoothed movement
-        Vector3 targetPosition = Vector3.Lerp(transform.position, targetWaypoint.position, curveSmoothing);
-        transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, 1f / moveSpeed);
+        // Smoothly update the base position toward the target waypoint
+        Vector3 targetBasePos = Vector3.Lerp(basePosition, targetWaypoint.position, curveSmoothing);
+        basePosition = Vector3.SmoothDamp(basePosition, targetBasePos, ref velocity, 1f / moveSpeed);
 
-        // Rotate to face the movement direction
-        Vector3 direction = (targetPosition - transform.position).normalized;
-        if (direction.magnitude > 0.01f) // Avoid jittering when stationary
+        // Rotate to face the movement direction (using the base position for consistency)
+        Vector3 direction = (targetBasePos - basePosition).normalized;
+        if (direction.magnitude > 0.01f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * moveSpeed);
         }
 
-        // Check if the waypoint is reached
-        float distance = Vector3.Distance(transform.position, targetWaypoint.position);
+        // Check if the waypoint is reached (using basePosition to avoid hover-induced false positives)
+        float distance = Vector3.Distance(basePosition, targetWaypoint.position);
         if (distance < waypointThreshold)
         {
             currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
