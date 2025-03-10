@@ -79,7 +79,7 @@ public class PlayerEnemySelectUI : MonoBehaviour
         // UpdateMaterialManager(isVisible, hasEnemy);
 
         // Update the previous enemy
-        _previousEnemy = Player.Instance.PlayerEnemySelect.SelectedEnemy;
+        _previousEnemy = Player.Instance?.PlayerEnemySelect?.SelectedEnemy;
     }
 
     private void UpdateMaterialManager(bool isVisible, bool hasEnemy)
@@ -89,16 +89,16 @@ public class PlayerEnemySelectUI : MonoBehaviour
             _dynamicMaterialManager.ChangeRenderers(null);
             return;
         }
-        
+
         var currentEnemy = Player.Instance.PlayerEnemySelect.SelectedEnemy;
-        
+
         var needsToChangeRenderers = isVisible && _previousEnemy != currentEnemy;
 
-        if (!needsToChangeRenderers) 
+        if (!needsToChangeRenderers)
             return;
-        
+
         Debug.Log($"Changing renderers from [{_previousEnemy}] to [{currentEnemy}]");
-        
+
         // Remove the material from the previous enemy
         if (currentEnemy != null)
         {
