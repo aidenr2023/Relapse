@@ -86,6 +86,7 @@ public class ContinuousEnemySpawner : EnemySpawner
         // Attach the OnDeath event to the CheckForSpawnerCompleteOnEnemyDeath method
         actualEnemy.EnemyInfo.OnDeath += IncrementEnemyKilledCount;
         actualEnemy.EnemyInfo.OnDeath += CheckForSpawnerCompleteOnEnemyDeath;
+        actualEnemy.EnemyInfo.OnDeath += SpawnItemOnEnemyDeath;
     }
 
     private void IncrementEnemyKilledCount(object sender, HealthChangedEventArgs e)
@@ -107,11 +108,30 @@ public class ContinuousEnemySpawner : EnemySpawner
         // Invoke the spawner complete event
         onSpawnerComplete?.Invoke();
 
+        // // Drop the item to spawn
+        // if (itemToDropWhenComplete != null)
+        //     Instantiate(
+        //         itemToDropWhenComplete,
+        //         healthChangedEventArgs.Actor.GameObject.transform.position,
+        //         Quaternion.identity
+        //     );
+    }
+    
+    private void SpawnItemOnEnemyDeath(object sender, HealthChangedEventArgs e)
+    {
+        // Return if the spawner is infinite
+        if (isInfinite)
+            return;
+
+        // Return if the enemy killed count is not equal to the spawner complete amount
+        if (_enemyKilledCount != spawnerCompleteAmount)
+            return;
+        
         // Drop the item to spawn
         if (itemToDropWhenComplete != null)
             Instantiate(
                 itemToDropWhenComplete,
-                healthChangedEventArgs.Actor.GameObject.transform.position,
+                e.Actor.GameObject.transform.position,
                 Quaternion.identity
             );
     }

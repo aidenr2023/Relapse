@@ -84,8 +84,32 @@ public class MiniWaveEnemySpawner : EnemySpawner
 
         actualEnemy.EnemyInfo.OnDeath += DecrementEnemiesRemaining;
         actualEnemy.EnemyInfo.OnDeath += OnEnemyDeath;
+        actualEnemy.EnemyInfo.OnDeath += SpawnItemOnEnemyDeath;
     }
 
+    private void SpawnItemOnEnemyDeath(object sender, HealthChangedEventArgs e)
+    {
+        // Return if the spawner is infinite
+        if (isInfinite)
+            return;
+
+        // Return if the enemy killed count is not equal to the spawner complete amount
+        if (_waveEnemiesRemaining != 0)
+            return;
+        
+        // Return if there are waves remaining
+        if (_wavesCompleted < spawnerCompleteAmount)
+            return;
+        
+        // Drop the item to spawn
+        if (itemToDropWhenComplete != null)
+            Instantiate(
+                itemToDropWhenComplete,
+                e.Actor.GameObject.transform.position,
+                Quaternion.identity
+            );
+    }
+    
     private void DecrementEnemiesRemaining(object sender, HealthChangedEventArgs e)
     {
         _waveEnemiesRemaining--;
