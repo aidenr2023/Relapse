@@ -18,7 +18,10 @@ public interface IActor : IInterfacedObject
     /// </summary>
     /// <param name="amount">The amount to change the actor's health by.</param>
     /// <param name="changer">The actor that is changing the actor's health.</param>
-    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position);
+    /// <param name="damager"></param>
+    /// <param name="position"></param>
+    /// <param name="isCriticalHit"></param>
+    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position, bool isCriticalHit = false);
 }
 
 public sealed class HealthChangedEventArgs : EventArgs

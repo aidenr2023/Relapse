@@ -219,9 +219,9 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         if (sfx == null)
             return;
 
-        // Return if the enemy's health is less than or equal to 0
-        if (currentHealth <= 0)
-            return;
+        // // Return if the enemy's health is less than or equal to 0
+        // if (currentHealth <= 0)
+        //     return;
 
         // Return if the hit sound has already played this frame
         if (_hasPlayedHitSoundThisFrame)
@@ -331,7 +331,7 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         PlayVFXAfterDamage();
     }
 
-    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position)
+    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position, bool isCriticalHit = false)
     {
         // Clamp the health value between 0 and the max health
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
@@ -341,14 +341,14 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         // If the amount is less than 0, invoke the OnDamaged event
         if (amount < 0)
         {
-            args = new HealthChangedEventArgs(this, changer, damager, -amount, position);
+            args = new HealthChangedEventArgs(this, changer, damager, -amount, position, isCriticalHit);
             OnDamaged?.Invoke(this, args);
         }
 
         // If the amount is greater than 0, invoke the OnHealed event
         else if (amount > 0)
         {
-            args = new HealthChangedEventArgs(this, changer, damager, amount, position);
+            args = new HealthChangedEventArgs(this, changer, damager, amount, position, false);
             OnHealed?.Invoke(this, args);
         }
 

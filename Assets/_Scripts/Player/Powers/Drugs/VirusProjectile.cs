@@ -68,7 +68,7 @@ public class VirusProjectile : MonoBehaviour, IPowerProjectile
 
         // Start the virus ticks
         (actor as MonoBehaviour)!.StartCoroutine(VirusTicks(actor));
-        
+
         // Add an event to the actor's death event to remove them from the infected actors list
         actor.OnDeath += RemoveFromInfectedActors;
     }
@@ -92,8 +92,10 @@ public class VirusProjectile : MonoBehaviour, IPowerProjectile
         for (float elapsedTime = 0; elapsedTime < tickDuration; elapsedTime += tickRate)
         {
             // Actually do the damage
-            actor.ChangeHealth(-tickDamage, _powerManager.Player.PlayerInfo, _virus,
-                actor.GameObject.transform.position);
+            actor.ChangeHealth(
+                -tickDamage, _powerManager.Player.PlayerInfo, _virus,
+                actor.GameObject.transform.position, true
+            );
 
             totalDamage += tickDamage;
 
@@ -103,10 +105,10 @@ public class VirusProjectile : MonoBehaviour, IPowerProjectile
             // Wait for tickRate
             yield return new WaitForSeconds(tickRate);
         }
-        
+
         // Remove the actor from the infected actors list
         Virus.RemoveInfectedActor(actor);
-        
+
         // Remove the infection VFX
         Destroy(infectionVfx.gameObject);
     }

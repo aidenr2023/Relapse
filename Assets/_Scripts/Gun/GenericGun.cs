@@ -8,7 +8,7 @@ using UnityEngine.Serialization;
 using UnityEngine.VFX;
 using Random = UnityEngine.Random;
 
-[RequireComponent(typeof(Rigidbody),  typeof(InteractableMaterialManager))]
+[RequireComponent(typeof(Rigidbody), typeof(InteractableMaterialManager))]
 public class GenericGun : MonoBehaviour, IGun, IDebugged
 {
     private static readonly int ShootingAnimationID = Animator.StringToHash("Shooting");
@@ -29,8 +29,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     [SerializeField] protected VisualEffect muzzleFlash;
 
-    [Header("Impact Particles")] 
-    [SerializeField] protected ParticleSystem impactParticles;
+    [Header("Impact Particles")] [SerializeField]
+    protected ParticleSystem impactParticles;
+
     [SerializeField] protected VisualEffect impactVfxPrefab;
 
     [SerializeField] [Range(0, 500)] protected int impactParticlesCount = 200;
@@ -74,7 +75,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     protected float currentReloadTime;
 
     protected bool isReloading;
-    
+
     /// <summary>
     /// A reference to the weapon manager that is currently using this gun.
     /// </summary>
@@ -87,7 +88,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     #region Getters
 
     public InteractableMaterialManager InteractableMaterialManager { get; set; }
-    
+
     public GunInformation GunInformation => gunInformation;
 
     public GunModelType GunModelType => gunModelType;
@@ -119,7 +120,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     }
 
     public Animator Animator => animator;
-    
+
     public Sound NormalHitSfx => gunInformation.NormalHitSfx;
     public Sound CriticalHitSfx => gunInformation.CriticalHitSfx;
 
@@ -371,6 +372,25 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             if (!hitInfo.collider.TryGetComponentInParent(out IActor actor, 20))
                 continue;
 
+            var damageMultiplier = 1f;
+
+            bool isCriticalHit = false;
+
+            // Try to get the special hurt box component
+            if (hitInfo.collider.TryGetComponentInParent(out SpecialHurtBox specialHurtBox))
+            {
+                damageMultiplier = specialHurtBox.DamageMultiplier;
+
+                damageMultiplier *= gunInformation.CriticalHitMultiplier;
+                
+                // This is a critical hit
+                if (damageMultiplier > 1)
+                {
+                    isCriticalHit = true;
+                    Debug.Log($"CRITICAL HIT");
+                }
+            }
+
             // continue if the actor is the player
             if (actor is PlayerInfo info && info == weaponManager.PlayerInfo)
                 continue;
@@ -382,7 +402,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             // Debug.Log($"DAMAGE: {damage} - DISTANCE: {distance} / {gunInformation.Range}");
 
             // Deal damage to the actor
-            actor.ChangeHealth(-damage, weaponManager.Player.PlayerInfo, this, hitInfo.point);
+            actor.ChangeHealth(-damage * damageMultiplier, weaponManager.Player.PlayerInfo, this, hitInfo.point, isCriticalHit);
         }
 
         // Play the fire sound
@@ -439,7 +459,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         {
             // Choose a random decal from the array
             var bulletHoleDecal = bulletHoleDecals[Random.Range(0, bulletHoleDecals.Length)];
-            
+
             var decal = Instantiate(bulletHoleDecal, hit.point, Quaternion.LookRotation(hit.normal));
 
             // Set the parent of the decal to the object that was hit
@@ -450,7 +470,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
             // Set the decal to destroy itself after 10 seconds
             Destroy(decal.gameObject, 10);
-            
+
             // Spawn the impact VFX
             PlayVisualEffect(impactVfxPrefab, hit.point + hit.normal * 0.5f);
         }
@@ -515,7 +535,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     {
         // Set the weapon manager
         this._weaponManager = weaponManager;
-        
+
         // Set the player animator
         _playerAnimator = GetComponentInParent<Animator>();
 
@@ -533,7 +553,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Clear the weapon manager
         _weaponManager = null;
-        
+
         // Stop showing the outline
         InteractableMaterialManager.ShowOutline = true;
     }
@@ -562,12 +582,11 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Instantiate the VFX
         var vfxInstance = Instantiate(vfx, position, Quaternion.identity);
-        
+
         // Destroy the VFX after the duration
         Destroy(vfxInstance.gameObject, 10);
-
     }
-    
+
     protected void PlayMuzzleFlash()
     {
         // Return if the muzzle flash is null

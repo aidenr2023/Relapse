@@ -136,7 +136,7 @@ public class AndreEnemy : MonoBehaviour, IActor, IDamager
     }
 
 
-    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position)
+    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position, bool isCriticalHit)
     {
         if (amount < 0)
             TakeDamage(-amount, changer, damager, position);

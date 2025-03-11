@@ -18,6 +18,7 @@ public class GunInformation : ScriptableObject
     [SerializeField] private GunFireType gunFireType;
 
     [Header("Stats")] [SerializeField] private float baseDamage;
+    [SerializeField] private float criticalHitMultiplier = 1;
 
     [Tooltip("How many shots per second the gun can fire.")] [SerializeField]
     private float fireRate;
@@ -72,6 +73,8 @@ public class GunInformation : ScriptableObject
     public GunFireType FireType => gunFireType;
 
     public float BaseDamage => baseDamage;
+    
+    public float CriticalHitMultiplier => criticalHitMultiplier;
 
     public float FireRate => fireRate;
 

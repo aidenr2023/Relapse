@@ -146,14 +146,6 @@ MonoBehaviour:
   minVFXDamage: 10
   enemyDeathVfxPrefab: {fileID: 1316523376902277534, guid: dfc4fc5f6b6f93f47a16e7a3853a4f57,
     type: 3}
-  enemyHitSound:
-    clip: {fileID: 8300000, guid: 94981910bbf34bb43a109bca992410c3, type: 3}
-    soundType: 2
-    volume: 0.0625
-    isPersistent: 0
-    isLooping: 0
-    pitch: 1
-    spatialBlend: 0.5
   enemyDeathSound:
     clip: {fileID: 8300000, guid: 94981910bbf34bb43a109bca992410c3, type: 3}
     soundType: 2
@@ -274,6 +266,14 @@ MonoBehaviour:
   projectileSpawnPoints:
   - {fileID: 8206896207631091891}
   - {fileID: 8768690875502093359}
+  normalHitSfx:
+    clip: {fileID: 0}
+    soundType: 1
+    volume: 1
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 1
 --- !u!95 &3550124052841774315
 Animator:
   serializedVersion: 5
@@ -2850,6 +2850,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1338366616965227524}
+    - targetCorrespondingSourceObject: {fileID: 2508669603913777724, guid: d5ec369d78f59024f80f42e0d141d0f8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1571670064175036800}
     - targetCorrespondingSourceObject: {fileID: 3070531334620842133, guid: d5ec369d78f59024f80f42e0d141d0f8,
         type: 3}
       insertIndex: -1
@@ -4238,10 +4242,23 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.75
+  m_Radius: 1
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0.39, z: 0}
+--- !u!114 &1571670064175036800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8881570796766569425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05f7fb935d3e47899e94022356ed5697, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageMultiplier: 1
 --- !u!1 &8950174012772495465 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2712398411149365636, guid: d5ec369d78f59024f80f42e0d141d0f8,

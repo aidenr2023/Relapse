@@ -829,14 +829,6 @@ MonoBehaviour:
   minVFXDamage: 10
   enemyDeathVfxPrefab: {fileID: 1316523376902277534, guid: dfc4fc5f6b6f93f47a16e7a3853a4f57,
     type: 3}
-  enemyHitSound:
-    clip: {fileID: 8300000, guid: 94981910bbf34bb43a109bca992410c3, type: 3}
-    soundType: 2
-    volume: 0.03125
-    isPersistent: 0
-    isLooping: 0
-    pitch: 1
-    spatialBlend: 0.5
   enemyDeathSound:
     clip: {fileID: 8300000, guid: 94981910bbf34bb43a109bca992410c3, type: 3}
     soundType: 2
@@ -887,7 +879,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   updatesPerSecond: 4
   movementSpeed: 10
-  strafeMultiplier: 0.75
+  strafeMultiplier: 0.45
   strafeRotationLerpAmount: 0.075
   animator: {fileID: 5835691382165057910}
   walkAnimationThreshold: 0.25
@@ -956,6 +948,14 @@ MonoBehaviour:
   meleeAttackHitboxes:
   - {fileID: 6364708773960495632}
   - {fileID: 3746347422853906654}
+  normalHitSfx:
+    clip: {fileID: 0}
+    soundType: 1
+    volume: 1
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 1
 --- !u!1001 &610759312793068290
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3902,6 +3902,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 6965747409420496502}
+    - targetCorrespondingSourceObject: {fileID: 2508669603913777724, guid: d5ec369d78f59024f80f42e0d141d0f8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 202702183461290991}
     - targetCorrespondingSourceObject: {fileID: 3070531334620842133, guid: d5ec369d78f59024f80f42e0d141d0f8,
         type: 3}
       insertIndex: -1
@@ -4240,10 +4244,23 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.75
+  m_Radius: 1
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0.39, z: 0}
+--- !u!114 &202702183461290991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3074076101900968254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05f7fb935d3e47899e94022356ed5697, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageMultiplier: 1.5
 --- !u!4 &3160258410454954703 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2567795178724217293, guid: d5ec369d78f59024f80f42e0d141d0f8,
@@ -4428,7 +4445,7 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 1
+  m_Radius: 1.5
   m_Height: 4
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}

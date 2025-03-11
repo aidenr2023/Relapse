@@ -362,11 +362,11 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         currentTolerance = Mathf.Clamp(currentTolerance, 0, maxTolerance);
     }
     
-    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position)
+    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position, bool isCriticalHit = false)
     {
         // If the amount is negative, the player is taking damage
         if (amount < 0)
-            TakeDamage(-amount, changer, damager, position);
+            TakeDamage(-amount, changer, damager, position, isCriticalHit);
 
         // If the amount is positive, the player is gaining health
         else if (amount > 0)
@@ -379,7 +379,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         }
     }
 
-    private void TakeDamage(float damageAmount, IActor changer, IDamager damager, Vector3 position)
+    private void TakeDamage(float damageAmount, IActor changer, IDamager damager, Vector3 position, bool isCriticalHit)
     {
         // Return if the player is already dead
         if (health <= 0)
@@ -392,7 +392,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         health = Mathf.Clamp(health - damageAmount, 0, maxHealth);
 
         // Invoke the OnDamaged event
-        var args = new HealthChangedEventArgs(this, changer, damager, damageAmount, position);
+        var args = new HealthChangedEventArgs(this, changer, damager, damageAmount, position, isCriticalHit);
         OnDamaged?.Invoke(this, args);
 
         if (health <= 0)

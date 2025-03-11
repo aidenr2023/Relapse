@@ -66,7 +66,7 @@ public class CustomShootable : MonoBehaviour, IActor
             Destroy(gameObject);
     }
 
-    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position)
+    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position, bool isCriticalHit = false)
     {
         // If the amount is negative, the actor is taking damage
         if (amount < 0)
@@ -77,7 +77,7 @@ public class CustomShootable : MonoBehaviour, IActor
             CurrentHealth -= amount;
 
             // Create a new HealthChangedEventArgs object
-            var eventArgs = new HealthChangedEventArgs(this, changer, damager, amount, position);
+            var eventArgs = new HealthChangedEventArgs(this, changer, damager, amount, position, isCriticalHit);
 
             // If the current health is less than or equal to 0
             // Invoke the OnDeath event
