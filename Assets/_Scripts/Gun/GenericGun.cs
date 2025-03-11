@@ -137,6 +137,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     public Action<IGun> OnShoot { get; set; }
 
+    public Action<IGun, IActor, bool> OnHit { get; set; }
+
     protected virtual void Awake()
     {
         // Get the collider component
@@ -153,6 +155,15 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Get the animator component from KinBody
         //_playerAnimator = GetComponentInParent<Animator>();
+        
+        // Connect the animator to the gun
+        OnHit += PlayHitMarkerOnHit;
+    }
+
+    private static void PlayHitMarkerOnHit(IGun gun, IActor actor, bool isCritical)
+    {
+        // Show the hit marker
+        HitMarkerUIManager.Instance.ShowHitMarker(isCritical);
     }
 
     private void OnDestroy()
@@ -382,7 +393,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
                 damageMultiplier = specialHurtBox.DamageMultiplier;
 
                 damageMultiplier *= gunInformation.CriticalHitMultiplier;
-                
+
                 // This is a critical hit
                 if (damageMultiplier > 1)
                 {
@@ -402,7 +413,11 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             // Debug.Log($"DAMAGE: {damage} - DISTANCE: {distance} / {gunInformation.Range}");
 
             // Deal damage to the actor
-            actor.ChangeHealth(-damage * damageMultiplier, weaponManager.Player.PlayerInfo, this, hitInfo.point, isCriticalHit);
+            actor.ChangeHealth(-damage * damageMultiplier, weaponManager.Player.PlayerInfo, this, hitInfo.point,
+                isCriticalHit);
+            
+            // Invoke the on hit event
+            OnHit?.Invoke(this, actor, isCriticalHit);
         }
 
         // Play the fire sound
