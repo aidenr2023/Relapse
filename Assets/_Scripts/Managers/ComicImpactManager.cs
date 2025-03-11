@@ -45,9 +45,19 @@ public class ComicImpactManager : MonoBehaviour
             mainCamera.transform.up.y * offset.y,
             mainCamera.transform.forward.z * offset.z
         );
-        
+
         // Apply the offset to the comic UI
         comicUI.transform.position += currentOffset;
+
+        return comicUI;
+    }
+
+    public GameObject SpawnImpact(Vector3 position, Transform parent)
+    {
+        // Spawn the impact at the parent's position
+        var comicUI = SpawnImpact(position);
+        
+        comicUI.transform.SetParent(parent);
 
         return comicUI;
     }

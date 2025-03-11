@@ -146,7 +146,10 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         // Reset the comic impact timer
         _comicImpactTimer.Reset();
 
-        var ui = ComicImpactManager.Instance.SpawnImpact(e.Position);
+        if (currentHealth > 0)
+            ComicImpactManager.Instance.SpawnImpact(e.Position, e.Actor.GameObject.transform);
+        else
+            ComicImpactManager.Instance.SpawnImpact(e.Position);
 
         // // Make the UI a child of the enemy
         // ui.transform.SetParent(transform);
@@ -210,10 +213,10 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         //     return;
 
         // TODO: Determine which sound should be played
-        var sfx = 
-            e.IsCriticalHit && e.DamagerObject.CriticalHitSfx != null 
-            ? e.DamagerObject.CriticalHitSfx 
-            : e.DamagerObject.NormalHitSfx;
+        var sfx =
+            e.IsCriticalHit && e.DamagerObject.CriticalHitSfx != null
+                ? e.DamagerObject.CriticalHitSfx
+                : e.DamagerObject.NormalHitSfx;
 
         // Return if the sound is null
         if (sfx == null)
@@ -331,7 +334,8 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         PlayVFXAfterDamage();
     }
 
-    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position, bool isCriticalHit = false)
+    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position,
+        bool isCriticalHit = false)
     {
         // Clamp the health value between 0 and the max health
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
