@@ -3,7 +3,20 @@ using UnityEngine;
 
 public class TimeScaleManagerHelper : MonoBehaviour
 {
+    public static TimeScaleManagerHelper Instance { get; set; }
+
     private bool _addedToDebugManager;
+
+    private void OnEnable()
+    {
+        Instance = this;
+    }
+
+    private void OnDisable()
+    {
+        if (Instance == this)
+            Instance = null;
+    }
 
     private void Start()
     {
