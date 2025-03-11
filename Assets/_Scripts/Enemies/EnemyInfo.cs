@@ -136,7 +136,7 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
             return;
 
         // Return if the damager is not a power
-        if (e.DamagerObject is not IPower && e.DamagerObject is not Shotgun)
+        if (e.DamagerObject is not IPower && (e.DamagerObject is not Shotgun && !e.IsCriticalHit))
             return;
 
         // Return if the comic impact timer is not complete

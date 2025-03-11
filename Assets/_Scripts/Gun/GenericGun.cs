@@ -385,7 +385,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
             var damageMultiplier = 1f;
 
-            bool isCriticalHit = false;
+            var isCriticalHit = false;
 
             // Try to get the special hurt box component
             if (hitInfo.collider.TryGetComponentInParent(out SpecialHurtBox specialHurtBox))
