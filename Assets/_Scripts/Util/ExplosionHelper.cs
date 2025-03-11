@@ -14,6 +14,7 @@ public class ExplosionHelper : MonoBehaviour, IDamager
 
     [SerializeField] private ParticleSystem explosionParticlePrefab;
     [SerializeField] private VisualEffect explosionVfxPrefab;
+    [SerializeField] private Sound sound;
 
     #endregion
 
@@ -77,6 +78,10 @@ public class ExplosionHelper : MonoBehaviour, IDamager
             // Set it to destroy itself after the duration of the particle system
             Destroy(explosionParticle.gameObject, explosionParticle.main.duration);
         }
+        
+        // Play the sound
+        if (sound != null)
+            SoundManager.Instance.PlaySfxAtPoint(sound, transform.position);
     }
 
     private void OnDrawGizmosSelected()
