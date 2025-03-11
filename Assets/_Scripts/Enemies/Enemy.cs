@@ -10,10 +10,6 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
 
     public static IReadOnlyCollection<Enemy> Enemies => _enemies;
 
-    // #region Fields
-    //
-    // #endregion
-
     #region Getters
 
     public EnemyInfo EnemyInfo { get; private set; }
@@ -24,7 +20,7 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
     
     public IEnemyDetectionBehavior DetectionBehavior { get; private set; }
 
-    public IEnemyAttackBehavior AttackBehavior { get; private set; }
+    public IEnemyAttackBehavior AttackBehavior { get; set; }
 
     public INewEnemyMovementBehavior MovementBehavior => Brain.MovementBehavior;
 

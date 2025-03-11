@@ -11,6 +11,9 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 {
     #region Serialized Fields
 
+    [SerializeField] private BossEnemyAttack bossEnemyAttack;
+    [SerializeField] private TempShootingEnemyAttack attack1;
+
     [SerializeField] private BossPhaseInfo[] bossPhases;
 
     [SerializeField] private UnityEvent onGoodEnding;
@@ -23,6 +26,8 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
     private EnemyInfo _enemyInfo;
 
     private int _currentPhase;
+
+    private IEnemyAttackBehavior _currentAttackBehavior;
 
     #endregion
 
@@ -44,6 +49,9 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
     // Start is called before the first frame update
     private void Start()
     {
+        // Switch to the first attack behavior
+        ChangeAttackBehavior(attack1);
+
         _currentPhase = -1;
 
         // Subscribe to the OnDamaged event
@@ -60,7 +68,8 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         // Get the instance of the player.
         // If it has ANY neuros in the powers list, then the player has the bad ending.
         var goodEnding =
-            Player.Instance == null && Player.Instance.PlayerPowerManager.Powers.All(n => n.PowerType != PowerType.Drug);
+            Player.Instance == null &&
+            Player.Instance.PlayerPowerManager.Powers.All(n => n.PowerType != PowerType.Drug);
 
         if (goodEnding)
         {
@@ -118,6 +127,29 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         }
     }
 
+    private void ChangeAttackBehavior(IEnemyAttackBehavior newBehavior)
+    {
+        // Create an array of all the attack behaviors
+        var attackBehaviors = new IEnemyAttackBehavior[]
+        {
+            bossEnemyAttack, attack1
+        };
+        
+        // Iterate through all of them and disable the ones that aren't the current one
+        foreach (var cBehavior in attackBehaviors)
+        {
+            // Skip the current behavior
+            if (cBehavior == newBehavior)
+                continue;
+            
+            // Disable the attack behavior
+            (cBehavior as MonoBehaviour)!.enabled = false;
+        }
+        
+        // Enable the new behavior
+        (newBehavior as MonoBehaviour)!.enabled = true;
+    }
+
     public string GetDebugText()
     {
         StringBuilder sb = new();
@@ -129,6 +161,12 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         return sb.ToString();
     }
 
+    public enum BossBehavior : byte
+    {
+        Gun,
+        Power,
+    }
+    
     [Serializable]
     private struct BossPhaseInfo
     {

@@ -110,8 +110,11 @@ public class TempShootingEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         // Return if the fire delay timer is not complete
         // Return if the cooldown timer is not complete
         // Return if the enemy's line of sight with the target is broken
+        // Return if there is an attack disable token
         if (!IsAttackEnabled || !IsTargetInRange || _detectionFireDelayTimer.IsNotComplete ||
-            _attackCooldownTimer.IsNotComplete || !Enemy.DetectionBehavior.IsTargetDetected)
+            _attackCooldownTimer.IsNotComplete || !Enemy.DetectionBehavior.IsTargetDetected ||
+            AttackDisableTokens.Count > 0
+           )
             return;
 
         // Reset the attack cooldown timer

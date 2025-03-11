@@ -496,7 +496,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         OnReloadStart?.Invoke(this);
     }
 
-    //this function gates the the jump animation while reloading
+    // this function gates the jump animation while reloading
     // public void HandleJumpAnimWhileReloading()
     // {
     //     // Check if the player is reloading

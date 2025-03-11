@@ -37,19 +37,21 @@ public class Spreadblast : MonoBehaviour, IPower
 
         for (var i = 0; i < projectileCount; i++)
         {
-            //Create object at current position
-            var spreadBlast = Instantiate(spreadblastPrefab,
-                powerManager.Player.PlayerController.CameraPivot.transform.position,
-                powerManager.Player.PlayerController.CameraPivot.transform.rotation);
-
-            var spreadblastProjectile = spreadBlast.GetComponent<SpreadblastProjectile>();
-
             // Create the position of the projectile
             var firePosition = powerManager.PowerFirePoint.position;
 
             // Create a vector that points forward from the camera pivot
             var aimTargetPoint = powerManager.PowerAimHitPoint;
             var fireForward = (aimTargetPoint - firePosition).normalized;
+
+            // Create object at current position
+            var spreadBlast = Instantiate(
+                spreadblastPrefab,
+                powerManager.Player.PlayerController.CameraPivot.transform.position,
+                Quaternion.LookRotation(fireForward)
+            );
+
+            var spreadblastProjectile = spreadBlast.GetComponent<SpreadblastProjectile>();
 
             spreadblastProjectile.Shoot(
                 this, powerManager, pToken,

@@ -44,6 +44,12 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
 
     #endregion
 
+    #region Int Variables
+    
+    public int BehaviorMode { get; set; }
+    
+    #endregion
+    
     #region Bool Variables
 
     public bool IsTargetDetected { get; set; }

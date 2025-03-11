@@ -45,15 +45,17 @@ public class SpreadblastProjectile : MonoBehaviour, IPowerProjectile
         // Move the projectile to the position parameter
         transform.position = position;
 
-        // Randomize the forward parameter by rotating it by a random amount
-        forward = Quaternion.Euler(
-            Random.Range(-randomSpreadY, randomSpreadY),
-            Random.Range(-randomSpreadX, randomSpreadX),
-            0
-        ) * forward;
-
         // Set the forward of the game object to the forward parameter
         transform.forward = forward;
+
+        // Rotate the projectile by a random amount
+        var spreadDirection =
+            Quaternion.AngleAxis(Random.Range(-randomSpreadX, randomSpreadX), transform.up) *
+            Quaternion.AngleAxis(Random.Range(-randomSpreadY, randomSpreadY), transform.right) *
+            forward;
+        
+        // Set the forward of the game object to the spread direction
+        transform.forward = spreadDirection;
 
         _spreadBlast = (Spreadblast)power;
         _powerManager = powerManager;
@@ -62,8 +64,7 @@ public class SpreadblastProjectile : MonoBehaviour, IPowerProjectile
         Destroy(gameObject, despawnTimer);
 
         var rb = GetComponent<Rigidbody>();
-        rb.AddForce(transform.up * yLaunchVelocity, ForceMode.VelocityChange);
-        rb.AddForce(transform.forward * zLaunchVelocity, ForceMode.VelocityChange);
+        rb.AddForce(transform.up * yLaunchVelocity + transform.forward * zLaunchVelocity, ForceMode.VelocityChange);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -126,12 +127,12 @@ public class SpreadblastProjectile : MonoBehaviour, IPowerProjectile
         // Return if the explosion VFX prefab is null
         if (explosionVfxPrefab == null)
             return;
-        
+
         // Instantiate the explosion VFX at the projectile's position
         var explosion = Instantiate(explosionVfxPrefab, transform.position, Quaternion.identity);
 
         explosion.Play();
-        
+
         // Destroy the explosion VFX after the duration of the main explosion VFX
         Destroy(explosion.gameObject, 10);
     }
