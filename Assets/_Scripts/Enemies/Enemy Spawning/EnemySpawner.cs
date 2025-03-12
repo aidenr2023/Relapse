@@ -11,7 +11,7 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
     [SerializeField] protected bool isActiveOnStart = false;
 
     [SerializeField] protected GameObject itemToDropWhenComplete;
-    
+
     [SerializeField] protected UnityEvent onEnemyKilled;
     [SerializeField] protected UnityEvent onSpawnerStart;
     [SerializeField] protected UnityEvent onSpawnerComplete;
@@ -54,21 +54,21 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
 
         // Set the transform's parent to null
         enemy.transform.SetParent(null);
-        
+
         // Set the position and rotation of the enemy to the spawn position and rotation
         enemy.transform.position = spawnPosition;
         enemy.transform.rotation = spawnRotation;
-        
+
         // Set the instantiated at runtime flag to true to avoid data for
         // this enemy being saved / loaded
         enemy.UniqueId.InstantiatedAtRuntime = true;
-        
+
         // Add the enemy to the spawned enemies hash set
         spawnedEnemies.Add(enemy.EnemyInfo);
 
         // Attach the OnDeath event to the InvokeOnEnemyKilled method
         enemy.EnemyInfo.OnDeath += InvokeOnEnemyKilled;
-        
+
         // Call the custom spawn enemy method
         CustomSpawnEnemy(enemy, spawnPosition, spawnRotation);
 
@@ -97,7 +97,7 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
 
         // Invoke the on spawner start event
         onSpawnerStart.Invoke();
-        
+
         // Call the custom start spawning method
         CustomStartSpawning();
     }
@@ -119,12 +119,29 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
 
     protected abstract void CustomStopSpawning();
 
+    protected void SpawnItem(HealthChangedEventArgs args)
+    {
+        // Drop the item to spawn
+        if (itemToDropWhenComplete == null)
+            return;
+
+        var spawnedItem = Instantiate(
+            itemToDropWhenComplete,
+            args.Actor.GameObject.transform.position,
+            Quaternion.identity
+        );
+
+        // Set the instantiated at runtime flag to true (if it has one)
+        if (spawnedItem.TryGetComponent(out UniqueId uniqueId))
+            uniqueId.InstantiatedAtRuntime = true;
+    }
+
     public void KillAllCurrentEnemies()
     {
         // Copy the spawned enemies hash set to an array
         var enemies = new EnemyInfo[spawnedEnemies.Count];
         spawnedEnemies.CopyTo(enemies);
-        
+
         // Loop through the enemies array and kill each enemy
         foreach (var enemy in enemies)
             enemy.ChangeHealth(-enemy.MaxHealth, enemy, enemy.ParentComponent.AttackBehavior, enemy.transform.position);

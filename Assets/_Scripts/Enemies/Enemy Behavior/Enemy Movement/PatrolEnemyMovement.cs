@@ -55,7 +55,10 @@ public class PatrolEnemyMovement : ComponentScript<Enemy>, INewEnemyMovementBeha
 
         // Reset the movement speed token
         else
-            _detectionStateToken.Value = 1;
+        {
+            if (_detectionStateToken != null)
+                _detectionStateToken.Value = 1;
+        }
     }
 
     private void Start()
@@ -86,6 +89,10 @@ public class PatrolEnemyMovement : ComponentScript<Enemy>, INewEnemyMovementBeha
 
     private void UpdateDetectionStateToken()
     {
+        // Return if the token is null
+        if (_detectionStateToken == null)
+            return;
+        
         _detectionStateToken.Value = Enemy.DetectionBehavior.CurrentDetectionState switch
         {
             EnemyDetectionState.Unaware => unawareMovementMultiplier,
@@ -95,7 +102,7 @@ public class PatrolEnemyMovement : ComponentScript<Enemy>, INewEnemyMovementBeha
 
     private bool CheckForNewCheckpoint()
     {
-        return (NewMovement.NavMeshAgent.remainingDistance < checkpointProximityThreshold);
+        return NewMovement.GetRemainingDistance() < checkpointProximityThreshold;
     }
 
     private void SetDestinationToCheckpoint(int index)

@@ -44,7 +44,7 @@ public class MiniWaveEnemySpawner : EnemySpawner
     private void SpawnEnemiesOnWaveComplete()
     {
         Debug.Log($"Spawning enemies: {_wavesCompleted} - {spawnerCompleteAmount}");
-        
+
         // Return if the spawner is not infinite and the spawner has completed the required amount of waves
         if (!isInfinite && _wavesCompleted >= spawnerCompleteAmount)
         {
@@ -54,7 +54,7 @@ public class MiniWaveEnemySpawner : EnemySpawner
 
             return;
         }
-        
+
         // Reset the timer
         _spawnTimer.SetMaxTimeAndReset(spawnInterval);
 
@@ -96,20 +96,14 @@ public class MiniWaveEnemySpawner : EnemySpawner
         // Return if the enemy killed count is not equal to the spawner complete amount
         if (_waveEnemiesRemaining != 0)
             return;
-        
+
         // Return if there are waves remaining
         if (_wavesCompleted < spawnerCompleteAmount)
             return;
-        
-        // Drop the item to spawn
-        if (itemToDropWhenComplete != null)
-            Instantiate(
-                itemToDropWhenComplete,
-                e.Actor.GameObject.transform.position,
-                Quaternion.identity
-            );
+
+        SpawnItem(e);
     }
-    
+
     private void DecrementEnemiesRemaining(object sender, HealthChangedEventArgs e)
     {
         _waveEnemiesRemaining--;
@@ -127,7 +121,7 @@ public class MiniWaveEnemySpawner : EnemySpawner
         // Start the initial wave
         if (!_spawnedInitialWave)
             SpawnAllEnemies();
-        
+
         _spawnedInitialWave = true;
 
         // TODO: Fix bug where stopping the spawner between waves still spawns the next wave

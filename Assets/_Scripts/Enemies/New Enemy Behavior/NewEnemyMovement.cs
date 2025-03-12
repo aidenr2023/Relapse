@@ -48,6 +48,8 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
     private readonly HashSet<object> _movementDisableTokens = new();
 
+    private bool _hasStarted;
+    
     #endregion
 
     #region Getters
@@ -69,13 +71,18 @@ public class NewEnemyMovement : ComponentScript<Enemy>
     }
 
     #endregion
-
+    
     protected override void CustomAwake()
     {
         _brain = GetComponent<NewEnemyBehaviorBrain>();
         _navMeshAgent = GetComponent<NavMeshAgent>();
 
         MovementSpeedTokens = new(false, null, 1);
+    }
+
+    private void Start()
+    {
+        _hasStarted = true;
     }
 
     private void OnEnable()
@@ -133,9 +140,12 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
     private IEnumerator CoroutineUpdate()
     {
-        // Wait a frame
-        yield return null;
+        // Wait until the start method is called
+        yield return new WaitUntil(() => _hasStarted);
 
+        // Wait for ANOTHER frame
+        yield return null;
+        
         while (enabled)
         {
             // Get the current move action
@@ -157,7 +167,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
         // Update the float variables 
         _brain.DistanceFromTarget = Vector3.Distance(transform.position, targetPosition);
-        _brain.DistanceFromDestination = _navMeshAgent.remainingDistance;
+        _brain.DistanceFromDestination = GetRemainingDistance();
         _brain.Speed = _navMeshAgent.velocity.magnitude;
         _brain.HealthPercentage = ParentComponent.EnemyInfo.CurrentHealth / ParentComponent.EnemyInfo.MaxHealth;
 
@@ -175,19 +185,21 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         {
             BehaviorActionMove.MoveAction.Idle => false,
 
-            BehaviorActionMove.MoveAction.StrafeLeft => _navMeshAgent.remainingDistance < strafeUpdateDistance,
-            BehaviorActionMove.MoveAction.StrafeRight => _navMeshAgent.remainingDistance < strafeUpdateDistance,
-            BehaviorActionMove.MoveAction.StrafeForward => _navMeshAgent.remainingDistance < strafeUpdateDistance,
-            BehaviorActionMove.MoveAction.StrafeBackward => _navMeshAgent.remainingDistance < strafeUpdateDistance,
+            BehaviorActionMove.MoveAction.StrafeLeft => GetRemainingDistance() < strafeUpdateDistance,
+            BehaviorActionMove.MoveAction.StrafeRight => GetRemainingDistance() < strafeUpdateDistance,
+            BehaviorActionMove.MoveAction.StrafeForward => GetRemainingDistance() < strafeUpdateDistance,
+            BehaviorActionMove.MoveAction.StrafeBackward => GetRemainingDistance() < strafeUpdateDistance,
 
             BehaviorActionMove.MoveAction.MoveTowardTarget => true,
             BehaviorActionMove.MoveAction.MoveAwayFromTarget => true,
 
-            BehaviorActionMove.MoveAction.Wander => _navMeshAgent.remainingDistance < destinationUpdateDistance,
+            BehaviorActionMove.MoveAction.Wander => GetRemainingDistance() < destinationUpdateDistance,
             BehaviorActionMove.MoveAction.MovementScript => true,
 
             _ => throw new ArgumentOutOfRangeException()
         };
+
+
     }
 
     private void DetermineMovementSpeed(BehaviorActionMove.MoveAction moveAction)
@@ -402,6 +414,11 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         // Set the target position to the destination
         _targetPosition = destination;
 
+        // Return if the agent is disabled OR
+        // return if the agent is not on the navmesh
+        if (!NavMeshAgent.enabled || !NavMeshAgent.isOnNavMesh)
+            return;
+        
         // Set the destination of the nav mesh agent
         _navMeshAgent.SetDestination(_targetPosition);
     }
@@ -442,6 +459,16 @@ public class NewEnemyMovement : ComponentScript<Enemy>
     {
         // Warp the nav mesh agent to the position
         _navMeshAgent.Warp(pos);
+    }
+    
+    public float GetRemainingDistance()
+    {
+        // Return if the nav mesh agent is disabled OR
+        // return if the agent is not on the navmesh
+        if (!NavMeshAgent.enabled || !NavMeshAgent.isOnNavMesh)
+            return 0;
+            
+        return _navMeshAgent.remainingDistance;
     }
 
     public static Vector3 RotateDirectionRandomly(Vector3 direction, float angle = RANDOM_STRAFE_ANGLE)

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Serialization;
-using Random = UnityEngine.Random;
 
 public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
 {
@@ -31,7 +30,7 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
     private bool _isAttacking;
 
     #endregion
-    
+
     public Action<BehaviorActionMove.MoveAction, NewEnemyBehaviorBrain> onPlayerMovementStateChange;
 
     #region Float Variables
@@ -45,11 +44,11 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
     #endregion
 
     #region Int Variables
-    
+
     public int BehaviorMode { get; set; }
-    
+
     #endregion
-    
+
     #region Bool Variables
 
     public bool IsTargetDetected { get; set; }
@@ -60,9 +59,9 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
 
     public BehaviorActionMove CurrentMoveAction => _currentMoveAction;
     public BehaviorActionAttack CurrentAttackAction => _currentAttackAction;
-    
+
     public INewEnemyMovementBehavior MovementBehavior => _movementBehavior;
-    
+
     public BehaviorActionMove.MoveAction CurrentMoveActionType => _currentMoveAction.moveAction;
 
     #endregion
@@ -73,7 +72,7 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
     {
         // Get the movement behavior
         _movementBehavior = GetComponent<INewEnemyMovementBehavior>();
-        
+
         // Assert that the movement behavior is not null
         Debug.Assert(_movementBehavior != null, "The movement behavior is null!");
     }
@@ -104,20 +103,21 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
 
         // Store the previous movement state
         var previousMovementAction = _currentMoveAction;
-        
+
         if (_currentBehaviorState != bestBehaviorState)
         {
             // Reset the current action
             ResetCurrentAction();
-            
+
             // Set the flag to invoke the event
             invokeEvent = true;
         }
 
         // Set the current behavior state to the best behavior state
         _currentBehaviorState = bestBehaviorState;
-        
-        onPlayerMovementStateChange?.Invoke(previousMovementAction.moveAction, this);
+
+        if (invokeEvent)
+            onPlayerMovementStateChange?.Invoke(previousMovementAction.moveAction, this);
     }
 
     private EnemyBehaviorState GetBehaviorStateRecursive(EnemyBehaviorStateBase[] currentStates)
@@ -168,7 +168,7 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
 
             if (randomWeight > 0)
                 continue;
-            
+
             // Update the current move action   
             _currentMoveAction = _currentBehaviorState.moveActions[index];
             break;
@@ -243,10 +243,10 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
     {
         // Delay the first update by a frame to allow the other scripts to initialize
         yield return null;
-        
+
         // Wait between 0 and 1 seconds to prevent too many enemies from updating at the same time
-        yield return new WaitForSeconds(Random.Range(0f, 1f));
-        
+        yield return new WaitForSeconds(UnityEngine.Random.Range(0f, 1f));
+
         while (true)
         {
             // Determine the behavior state

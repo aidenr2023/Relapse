@@ -66,8 +66,8 @@ public class AsyncSceneManager : IDebugged
         // Try to get the level information for the loaded scene
         if (!LevelInformation.GetLevelInformation(scene.name, out var levelInfo))
         {
-            // Log an error if the level information is not found
-            Debug.LogError($"Level Information for {scene.name} not found!");
+            // // Log an error if the level information is not found
+            // Debug.LogError($"Level Information for {scene.name} not found!");
             return;
         }
 

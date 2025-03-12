@@ -212,7 +212,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             velocity.z
         );
 
-        Debug.Log($"Killed Velocity: {ParentComponent.Rigidbody.velocity}");
+        // Debug.Log($"Killed Velocity: {ParentComponent.Rigidbody.velocity}");
     }
 
     private void ResetJumpOnWallRunEnd(PlayerWallRunning obj)

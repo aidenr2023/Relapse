@@ -107,17 +107,9 @@ public class ContinuousEnemySpawner : EnemySpawner
 
         // Invoke the spawner complete event
         onSpawnerComplete?.Invoke();
-
-        // // Drop the item to spawn
-        // if (itemToDropWhenComplete != null)
-        //     Instantiate(
-        //         itemToDropWhenComplete,
-        //         healthChangedEventArgs.Actor.GameObject.transform.position,
-        //         Quaternion.identity
-        //     );
     }
-    
-    private void SpawnItemOnEnemyDeath(object sender, HealthChangedEventArgs e)
+
+    private void SpawnItemOnEnemyDeath(object sender, HealthChangedEventArgs args)
     {
         // Return if the spawner is infinite
         if (isInfinite)
@@ -126,14 +118,8 @@ public class ContinuousEnemySpawner : EnemySpawner
         // Return if the enemy killed count is not equal to the spawner complete amount
         if (_enemyKilledCount != spawnerCompleteAmount)
             return;
-        
-        // Drop the item to spawn
-        if (itemToDropWhenComplete != null)
-            Instantiate(
-                itemToDropWhenComplete,
-                e.Actor.GameObject.transform.position,
-                Quaternion.identity
-            );
+
+        SpawnItem(args);
     }
 
     protected override void CustomStartSpawning()

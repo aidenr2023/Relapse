@@ -97,7 +97,7 @@ public class NewPatrolEnemyMovement : ComponentScript<Enemy>, INewEnemyMovementB
 
     private bool CheckForNewCheckpoint()
     {
-        return (NewMovement.NavMeshAgent.remainingDistance < checkpointProximityThreshold);
+        return NewMovement.GetRemainingDistance() < checkpointProximityThreshold;
     }
 
     private void SetDestinationToCheckpoint(int index)

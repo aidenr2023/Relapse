@@ -169,18 +169,12 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     // Update is called once per frame
     private void Update()
     {
-        // // Update the text
-        // UpdateText();
-
         // Update the tolerance and health
         UpdateToleranceAndHealth();
 
-        if (Input.GetKeyDown(KeyCode.Z))
-            FindBadInteractableMaterials();
-
-        // Scene Skips
         if (DebugManager.Instance.IsDebugMode)
         {
+            // Scene Skips
             if (Input.GetKeyDown(KeyCode.Alpha1))
                 DebugLoadScene(debugSceneLevelInfos[0]);
             if (Input.GetKeyDown(KeyCode.Alpha2))
@@ -202,6 +196,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
             if (Input.GetKeyDown(KeyCode.Alpha0))
                 DebugLoadScene(debugSceneLevelInfos[9]);
 
+            // Power Changes
             if (Input.GetKeyDown(KeyCode.Keypad0))
                 ChangePower(0);
             if (Input.GetKeyDown(KeyCode.Keypad1))
@@ -210,7 +205,15 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
                 ChangePower(2);
             if (Input.GetKeyDown(KeyCode.Keypad3))
                 ChangePower(3);
+                    
+            // Breakpoint
+            if (Input.GetKeyDown(KeyCode.B))
+                Debug.Break();
+            
+            if (Input.GetKeyDown(KeyCode.Z))
+                FindBadInteractableMaterials();
         }
+
     }
 
     private void DebugLoadScene(LevelSectionSceneInfo[] levelInfo)
