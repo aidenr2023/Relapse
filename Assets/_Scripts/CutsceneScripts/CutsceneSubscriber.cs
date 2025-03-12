@@ -1,11 +1,13 @@
 using System;
 using UnityEngine;
 using System.Collections;
+using Cinemachine;
 
 public class CutsceneSubscriber : MonoBehaviour
 {
     #region References
-
+    
+    [SerializeField] private GameObject _player;
     private CutsceneHandler _cutsceneHandler;
     private PlayerMovementV2 _playerMovementV2;
     private PlayerLook _playerCameraMovement;
@@ -17,6 +19,7 @@ public class CutsceneSubscriber : MonoBehaviour
     [Header("Player Reference")]
     [SerializeField] private Transform _playerTransform;
     [SerializeField] private Animator _playerAnimator;
+    [SerializeField] private GameObject  _cameraPlayer;
 
     [Header("Rotation Settings")]
     [SerializeField] private float _rotationResetDelay = 0.1f;
@@ -68,49 +71,117 @@ public class CutsceneSubscriber : MonoBehaviour
         _cutsceneHandler.OnCutsceneStart.AddListener(OnCutsceneStart);
         _cutsceneHandler.OnCutsceneEnd.AddListener(OnCutsceneEnd);
     }
-
+    
+    
+    /// <summary>
+    /// Invoked when a cutscene starts. checks if the player needs to be moved or not
+    /// and if the cutscene is first person or not
+    /// </summary>
     private void OnCutsceneStart()
     {
         _initialRotation = _playerTransform.rotation;
-        
-        if (!_cutsceneHandler.IsPlayerMovementNeeded)
+    
+        bool needsMovement = _cutsceneHandler.IsPlayerMovementNeeded;
+        bool isFirstPerson = _cutsceneHandler.IsCutsceneFirstPerson;
+
+        // Early exit for first-person cutscenes with active movement
+        if (needsMovement && isFirstPerson)
+            return;
+
+        // Handle movement-restricted scenarios
+        if (!needsMovement)
         {
-            DisablePlayerSystems();
-        }
-        else
-        {
-            PlayScriptedEvents();
+            if (isFirstPerson)
+            {
+                DisablePlayerSystemsFirstPerson();
+            }
+            else
+            {
+                _cameraPlayer.SetActive(false); 
+                if (_cameraPlayer.activeInHierarchy)
+                {
+                    Debug.Log("Camera player is inactive");
+                }
+                DisablePlayerSystems();
+            }
         }
     }
-
+    
+    
+    /// <summary>
+    /// Invoked when a cutscene ends. checks if the player had movement or not
+    /// and if the cutscene is first person or not to enable the player systems
+    /// </summary>
     private void OnCutsceneEnd()
     {
-        
-        if (!_cutsceneHandler.IsPlayerMovementNeeded)
+        bool isFirstPerson = _cutsceneHandler.IsCutsceneFirstPerson;
+        bool needsMovement = _cutsceneHandler.IsPlayerMovementNeeded;
+
+        // Handle camera and core systems first
+        if (!isFirstPerson)
         {
-            if (_rotationCheckCoroutine != null)
+            // Third-person cutscene (both movement needed and not needed cases)
+            _cameraPlayer.SetActive(true);
+            if (_cameraPlayer.activeInHierarchy)
             {
-                StopCoroutine(_rotationCheckCoroutine);
+                Debug.Log("Camera player is active");
             }
-            _rotationCheckCoroutine = StartCoroutine(ValidatePlayerRotation());
             EnablePlayerSystems();
         }
-        else
+        else if (!needsMovement)
         {
-            StopScriptedEvents();
+            // First-person cutscene without movement needed
+            EnablePlayerSystemsFirstPerson();
         }
+
+        // Handle common post-cutscene cleanup
+        HandleRotationValidation();
+    
+        // Uncomment if needed
+        // StopScriptedEvents();
     }
 
+    private void HandleRotationValidation()
+    {
+        if (_rotationCheckCoroutine != null)
+            StopCoroutine(_rotationCheckCoroutine);
+    
+        _rotationCheckCoroutine = StartCoroutine(ValidatePlayerRotation());
+    }
+
+    /// <summary>
+    /// function to disable player systems for third person cutscenes
+    /// </summary>
     private void DisablePlayerSystems()
     {
-        _storedRotation = _playerTransform.rotation;
-        _playerCameraMovement.enabled = false;
-        _playerMovementV2.DisablePlayerControls();
-        _weaponManager.enabled = false;
-        Debug.Log("Player systems disabled");
+        //on cutscene start set the player inactive
+        _player.SetActive(false);
+        
+        // _storedRotation = _playerTransform.rotation;
+        // _playerCameraMovement.enabled = false;
+        // _playerMovementV2.DisablePlayerControls();
+        // _weaponManager.enabled = false;
+        Debug.Log("Player character disabled");
     }
-
+    
+    /// <summary>
+    /// function to enable player systems for third person cutscenes
+    /// </summary>
     private void EnablePlayerSystems()
+    {
+        //on cutscene end set the player active
+        _player.SetActive(true);
+        // _playerTransform.rotation = resetRotationToZero ? Quaternion.identity : _storedRotation;
+        // _playerCameraMovement.enabled = true;
+        // _playerMovementV2.EnablePlayerControls();
+        // _weaponManager.enabled = true;
+        Debug.Log("Player character enabled");
+    }
+    
+    /// <summary>
+    /// Function to enable player systems for first person cutscenes
+    /// </summary>
+    private void EnablePlayerSystemsFirstPerson()
     {
         _playerTransform.rotation = resetRotationToZero ? Quaternion.identity : _storedRotation;
         _playerCameraMovement.enabled = true;
@@ -118,6 +189,22 @@ public class CutsceneSubscriber : MonoBehaviour
         _weaponManager.enabled = true;
         Debug.Log("Player systems enabled");
     }
+    
+    /// <summary>
+    /// function to disable player systems for first person cutscenes
+    /// </summary>
+    private void DisablePlayerSystemsFirstPerson()
+    {
+        _storedRotation = _playerTransform.rotation;
+        _playerCameraMovement.enabled = false;
+        _playerMovementV2.DisablePlayerControls();
+        _weaponManager.enabled = false;
+        Debug.Log("Player systems disabled");
+    }
+    
+    
+    
+    
 
     private void StartRotationValidation()
     {

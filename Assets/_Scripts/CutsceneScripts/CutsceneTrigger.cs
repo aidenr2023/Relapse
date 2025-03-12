@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -11,9 +12,18 @@ public class CutsceneTrigger : MonoBehaviour
 
     private CutsceneHandler cutsceneHandler;
     
-    [SerializeField] private bool isCamChangeNeeded = true;
+    [SerializeField] private bool isCamChangeNeeded = false;
     
-    [SerializeField] private bool isPlayerMovementNeeded = true;
+    [SerializeField] private bool isPlayerMovementNeeded = false;
+    
+    [SerializeField] private bool isCutsceneFirstPerson = false;
+    
+    
+    
+    private CutsceneHandler.CutsceneType _cutscenePerspective;
+    private BoxCollider _boxCollider;
+    
+    
     public bool IsCamChangeNeeded => isCamChangeNeeded;
 
     private bool cutscenePlayed = false;
@@ -22,6 +32,15 @@ public class CutsceneTrigger : MonoBehaviour
     {
         cutsceneHandler = CutsceneManager.Instance.CutsceneHandler;
         cutsceneHandler.IsPlayerMovementNeeded = isPlayerMovementNeeded;
+        cutsceneHandler.IsCutsceneFirstPerson = isCutsceneFirstPerson;
+        if (isCutsceneFirstPerson)
+        {
+            _cutscenePerspective = CutsceneHandler.CutsceneType.FirstPerson;
+        }
+        else
+        {
+            _cutscenePerspective = CutsceneHandler.CutsceneType.ThirdPerson;
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -39,15 +58,20 @@ public class CutsceneTrigger : MonoBehaviour
     
     private IEnumerator TriggerCutsceneDelayed()
     {
+        // Wait one frame after the player enters the trigger
         yield return null;
-        CutsceneManager.Instance.PlayCutsceneByName(cutsceneName, isPlayerMovementNeeded);
+        //plays the cutscene by name, checks if player movement is needed,
+        //and if the cutscene is first person
+        CutsceneManager.Instance.PlayCutsceneByName(cutsceneName, isPlayerMovementNeeded, _cutscenePerspective);
         cutscenePlayed = true;
     }
+   
+    
     
     //destroy the trigger after seconds 
     private IEnumerator DestroyTrigger()
     {
-        yield return new WaitForSeconds(2f);
-        Destroy(gameObject);
+        yield return new WaitForSeconds(3f);
+        _boxCollider.enabled = false;
     }
 }

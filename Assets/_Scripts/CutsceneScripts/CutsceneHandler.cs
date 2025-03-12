@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Events;
@@ -14,9 +15,14 @@ public class CutsceneHandler : MonoBehaviour
     private Animator _playerCutsceneAnimator;
     private bool _isCutsceneActive;
     public bool IsPlayerMovementNeeded { get;  set; }
+    public bool IsCutsceneFirstPerson { get;  set; }
     
-
-    
+    public enum CutsceneType
+    {
+        FirstPerson,
+        ThirdPerson
+    }
+        
     private void Start()
     {
         _director = GetComponent<PlayableDirector>();
@@ -41,14 +47,19 @@ public class CutsceneHandler : MonoBehaviour
         }
     }
     
-    
-    public void PlayCutscene(PlayableAsset timelineAsset, bool isMovementNeeded)
+    /// <summary>
+    /// Plays a cutscene using the provided timeline asset and conditions
+    /// </summary>
+    /// <param name="timelineAsset"></param>
+    /// <param name="isMovementNeeded"></param>
+    public void PlayCutscene(PlayableAsset timelineAsset, bool isMovementNeeded, CutsceneType perspective)
     {
         if (_isCutsceneActive) return;
 
         if (!ValidateDependencies(timelineAsset)) return;
-        
+        IsCutsceneFirstPerson = (perspective == CutsceneType.FirstPerson);
         IsPlayerMovementNeeded = isMovementNeeded;
+        
         StartCoroutine(PlayCutsceneDelayed(timelineAsset));
     }
 
@@ -117,14 +128,23 @@ public class CutsceneHandler : MonoBehaviour
 
         _director.playableAsset = timelineAsset;
         
+        if (IsCutsceneFirstPerson)
+        {
+            BindFirstPersonAnimatorTracks();
+        }
+        else
+        {
+            Debug.Log("Using prebinded third person animator tracks...");
+        }
+    }
+    private void BindFirstPersonAnimatorTracks()
+    {
         foreach (var output in _director.playableAsset.outputs)
         {
             if (output.outputTargetType == typeof(Animator))
             {
                 _director.SetGenericBinding(output.sourceObject, _playerCutsceneAnimator);
-                Debug.Log($"Bound {_playerCutsceneAnimator} to track: {output.streamName}");
-                Debug.Log($"[Cutscene] Animator Bound: {_playerCutsceneAnimator.gameObject.name}");
-
+                Debug.Log($"Bound FP animator to track: {output.streamName}");
             }
         }
     }

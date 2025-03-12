@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
+using System;
 
 public class CutsceneManager : MonoBehaviour
 {
@@ -87,7 +88,7 @@ public class CutsceneManager : MonoBehaviour
     #endregion
 
     #region Public API
-    public void PlayCutsceneByName(string cutsceneName, bool isPlayerMovementNeeded)
+    public void PlayCutsceneByName(string cutsceneName, bool isPlayerMovementNeeded, CutsceneHandler.CutsceneType perspective)
     {
         if (!cutsceneDictionary.TryGetValue(cutsceneName, out PlayableAsset asset))
         {
@@ -95,7 +96,7 @@ public class CutsceneManager : MonoBehaviour
             
             return;
         }
-        cutsceneHandler.PlayCutscene(asset, !isPlayerMovementNeeded);
+        cutsceneHandler.PlayCutscene(asset, !isPlayerMovementNeeded, perspective);
         
 
         if (activeDirector == null)
@@ -105,16 +106,22 @@ public class CutsceneManager : MonoBehaviour
         }
         //log asset name 
         Debug.Log($"Playing cutscene asset: {asset.name}");
-        StartCutsceneSequence(asset);
+        StartCutsceneSequence(asset, perspective);
     }
     #endregion
 
     #region Execution
-    private void StartCutsceneSequence(PlayableAsset asset)
+    /// <summary>
+    /// gets the timeline asset and perspective-> plays the cutscene
+    /// </summary>
+    /// <param name="asset"></param>
+    /// <param name="perspective"></param>
+    private void StartCutsceneSequence(PlayableAsset asset, CutsceneHandler.CutsceneType perspective)
     {
         try
         {
-           cutsceneHandler.PlayCutscene(asset, cutsceneHandler.IsPlayerMovementNeeded);// pass the asset directly
+           cutsceneHandler.PlayCutscene(asset, cutsceneHandler.IsPlayerMovementNeeded, 
+           perspective);
         }
         catch (System.Exception e)
         {
