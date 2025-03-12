@@ -12,7 +12,7 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
     private const float TRANSITION_TIME2 = .5f;
     private const float HOLD_TIME = 1f;
     private const float CA_JITTER = 0.1f;
-    
+
     [SerializeField] private bool useLevelInformation = true;
     [SerializeField] private LevelSectionSceneInfo[] scenesToLoad;
 
@@ -20,6 +20,12 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
     {
         Debug.Log($"Entered the level transition checkpoint with player {player.name}");
 
+        // Run the transition to the next scene coroutine
+        DebugManagerHelper.Instance.StartCoroutine(TransitionToNextScene(scenesToLoad));
+    }
+
+    public void ForceTransitionToNextScene()
+    {
         // Run the transition to the next scene coroutine
         DebugManagerHelper.Instance.StartCoroutine(TransitionToNextScene(scenesToLoad));
     }
@@ -32,7 +38,7 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
         // Create a chromatic aberration token
         var caToken =
             PostProcessingVolumeController.Instance.ScreenVolume.ChromaticAberrationModule.Tokens.AddToken(0, -1, true);
-        
+
         // Get the unscaled start time
         var startTime = Time.unscaledTime;
 
@@ -41,18 +47,18 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
         {
             var lerpValue = Mathf.InverseLerp(startTime, startTime + TRANSITION_TIME, Time.unscaledTime);
             // TransitionOverlay.Instance.SetOpacity(lerpValue);
-            
+
             var randomValue = Random.Range(-CA_JITTER, CA_JITTER);
-            
+
             caToken.Value = lerpValue + randomValue;
 
             yield return null;
         }
-        
+
         caToken.Value = 1;
-        
+
         startTime = Time.unscaledTime;
-        
+
         // While transitioning, fade the screen
         while (Time.unscaledTime - startTime < TRANSITION_TIME2)
         {
@@ -130,27 +136,27 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
         {
             var lerpValue = 1 - (Time.unscaledTime - startTime) / TRANSITION_TIME;
             TransitionOverlay.Instance.SetOpacity(lerpValue);
-            
+
             yield return null;
         }
-        
+
         // Set the opacity of the transition overlay to 0
         TransitionOverlay.Instance.SetOpacity(0);
-        
+
         startTime = Time.unscaledTime;
-        
+
         // While transitioning, fade the screen to black
         while (Time.unscaledTime - startTime < TRANSITION_TIME)
         {
             var lerpValue = 1 - (Time.unscaledTime - startTime) / TRANSITION_TIME;
 
             var randomValue = Random.Range(-CA_JITTER, CA_JITTER);
-            
+
             caToken.Value = lerpValue + randomValue;
-            
+
             yield return null;
         }
-        
+
         // Remove the chromatic aberration token
         PostProcessingVolumeController.Instance.ScreenVolume.ChromaticAberrationModule.Tokens.RemoveToken(caToken);
     }
