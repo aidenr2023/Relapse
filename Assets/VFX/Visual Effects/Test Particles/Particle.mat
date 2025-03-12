@@ -10,19 +10,21 @@ Material:
   m_Name: Particle
   m_Shader: {fileID: 4800000, guid: 0406db5a14f94604a8c57ccfbc9f3b46, type: 3}
   m_Parent: {fileID: 2100000, guid: a10b193a7baa7ee40aa62d9b5799818c, type: 2}
-  m_ModifiedSerializedProperties: 2
+  m_ModifiedSerializedProperties: 10
   m_ValidKeywords:
   - _EMISSION
   - _SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords:
+  - _ALPHABLEND_ON
   - _FLIPBOOKBLENDING_OFF
-  m_LightmapFlags: 2
+  m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap:
     RenderType: Transparent
   disabledShaderPasses:
+  - GRABPASS
   - DepthOnly
   - SHADOWCASTER
   m_LockedProperties: 
@@ -30,7 +32,10 @@ Material:
     serializedVersion: 3
     m_TexEnvs: []
     m_Ints: []
-    m_Floats: []
+    m_Floats:
+    - _DstBlend: 10
+    - _SrcBlend: 5
+    - _ZWrite: 0
     m_Colors:
     - _EmissionColor: {r: 0.09649068, g: 0.059665702, b: 0.05683301, a: 1}
   m_BuildTextureStacks: []
