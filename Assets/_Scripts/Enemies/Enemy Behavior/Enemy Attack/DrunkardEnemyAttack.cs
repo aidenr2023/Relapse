@@ -9,7 +9,7 @@ public class DrunkardEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     #region Serialized Fields
 
     [SerializeField, Min(0)] private float chargeMovementSpeed = 12;
-    
+
     [SerializeField, Min(0.0001f)] private float updatesPerSecond = 4f;
 
     [SerializeField, Min(0)] private float explosionRange = 5;
@@ -22,11 +22,11 @@ public class DrunkardEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     #region Private Fields
 
     private ExplosionHelper _explosionHelper;
-    
+
     private bool _isExternallyEnabled = true;
 
     private Coroutine _updateCoroutine;
-    
+
     private bool _isExploding;
 
     #endregion
@@ -71,7 +71,7 @@ public class DrunkardEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     {
         // Wait for a frame
         yield return null;
-        
+
         while (!_isExploding)
         {
             // Continue if there is no target
@@ -93,7 +93,7 @@ public class DrunkardEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
                 yield return new WaitForSeconds(updatesPerSecond);
                 continue;
             }
-            
+
             // Start the explode coroutine
             StartCoroutine(ExplodeCoroutine());
 
@@ -106,9 +106,9 @@ public class DrunkardEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     {
         // Set the is exploding flag to true
         _isExploding = true;
-        
+
         yield return new WaitForSeconds(explosionTime);
-        
+
         Explode();
     }
 
@@ -120,12 +120,12 @@ public class DrunkardEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
             StopCoroutine(_updateCoroutine);
             _updateCoroutine = null;
         }
-        
+
+        // Remove all health from the enemy
+        Enemy.EnemyInfo.ChangeHealth(-Enemy.EnemyInfo.CurrentHealth, Enemy.EnemyInfo, this, transform.position, false);
+
         // Add explosion logic here
         _explosionHelper.Explode(true);
-        
-        // Destroy the enemy
-        Destroy(gameObject);
     }
 
     public void SetAttackEnabled(bool on)
