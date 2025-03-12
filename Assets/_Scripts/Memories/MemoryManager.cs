@@ -34,7 +34,7 @@ public class MemoryManager
         if (memory == null)
             return;
         
-        JournalTooltipManager.Instance.AddTooltip($"Memory Added: {memory.MemoryName}\nCheck the Journal For Details!");
+        JournalTooltipManager.Instance.AddTooltip($"Memory Added:\n{memory.MemoryName}\nCheck the Journal For Details!");
     }
 
     public void AddMemory(MemoryScriptableObject memory)

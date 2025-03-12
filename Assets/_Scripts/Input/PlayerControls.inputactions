@@ -258,6 +258,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Journal",
+                    "type": "Button",
+                    "id": "9800d61d-45f9-4f80-af77-f4582d970fd4",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Inspect",
                     "type": "Button",
                     "id": "df08003b-fa13-4424-b5aa-29bc11e777d4",
@@ -605,6 +614,28 @@
                     "processors": "",
                     "groups": "KB n M",
                     "action": "Power4",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ee817334-500b-47dd-be3a-a6eed4004044",
+                    "path": "<Keyboard>/j",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KB n M",
+                    "action": "Journal",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0fdcb4dd-9ec8-45f6-9f34-0c8fc1ab84b4",
+                    "path": "<Gamepad>/select",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "Journal",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

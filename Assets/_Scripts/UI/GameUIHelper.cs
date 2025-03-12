@@ -65,6 +65,7 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
         StartCoroutine(PauseMenuManager.LoadPauseMenuManager());
         StartCoroutine(VendorMenu.LoadVendorMenu());
         StartCoroutine(RelapseScreen.LoadDeathScene());
+        StartCoroutine(JournalMenu.LoadJournalMenu());
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -82,9 +83,22 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
 
     public void InitializeInput()
     {
+        // Pause input actions
         InputActions.Add(
             new InputData(InputManager.Instance.PControls.Player.Pause, InputType.Performed, OnPausePerformed)
         );
+
+        // Journal input actions
+        InputActions.Add(
+            new InputData(InputManager.Instance.PControls.Player.Journal, InputType.Performed, OnJournalPerformed)
+        );
+    }
+
+    private void OnJournalPerformed(InputAction.CallbackContext obj)
+    {
+        // If the journal menu's instance is NOT null, perform the journal action
+        if (JournalMenu.Instance != null)
+            JournalMenu.Instance.OnJournalPerformed(obj);
     }
 
     private void OnPausePerformed(InputAction.CallbackContext obj)

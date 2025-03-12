@@ -47,8 +47,6 @@ public class PauseMenuManager : GameMenu
 
     private readonly Stack<GameObject> _menuStack = new();
 
-    private bool _isInputRegistered;
-
     private bool _inputtedThisFrame;
 
     #endregion
@@ -73,30 +71,11 @@ public class PauseMenuManager : GameMenu
     {
         // Set the instance
         Instance = this;
-
-        // Initialize the input
-        InitializeInput();
     }
 
     protected override void CustomStart()
     {
     }
-
-    public void InitializeInput()
-    {
-    }
-
-    // private void OnEnable()
-    // {
-    //     if (!_isInputRegistered)
-    //     {
-    //         // Register the input user
-    //         InputManager.Instance.Register(this);
-    //
-    //         // Set the input registered flag to true
-    //         _isInputRegistered = true;
-    //     }
-    // }
 
     protected override void CustomActivate()
     {
@@ -131,28 +110,6 @@ public class PauseMenuManager : GameMenu
         TogglePause();
     }
 
-
-    private void OnBackPerformed(InputAction.CallbackContext obj)
-    {
-        // Return if inputted this frame
-        if (_inputtedThisFrame)
-            return;
-
-        // If the game is not paused, return
-        if (!IsPaused)
-            return;
-
-        _inputtedThisFrame = true;
-
-        // Check if the menu stack has more than one item
-        // If it does, go back to the previous menu
-        if (_menuStack.Count > 1)
-            GoBack();
-
-        // Resume the game
-        else
-            Resume(pauseMenuPanel.transform.GetChild(0).gameObject);
-    }
 
     private void TogglePause()
     {
@@ -337,23 +294,22 @@ public class PauseMenuManager : GameMenu
         var allTutorials = Tutorial.Tutorials;
 
         var firstSelected = tutorialBack;
-        
+
         foreach (var tutorial in allTutorials)
         {
             // Continue if the player has not read the tutorial
             if (!TutorialManager.Instance.IsTutorialCompleted(tutorial))
                 continue;
-            
+
             // Create a new button
             var tutorialButton = Instantiate(tutorialButtonPrefab, tutorialsButtonParent.transform);
-            
+
             // Set the tutorial button's text to the tutorial's name
             tutorialButton.Initialize(this, tutorial);
-            
+
             // Set the first selected button
             if (firstSelected == tutorialBack)
                 firstSelected = tutorialButton.gameObject;
-            
         }
 
         return firstSelected;

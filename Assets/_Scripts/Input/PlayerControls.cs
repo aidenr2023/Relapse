@@ -280,6 +280,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Journal"",
+                    ""type"": ""Button"",
+                    ""id"": ""9800d61d-45f9-4f80-af77-f4582d970fd4"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""Inspect"",
                     ""type"": ""Button"",
                     ""id"": ""df08003b-fa13-4424-b5aa-29bc11e777d4"",
@@ -629,6 +638,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Power4"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ee817334-500b-47dd-be3a-a6eed4004044"",
+                    ""path"": ""<Keyboard>/j"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""KB n M"",
+                    ""action"": ""Journal"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0fdcb4dd-9ec8-45f6-9f34-0c8fc1ab84b4"",
+                    ""path"": ""<Gamepad>/select"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Journal"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -909,6 +940,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_ChangePower = m_Player.FindAction("ChangePower", throwIfNotFound: true);
         m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
         m_Player_Pause = m_Player.FindAction("Pause", throwIfNotFound: true);
+        m_Player_Journal = m_Player.FindAction("Journal", throwIfNotFound: true);
         m_Player_Inspect = m_Player.FindAction("Inspect", throwIfNotFound: true);
         m_Player_SprintToggle = m_Player.FindAction("SprintToggle", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
@@ -1118,6 +1150,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_ChangePower;
     private readonly InputAction m_Player_Reload;
     private readonly InputAction m_Player_Pause;
+    private readonly InputAction m_Player_Journal;
     private readonly InputAction m_Player_Inspect;
     private readonly InputAction m_Player_SprintToggle;
     private readonly InputAction m_Player_Sprint;
@@ -1137,6 +1170,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @ChangePower => m_Wrapper.m_Player_ChangePower;
         public InputAction @Reload => m_Wrapper.m_Player_Reload;
         public InputAction @Pause => m_Wrapper.m_Player_Pause;
+        public InputAction @Journal => m_Wrapper.m_Player_Journal;
         public InputAction @Inspect => m_Wrapper.m_Player_Inspect;
         public InputAction @SprintToggle => m_Wrapper.m_Player_SprintToggle;
         public InputAction @Sprint => m_Wrapper.m_Player_Sprint;
@@ -1177,6 +1211,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Pause.started += instance.OnPause;
             @Pause.performed += instance.OnPause;
             @Pause.canceled += instance.OnPause;
+            @Journal.started += instance.OnJournal;
+            @Journal.performed += instance.OnJournal;
+            @Journal.canceled += instance.OnJournal;
             @Inspect.started += instance.OnInspect;
             @Inspect.performed += instance.OnInspect;
             @Inspect.canceled += instance.OnInspect;
@@ -1226,6 +1263,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Pause.started -= instance.OnPause;
             @Pause.performed -= instance.OnPause;
             @Pause.canceled -= instance.OnPause;
+            @Journal.started -= instance.OnJournal;
+            @Journal.performed -= instance.OnJournal;
+            @Journal.canceled -= instance.OnJournal;
             @Inspect.started -= instance.OnInspect;
             @Inspect.performed -= instance.OnInspect;
             @Inspect.canceled -= instance.OnInspect;
@@ -1420,6 +1460,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnChangePower(InputAction.CallbackContext context);
         void OnReload(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
+        void OnJournal(InputAction.CallbackContext context);
         void OnInspect(InputAction.CallbackContext context);
         void OnSprintToggle(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
