@@ -46,7 +46,7 @@ Transform:
   - {fileID: 8805553494712496160}
   - {fileID: 7548346704407681971}
   - {fileID: 3187436750461936289}
-  - {fileID: 480246311413040002}
+  - {fileID: 4954134739459790599}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &5359257001246125099
@@ -111,7 +111,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uniqueId: 
-  originalScene: Ranged-Stationary Lesions Enemy
+  originalScene: '[OBSOLETE] Ranged-Stationary Lesions Enemy'
 --- !u!114 &5888956271656719663
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -140,7 +140,7 @@ MonoBehaviour:
   currentHealth: 100
   moneyReward: 50
   animator: {fileID: 77801565629690777}
-  enemyHitEffect: {fileID: 3788798300173647694}
+  enemyHitEffect: {fileID: 8574345505854663627}
   minVFXRangeDamage: 10
   maxVFXRangeDamage: 50
   minVFXDamage: 10
@@ -1090,75 +1090,75 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 723301937455561176}
     m_Modifications:
-    - target: {fileID: 507949701673445595, guid: 7e8bc17080f03854795348dc87a2a32d,
+    - target: {fileID: 1862514817226254412, guid: 3c1f8f01ccbd7cf468d8cb01415eb15e,
+        type: 3}
+      propertyPath: m_Name
+      value: Enemy Hit VFX Prefab 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5000732514417507422, guid: 3c1f8f01ccbd7cf468d8cb01415eb15e,
         type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 507949701673445595, guid: 7e8bc17080f03854795348dc87a2a32d,
+    - target: {fileID: 5000732514417507422, guid: 3c1f8f01ccbd7cf468d8cb01415eb15e,
         type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 507949701673445595, guid: 7e8bc17080f03854795348dc87a2a32d,
+    - target: {fileID: 5000732514417507422, guid: 3c1f8f01ccbd7cf468d8cb01415eb15e,
         type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 507949701673445595, guid: 7e8bc17080f03854795348dc87a2a32d,
+    - target: {fileID: 5000732514417507422, guid: 3c1f8f01ccbd7cf468d8cb01415eb15e,
         type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 507949701673445595, guid: 7e8bc17080f03854795348dc87a2a32d,
+    - target: {fileID: 5000732514417507422, guid: 3c1f8f01ccbd7cf468d8cb01415eb15e,
         type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 507949701673445595, guid: 7e8bc17080f03854795348dc87a2a32d,
+    - target: {fileID: 5000732514417507422, guid: 3c1f8f01ccbd7cf468d8cb01415eb15e,
         type: 3}
       propertyPath: m_LocalRotation.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 507949701673445595, guid: 7e8bc17080f03854795348dc87a2a32d,
+    - target: {fileID: 5000732514417507422, guid: 3c1f8f01ccbd7cf468d8cb01415eb15e,
         type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 507949701673445595, guid: 7e8bc17080f03854795348dc87a2a32d,
+    - target: {fileID: 5000732514417507422, guid: 3c1f8f01ccbd7cf468d8cb01415eb15e,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 507949701673445595, guid: 7e8bc17080f03854795348dc87a2a32d,
+    - target: {fileID: 5000732514417507422, guid: 3c1f8f01ccbd7cf468d8cb01415eb15e,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 507949701673445595, guid: 7e8bc17080f03854795348dc87a2a32d,
+    - target: {fileID: 5000732514417507422, guid: 3c1f8f01ccbd7cf468d8cb01415eb15e,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6607424341631515849, guid: 7e8bc17080f03854795348dc87a2a32d,
-        type: 3}
-      propertyPath: m_Name
-      value: Enemy Hit VFX Prefab
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 7e8bc17080f03854795348dc87a2a32d, type: 3}
---- !u!4 &480246311413040002 stripped
+  m_SourcePrefab: {fileID: 100100000, guid: 3c1f8f01ccbd7cf468d8cb01415eb15e, type: 3}
+--- !u!4 &4954134739459790599 stripped
 Transform:
-  m_CorrespondingSourceObject: {fileID: 507949701673445595, guid: 7e8bc17080f03854795348dc87a2a32d,
+  m_CorrespondingSourceObject: {fileID: 5000732514417507422, guid: 3c1f8f01ccbd7cf468d8cb01415eb15e,
     type: 3}
   m_PrefabInstance: {fileID: 118981409639869273}
   m_PrefabAsset: {fileID: 0}
---- !u!2083052967 &3788798300173647694 stripped
+--- !u!2083052967 &8574345505854663627 stripped
 VisualEffect:
-  m_CorrespondingSourceObject: {fileID: 3833186761132053527, guid: 7e8bc17080f03854795348dc87a2a32d,
+  m_CorrespondingSourceObject: {fileID: 8599769969290018962, guid: 3c1f8f01ccbd7cf468d8cb01415eb15e,
     type: 3}
   m_PrefabInstance: {fileID: 118981409639869273}
   m_PrefabAsset: {fileID: 0}
