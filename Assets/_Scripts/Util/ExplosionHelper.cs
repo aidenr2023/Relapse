@@ -12,6 +12,8 @@ public class ExplosionHelper : MonoBehaviour, IDamager
     [SerializeField, Min(0)] private float explosionRadius;
     [SerializeField, Min(0)] private float explosionDamage;
 
+    [SerializeField] private CameraShakeHelper cameraShakeHelper;
+    
     [SerializeField] private ParticleSystem explosionParticlePrefab;
     [SerializeField] private VisualEffect explosionVfxPrefab;
     [SerializeField] private Sound sound;
@@ -27,7 +29,7 @@ public class ExplosionHelper : MonoBehaviour, IDamager
 
     #endregion
 
-    public void Explode()
+    public void Explode(bool canDamagePlayer)
     {
         // Create an array of colliders to store the colliders in the explosion radius
         var colliders = new Collider[MAX_COLLIDERS];
@@ -49,7 +51,7 @@ public class ExplosionHelper : MonoBehaviour, IDamager
                 continue;
             
             // Continue if the actor is a player
-            if (actor is PlayerInfo)
+            if (actor is PlayerInfo && !canDamagePlayer)
                 continue;
             
             if (!actors.Add(actor))
@@ -82,7 +84,13 @@ public class ExplosionHelper : MonoBehaviour, IDamager
         // Play the sound
         if (sound != null)
             SoundManager.Instance.PlaySfxAtPoint(sound, transform.position);
+        
+        // Shake the camera (if the camera shake helper is not null)
+        if (cameraShakeHelper != null)
+            cameraShakeHelper.ShakeCamera();
     }
+    
+    public void Explode() => Explode(false);
 
     private void OnDrawGizmosSelected()
     {

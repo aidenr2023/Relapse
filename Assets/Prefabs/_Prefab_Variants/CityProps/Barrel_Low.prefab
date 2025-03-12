@@ -171,18 +171,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 9170504378154881915}
-        m_TargetAssemblyTypeName: CameraShakeHelper, Assembly-CSharp
-        m_MethodName: ShakeCamera
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
   hasBeenActivated: 0
 --- !u!114 &9198145726992342673
 MonoBehaviour:
@@ -198,6 +186,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explosionRadius: 6
   explosionDamage: 100
+  cameraShakeHelper: {fileID: 9170504378154881915}
   explosionParticlePrefab: {fileID: 0}
   explosionVfxPrefab: {fileID: 1316523376902277534, guid: 9079a3342c2258b4da48a9df04e51dcc,
     type: 3}

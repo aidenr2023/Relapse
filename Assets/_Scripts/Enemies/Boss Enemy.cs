@@ -23,8 +23,6 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 
     #region Private Fields
 
-    private EnemyInfo _enemyInfo;
-
     private int _currentPhase;
 
     private IEnemyAttackBehavior _currentAttackBehavior;
@@ -39,9 +37,6 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 
     protected override void CustomAwake()
     {
-        // Get the EnemyInfo component
-        _enemyInfo = GetComponent<EnemyInfo>();
-
         // Order the boss phases descending order by their phaseEndPercent
         bossPhases = bossPhases.OrderByDescending(phase => phase.phaseEndPercent).ToArray();
     }
@@ -55,12 +50,12 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         _currentPhase = -1;
 
         // Subscribe to the OnDamaged event
-        _enemyInfo.OnDamaged += ActivatePhaseChange;
+        ParentComponent.OnDamaged += ActivatePhaseChange;
 
-        _enemyInfo.OnDamaged += ChangeHealthBar;
-        _enemyInfo.OnHealed += ChangeHealthBar;
+        ParentComponent.OnDamaged += ChangeHealthBar;
+        ParentComponent.OnHealed += ChangeHealthBar;
 
-        _enemyInfo.OnDeath += DetermineEndingOnDeath;
+        ParentComponent.OnDeath += DetermineEndingOnDeath;
     }
 
     private void DetermineEndingOnDeath(object sender, HealthChangedEventArgs e)
@@ -102,7 +97,7 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 
     private void ActivatePhaseChange(object sender, HealthChangedEventArgs e)
     {
-        var healthPercent = _enemyInfo.CurrentHealth / _enemyInfo.MaxHealth;
+        var healthPercent = ParentComponent.CurrentHealth / ParentComponent.MaxHealth;
 
         for (var i = bossPhases.Length - 1; i > _currentPhase; i--)
         {
@@ -148,6 +143,9 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         
         // Enable the new behavior
         (newBehavior as MonoBehaviour)!.enabled = true;
+        
+        // Set the current attack behavior
+        _currentAttackBehavior = newBehavior;
     }
 
     public string GetDebugText()
@@ -155,7 +153,7 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         StringBuilder sb = new();
 
         sb.AppendLine($"Boss Enemy: {name}");
-        sb.AppendLine($"\tHealth: {(_enemyInfo.CurrentHealth / _enemyInfo.MaxHealth):0.00}");
+        sb.AppendLine($"\tHealth: {(ParentComponent.CurrentHealth / ParentComponent.MaxHealth):0.00}");
         sb.AppendLine($"\tCurrent Phase: {_currentPhase + 1}");
 
         return sb.ToString();

@@ -122,7 +122,6 @@ public class JournalMenu : GameMenu
     public void Pause()
     {
         // Un-hide the pause menu
-        // pauseMenuParent.SetActive(true);
         Activate();
 
         // Set pause to true

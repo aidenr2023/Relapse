@@ -62,6 +62,12 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         _currentMoveAction == BehaviorActionMove.MoveAction.StrafeForward ||
         _currentMoveAction == BehaviorActionMove.MoveAction.StrafeBackward;
 
+    public float MovementSpeed
+    {
+        get => movementSpeed;
+        set => movementSpeed = value;
+    }
+
     #endregion
 
     protected override void CustomAwake()
