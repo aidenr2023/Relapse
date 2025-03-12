@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class HitMarkerUIManager : MonoBehaviour
 {
+    private static Action<bool> _onShowHitMarker;
+    
     public static HitMarkerUIManager Instance { get; private set; }
 
     [SerializeField] private CanvasGroup hitMarkerCanvasGroup;
@@ -25,14 +27,21 @@ public class HitMarkerUIManager : MonoBehaviour
 
         // Set the alpha of the hit marker canvas group to 0
         hitMarkerCanvasGroup.alpha = 0;
+        
+        // Subscribe to the show hit marker event
+        _onShowHitMarker += ShowHitMarkerSingle;
     }
 
     private void OnDisable()
     {
         // Stop the update coroutine
-        StopCoroutine(_updateCoroutine);
+        if (_updateCoroutine != null)
+            StopCoroutine(_updateCoroutine);
         
         hitMarkerCanvasGroup.alpha = 0;
+        
+        // unsubscribe from the show hit marker event
+        _onShowHitMarker -= ShowHitMarkerSingle;
     }
 
     private IEnumerator UpdateCoroutine(float lastHitTime, bool isCritical)
@@ -57,12 +66,17 @@ public class HitMarkerUIManager : MonoBehaviour
         hitMarkerCanvasGroup.alpha = 0;
     }
     
-    public void ShowHitMarker(bool isCritical)
+    private void ShowHitMarkerSingle(bool isCritical)
     {
         // If there is an active coroutine, stop it
         if (_updateCoroutine != null)
             StopCoroutine(_updateCoroutine);
         
         _updateCoroutine = StartCoroutine(UpdateCoroutine(Time.time, isCritical));
+    }
+    
+    public static void ShowHitMarker(bool isCritical)
+    {
+        _onShowHitMarker?.Invoke(isCritical);
     }
 }

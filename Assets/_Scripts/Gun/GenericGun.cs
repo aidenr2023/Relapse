@@ -163,7 +163,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     private static void PlayHitMarkerOnHit(IGun gun, IActor actor, bool isCritical)
     {
         // Show the hit marker
-        HitMarkerUIManager.Instance.ShowHitMarker(isCritical);
+        // HitMarkerUIManager.Instance.ShowHitMarker(isCritical);
+        HitMarkerUIManager.ShowHitMarker(isCritical);
     }
 
     private void OnDestroy()
@@ -177,7 +178,6 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     protected virtual void Update()
     {
         UpdateFireDelta();
-
 
         // Fire the weapon if applicable
         if (_weaponManager != null)

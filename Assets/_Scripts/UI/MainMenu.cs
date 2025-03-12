@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -15,6 +16,8 @@ public class MainMenu : GameMenu
 
     [SerializeField] private CanvasGroup blackOverlayGroup;
     [SerializeField, Min(0)] private float blackOverlayTransitionTime = .5f;
+    
+    [SerializeField] private Volume mainMenuVolume;
 
     #endregion
 
@@ -111,6 +114,10 @@ public class MainMenu : GameMenu
         }
 
         blackOverlayGroup.alpha = 1;
+        
+        // Turn off the post processing volume
+        if (mainMenuVolume != null)
+            mainMenuVolume.weight = 0;
         
         // Set the show loading bar flag to true
         _showLoadingBar = true;
