@@ -18,10 +18,12 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     [SerializeField] private float variableJumpForce = 1f;
     [SerializeField, Min(0)] private float variableJumpTime = 1f;
 
-    //variables to store the ground floor and jump height for calculating distance to ground
+    // variables to store the ground floor and jump height for calculating distance to ground
     [SerializeField] private float groundFloorDistance = 100f;
     [SerializeField] private float JumpHeightThreshold = 2f;
 
+    [SerializeField, Min(0)] private float coyoteJumpTime = .5f; 
+    
     [Header("Sounds")] [SerializeField] private SoundPool footstepSoundPool;
 
     [SerializeField] private float walkingFootstepInterval = 0.35f;
@@ -45,6 +47,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
     private bool _isJumpHeld;
     private CountdownTimer _variableJumpTimer;
     private bool _canJumpWhileReloading;
+
+    private CountdownTimer _coyoteJumpTimer;
 
     #endregion
 
@@ -96,6 +100,10 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         // Initialize the variable jump timer
         _variableJumpTimer = new CountdownTimer(variableJumpTime, false, true);
         _variableJumpTimer.Start();
+        
+        // Initialize the coyote jump timer
+        _coyoteJumpTimer = new CountdownTimer(coyoteJumpTime, false, true);
+        _coyoteJumpTimer.Start();
     }
 
     private void Start()
@@ -228,6 +236,13 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         _variableJumpTimer.SetMaxTime(variableJumpTime);
         _variableJumpTimer.Update(Time.deltaTime);
 
+        // Update the coyote jump timer
+        _coyoteJumpTimer.SetMaxTime(coyoteJumpTime);
+        if (ParentComponent.IsGrounded)
+            _coyoteJumpTimer.Reset();
+        else
+            _coyoteJumpTimer.Update(Time.deltaTime);
+        
         // Set the is trying to jump flag to false if the player is falling
         if (ParentComponent.Rigidbody.velocity.y < 0)
             IsTryingToJump = false;
@@ -479,12 +494,16 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
             return;
 
         // Return if the player is not grounded
-        if (!ParentComponent.IsGrounded)
+        // AND if the player is NOT (not grounded and the coyote jump timer is still running)
+        if (!ParentComponent.IsGrounded && !(!ParentComponent.IsGrounded && _coyoteJumpTimer.IsNotComplete))
             return;
 
         // Return if the jump grace timer is not active or is complete
         if (!_jumpGraceTimer.IsActive || _jumpGraceTimer.IsComplete)
             return;
+
+        if (!ParentComponent.IsGrounded && _coyoteJumpTimer.IsNotComplete)
+            Debug.Log($"COYOTE JUMP: {_coyoteJumpTimer.Percentage:0.00}");
 
         // Jump in the direction of the movement input
         PlayerAnimator?.SetBool(HasJumped, false);
@@ -506,7 +525,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
         // Play the jump sound
         SoundManager.Instance.PlaySfx(jumpSound);
-        //player_Animator?.SetBool(HasJumped, true);
+        // player_Animator?.SetBool(HasJumped, true);
 
         // Set the is trying to jump flag to true
         IsTryingToJump = true;
@@ -520,6 +539,9 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
         // Reset the variable jump timer
         _variableJumpTimer.SetMaxTimeAndReset(variableJumpTime);
+        
+        // Force the coyote jump timer to be complete 
+        _coyoteJumpTimer.ForcePercent(1);
     }
 
     #endregion
