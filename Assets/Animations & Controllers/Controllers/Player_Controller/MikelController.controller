@@ -604,8 +604,7 @@ AnimatorState:
   - {fileID: -2373195038446901750}
   - {fileID: 502968449313130948}
   - {fileID: 228164044651771620}
-  m_StateMachineBehaviours:
-  - {fileID: 4638998152081681200}
+  m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
@@ -614,7 +613,8 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 8142977603226392561}
+  m_Motion: {fileID: 1827226128182048838, guid: ea6c4f9981ad62845aeec3e7068691ef,
+    type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -2853,20 +2853,6 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
---- !u!114 &4638998152081681200
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c2dcd05577918747b638ff759df0925, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _timeUntilIdle: 3
-  _idleTime: 0
 --- !u!1109 &4711851687949877870
 AnimatorTransition:
   m_ObjectHideFlags: 1
@@ -3604,37 +3590,6 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
---- !u!206 &8142977603226392561
-BlendTree:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: Blend Tree
-  m_Childs:
-  - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 5e2f98b855b78b343a90f269c247f209, type: 2}
-    m_Threshold: 0
-    m_Position: {x: 0, y: 0}
-    m_TimeScale: 1
-    m_CycleOffset: 0
-    m_DirectBlendParameter: JumpHeight
-    m_Mirror: 0
-  - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: 8ec27f5997f27404c96ed90b6c57be7b, type: 2}
-    m_Threshold: 1
-    m_Position: {x: 0, y: 0}
-    m_TimeScale: 1
-    m_CycleOffset: 0
-    m_DirectBlendParameter: JumpHeight
-    m_Mirror: 0
-  m_BlendParameter: IdleBlend
-  m_BlendParameterY: JumpHeight
-  m_MinThreshold: 0
-  m_MaxThreshold: 1
-  m_UseAutomaticThresholds: 0
-  m_NormalizedBlendValues: 0
-  m_BlendType: 0
 --- !u!1101 &8164198468110108523
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
