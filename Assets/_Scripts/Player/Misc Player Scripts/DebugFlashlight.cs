@@ -68,6 +68,10 @@ public class DebugFlashlight : MonoBehaviour, IUsesInput
         // return if there is no flashlight
         if (!debugFlashlight)
             return;
+        
+        // if turning the light on, and debug mode is off, return
+        if (value && !DebugManager.Instance.IsDebugMode)
+            return;
 
         // Set the flashlight to the given value.
         debugFlashlight.enabled = value;
