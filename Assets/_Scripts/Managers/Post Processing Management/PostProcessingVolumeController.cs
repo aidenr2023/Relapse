@@ -37,11 +37,25 @@ public class PostProcessingVolumeController : MonoBehaviour
 
     private void Awake()
     {
+        // If there is already an instance, log an error!
+        if (Instance != null)
+        {
+            Debug.LogError("There is already an instance of PostProcessingVolumeController in the scene!");
+            Destroy(gameObject);
+            return;
+        }
+        
         // Set the instance to this
         Instance = this;
 
         // Force the correct post-processing on start
         ChangePostProcessing(currentType, 0);
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 
     public void ChangePostProcessing(PostProcessingType type, float duration = .5f)
