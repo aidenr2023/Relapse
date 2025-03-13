@@ -25,10 +25,11 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     [SerializeField] private float currentTolerance;
 
-    [Header("Relapse Image Overlay")] 
+    [Header("Relapse Image Overlay")]
     // [SerializeField] private Image relapseImage;
+    [SerializeField]
+    private AnimationCurve relapseOpacityCurve;
 
-    [SerializeField] private AnimationCurve relapseOpacityCurve;
     [SerializeField] [Min(0.00001f)] private float relapseOpacityDuration = 1f;
     [SerializeField] private CountdownTimer relapseOpacityTimer = new(1);
 
@@ -96,7 +97,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     public CinemachineVirtualCamera VirtualCamera => CameraManager.Instance.VirtualCamera;
 
     public bool IsInvincibleBecauseDamaged => _invincibilityTimer.IsActive && _invincibilityTimer.Percentage < 1;
-    
+
     public Sound NormalHitSfx => null;
     public Sound CriticalHitSfx => null;
 
@@ -211,7 +212,8 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     private void OnDestroy()
     {
         // Set the relapse overlay UI's alpha to 0
-        RelapseOverlayUI.Instance.CanvasGroup.alpha = 0;
+        if (RelapseOverlayUI.Instance != null)
+            RelapseOverlayUI.Instance.CanvasGroup.alpha = 0;
     }
 
     #endregion
@@ -258,7 +260,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         // // If the relapse duration is greater than the relapse duration, end the relapse
         // if (_currentRelapseDuration >= relapseDuration)
         //     EndRelapse();
-        
+
         // If the current tolerance is less than or equal to 0, end the relapse
         if (currentTolerance <= 0)
             EndRelapse();
@@ -288,7 +290,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
         if (!_isRelapsing)
             opacity = Mathf.Lerp(RelapseOverlayUI.Instance.CanvasGroup.alpha, 0, CustomFunctions.FrameAmount(.1f));
-        
+
         // Set the opacity of the relapse image
         RelapseOverlayUI.Instance.CanvasGroup.alpha = opacity;
     }
@@ -311,7 +313,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         // Return if health is at the passive regen cap
         if (health >= passiveRegenCap)
             return;
-        
+
         // Return if the passive regen timer is not complete
         if (_passiveRegenTimer.IsNotComplete)
             return;
@@ -335,11 +337,11 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
             maxHealth = newValue;
             health += healthDifference;
         }
-        
+
         // If the player is losing health, decrease the max health & health
         else if (newValue < maxHealth)
             maxHealth = newValue;
-        
+
         // Clamp the health
         health = Mathf.Clamp(health, 0, maxHealth);
     }
@@ -349,7 +351,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         // If the player is gaining toxicity, increase the max toxicity & toxicity
         if (newValue > maxTolerance)
             maxTolerance = newValue;
-        
+
         // If the player is losing toxicity, decrease the max toxicity & toxicity
         else if (newValue < maxTolerance)
         {
@@ -357,12 +359,13 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
             maxTolerance = newValue;
             currentTolerance += toleranceDifference;
         }
-        
+
         // Clamp the toxicity
         currentTolerance = Mathf.Clamp(currentTolerance, 0, maxTolerance);
     }
-    
-    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position, bool isCriticalHit = false)
+
+    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position,
+        bool isCriticalHit = false)
     {
         // If the amount is negative, the player is taking damage
         if (amount < 0)
@@ -384,7 +387,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         // Return if the player is already dead
         if (health <= 0)
             return;
-        
+
         // Return if the player is invincible
         if (_invincibilityTimer.IsActive)
             return;
