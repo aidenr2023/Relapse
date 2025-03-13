@@ -374,6 +374,11 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         }
     }
 
+    public void ForceCurrentHealth(float health)
+    {
+        currentHealth = health;
+    }
+
     private void Die()
     {
         // Return if the enemy is already dead
