@@ -128,13 +128,13 @@ public class CutsceneHandler : MonoBehaviour
 
         _director.playableAsset = timelineAsset;
         
-        if (IsCutsceneFirstPerson)
+        if (!IsCutsceneFirstPerson)
         {
-            BindFirstPersonAnimatorTracks();
+            Debug.Log("Using prebinded third person animator tracks...");
         }
         else
         {
-            Debug.Log("Using prebinded third person animator tracks...");
+            BindFirstPersonAnimatorTracks();
         }
     }
     private void BindFirstPersonAnimatorTracks()

@@ -6,6 +6,7 @@ public class CutsceneObjectList : MonoBehaviour
 {
     // Assign these via the inspector.
     [SerializeField] private List<GameObject> objectsToToggle;
+   // [SerializeField] private GameObject player;
 
     private void OnEnable()
     {
@@ -37,6 +38,8 @@ public class CutsceneObjectList : MonoBehaviour
         }
     }
 
+   
+
     private void EnableObjects()
     {
         // Enable each GameObject in the list when the cutscene ends.
@@ -46,4 +49,5 @@ public class CutsceneObjectList : MonoBehaviour
                 obj.SetActive(true);
         }
     }
+    
 }

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1013551616924425515}
   - component: {fileID: 1573529953418011309}
   - component: {fileID: 8518434691970240673}
+  - component: {fileID: 7567562849479313178}
   m_Layer: 0
   m_Name: Cutscene Manager
   m_TagString: Untagged
@@ -95,3 +96,17 @@ PlayableDirector:
     value: {fileID: 0}
   m_ExposedReferences:
     m_References: []
+--- !u!114 &7567562849479313178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1353195829919808630}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d86535c7f6004414eb862d8ac9e22b77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectsToToggle:
+  - {fileID: 0}

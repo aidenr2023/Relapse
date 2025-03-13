@@ -19,7 +19,6 @@ public class CutsceneSubscriber : MonoBehaviour
     [Header("Player Reference")]
     [SerializeField] private Transform _playerTransform;
     [SerializeField] private Animator _playerAnimator;
-    [SerializeField] private GameObject  _cameraPlayer;
 
     [Header("Rotation Settings")]
     [SerializeField] private float _rotationResetDelay = 0.1f;
@@ -97,11 +96,6 @@ public class CutsceneSubscriber : MonoBehaviour
             }
             else
             {
-                _cameraPlayer.SetActive(false); 
-                if (_cameraPlayer.activeInHierarchy)
-                {
-                    Debug.Log("Camera player is inactive");
-                }
                 DisablePlayerSystems();
             }
         }
@@ -121,11 +115,6 @@ public class CutsceneSubscriber : MonoBehaviour
         if (!isFirstPerson)
         {
             // Third-person cutscene (both movement needed and not needed cases)
-            _cameraPlayer.SetActive(true);
-            if (_cameraPlayer.activeInHierarchy)
-            {
-                Debug.Log("Camera player is active");
-            }
             EnablePlayerSystems();
         }
         else if (!needsMovement)
@@ -202,18 +191,6 @@ public class CutsceneSubscriber : MonoBehaviour
         Debug.Log("Player systems disabled");
     }
     
-    
-    
-    
-
-    private void StartRotationValidation()
-    {
-        if (_rotationCheckCoroutine != null)
-            StopCoroutine(_rotationCheckCoroutine);
-        
-        _rotationCheckCoroutine = StartCoroutine(ValidatePlayerRotation());
-    }
-
     private IEnumerator ValidatePlayerRotation()
     {
     
