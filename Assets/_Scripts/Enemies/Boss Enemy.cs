@@ -17,7 +17,7 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
     #region Serialized Fields
 
     [SerializeField] private Slider bossHealthSlider;
-    
+
     [SerializeField] private BossEnemyAttack bossEnemyAttack;
     [SerializeField] private TempShootingEnemyAttack attack1;
 
@@ -67,8 +67,17 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 
         ParentComponent.OnDeath += DetermineEndingOnDeath;
 
+        ParentComponent.OnDeath += ResetStaticVariables;
+
         // Set the max boss health
         StaticallyInitialize(this);
+    }
+
+    private void ResetStaticVariables(object sender, HealthChangedEventArgs e)
+    {
+        _bossStarted = false;
+        _bossHealth = 0;
+        _staticPhase = 0;
     }
 
     private void ChangeStaticHealth(object sender, HealthChangedEventArgs e)
@@ -89,29 +98,30 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 
             // Set the current phase of the boss using the static variables
             bossEnemy._currentPhase = _staticPhase;
-            
+
             return;
         }
 
         _bossStarted = true;
+        _bossHealth = bossEnemy.ParentComponent.CurrentHealth;
+        _staticPhase = bossEnemy._currentPhase;
     }
 
     private void DetermineEndingOnDeath(object sender, HealthChangedEventArgs e)
     {
-        // Get the instance of the player.
-        // If it has ANY neuros in the powers list, then the player has the bad ending.
-        var goodEnding =
-            Player.Instance == null &&
-            Player.Instance.PlayerPowerManager.Powers.All(n => n.PowerType != PowerType.Drug);
+        // Get the relapse count
+        var relapseCount = Player.Instance?.PlayerInfo.RelapseCount ?? 0;
 
-        if (goodEnding)
+        // Get the instance of the player.
+        // If the player has relapsed at all, then it's a bad ending.
+        if (relapseCount <= 0)
         {
-            Debug.Log("GOOD ENDING");
+            Debug.Log($"GOOD ENDING: {relapseCount}");
             onGoodEnding.Invoke();
         }
         else
         {
-            Debug.Log("BAD ENDING");
+            Debug.Log($"BAD ENDING: {relapseCount}");
             onBadEnding.Invoke();
         }
     }
@@ -121,7 +131,7 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         // TODO: Implement health bar change
 
         var healthPercentage = ParentComponent.CurrentHealth / ParentComponent.MaxHealth;
-        
+
         // Change the fill of the health bar
         SetHealthBar(healthPercentage);
     }
@@ -130,7 +140,7 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
     {
         if (bossHealthSlider == null)
             return;
-        
+
         bossHealthSlider.value = percent;
     }
 
