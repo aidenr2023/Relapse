@@ -17,8 +17,8 @@ public class DynamicChromaticAberrationModule : DynamicPostProcessingModule
     private readonly TokenManager<float> _tokens = new(false, null, 0);
 
     private TokenManager<float>.ManagedToken _relapseToken;
-
     private TokenManager<float>.ManagedToken _powerToken;
+    
     private float _maxPowerTokenValue;
     private CountdownTimer _powerTokenTimer;
 
@@ -135,5 +135,22 @@ public class DynamicChromaticAberrationModule : DynamicPostProcessingModule
         _powerTokenTimer.Start();
 
         Debug.Log($"Added power token");
+    }
+    
+    public override void TransferTokens(DynamicPostProcessingModule otherModule)
+    {
+        var castedModule = (DynamicChromaticAberrationModule) otherModule;
+        
+        // Transfer the tokens from the other module
+        // Clear out the other token manager
+        castedModule._tokens.Clear();
+        
+        // Add each of the current tokens to the other token manager
+        foreach (var token in _tokens.Tokens)
+            castedModule._tokens.ForceAddToken(token);
+        
+        // Individual tokens
+        castedModule._relapseToken = _relapseToken;
+        castedModule._powerToken = _powerToken;
     }
 }

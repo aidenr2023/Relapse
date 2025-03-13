@@ -143,4 +143,22 @@ public class DynamicVignetteModule : DynamicPostProcessingModule
 
         return value;
     }
+
+    public override void TransferTokens(DynamicPostProcessingModule otherModule)
+    {
+        var castedModule = (DynamicVignetteModule) otherModule;
+        
+        // Transfer the tokens from the other module
+        // Clear out the other token manager
+        castedModule._tokens.Clear();
+        
+        // Add each of the current tokens to the other token manager
+        foreach (var token in _tokens.Tokens)
+            castedModule._tokens.ForceAddToken(token);
+        
+        // Individual tokens
+        castedModule._speedVignetteToken = _speedVignetteToken;
+        castedModule._slideVignetteToken = _slideVignetteToken;
+        castedModule._relapseVignetteToken = _relapseVignetteToken;
+    }
 }

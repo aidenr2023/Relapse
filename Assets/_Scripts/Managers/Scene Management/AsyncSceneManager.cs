@@ -42,6 +42,8 @@ public class AsyncSceneManager : IDebugged
 
     #endregion
 
+    private event Action<LevelSectionSceneInfo> _onSectionLoadCompletion;
+
     private AsyncSceneManager()
     {
         // Set the instance
@@ -53,7 +55,26 @@ public class AsyncSceneManager : IDebugged
 
         SceneManager.sceneLoaded += LoadDataFromDiskOnSceneLoaded;
         SceneManager.sceneLoaded += SceneLoadedDebug;
+
+        // on section scene load events
+        _onSectionLoadCompletion += SetMovementTypeOnSectionLoad;
+        _onSectionLoadCompletion += SetPostProcessingOnSectionLoad;
     }
+
+    #region Events
+
+    private void SetMovementTypeOnSectionLoad(LevelSectionSceneInfo levelSectionSceneInfo)
+    {
+        // Set the player movement type
+        SetPlayerMovementType(levelSectionSceneInfo.PlayerMovementType);
+    }
+
+    private void SetPostProcessingOnSectionLoad(LevelSectionSceneInfo levelSectionSceneInfo)
+    {
+        PostProcessingVolumeController.Instance.ChangePostProcessing(levelSectionSceneInfo.PostProcessingType, 0);
+    }
+
+    #endregion
 
     private void SceneLoadedDebug(Scene scene, LoadSceneMode _)
     {
@@ -288,9 +309,8 @@ public class AsyncSceneManager : IDebugged
 
             if (activeScene.IsValid())
                 SceneManager.SetActiveScene(activeScene);
-            
-            // Set the player movement type
-            SetPlayerMovementType(levelSectionSceneInfo.PlayerMovementType);
+
+            _onSectionLoadCompletion?.Invoke(levelSectionSceneInfo);
         };
 
         // Return the operations
@@ -333,10 +353,14 @@ public class AsyncSceneManager : IDebugged
         // Load the section persistent data
         if (levelSectionSceneInfo.SectionPersistentData != null)
             LoadSceneSynchronous(levelSectionSceneInfo.SectionPersistentData);
-        
-        // If the scene is an active scene, set the player movement type
+
+        // // If the scene is an active scene, set the player movement type
+        // if (levelSectionSceneInfo.SetActiveSceneToSectionScene)
+        //     SetPlayerMovementType(levelSectionSceneInfo.PlayerMovementType);
+
+        // If the scene is an active scene, invoke the event
         if (levelSectionSceneInfo.SetActiveSceneToSectionScene)
-            SetPlayerMovementType(levelSectionSceneInfo.PlayerMovementType);
+            _onSectionLoadCompletion?.Invoke(levelSectionSceneInfo);
     }
 
     public void LoadScenesSynchronous(SceneLoaderInformation loaderInformation)
@@ -883,11 +907,11 @@ public class AsyncSceneManager : IDebugged
 
     // TODO: Remove
     public PlayerMovementType _movementType;
-    
+
     private void SetPlayerMovementType(PlayerMovementType movementType)
     {
         _movementType = movementType;
-        
+
         // If the player instance is not null
         if (Player.Instance != null)
         {
@@ -902,7 +926,7 @@ public class AsyncSceneManager : IDebugged
             playerMovement.ApplyMovementTypeSettings(movementType);
         }
     }
-    
+
     public string GetDebugText()
     {
         return $"Managed Scenes: {string.Join(", ", _asyncSceneRecords.Keys)}";

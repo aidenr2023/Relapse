@@ -95,6 +95,14 @@ public class TokenManager<TTokenType>
         return token;
     }
 
+    public void ForceAddToken(ManagedToken token)
+    {
+        _tokens.Add(token);
+        
+        // Set the has been edited since last sort to true
+        _hasBeenEditedSinceLastSort = true;
+    }
+    
     public void RemoveToken(ManagedToken token)
     {
         // If the token is the indefinite token, return

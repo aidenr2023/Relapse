@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-[RequireComponent(typeof(Volume))]
 public class DynamicPostProcessVolume : MonoBehaviour
 {
     #region Serialized Fields
@@ -85,5 +85,23 @@ public class DynamicPostProcessVolume : MonoBehaviour
     public bool GetSettingsComponent<T>(out T component) where T : VolumeComponent
     {
         return profile.TryGet(out component);
+    }
+    
+    public void TransferTokens(DynamicPostProcessVolume otherVolume)
+    {
+        // If the other volume is null, return
+        if (otherVolume == null)
+            return;
+        
+        // If the other volume is the same as this volume, return
+        if (otherVolume == this)
+            return;
+        
+        var myModules = _modules.ToArray();
+        var otherModules = otherVolume._modules.ToArray();
+
+        // Transfer tokens from each module
+        for (var i = 0; i < myModules.Length; i++)
+            myModules[i].TransferTokens(otherModules[i]);
     }
 }
