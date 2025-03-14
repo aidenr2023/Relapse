@@ -160,4 +160,18 @@ public class ContinuousEnemySpawner : EnemySpawner
             CustomFunctions.DrawArrow(spawnPoint.position, spawnPoint.forward);
         }
     }
+
+    public void RestartSpawner()
+    {
+        // Reset the total spawn count
+        _totalSpawnCount = 0;
+        
+        _spawnTimer.ForcePercent(1);
+        
+        // Reset the enemy killed count
+        _enemyKilledCount = 0;
+        
+        // Clear the flag
+        hasStartedSpawning = false;
+    }
 }

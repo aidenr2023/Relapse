@@ -78,6 +78,9 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         _navMeshAgent = GetComponent<NavMeshAgent>();
 
         MovementSpeedTokens = new(false, null, 1);
+        
+        // Turn the navmesh agent off
+        _navMeshAgent.enabled = false;
     }
 
     private void Start()
@@ -145,6 +148,9 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
         // Wait for ANOTHER frame
         yield return null;
+
+        // Make sure the navmesh agent is enabled
+        _navMeshAgent.enabled = true;
         
         while (enabled)
         {
