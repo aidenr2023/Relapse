@@ -530,6 +530,8 @@ GameObject:
   - component: {fileID: 7294235095540251026}
   - component: {fileID: 9131613444061068536}
   - component: {fileID: 23606618357390537}
+  - component: {fileID: 6632304591480369217}
+  - component: {fileID: 3919439243002877267}
   m_Layer: 9
   m_Name: Ranged-Patrol Enforcer Enemy
   m_TagString: Untagged
@@ -646,25 +648,6 @@ MonoBehaviour:
   currentHealth: 70
   moneyReward: 50
   animator: {fileID: 8452795996763678825}
-  enemyHitEffect: {fileID: 617943012576577267}
-  minVFXRangeDamage: 10
-  maxVFXRangeDamage: 50
-  minVFXDamage: 5
-  enemyDeathVfxPrefab: {fileID: 1316523376902277534, guid: dfc4fc5f6b6f93f47a16e7a3853a4f57,
-    type: 3}
-  enemyDeathSound:
-    clip: {fileID: 0}
-    soundType: 1
-    volume: 1
-    isPersistent: 0
-    isLooping: 0
-    pitch: 1
-    spatialBlend: 1
-  enemyMoanSource: {fileID: 2659537494469221325}
-  moanSounds: []
-  moanSoundChance: 1
-  moanSoundMinCooldown: 5
-  moanSoundMaxCooldown: 10
 --- !u!114 &2314050373250607455
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -803,6 +786,56 @@ MonoBehaviour:
     isLooping: 0
     pitch: 1
     spatialBlend: 1
+--- !u!114 &6632304591480369217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9186631886560993377}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed51fdcc653a4c0e921bf3a6784893d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyHitEffect: {fileID: 617943012576577267}
+  minVFXRangeDamage: 10
+  maxVFXRangeDamage: 50
+  minVFXDamage: 10
+  enemyDeathVfxPrefab: {fileID: 1316523376902277534, guid: dfc4fc5f6b6f93f47a16e7a3853a4f57,
+    type: 3}
+--- !u!114 &3919439243002877267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9186631886560993377}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c66c40959b244d3b31320da7a9df63c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyDeathSound:
+    clip: {fileID: 0}
+    soundType: 1
+    volume: 1
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 1
+  enemyMoanSource: {fileID: 2659537494469221325}
+  moanSounds:
+  - clip: {fileID: 8300000, guid: fb282b04bff6174458bff6d8ec3924d2, type: 3}
+    soundType: 2
+    volume: 0.35
+    isPersistent: 0
+    isLooping: 0
+    pitch: 0.8
+    spatialBlend: 1
+  moanSoundChance: 0.4
+  moanSoundMinCooldown: 8
+  moanSoundMaxCooldown: 1
 --- !u!1001 &2604426959730628088
 PrefabInstance:
   m_ObjectHideFlags: 0

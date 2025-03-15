@@ -5633,7 +5633,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uniqueId: 
-  originalScene: DroneTestScene
+  originalScene: ShootyDrone
 --- !u!114 &4414139725517363152
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5662,25 +5662,6 @@ MonoBehaviour:
   currentHealth: 99999
   moneyReward: 0
   animator: {fileID: 3092743919417664935}
-  enemyHitEffect: {fileID: 2252743697457114568}
-  minVFXRangeDamage: 10
-  maxVFXRangeDamage: 50
-  minVFXDamage: 5
-  enemyDeathVfxPrefab: {fileID: 1316523376902277534, guid: dfc4fc5f6b6f93f47a16e7a3853a4f57,
-    type: 3}
-  enemyDeathSound:
-    clip: {fileID: 0}
-    soundType: 1
-    volume: 1
-    isPersistent: 0
-    isLooping: 0
-    pitch: 1
-    spatialBlend: 1
-  enemyMoanSource: {fileID: 3842993383150533774}
-  moanSounds: []
-  moanSoundChance: 1
-  moanSoundMinCooldown: 5
-  moanSoundMaxCooldown: 10
 --- !u!114 &881294577806582655
 MonoBehaviour:
   m_ObjectHideFlags: 0

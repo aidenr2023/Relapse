@@ -436,6 +436,8 @@ GameObject:
   - component: {fileID: 4579348370096720100}
   - component: {fileID: 8472600151036176868}
   - component: {fileID: 6375487390463003107}
+  - component: {fileID: 5465492425596142432}
+  - component: {fileID: 2610643554001586588}
   m_Layer: 9
   m_Name: Drunkard Enemy
   m_TagString: Enemy
@@ -772,6 +774,56 @@ MonoBehaviour:
     frequencyGain: 1
   shakeDuration: 0.5
   shakeFadeDuration: 0.5
+--- !u!114 &5465492425596142432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5397329162327813186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed51fdcc653a4c0e921bf3a6784893d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyHitEffect: {fileID: 7963333947894845958}
+  minVFXRangeDamage: 10
+  maxVFXRangeDamage: 50
+  minVFXDamage: 10
+  enemyDeathVfxPrefab: {fileID: 1316523376902277534, guid: dfc4fc5f6b6f93f47a16e7a3853a4f57,
+    type: 3}
+--- !u!114 &2610643554001586588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5397329162327813186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c66c40959b244d3b31320da7a9df63c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyDeathSound:
+    clip: {fileID: 0}
+    soundType: 1
+    volume: 1
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 1
+  enemyMoanSource: {fileID: 6128881449656524930}
+  moanSounds:
+  - clip: {fileID: 8300000, guid: fb282b04bff6174458bff6d8ec3924d2, type: 3}
+    soundType: 2
+    volume: 0.35
+    isPersistent: 0
+    isLooping: 0
+    pitch: 0.8
+    spatialBlend: 1
+  moanSoundChance: 0.4
+  moanSoundMinCooldown: 8
+  moanSoundMaxCooldown: 1
 --- !u!1 &6318990487789589755
 GameObject:
   m_ObjectHideFlags: 0

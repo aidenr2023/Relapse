@@ -734,6 +734,8 @@ GameObject:
   - component: {fileID: 1321240230866553819}
   - component: {fileID: 1562862804367130674}
   - component: {fileID: 8865007077112191545}
+  - component: {fileID: 4818004472963796004}
+  - component: {fileID: 1428431479969992486}
   m_Layer: 9
   m_Name: Melee-Patrol Lesions Enemy
   m_TagString: Enemy
@@ -823,32 +825,6 @@ MonoBehaviour:
   currentHealth: 100
   moneyReward: 50
   animator: {fileID: 5835691382165057910}
-  enemyHitEffect: {fileID: 935515506809706881}
-  minVFXRangeDamage: 10
-  maxVFXRangeDamage: 50
-  minVFXDamage: 10
-  enemyDeathVfxPrefab: {fileID: 1316523376902277534, guid: dfc4fc5f6b6f93f47a16e7a3853a4f57,
-    type: 3}
-  enemyDeathSound:
-    clip: {fileID: 8300000, guid: 94981910bbf34bb43a109bca992410c3, type: 3}
-    soundType: 2
-    volume: 0.0625
-    isPersistent: 0
-    isLooping: 0
-    pitch: 1
-    spatialBlend: 1
-  enemyMoanSource: {fileID: 4761777531960735672}
-  moanSounds:
-  - clip: {fileID: 8300000, guid: fb282b04bff6174458bff6d8ec3924d2, type: 3}
-    soundType: 2
-    volume: 0.35
-    isPersistent: 0
-    isLooping: 0
-    pitch: 0.8
-    spatialBlend: 1
-  moanSoundChance: 0.4
-  moanSoundMinCooldown: 8
-  moanSoundMaxCooldown: 15
 --- !u!114 &743209099562729217
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -956,6 +932,56 @@ MonoBehaviour:
     isLooping: 0
     pitch: 1
     spatialBlend: 1
+--- !u!114 &4818004472963796004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8754773797763522373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed51fdcc653a4c0e921bf3a6784893d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyHitEffect: {fileID: 935515506809706881}
+  minVFXRangeDamage: 10
+  maxVFXRangeDamage: 50
+  minVFXDamage: 10
+  enemyDeathVfxPrefab: {fileID: 1316523376902277534, guid: dfc4fc5f6b6f93f47a16e7a3853a4f57,
+    type: 3}
+--- !u!114 &1428431479969992486
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8754773797763522373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c66c40959b244d3b31320da7a9df63c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyDeathSound:
+    clip: {fileID: 0}
+    soundType: 1
+    volume: 1
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 1
+  enemyMoanSource: {fileID: 4761777531960735672}
+  moanSounds:
+  - clip: {fileID: 8300000, guid: fb282b04bff6174458bff6d8ec3924d2, type: 3}
+    soundType: 2
+    volume: 0.35
+    isPersistent: 0
+    isLooping: 0
+    pitch: 0.8
+    spatialBlend: 1
+  moanSoundChance: 0.4
+  moanSoundMinCooldown: 8
+  moanSoundMaxCooldown: 1
 --- !u!1001 &610759312793068290
 PrefabInstance:
   m_ObjectHideFlags: 0
