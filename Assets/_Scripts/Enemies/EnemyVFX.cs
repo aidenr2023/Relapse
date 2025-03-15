@@ -13,6 +13,8 @@ public class EnemyVFX : ComponentScript<EnemyInfo>
 
     [SerializeField] private VisualEffect enemyDeathVfxPrefab;
 
+    [SerializeField] private VisualEffect spawnVfxPrefab;
+    
     #endregion
 
     #region Private Fields
@@ -34,8 +36,23 @@ public class EnemyVFX : ComponentScript<EnemyInfo>
     private void Start()
     {
         ParentComponent.OnDamaged += ComicImpactOnDamaged;
+        
+        SpawnVfx();
     }
 
+    private void SpawnVfx()
+    {
+        // Return if there are no spawn VFX
+        if (spawnVfxPrefab == null)
+            return;
+        
+        // Instantiate the spawn VFX at the enemy's position
+        var spawnVfx = Instantiate(spawnVfxPrefab, transform.position, Quaternion.identity);
+        
+        // Play the spawn VFX
+        spawnVfx.Play();
+    }
+    
     private void DetachVFXOnDeath(object sender, HealthChangedEventArgs args)
     {
         // Return if the visual effect is null

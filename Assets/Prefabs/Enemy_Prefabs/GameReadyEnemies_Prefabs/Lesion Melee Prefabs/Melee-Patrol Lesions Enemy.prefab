@@ -821,8 +821,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1f2f7014adf46a88a0579b47084cca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  currentHealth: 100
+  maxHealth: 150
+  currentHealth: 150
   moneyReward: 50
   animator: {fileID: 5835691382165057910}
 --- !u!114 &743209099562729217
@@ -948,7 +948,9 @@ MonoBehaviour:
   minVFXRangeDamage: 10
   maxVFXRangeDamage: 50
   minVFXDamage: 10
-  enemyDeathVfxPrefab: {fileID: 1316523376902277534, guid: dfc4fc5f6b6f93f47a16e7a3853a4f57,
+  enemyDeathVfxPrefab: {fileID: 729671060432723281, guid: 4adf02244e1293d49a98aa75a89d8545,
+    type: 3}
+  spawnVfxPrefab: {fileID: 729671060432723281, guid: 4adf02244e1293d49a98aa75a89d8545,
     type: 3}
 --- !u!114 &1428431479969992486
 MonoBehaviour:
