@@ -52,6 +52,16 @@ public class WeightedContinuousEnemySpawner : ContinuousEnemySpawnerBase
                 enemyPrefabs[i].weight = 1f;
         }
     }
+    
+    protected override string GetTooltipText()
+    {
+        return $"Remaining Enemies: {spawnerCompleteAmount - _enemyKilledCount}";
+    }
+
+    protected override bool TooltipEndCondition()
+    {
+        return _enemyKilledCount >= spawnerCompleteAmount;
+    }
 
     [Serializable]
     private struct WeightedEnemyInformation

@@ -15,10 +15,18 @@ public class WaveEnemySpawner : EnemySpawner
     private int _currentWaveIndex;
     private int _remainingWaveEnemies;
 
+    private int _totalEnemiesLeft;
+
     #region EnemySpawner Implementation
 
     protected override void CustomStart()
     {
+        // Count all the enemies in the waves
+        foreach (var cWave in waves)
+        {
+            foreach (var _ in cWave.waveEnemyInfos)
+                _totalEnemiesLeft++;
+        }
     }
 
     protected override void CustomDestroy()
@@ -34,7 +42,7 @@ public class WaveEnemySpawner : EnemySpawner
 
     private void CheckForSpawnerComplete(object sender, HealthChangedEventArgs e)
     {
-        if (_currentWaveIndex < waves.Length) 
+        if (_currentWaveIndex < waves.Length)
             return;
 
         // If the remaining wave enemies is greater than 0, return
@@ -45,7 +53,6 @@ public class WaveEnemySpawner : EnemySpawner
         onSpawnerComplete.Invoke();
     }
 
-
     protected override void CustomStartSpawning()
     {
         SpawnWave(_currentWaveIndex);
@@ -55,11 +62,23 @@ public class WaveEnemySpawner : EnemySpawner
     {
     }
 
+    protected override string GetTooltipText()
+    {
+        return $"Remaining Enemies: {_remainingWaveEnemies}";
+    }
+
+    protected override bool TooltipEndCondition()
+    {
+        return _remainingWaveEnemies <= 0 && _currentWaveIndex >= waves.Length;
+    }
+
     #endregion
 
     private void DecrementEnemiesRemaining(object sender, HealthChangedEventArgs e)
     {
         _remainingWaveEnemies--;
+        
+        _totalEnemiesLeft--;
     }
 
     private void IncrementWave(object sender, HealthChangedEventArgs e)
@@ -76,7 +95,7 @@ public class WaveEnemySpawner : EnemySpawner
     private IEnumerator SpawnNextWave(int currentSpawnIndex, float spawnDelay)
     {
         yield return new WaitForSeconds(spawnDelay);
-        
+
         SpawnWave(currentSpawnIndex);
     }
 

@@ -10,6 +10,8 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
 
     [SerializeField] protected bool isActiveOnStart = false;
 
+    [SerializeField] protected bool showPersistentTooltip = true;
+    
     [SerializeField] protected GameObject itemToDropWhenComplete;
 
     [SerializeField] protected UnityEvent onEnemyKilled;
@@ -23,6 +25,8 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
     protected readonly HashSet<EnemyInfo> spawnedEnemies = new();
 
     protected bool hasStartedSpawning;
+    
+    protected JournalTooltip journalTooltip;
 
     #endregion
 
@@ -31,8 +35,20 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
         // Add this to the debug manager
         DebugManager.Instance.AddDebuggedObject(this);
 
+        onSpawnerStart.AddListener(ShowTooltipOnStart);
+        
         CustomStart();
     }
+
+    private void ShowTooltipOnStart()
+    {
+        JournalTooltipManager.Instance.AddTooltip(
+            GetTooltipText, 3, true, TooltipEndCondition
+        );
+    }
+    
+    protected abstract string GetTooltipText();
+    protected abstract bool TooltipEndCondition();
 
     protected abstract void CustomStart();
 
@@ -84,7 +100,6 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
         // Also, remove the enemy from the spawned enemies hash set
         spawnedEnemies.Remove((EnemyInfo)e.Actor);
     }
-
 
     public void StartSpawning()
     {

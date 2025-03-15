@@ -16,4 +16,14 @@ public class ContinuousEnemySpawner : ContinuousEnemySpawnerBase
     {
         return enemyPrefabs[UnityEngine.Random.Range(0, enemyPrefabs.Length)];
     }
+
+    protected override string GetTooltipText()
+    {
+        return $"Remaining Enemies: {spawnerCompleteAmount - _enemyKilledCount}";
+    }
+
+    protected override bool TooltipEndCondition()
+    {
+        return spawnerCompleteAmount - _enemyKilledCount >= 0;
+    }
 }

@@ -23,11 +23,16 @@ public class MiniWaveEnemySpawner : EnemySpawner
     private CountdownTimer _spawnTimer;
     private int _waveEnemiesRemaining;
     private bool _spawnedInitialWave;
+    private int _totalEnemiesLeft;
 
     #endregion
 
     protected override void CustomStart()
     {
+        // Count all the enemies in the waves
+        foreach (var _ in waveSpawnInfos)
+            _totalEnemiesLeft += spawnerCompleteAmount;
+        
         onWaveComplete.AddListener(IncrementWavesCompleted);
         onWaveComplete.AddListener(SpawnEnemiesOnWaveComplete);
 
@@ -135,6 +140,16 @@ public class MiniWaveEnemySpawner : EnemySpawner
     {
         foreach (var waveSpawnInfo in waveSpawnInfos)
             SpawnEnemy(waveSpawnInfo.EnemyPrefab, waveSpawnInfo.SpawnPoint.position, waveSpawnInfo.SpawnPoint.rotation);
+    }
+    
+    protected override string GetTooltipText()
+    {
+        return $"Remaining Enemies: {_totalEnemiesLeft}";
+    }
+
+    protected override bool TooltipEndCondition()
+    {
+        return _totalEnemiesLeft <= 0;
     }
 
     private void OnDrawGizmos()
