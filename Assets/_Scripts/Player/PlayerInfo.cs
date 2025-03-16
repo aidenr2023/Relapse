@@ -12,18 +12,21 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     #region Serialized Fields
 
     [Header("Health Settings")] [SerializeField]
-    private float maxHealth = 3f;
+    private FloatReference maxHealthSo;
 
-    [SerializeField] private float health;
+    [SerializeField] private FloatReference currentHealthSo;
 
     [SerializeField] [Min(0)] private float invincibilityDuration = 1f;
 
     // TODO: Eventually, I might move this code to another script.
     // For now though, I'm keeping this here to make things easier
-    [Header("Tolerance Meter Settings")] [SerializeField] [Min(.001f)]
-    private float maxTolerance;
+    [Header("Tolerance Meter Settings")] [SerializeField]
+    private FloatReference maxToxicitySo;
 
-    [SerializeField] private float currentTolerance;
+    [SerializeField] private FloatReference currentToxicitySo;
+
+    // [SerializeField] [Min(.001f)] private float maxTolerance;
+    // [SerializeField] private float currentTolerance;
 
     [Header("Relapse Image Overlay")]
     // [SerializeField] private Image relapseImage;
@@ -36,7 +39,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     [Tooltip("The number of relapses the player can have before losing the level.")] [SerializeField]
     private int relapsesToLose = 3;
 
-    [Tooltip("What percent is the tolerance meter set to when the player relapses?")] [Range(0, 1)] [SerializeField]
+    [Tooltip("What percent is the toxicity meter set to when the player relapses?")] [Range(0, 1)] [SerializeField]
     private float toleranceRelapsePercent = .75f;
 
     [Header("Relapsing Settings")] [SerializeField] [Min(0)]
@@ -49,7 +52,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     [SerializeField, Min(0)] private float passiveRegenDelay = 10;
 
     // // TODO: Find a better way to do this
-    // [SerializeField] private CinemachineVirtualCamera vCam;
+    // [SerializeField] private Cinemachine VirtualCamera vCam;
 
     [Header("Audio"), SerializeField] private Sound hitSound;
     [SerializeField] private Sound deathSound;
@@ -77,15 +80,15 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     public GameObject GameObject => gameObject;
 
-    public float MaxHealth => maxHealth;
+    public float MaxHealth => maxHealthSo;
 
-    public float CurrentHealth => health;
+    public float CurrentHealth => currentHealthSo;
 
-    public float MaxTolerance => maxTolerance;
+    public float MaxToxicity => maxToxicitySo;
 
-    public float CurrentTolerance => currentTolerance;
+    public float CurrentToxicity => currentToxicitySo;
 
-    public float ToxicityPercentage => currentTolerance / maxTolerance;
+    public float ToxicityPercentage => currentToxicitySo / maxToxicitySo;
 
     public bool IsRelapsing => _isRelapsing;
 
@@ -126,21 +129,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     private void Start()
     {
-        // Set the player's health to the max health
-        // health = maxHealth;
-
-        // OnHealed += (sender, args) =>
-        //     Debug.Log(
-        //         $"{gameObject.name} healed: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
-        // OnDamaged += (sender, args) =>
-        //     Debug.Log(
-        //         $"{gameObject.name} damaged: {args.Amount} by {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
-        // OnDeath += (sender, args) =>
-        //     Debug.Log($"{gameObject.name} died: {args.Changer.GameObject.name} ({args.DamagerObject.GameObject.name})");
-        //
-        // OnDeath += (sender, args) =>
-        //     Debug.Log($"{(args.DamagerObject == args.Actor ? "RELAPSE" : "DEATH")}!");
-
         // Disable the relapse image
         // relapseImage.enabled = false;
         relapseOpacityTimer.OnTimerEnd += () => { relapseOpacityTimer.Reset(); };
@@ -173,7 +161,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     private void PlaySoundOnDamaged(object sender, HealthChangedEventArgs e)
     {
-        var cSound = (health > 0) ? hitSound : deathSound;
+        var cSound = (currentHealthSo > 0) ? hitSound : deathSound;
 
         // Return if the sound is null
         if (cSound == null)
@@ -228,7 +216,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         // Update the relapse effects
         UpdateRelapseEffects();
 
-        // Prevent the tolerance from going below 0 or above the max value
+        // Prevent the toxicity from going below 0 or above the max value
         ClampTolerance();
 
         // Update the Relapse Image update
@@ -251,18 +239,18 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         // Increment the relapse duration
         _currentRelapseDuration += Time.deltaTime;
 
-        // Reset the tolerance meter after a relapse
-        var targetTolerance = maxTolerance * toleranceRelapsePercent;
-        var toleranceDifference = targetTolerance - maxTolerance;
-        var toleranceDifferencePerSecond = toleranceDifference / relapseDuration;
-        ChangeTolerance(toleranceDifferencePerSecond * Time.deltaTime);
+        // Reset the toxicity meter after a relapse
+        var targetTolerance = maxToxicitySo * toleranceRelapsePercent;
+        var toxicityDifference = targetTolerance - maxToxicitySo;
+        var toxicityDifferencePerSecond = toxicityDifference / relapseDuration;
+        ChangeToxicity(toxicityDifferencePerSecond * Time.deltaTime);
 
         // // If the relapse duration is greater than the relapse duration, end the relapse
         // if (_currentRelapseDuration >= relapseDuration)
         //     EndRelapse();
 
-        // If the current tolerance is less than or equal to 0, end the relapse
-        if (currentTolerance <= 0)
+        // If the current toxicity is less than or equal to 0, end the relapse
+        if (currentToxicitySo <= 0)
             EndRelapse();
     }
 
@@ -307,11 +295,11 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
             return;
 
         // Return if the player is at max health
-        if (health >= maxHealth)
+        if (currentHealthSo >= maxHealthSo)
             return;
 
         // Return if health is at the passive regen cap
-        if (health >= passiveRegenCap)
+        if (currentHealthSo >= passiveRegenCap)
             return;
 
         // Return if the passive regen timer is not complete
@@ -320,8 +308,8 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
         // Increment the player's health
         var regenAmount = passiveRegenRate * Time.deltaTime;
-        if (health + regenAmount >= passiveRegenCap)
-            ChangeHealth(passiveRegenCap - health, this, this, transform.position);
+        if (currentHealthSo + regenAmount >= passiveRegenCap)
+            ChangeHealth(passiveRegenCap - currentHealthSo, this, this, transform.position);
         else
             ChangeHealth(regenAmount, this, this, transform.position);
     }
@@ -331,37 +319,37 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     public void ChangeMaxHealth(float newValue)
     {
         // If the player is gaining health, increase the max health & health
-        if (newValue > maxHealth)
+        if (newValue > maxHealthSo)
         {
-            var healthDifference = newValue - maxHealth;
-            maxHealth = newValue;
-            health += healthDifference;
+            var healthDifference = newValue - maxHealthSo;
+            maxHealthSo.Value = newValue;
+            currentHealthSo.Value += healthDifference;
         }
 
         // If the player is losing health, decrease the max health & health
-        else if (newValue < maxHealth)
-            maxHealth = newValue;
+        else if (newValue < maxHealthSo)
+            maxHealthSo.Value = newValue;
 
         // Clamp the health
-        health = Mathf.Clamp(health, 0, maxHealth);
+        currentHealthSo.Value = Mathf.Clamp(currentHealthSo, 0, maxHealthSo);
     }
 
     public void ChangeMaxToxicity(float newValue)
     {
         // If the player is gaining toxicity, increase the max toxicity & toxicity
-        if (newValue > maxTolerance)
-            maxTolerance = newValue;
+        if (newValue > maxToxicitySo)
+            maxToxicitySo.Value = newValue;
 
         // If the player is losing toxicity, decrease the max toxicity & toxicity
-        else if (newValue < maxTolerance)
+        else if (newValue < maxToxicitySo)
         {
-            var toleranceDifference = newValue - maxTolerance;
-            maxTolerance = newValue;
-            currentTolerance += toleranceDifference;
+            var toxicityDifference = newValue - maxToxicitySo;
+            maxToxicitySo.Value = newValue;
+            currentToxicitySo.Value += toxicityDifference;
         }
 
         // Clamp the toxicity
-        currentTolerance = Mathf.Clamp(currentTolerance, 0, maxTolerance);
+        currentToxicitySo.Value = Mathf.Clamp(currentToxicitySo, 0, maxToxicitySo);
     }
 
     public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position,
@@ -374,7 +362,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         // If the amount is positive, the player is gaining health
         else if (amount > 0)
         {
-            health = Mathf.Clamp(health + amount, 0, maxHealth);
+            currentHealthSo.Value = Mathf.Clamp(currentHealthSo + amount, 0, maxHealthSo);
 
             // Invoke the OnHealed event
             var args = new HealthChangedEventArgs(this, changer, damager, amount, position);
@@ -385,20 +373,20 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     private void TakeDamage(float damageAmount, IActor changer, IDamager damager, Vector3 position, bool isCriticalHit)
     {
         // Return if the player is already dead
-        if (health <= 0)
+        if (currentHealthSo <= 0)
             return;
 
         // Return if the player is invincible
         if (_invincibilityTimer.IsActive)
             return;
 
-        health = Mathf.Clamp(health - damageAmount, 0, maxHealth);
+        currentHealthSo.Value = Mathf.Clamp(currentHealthSo - damageAmount, 0, maxHealthSo);
 
         // Invoke the OnDamaged event
         var args = new HealthChangedEventArgs(this, changer, damager, damageAmount, position, isCriticalHit);
         OnDamaged?.Invoke(this, args);
 
-        if (health <= 0)
+        if (currentHealthSo <= 0)
         {
             // Invoke the OnDeath event
             OnDeath?.Invoke(this, args);
@@ -415,15 +403,15 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     private void ClampTolerance()
     {
-        currentTolerance = Mathf.Clamp(currentTolerance, 0, maxTolerance);
+        currentToxicitySo.Value = Mathf.Clamp(currentToxicitySo, 0, maxToxicitySo);
     }
 
-    public void ChangeTolerance(float amount)
+    public void ChangeToxicity(float amount)
     {
-        currentTolerance = Mathf.Clamp(currentTolerance + amount, 0, maxTolerance);
+        currentToxicitySo.Value = Mathf.Clamp(currentToxicitySo + amount, 0, maxToxicitySo);
 
-        // The player will relapse if the tolerance meter is too high
-        if (currentTolerance >= maxTolerance)
+        // The player will relapse if the toxicity meter is too high
+        if (currentToxicitySo >= maxToxicitySo)
             StartRelapse();
     }
 
@@ -460,16 +448,16 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     private void DieFromRelapse()
     {
-        ChangeHealth(-maxHealth, this, this, transform.position);
+        ChangeHealth(-maxHealthSo, this, this, transform.position);
     }
 
     public void ResetPlayer()
     {
         // Reset the health
-        health = maxHealth;
+        currentHealthSo.Value = maxHealthSo;
 
-        // Reset the tolerance
-        currentTolerance = 0;
+        // Reset the toxicity
+        currentToxicitySo.Value = 0;
 
         // End the relapse
         EndRelapse();
@@ -477,16 +465,16 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     public void SetUpHealth(float cHealth, float mHealth)
     {
-        health = cHealth;
-        maxHealth = mHealth;
+        currentHealthSo.Value = cHealth;
+        maxHealthSo.Value = mHealth;
     }
 
     public void SetUpToxicity(float cToxicity, float mToxicity, int relapseCount, bool isRelapsing)
     {
         var wasRelapsing = _isRelapsing;
 
-        currentTolerance = cToxicity;
-        maxTolerance = mToxicity;
+        currentToxicitySo.Value = cToxicity;
+        maxToxicitySo.Value = mToxicity;
         _relapseCount = relapseCount;
         _isRelapsing = isRelapsing;
 

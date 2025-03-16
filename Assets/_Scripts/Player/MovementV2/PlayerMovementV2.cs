@@ -41,7 +41,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     [SerializeField, Min(0)] private float slideInterpolationMultiplier = 10;
     [SerializeField, Range(0, 1)] private float sphereCastRadius = .9f;
     [SerializeField, Range(0, 90)] private float maxSlopeAngle = 60;
-    
+
     [SerializeField] private PlayerMovementTypeSettings cityMovementSettings;
     [SerializeField] private PlayerMovementTypeSettings apartmentMovementSettings;
 
@@ -57,7 +57,11 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     [SerializeField] private LayerMask layersToIgnore;
 
     [Space, SerializeField] private bool staminaDrains = true;
-    [SerializeField, Min(0)] private float maxStamina = 100;
+
+    [SerializeField] private FloatReference maxStaminaSo;
+    [SerializeField] private FloatReference currentStaminaSo;
+
+
     [SerializeField, Min(0)] private float staminaRegenRate = 20f;
     [SerializeField, Min(0)] private float sprintStaminaDrainRate = 10f;
     [SerializeField, Min(0)] private float staminaRegenDelay = .5f;
@@ -94,8 +98,6 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private float _currentPlayerHeight;
     // private float _rideHeight = .5f;
-
-    private float _currentStamina;
 
     private CountdownTimer _staminaRegenDelayTimer;
 
@@ -160,9 +162,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public HashSet<InputData> InputActions { get; } = new();
 
-    public float CurrentStamina => _currentStamina;
+    public float CurrentStamina => currentStaminaSo;
 
-    public float MaxStamina => maxStamina;
+    public float MaxStamina => maxStaminaSo;
 
     public float StaminaRegenRate => staminaRegenRate;
 
@@ -189,7 +191,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         _currentPlayerHeight = defaultPlayerHeight;
 
         // Set the current stamina to the max stamina
-        _currentStamina = maxStamina;
+        currentStaminaSo.Value = maxStaminaSo;
 
         // Create the stamina regen delay timer
         _staminaRegenDelayTimer = new CountdownTimer(staminaRegenDelay);
@@ -778,7 +780,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         sb.AppendLine($"\tPosition: {transform.position}");
         sb.AppendLine($"\tVelocity: {_rigidbody.velocity} ({lateralVelocity.magnitude:0.0000})");
         sb.AppendLine($"\tGrounded: {IsGrounded}");
-        sb.AppendLine($"\tStamina: {_currentStamina:0.00} / {maxStamina:0.00}");
+        sb.AppendLine($"\tStamina: {currentStaminaSo:0.00} / {maxStaminaSo:0.00}");
 
         sb.AppendLine($"\tAll Movement Scripts: {string.Join(", ", _movementScripts.Select(n => n.GetType().Name))}");
 
@@ -883,7 +885,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Don't drain the stamina if the stamina drains flag is false
         if (!staminaDrains && amount < 0)
         {
-            _currentStamina = maxStamina;
+            currentStaminaSo = maxStaminaSo;
             return;
         }
 
@@ -896,13 +898,13 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             _staminaRegenDelayTimer.SetMaxTimeAndReset(staminaRegenDelay);
         }
 
-        _currentStamina = Mathf.Clamp(_currentStamina + amount, 0, maxStamina);
+        currentStaminaSo.Value = Mathf.Clamp(currentStaminaSo + amount, 0, maxStaminaSo);
     }
 
     public void SetUpStamina(float cStamina, float mStamina)
     {
-        _currentStamina = cStamina;
-        maxStamina = mStamina;
+        currentStaminaSo.Value = cStamina;
+        maxStaminaSo.Value = mStamina;
     }
 
     public void DisablePlayerControls()
@@ -920,7 +922,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     public void ApplyMovementTypeSettings(PlayerMovementType movementType)
     {
         Debug.Log($"Applying settings for {movementType}");
-        
+
         // Determine which settings to use
         var cSettings = movementType switch
         {
@@ -928,7 +930,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             PlayerMovementType.Apartment => apartmentMovementSettings,
             _ => throw new ArgumentOutOfRangeException(nameof(movementType), movementType, null)
         };
-        
+
         // Apply the settings
         desiredCapsuleHeightOffset = cSettings.desiredCapsuleHeightOffset;
         sphereCastRadius = cSettings.sphereCastRadius;

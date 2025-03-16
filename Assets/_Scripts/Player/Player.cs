@@ -217,12 +217,12 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
 
         // Create number data for the max toxicity
         // Save the data
-        var maxToxicityData = new DataInfo(MAX_TOXICITY_KEY, PlayerInfo.MaxTolerance);
+        var maxToxicityData = new DataInfo(MAX_TOXICITY_KEY, PlayerInfo.MaxToxicity);
         playerLoader.AddDataToMemory(Id, maxToxicityData);
 
         // Create number data for the current toxicity
         // Save the data
-        var currentToxicityData = new DataInfo(CURRENT_TOXICITY_KEY, PlayerInfo.CurrentTolerance);
+        var currentToxicityData = new DataInfo(CURRENT_TOXICITY_KEY, PlayerInfo.CurrentToxicity);
         playerLoader.AddDataToMemory(Id, currentToxicityData);
 
         // Create number data for the relapse count

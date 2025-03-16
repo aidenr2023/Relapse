@@ -30,7 +30,7 @@ public class ToxicityBarController : TransparentBarController
 
     protected override void SetCurrentValue()
     {
-        CurrentValue = _player.PlayerInfo.CurrentTolerance;
+        CurrentValue = _player.PlayerInfo.CurrentToxicity;
 
         if (jitter == null) 
             return;
@@ -53,6 +53,6 @@ public class ToxicityBarController : TransparentBarController
 
     protected override float CalculatePercentage()
     {
-        return Mathf.Clamp01(_player.PlayerInfo.CurrentTolerance / _player.PlayerInfo.MaxTolerance);
+        return Mathf.Clamp01(_player.PlayerInfo.CurrentToxicity / _player.PlayerInfo.MaxToxicity);
     }
 }
