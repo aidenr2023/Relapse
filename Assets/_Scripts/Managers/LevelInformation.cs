@@ -23,8 +23,7 @@ public class LevelInformation : MonoBehaviour
 
     [Header("Difficulty"), SerializeField] private FloatReference difficultyHealthMultiplierSo;
     [SerializeField] private FloatReference difficultyDamageMultiplierSo;
-    [SerializeField] private float difficultyHealthMultiplier = 1;
-    [SerializeField] private float difficultyDamageMultiplier = 1;
+    [SerializeField] private DifficultySettings difficultySettings;
 
     #endregion
 
@@ -92,11 +91,15 @@ public class LevelInformation : MonoBehaviour
         if (!Application.isPlaying)
             return;
         
+        // Return if the difficulty settings are null
+        if (difficultySettings == null)
+            return;
+
         // Set the difficulty multipliers
         if (difficultyHealthMultiplierSo != null)
-            difficultyHealthMultiplierSo.Value = difficultyHealthMultiplier;
+            difficultyHealthMultiplierSo.Value = difficultySettings.DifficultyHealthMultiplier;
         if (difficultyDamageMultiplierSo != null)
-            difficultyDamageMultiplierSo.Value = difficultyDamageMultiplier;
+            difficultyDamageMultiplierSo.Value = difficultySettings.DifficultyDamageMultiplier;
     }
 
     private void Start()

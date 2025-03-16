@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-[CreateAssetMenu(fileName = "New Enemy Behavior State", menuName = "Enemy Behavior/00. Enemy Behavior State")]
+[CreateAssetMenu(fileName = "New Enemy Behavior State", menuName = "Enemies/Behavior/00. Enemy Behavior State")]
 public class EnemyBehaviorState : EnemyBehaviorStateBase
 {
     [SerializeField] public BehaviorActionAttack[] attackActions;
