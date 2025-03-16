@@ -15,6 +15,8 @@ public class LevelInformation : MonoBehaviour
     [SerializeField] private string levelName;
     [SerializeField] private bool skipIntroText;
     [SerializeField] private LevelCheckpointCheckpoint startingCheckpoint;
+    [SerializeField] private bool addToCheckpointManagerOnLoad;
+    [SerializeField] private LevelSectionSceneInfo forcedSectionSceneInfo;
 
     #endregion
 
@@ -27,6 +29,8 @@ public class LevelInformation : MonoBehaviour
     #region Getters
 
     public LevelCheckpointCheckpoint StartingCheckpoint => startingCheckpoint;
+    
+    private Vector3 StartingPosition => startingCheckpoint != null ? startingCheckpoint.RespawnPoint.position : transform.position;
 
     #endregion
 
@@ -36,9 +40,29 @@ public class LevelInformation : MonoBehaviour
         if (_isStaticallyInitialized)
             return;
 
+        OnLevelInformationLoaded += ForceSceneInformation;
         OnLevelInformationLoaded += PlayIntroText;
+        OnLevelInformationLoaded += AddToCheckpointManager;
 
         _isStaticallyInitialized = true;
+    }
+
+    private static void ForceSceneInformation(LevelInformation obj)
+    {
+        // Return if the forced section scene info is null
+        if (obj.forcedSectionSceneInfo == null)
+            return;
+        
+        AsyncSceneManager.Instance.ForceManageScene(obj.forcedSectionSceneInfo);
+    }
+
+    private static void AddToCheckpointManager(LevelInformation obj)
+    {
+        if (!obj.addToCheckpointManagerOnLoad)
+            return;
+        
+        // Save the starting checkpoint (if necessary)
+        CheckpointManager.Instance.SaveCheckpoint(obj.StartingPosition);
     }
 
     private void Awake()

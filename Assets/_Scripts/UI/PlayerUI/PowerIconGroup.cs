@@ -54,7 +54,7 @@ public class PowerIconGroup : MonoBehaviour
         // Return if the object is disabled
         if (!gameObject.activeInHierarchy)
             return;
-        
+
         // Update the stay on screen timer
         _powerIconsStayOnScreenTimer.SetMaxTime(powerIconsStayOnScreenTime);
 
@@ -132,13 +132,12 @@ public class PowerIconGroup : MonoBehaviour
                 powerImages[i].SetFill((powerToken.CooldownPercentage != 0)
                     ? powerToken.CooldownPercentage
                     : 1);
-                
+
                 // If the power is currently cooling down, set the color to the disabled color
                 if (powerToken.IsCoolingDown)
                 {
                     powerImages[i].SetFgColor(disabledColor);
                     powerImages[i].SetBgOpacity(1f);
-                    
                 }
                 else
                 {
@@ -148,10 +147,13 @@ public class PowerIconGroup : MonoBehaviour
             }
 
             // Set the sprite of the image
-            powerImages[i].SetForeground(cPower.Icon);
-            
-            // Jitter the sprite if the power is the current power & the power is not cooling down
-            powerImages[i].SetJitters(currentPower == cPower && (!powerToken?.IsCoolingDown ?? false));
+            if (cPower != null)
+            {
+                powerImages[i].SetForeground(cPower.Icon);
+
+                // Jitter the sprite if the power is the current power & the power is not cooling down
+                powerImages[i].SetJitters(currentPower == cPower && (!powerToken?.IsCoolingDown ?? false));
+            }
 
             // var angle = cPower.PowerType == PowerType.Drug
             //     ? drugRotation

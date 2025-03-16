@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -21,7 +22,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     [SerializeField] private LayerMask powerAimIgnoreLayers;
 
-    [SerializeField] private PowerScriptableObject[] powers;
+    [SerializeField] private PowerArrayReference allPowers;
+    [SerializeField] private PowerArrayReference powers;
 
     [Header("Power Charged Vignette"), SerializeField, Range(0, 1)]
     private float chargedVignetteStrength = .25f;
@@ -29,8 +31,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     [SerializeField, Range(0, 1)] private float chargedVignetteLerpAmount = .25f;
     [SerializeField, Min(0)] private float chargedVignetteFlashesPerSecond = 1f;
 
-    [Header("Visual Effects")] 
-    [SerializeField] private VisualEffect fireballChargeVfx;
+    [Header("Visual Effects")] [SerializeField]
+    private VisualEffect fireballChargeVfx;
+
     [SerializeField] private VisualEffect greenFireballChargeVfx;
 
     [SerializeField] private VisualEffect electricChargeVfx;
@@ -48,8 +51,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     private Player _player;
 
     private Dictionary<PowerScriptableObject, PowerToken> _powerTokens;
-    private HashSet<PowerScriptableObject> _drugsSet;
-    private HashSet<PowerScriptableObject> _medsSet;
 
     private int _currentPowerIndex;
     private bool _isChargingPower;
@@ -71,14 +72,28 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     public Transform PowerFirePoint => powerFirePoint;
 
-    public PowerScriptableObject CurrentPower => powers.Length > 0 ? powers[_currentPowerIndex] : null;
+    public PowerScriptableObject CurrentPower
+    {
+        get
+        {
+            // Return null if the powers array is empty
+            if (powers.Value.Length == 0)
+                return null;
+            
+            _currentPowerIndex %= powers.Value.Length;
 
-    public PowerToken CurrentPowerToken =>
-        CurrentPower != null
-            ? _powerTokens.GetValueOrDefault(CurrentPower)
-            : null;
+            if (_currentPowerIndex < 0)
+                _currentPowerIndex += powers.Value.Length;
 
-    public IReadOnlyCollection<PowerScriptableObject> Powers => powers;
+            return powers.Value[_currentPowerIndex];
+        }
+    }
+
+    public PowerToken CurrentPowerToken => CurrentPower != null
+        ? _powerTokens.GetValueOrDefault(CurrentPower)
+        : null;
+
+    public IReadOnlyCollection<PowerScriptableObject> Powers => powers.Value;
 
     public int CurrentPowerIndex => _currentPowerIndex;
 
@@ -194,6 +209,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         WasPowerJustUsed = true;
     }
 
+    #region Input
+
     public void InitializeInput()
     {
         InputActions.Add(
@@ -246,13 +263,18 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         ChangePower(3);
     }
 
+    #endregion
 
     private void InitializePowerCollections()
     {
-        _drugsSet = new HashSet<PowerScriptableObject>();
-        _medsSet = new HashSet<PowerScriptableObject>();
         _powerTokens = new Dictionary<PowerScriptableObject, PowerToken>();
-        UpdatePowerCollections(powers);
+
+        // For each power in the all powers array, create a power token
+        foreach (var pso in allPowers.Value)
+            CreatePowerToken(pso);
+
+        // Update the power collections
+        UpdatePowerCollections(powers.Value);
     }
 
 
@@ -281,7 +303,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     public void ChangePower(int index)
     {
         // Return if the powers array is empty
-        if (powers.Length == 0)
+        if (powers.Value.Length == 0)
             return;
 
         // Don't change the power if the current power is active
@@ -292,9 +314,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         if (_isChargingPower)
             StopCharge();
 
-        _currentPowerIndex = (index) % powers.Length;
+        _currentPowerIndex = (index) % powers.Value.Length;
         if (_currentPowerIndex < 0)
-            _currentPowerIndex += powers.Length;
+            _currentPowerIndex += powers.Value.Length;
     }
 
     private void OnPowerPerformed(InputAction.CallbackContext obj)
@@ -496,15 +518,15 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     {
         // Condense the powers array by trimming the null values at the end
         int removeAmount;
-        for (removeAmount = 0; removeAmount < powers.Length; removeAmount++)
+        for (removeAmount = 0; removeAmount < powers.Value.Length; removeAmount++)
         {
-            if (powers[powers.Length - 1 - removeAmount] != null)
+            if (powers.Value[powers.Value.Length - 1 - removeAmount] != null)
                 break;
         }
 
         // Remove the null values from the end of the array if removeAmount is greater than 0
         if (removeAmount > 0)
-            Array.Resize(ref powers, powers.Length - removeAmount);
+            PowerResize(powers.Value.Length - removeAmount);
 
         // Loop through all the new powers
         foreach (var power in newPowers)
@@ -512,31 +534,32 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
             if (power == null)
                 continue;
 
-            // Determine which collection to add the power to
-            var addSet = power.PowerType switch
-            {
-                PowerType.Drug => _drugsSet,
-                PowerType.Medicine => _medsSet,
-                _ => throw new ArgumentOutOfRangeException()
-            };
-
-            // Add the power to the correct collection
-            addSet.Add(power);
-
             // Add the power to the power usage tokens
-            if (!_powerTokens.ContainsKey(power))
-                _powerTokens.Add(power, new PowerToken(power));
+            CreatePowerToken(power);
         }
 
         // clamp the current power index to the new powers array
-        _currentPowerIndex = Mathf.Clamp(_currentPowerIndex, 0, powers.Length - 1);
+        _currentPowerIndex = Mathf.Clamp(_currentPowerIndex, 0, powers.Value.Length - 1);
 
         // Skip if the current power is already set or if there are no powers
-        if (CurrentPower != null || powers.Length == 0)
+        if (CurrentPower != null || powers.Value.Length == 0)
             return;
 
         // Set the current power to the first power in the array
         _currentPowerIndex = 0;
+    }
+
+    private void CreatePowerToken(PowerScriptableObject power)
+    {
+        // Return if the power is null
+        if (power == null)
+            return;
+
+        // Return if there is already a power token
+        if (_powerTokens.ContainsKey(power))
+            return;
+
+        _powerTokens.Add(power, new PowerToken(power));
     }
 
     private void UpdateVignetteToken()
@@ -567,7 +590,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         UpdateGauntletChargeVFXHelper(CurrentPower, CurrentPowerToken, CurrentChargeVfx, processedVfx);
 
         // For each power the player has equipped
-        foreach (var power in powers)
+        foreach (var power in powers.Value)
         {
             // Continue if the power is the current power
             if (power == CurrentPower)
@@ -597,7 +620,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Try to add the vfx to the fade times dictionary
         _fadeTimes.TryAdd(chargeVfx, 0);
-        
+
         uint chargeState = 0;
 
         var isCurrentPower = power != null && power == CurrentPower;
@@ -712,11 +735,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Change the player's tolerance
         _player.PlayerInfo.ChangeToxicity(CurrentPowerToken.ToleranceMeterImpact);
-        // StartCoroutine(
-        //     AddToxicityOverTime(
-        //         CurrentPowerToken.ToleranceMeterImpact,
-        //         .5f)
-        // );
 
         // Invoke the event for the power used
         OnPowerUsed?.Invoke(this, CurrentPowerToken);
@@ -735,8 +753,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     public void SetUpPowers(int powerIndex, PowerScriptableObject[] newPowers)
     {
         // Clone the powers array
-        powers = new PowerScriptableObject[newPowers.Length];
-        Array.Copy(newPowers, powers, newPowers.Length);
+        powers.Value = new PowerScriptableObject[newPowers.Length];
+        Array.Copy(newPowers, powers.Value, newPowers.Length);
 
         // Initialize the power collections
         InitializePowerCollections();
@@ -747,6 +765,10 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     private VisualEffect GetChargeVfx(PowerScriptableObject power)
     {
+        // Return null if the power is null
+        if (power == null)
+            return fireballChargeVfx;
+        
         return power.ChargeVfxType switch
         {
             PowerVfxType.Fireball => fireballChargeVfx,
@@ -774,20 +796,14 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     public void AddPower(PowerScriptableObject powerScriptableObject, bool toolTip = true)
     {
-        // Check if the power is already in one of the hash sets
-        var powerSet = powerScriptableObject.PowerType switch
-        {
-            PowerType.Drug => _drugsSet,
-            PowerType.Medicine => _medsSet,
-            _ => throw new ArgumentOutOfRangeException()
-        };
-
-        if (!powerSet.Add(powerScriptableObject))
+        // Check if the power is already in the array
+        if (powers.Value.Contains(powerScriptableObject))
             return;
 
         // Add the power to the end of the powers array
-        Array.Resize(ref powers, powers.Length + 1);
-        powers[^1] = powerScriptableObject;
+        // Array.Resize(ref powers, powers.Value.Length + 1);
+        PowerResize(powers.Value.Length + 1);
+        powers.Value[^1] = powerScriptableObject;
 
         // Update the power collections
         UpdatePowerCollections(powerScriptableObject);
@@ -811,55 +827,54 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         // Add the power to the power tokens / replace the power token if it already exists
         _powerTokens[powerToken.PowerScriptableObject] = powerToken;
 
-        // Add the power to the correct hash set
-        var powerSet = powerToken.PowerScriptableObject.PowerType switch
+        // add the power to the end of the powers array
+        if (!powers.Value.Contains(powerToken.PowerScriptableObject))
         {
-            PowerType.Drug => _drugsSet,
-            PowerType.Medicine => _medsSet,
-            _ => throw new ArgumentOutOfRangeException()
-        };
-
-        // Also, add the power to the end of the powers array
-        if (powerSet.Add(powerToken.PowerScriptableObject))
-        {
-            Array.Resize(ref powers, powers.Length + 1);
-            powers[^1] = powerToken.PowerScriptableObject;
+            // Array.Resize(ref powers, powers.Value.Length + 1);
+            PowerResize(powers.Value.Length + 1);
+            powers.Value[^1] = powerToken.PowerScriptableObject;
         }
 
         // Update the power collections
         UpdatePowerCollections(powerToken.PowerScriptableObject);
     }
 
+    private void PowerResize(int newSize)
+    {
+        // Copy the original powers array
+        var powersCopy = new PowerScriptableObject[powers.Value.Length];
+        Array.Copy(powers.Value, powersCopy, powers.Value.Length);
+
+        // Replace the powers array with a new empty array
+        powers.Value = new PowerScriptableObject[newSize];
+
+        // Copy the original powers back to the new array
+        Array.Copy(powersCopy, powers.Value, powersCopy.Length);
+    }
+
     public void RemovePower(PowerScriptableObject powerScriptableObject)
     {
         var isCurrentPower = CurrentPower == powerScriptableObject;
-        var isLastPower = powers.Length == 1;
-
-        // Check if the power is already in one of the hash sets
-        var powerSet = powerScriptableObject.PowerType switch
-        {
-            PowerType.Drug => _drugsSet,
-            PowerType.Medicine => _medsSet,
-            _ => throw new ArgumentOutOfRangeException()
-        };
+        var isLastPower = powers.Value.Length == 1;
 
         // Return if the player does not have the power
-        if (!powerSet.Remove(powerScriptableObject))
+        if (!powers.Value.Contains(powerScriptableObject))
             return;
 
         // Remove the power from the powers array
-        for (int i = 0; i < powers.Length; i++)
+        for (int i = 0; i < powers.Value.Length; i++)
         {
             // Look for the power in the array
-            if (powers[i] != powerScriptableObject)
+            if (powers.Value[i] != powerScriptableObject)
                 continue;
 
             // Remove the power from the array by shifting all the elements to the left
-            for (int j = i; j < powers.Length - 1; j++)
-                powers[j] = powers[j + 1];
+            for (int j = i; j < powers.Value.Length - 1; j++)
+                powers.Value[j] = powers.Value[j + 1];
 
             // Resize the array
-            Array.Resize(ref powers, powers.Length - 1);
+            // Array.Resize(ref powers, powers.Value.Length - 1);
+            PowerResize(powers.Value.Length - 1);
 
             break;
         }
@@ -872,16 +887,14 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         if (isCurrentPower)
         {
-            _currentPowerIndex = Mathf.Clamp(_currentPowerIndex, 0, powers.Length - 1);
+            _currentPowerIndex = Mathf.Clamp(_currentPowerIndex, 0, powers.Value.Length - 1);
             ChangePower(_currentPowerIndex);
         }
 
         if (isLastPower)
         {
-            _drugsSet.Clear();
-            _medsSet.Clear();
             _powerTokens.Clear();
-            powers = Array.Empty<PowerScriptableObject>();
+            powers.Value = Array.Empty<PowerScriptableObject>();
         }
     }
 
@@ -889,22 +902,12 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     {
         // Clear the power tokens, the drugs set, the meds set, and the powers array
         _powerTokens.Clear();
-        _drugsSet.Clear();
-        _medsSet.Clear();
-        powers = Array.Empty<PowerScriptableObject>();
+        powers.Value = Array.Empty<PowerScriptableObject>();
     }
 
     public bool HasPower(PowerScriptableObject powerScriptableObject)
     {
-        // Check if the power is already in one of the hash sets
-        var powerSet = powerScriptableObject.PowerType switch
-        {
-            PowerType.Drug => _drugsSet,
-            PowerType.Medicine => _medsSet,
-            _ => throw new ArgumentOutOfRangeException()
-        };
-
-        return powerSet.Contains(powerScriptableObject);
+        return powers.Value.Contains(powerScriptableObject);
     }
 
     public PowerToken GetPowerToken(PowerScriptableObject powerScriptableObject)
@@ -957,20 +960,20 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     public PowerScriptableObject GetPowerAtIndex(int index)
     {
-        return index >= 0 && index < powers.Length ? powers[index] : null;
+        return index >= 0 && index < powers.Value.Length ? powers.Value[index] : null;
     }
 
     public void SetPowerAtIndex(PowerScriptableObject power, int index)
     {
-        if (index < 0 || index >= powers.Length)
+        if (index < 0 || index >= powers.Value.Length)
             return;
 
         // Create an array that represents the new powers array
-        var newPowers = new PowerScriptableObject[powers.Length];
+        var newPowers = new PowerScriptableObject[powers.Value.Length];
 
         // Populate the array with the current powers
-        for (int i = 0; i < powers.Length; i++)
-            newPowers[i] = powers[i];
+        for (int i = 0; i < powers.Value.Length; i++)
+            newPowers[i] = powers.Value[i];
 
         // Replace the power at the index
         newPowers[index] = power;
@@ -1076,9 +1079,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Clear the power tokens, the drugs set, the meds set, and the powers array
         _powerTokens.Clear();
-        _drugsSet.Clear();
-        _medsSet.Clear();
-        powers = Array.Empty<PowerScriptableObject>();
+        powers.Value = Array.Empty<PowerScriptableObject>();
 
         // Load the power scriptable objects
         foreach (var pso in PowerHelper.Instance.Powers)

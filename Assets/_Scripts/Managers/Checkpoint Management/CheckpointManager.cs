@@ -11,12 +11,6 @@ public class CheckpointManager : MonoBehaviour
 {
     public static CheckpointManager Instance { get; private set; }
 
-    #region Serialized Fields
-
-    [SerializeField] private CheckpointInteractable initialSpawnPosition;
-
-    #endregion
-
     #region Private Fields
 
     #endregion
@@ -41,14 +35,22 @@ public class CheckpointManager : MonoBehaviour
     // When player interacts with a burner phone, save the current checkpoint as the transform of the burner phone
     public void SaveCheckpoint(CheckpointInteractable interactedObject)
     {
+        SaveCheckpoint(interactedObject.RespawnPosition.position);
+    }
+
+    public void SaveCheckpoint(Vector3 position)
+    {
+        var currentSceneInfo = AsyncSceneManager.Instance.CurrentSceneInfo;
+
         CurrentCheckpointInfo = new CheckpointInformation
         {
             // Get the current level section
-            levelSectionSceneInfo = AsyncSceneManager.Instance.CurrentSceneInfo,
-            position = interactedObject.RespawnPosition.position
+            levelSectionSceneInfo = currentSceneInfo,
+            position = position
         };
-        
-        Debug.Log($"Saved Checkpoint: {CurrentCheckpointInfo.levelSectionSceneInfo.SectionScene.SceneName} - {CurrentCheckpointInfo.position}");
+
+        Debug.Assert(currentSceneInfo.SectionScene != null, "currentSceneInfo.SectionScene == null");
+        Debug.Log($"Saved Checkpoint: {currentSceneInfo.SectionScene.SceneName} - {CurrentCheckpointInfo.position}");
     }
 
     // public void RespawnAtCurrentCheckpoint(Rigidbody rb) =>

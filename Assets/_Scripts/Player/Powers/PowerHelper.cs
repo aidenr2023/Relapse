@@ -6,11 +6,11 @@ public class PowerHelper : MonoBehaviour
 {
     public static PowerHelper Instance { get; private set; }
     
-    [SerializeField] private PowerScriptableObject[] powers;
+    [SerializeField] private PowerArrayReference powers;
     
     [SerializeField] private BossPowerScriptableObject[] bossPowers;
     
-    public IReadOnlyCollection<PowerScriptableObject> Powers => powers;
+    public IReadOnlyCollection<PowerScriptableObject> Powers => powers.Value;
     
     public IReadOnlyCollection<BossPowerScriptableObject> BossPowers => bossPowers;
 

@@ -11,6 +11,13 @@ public class PlayerDisable : MonoBehaviour
 
     private void Start()
     {
+        // If there is no cutscene manager instance, return
+        if (CutsceneManager.Instance == null)
+        {
+            Debug.LogError("CutsceneManager not found!!!");
+            return;
+        }
+        
         CutsceneManager.Instance.CutsceneHandler.OnCutsceneStart.AddListener(DisablePlayer);
         CutsceneManager.Instance.CutsceneHandler.OnCutsceneEnd.AddListener(EnablePlayer);
 
