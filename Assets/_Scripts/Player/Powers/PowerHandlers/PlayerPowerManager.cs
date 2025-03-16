@@ -711,7 +711,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         CurrentPower.PowerLogic.StartPassiveEffect(this, CurrentPowerToken);
 
         // Change the player's tolerance
-        _player.PlayerInfo.ChangeTolerance(CurrentPowerToken.ToleranceMeterImpact);
+        _player.PlayerInfo.ChangeToxicity(CurrentPowerToken.ToleranceMeterImpact);
         // StartCoroutine(
         //     AddToxicityOverTime(
         //         CurrentPowerToken.ToleranceMeterImpact,
@@ -991,13 +991,13 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         StringBuilder debugString = new();
 
         float tolerancePercentage;
-        if (_player.PlayerInfo.MaxTolerance == 0)
+        if (_player.PlayerInfo.MaxToxicity == 0)
             tolerancePercentage = 0;
         else
-            tolerancePercentage = _player.PlayerInfo.CurrentTolerance / _player.PlayerInfo.MaxTolerance * 100;
+            tolerancePercentage = _player.PlayerInfo.CurrentToxicity / _player.PlayerInfo.MaxToxicity * 100;
 
         debugString.Append(
-            $"Toxicity: {_player.PlayerInfo.CurrentTolerance:0.00} / {_player.PlayerInfo.MaxTolerance:0.00} ({tolerancePercentage:0.00}%)\n\n");
+            $"Toxicity: {_player.PlayerInfo.CurrentToxicity:0.00} / {_player.PlayerInfo.MaxToxicity:0.00} ({tolerancePercentage:0.00}%)\n\n");
 
         debugString.Append($"Current Power: {CurrentPower.name}\n");
         // debugString.Append($"\tPurity (Level): {CurrentPowerToken.CurrentLevel}\n");

@@ -907,6 +907,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fps: 12
+  playWhilePaused: 0
   jitterLerpAmount: 1
   minJitterRotation: -2
   maxJitterRotation: 2
@@ -1261,6 +1262,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afd8762c62f649e6a0f5acd2629c4bd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxStamina:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: b0262a1af4da5404f9587d2837dac4d7, type: 2}
+  currentStamina:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: f00348c043d0deb448953ab57a3e325b, type: 2}
 --- !u!1 &1141620344276639351
 GameObject:
   m_ObjectHideFlags: 0
@@ -2732,6 +2741,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fps: 12
+  playWhilePaused: 0
   jitterLerpAmount: 1
   minJitterRotation: -2
   maxJitterRotation: 2
@@ -3932,6 +3942,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fps: 12
+  playWhilePaused: 0
   jitterLerpAmount: 1
   minJitterRotation: -2
   maxJitterRotation: 2
@@ -4580,6 +4591,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fps: 12
+  playWhilePaused: 0
   jitterLerpAmount: 1
   minJitterRotation: -2
   maxJitterRotation: 2
@@ -5945,6 +5957,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3f4185ebce24b2d9b8fd23d613c4065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHealth:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: 2be4a18a9fe1ac4448535a1a7edf4ea3, type: 2}
+  currentHealth:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: 64b8812f46e1a9e4489520d211e0b652, type: 2}
 --- !u!1 &5757657792591822833
 GameObject:
   m_ObjectHideFlags: 0
@@ -7045,6 +7065,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fps: 12
+  playWhilePaused: 0
   jitterLerpAmount: 1
   minJitterRotation: -2
   maxJitterRotation: 2
@@ -8151,6 +8172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fps: 12
+  playWhilePaused: 0
   jitterLerpAmount: 1
   minJitterRotation: -2.5
   maxJitterRotation: 2.5
@@ -8221,10 +8243,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2ef3d50d064894479cb83749ccff76e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _virtualCameraPlayer: {fileID: 7065384412726524469}
-  _virtualCameraFPS: {fileID: 4735056722903771423}
-  _virtualCameraCutscene: {fileID: 8319889867547045577}
-  cutsceneHandler: {fileID: 0}
 --- !u!1 &8542539507103184754
 GameObject:
   m_ObjectHideFlags: 0
@@ -8777,6 +8795,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fps: 12
+  playWhilePaused: 0
   jitterLerpAmount: 1
   minJitterRotation: -2
   maxJitterRotation: 2

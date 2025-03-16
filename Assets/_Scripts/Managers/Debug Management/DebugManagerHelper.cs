@@ -379,9 +379,9 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         );
 
         if (_toleranceChange < 0 && playerInfo.IsRelapsing)
-            playerInfo.ChangeTolerance(-playerInfo.CurrentTolerance);
+            playerInfo.ChangeToxicity(-playerInfo.CurrentToxicity);
         else
-            playerInfo.ChangeTolerance(_toleranceChange * Time.unscaledDeltaTime * toleranceMult);
+            playerInfo.ChangeToxicity(_toleranceChange * Time.unscaledDeltaTime * toleranceMult);
     }
 
     private string UpdateText()

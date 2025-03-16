@@ -461,9 +461,9 @@ public class VendorMenu : GameMenu
 
             // If this vendor is a dealer, increase the player's toxicity
             case VendorType.Dealer:
-                Player.Instance.PlayerInfo.ChangeMaxToxicity(playerInfo.MaxTolerance + CurrentVendor.UpgradeAmount);
+                Player.Instance.PlayerInfo.ChangeMaxToxicity(playerInfo.MaxToxicity + CurrentVendor.UpgradeAmount);
                 JournalTooltipManager.Instance.AddTooltip(
-                    $"You have bought a toxicity upgrade. Your max toxicity is now {playerInfo.MaxTolerance}.");
+                    $"You have bought a toxicity upgrade. Your max toxicity is now {playerInfo.MaxToxicity}.");
                 break;
         }
     }

@@ -8731,11 +8731,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c95b9bc13bcc84644930bdfa9f40055c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  health: 100
+  maxHealthSo:
+    useConstant: 0
+    constantValue: 100
+    variable: {fileID: 11400000, guid: 2be4a18a9fe1ac4448535a1a7edf4ea3, type: 2}
+  currentHealthSo:
+    useConstant: 0
+    constantValue: 100
+    variable: {fileID: 11400000, guid: 64b8812f46e1a9e4489520d211e0b652, type: 2}
   invincibilityDuration: 1
-  maxTolerance: 100
-  currentTolerance: 0
+  maxToxicitySo:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: 27ae6bb8251b4164c94c238ccdf37b4a, type: 2}
+  currentToxicitySo:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: 8a66f0e53e1ce3448bb60193f740b382, type: 2}
   relapseOpacityCurve:
     serializedVersion: 2
     m_Curve:
@@ -8972,6 +8984,14 @@ MonoBehaviour:
     m_Bits: 755464
   staminaDrains: 1
   maxStamina: 100
+  maxStaminaSo:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: b0262a1af4da5404f9587d2837dac4d7, type: 2}
+  currentStaminaSo:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: f00348c043d0deb448953ab57a3e325b, type: 2}
   staminaRegenRate: 50
   sprintStaminaDrainRate: 10
   staminaRegenDelay: 0.5
