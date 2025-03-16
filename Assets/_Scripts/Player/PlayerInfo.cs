@@ -45,8 +45,8 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     [Header("Relapsing Settings")] [SerializeField] [Min(0)]
     private float relapseDuration = 3;
 
-    [Header("Passive Regeneration")] [SerializeField, Min(0)]
-    private float passiveRegenCap = 50;
+    [Header("Passive Regeneration")] [SerializeField, Range(0, 1)]
+    private float passiveRegenCap = 1;
 
     [SerializeField, Min(0)] private float passiveRegenRate = 5;
     [SerializeField, Min(0)] private float passiveRegenDelay = 10;
@@ -286,10 +286,12 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     private void UpdatePassiveRegeneration()
     {
         // Update the passive regeneration timer
-        _passiveRegenTimer.SetMaxTime(passiveRegenRate);
+        _passiveRegenTimer.SetMaxTime(passiveRegenDelay);
         _passiveRegenTimer.Update(Time.deltaTime);
         _passiveRegenTimer.SetActive(true);
 
+        var actualPassiveRegenCap = passiveRegenCap * maxHealthSo;
+        
         // Return if the player is relapsing
         if (_isRelapsing)
             return;
@@ -299,7 +301,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
             return;
 
         // Return if health is at the passive regen cap
-        if (currentHealthSo >= passiveRegenCap)
+        if (currentHealthSo >= actualPassiveRegenCap)
             return;
 
         // Return if the passive regen timer is not complete
@@ -308,8 +310,8 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
         // Increment the player's health
         var regenAmount = passiveRegenRate * Time.deltaTime;
-        if (currentHealthSo + regenAmount >= passiveRegenCap)
-            ChangeHealth(passiveRegenCap - currentHealthSo, this, this, transform.position);
+        if (currentHealthSo + regenAmount >= actualPassiveRegenCap)
+            ChangeHealth(actualPassiveRegenCap - currentHealthSo, this, this, transform.position);
         else
             ChangeHealth(regenAmount, this, this, transform.position);
     }

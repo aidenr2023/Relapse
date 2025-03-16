@@ -8787,8 +8787,8 @@ MonoBehaviour:
   relapsesToLose: 3
   toleranceRelapsePercent: 0
   relapseDuration: 10
-  passiveRegenCap: 50
-  passiveRegenRate: 5
+  passiveRegenCap: 1
+  passiveRegenRate: 3
   passiveRegenDelay: 10
   hitSound:
     clip: {fileID: 8300000, guid: a07d4a0a361f338429c6b98e1d8a4499, type: 3}
@@ -8983,7 +8983,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 755464
   staminaDrains: 1
-  maxStamina: 100
   maxStaminaSo:
     useConstant: 0
     constantValue: 0
