@@ -7,11 +7,11 @@ using UnityEngine.Events;
 [RequireComponent(typeof(InteractableMaterialManager))]
 public class CheckpointInteractable : MonoBehaviour, IInteractable
 {
+    private const float INTERACT_TOOLTIP_COOLDOWN = 3f;
+
     #region Serialized Fields
 
     [SerializeField] private Transform respawnPosition;
-
-    [SerializeField] private SceneLoaderInformation sceneLoaderInformation;
 
     [SerializeField] private UnityEvent onInteraction;
 
@@ -19,6 +19,8 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
     [SerializeField, Min(0)] private float proximityRange = 15;
 
     #endregion
+
+    private bool _isInteractTooltipCooldown;
 
     #region Getters
 
@@ -35,7 +37,6 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
     public HashSet<Material> OutlineMaterials { get; } = new();
 
     public bool HasBeenCollected { get; private set; }
-    public SceneLoaderInformation SceneLoaderInformation => sceneLoaderInformation;
 
     public InteractionIcon InteractionIcon => InteractionIcon.Action;
 
@@ -69,7 +70,14 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
         if (HasBeenCollected)
         {
             // Make a tooltip appear
-            JournalTooltipManager.Instance?.AddTooltip("You already saved this checkpoint!");
+            if (!_isInteractTooltipCooldown)
+            {
+                JournalTooltipManager.Instance?.AddTooltip("You already saved this checkpoint!");
+
+                // Start the cooldown
+                StartCoroutine(InteractTooltipCooldown());
+            }
+
             return;
         }
 
@@ -116,5 +124,14 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
 
     public void LookAtUpdate(PlayerInteraction playerInteraction)
     {
+    }
+
+    private IEnumerator InteractTooltipCooldown()
+    {
+        _isInteractTooltipCooldown = true;
+
+        yield return new WaitForSecondsRealtime(INTERACT_TOOLTIP_COOLDOWN);
+
+        _isInteractTooltipCooldown = false;
     }
 }

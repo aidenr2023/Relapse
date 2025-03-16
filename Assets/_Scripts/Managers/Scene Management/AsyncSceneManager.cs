@@ -40,9 +40,11 @@ public class AsyncSceneManager : IDebugged
             .Select(n => n.Key)
             .ToArray();
 
+    public LevelSectionSceneInfo CurrentSceneInfo { get; private set; }
+
     #endregion
 
-    private event Action<LevelSectionSceneInfo> _onSectionLoadCompletion;
+    private event Action<LevelSectionSceneInfo> OnSectionLoadCompletion;
 
     private AsyncSceneManager()
     {
@@ -57,9 +59,11 @@ public class AsyncSceneManager : IDebugged
         SceneManager.sceneLoaded += SceneLoadedDebug;
 
         // on section scene load events
-        _onSectionLoadCompletion += SetMovementTypeOnSectionLoad;
-        _onSectionLoadCompletion += SetPostProcessingOnSectionLoad;
+        OnSectionLoadCompletion += SetCurrentSceneInfo;
+        OnSectionLoadCompletion += SetMovementTypeOnSectionLoad;
+        OnSectionLoadCompletion += SetPostProcessingOnSectionLoad;
     }
+
 
     #region Events
 
@@ -72,6 +76,11 @@ public class AsyncSceneManager : IDebugged
     private void SetPostProcessingOnSectionLoad(LevelSectionSceneInfo levelSectionSceneInfo)
     {
         PostProcessingVolumeController.Instance.ChangePostProcessing(levelSectionSceneInfo.PostProcessingType, 0);
+    }
+
+    private void SetCurrentSceneInfo(LevelSectionSceneInfo obj)
+    {
+        CurrentSceneInfo = obj;
     }
 
     #endregion
@@ -245,7 +254,7 @@ public class AsyncSceneManager : IDebugged
 
                 // Save the persistent data scene to memory
                 if (sceneInfo.SectionPersistentData != null &&
-                    sceneInfo.SectionPersistentData.SceneName != "" &&
+                    !string.IsNullOrEmpty(sceneInfo.SectionPersistentData.SceneName) &&
                     persistentDataScene.isLoaded
                    )
                 {
@@ -310,7 +319,7 @@ public class AsyncSceneManager : IDebugged
             if (activeScene.IsValid())
                 SceneManager.SetActiveScene(activeScene);
 
-            _onSectionLoadCompletion?.Invoke(levelSectionSceneInfo);
+            OnSectionLoadCompletion?.Invoke(levelSectionSceneInfo);
         };
 
         // Return the operations
@@ -360,7 +369,7 @@ public class AsyncSceneManager : IDebugged
 
         // If the scene is an active scene, invoke the event
         if (levelSectionSceneInfo.SetActiveSceneToSectionScene)
-            _onSectionLoadCompletion?.Invoke(levelSectionSceneInfo);
+            OnSectionLoadCompletion?.Invoke(levelSectionSceneInfo);
     }
 
     public void LoadScenesSynchronous(SceneLoaderInformation loaderInformation)
@@ -768,7 +777,7 @@ public class AsyncSceneManager : IDebugged
         foreach (var section in loaderInformation.SectionsToLoad)
         {
             // Load the section scene
-            if (section.SectionScene != null)
+            if (section.SectionScene != null && !string.IsNullOrEmpty(section.SectionScene.SceneName))
             {
                 var operation = LoadSceneAsync(section.SectionScene);
 
@@ -791,7 +800,7 @@ public class AsyncSceneManager : IDebugged
             }
 
             // Load the section persistent data
-            if (section.SectionPersistentData != null)
+            if (section.SectionPersistentData != null && !string.IsNullOrEmpty(section.SectionPersistentData.SceneName))
             {
                 var operation = LoadSceneAsync(section.SectionPersistentData);
 
@@ -827,6 +836,9 @@ public class AsyncSceneManager : IDebugged
         // Set all the load operations to allow scene activation
         foreach (var operation in loadOperations)
             operation.allowSceneActivation = true;
+        
+        // Wait for a frame
+        yield return null;
 
         // Find the first active scene in the scenes to load
         foreach (var sceneInfo in loaderInformation.SectionsToLoad)
@@ -844,6 +856,9 @@ public class AsyncSceneManager : IDebugged
 
             Debug.Log($"Setting active scene to {activeScene.name}");
 
+            // Wait until the scene is loaded
+            yield return new WaitUntil(() => activeScene.isLoaded);
+            
             // Set the active scene
             SceneManager.SetActiveScene(activeScene);
             break;

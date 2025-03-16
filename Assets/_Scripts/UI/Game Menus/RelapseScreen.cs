@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
@@ -89,23 +90,20 @@ public class RelapseScreen : GameMenu
 
     public void InitializeRelapse()
     {
-        // Set the background image of the Relapse Screen
-        SetBackgroundImage(relapseImage);
-
-        // Disable the respawn button
-        respawnButton.gameObject.SetActive(false);
+        // // Set the background image of the Relapse Screen
+        // SetBackgroundImage(relapseImage);
+        
+        // // Enable the respawn button
+        // respawnButton.gameObject.SetActive(true);
     }
 
     public void InitializeDeath()
     {
-        // Set the background image of the Relapse Screen
-        SetBackgroundImage(deathImage);
+        // // Set the background image of the Relapse Screen
+        // SetBackgroundImage(deathImage);
 
-        // // If there is no checkpoint manager, disable the respawn button
-        // var buttonActive = !(CheckpointManager.Instance == null);
-
-        // Enable the respawn button
-        respawnButton.gameObject.SetActive(true);
+        // // Enable the respawn button
+        // respawnButton.gameObject.SetActive(true);
     }
 
     public void LoadScene(string sceneName)
@@ -154,11 +152,45 @@ public class RelapseScreen : GameMenu
         // Set the flag to true
         _respawnButtonClicked = true;
 
-        // Load the scene asynchronously
-        AsyncSceneManager.Instance.LoadMultipleScenesAsynchronously(
-            CheckpointManager.Instance.CurrentRespawnPoint.SceneLoaderInformation,
-            this, UpdateProgressBarPercent, RespawnOnCompletion
+        // Get the currently managed scenes from the AsyncSceneManager
+        var managedScenes = AsyncSceneManager.Instance.GetManagedScenes();
+
+        // Create a level section scene info array with all the managed scenes EXCEPT the player's scene
+        var scenesToUnload = new List<string>();
+        foreach (var scene in managedScenes)
+        {
+            scenesToUnload.Add(scene);
+            Debug.Log($"Unload: {scene}");
+        }
+
+        // Convert the scenes to unload to a LevelSectionSceneInfo array
+        var scenesToUnloadInfo = scenesToUnload.Select(scene => LevelSectionSceneInfo.Create(null, scene)).ToArray();
+
+        // Create a scene loader information object with the scenes to unload
+        var loaderInfo = SceneLoaderInformation.Create(
+            new LevelSectionSceneInfo[] { }, scenesToUnloadInfo
         );
+
+        // Unload all the scenes to unload
+        AsyncSceneManager.Instance.LoadMultipleScenesAsynchronously(
+            loaderInfo, this, UpdateProgressBarPercent, RespawnSubFunction
+        );
+
+        return;
+
+        void RespawnSubFunction()
+        {
+            // Create scene loader information for just the one scene
+            var loaderInfo = SceneLoaderInformation.Create(
+                new[] { CheckpointManager.Instance.CurrentCheckpointInfo.levelSectionSceneInfo },
+                new LevelSectionSceneInfo[] { }
+            );
+
+            // Load the scene asynchronously
+            AsyncSceneManager.Instance.LoadMultipleScenesAsynchronously(
+                loaderInfo, this, UpdateProgressBarPercent, RespawnOnCompletion
+            );
+        }
     }
 
     private void UpdateProgressBarPercent(float amount)
