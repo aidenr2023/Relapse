@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class PauseMenuManager : GameMenu
 {
@@ -23,6 +24,7 @@ public class PauseMenuManager : GameMenu
 
     [SerializeField] private GameObject pauseMenuPanel;
     [SerializeField] private GameObject journalPanel;
+    [SerializeField] private GameObject powersMenuPanel;
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private GameObject tutorialsPanel;
 
@@ -40,6 +42,8 @@ public class PauseMenuManager : GameMenu
     [SerializeField] private GameObject tutorialsButtonParent;
     [SerializeField] private TutorialButton tutorialButtonPrefab;
     [SerializeField] private GameObject tutorialBack;
+
+    [SerializeField] private PowerInfoScreen powerInfoScreen;
 
     #endregion
 
@@ -177,6 +181,7 @@ public class PauseMenuManager : GameMenu
     {
         // Hide all the menus
         pauseMenuPanel.SetActive(false);
+        powersMenuPanel.SetActive(false);
         journalPanel.SetActive(false);
         settingsPanel.SetActive(false);
         tutorialsPanel.SetActive(false);
@@ -230,6 +235,18 @@ public class PauseMenuManager : GameMenu
 
         // Isolate the pause menu
         IsolateMenu(_menuStack.Peek());
+    }
+
+    public void PowersMenu(GameObject textObject)
+    {
+        // Push the journal panel onto the stack
+        _menuStack.Push(powersMenuPanel);
+
+        // Isolate the journal panel
+        IsolateMenu(_menuStack.Peek());
+
+        // Set the event system's selected object to the first button
+        SetSelectedButton(powerInfoScreen.FirstSelectedButton);
     }
 
     /// <summary>
@@ -352,6 +369,14 @@ public class PauseMenuManager : GameMenu
 
     public void SetSelectedButton(GameObject button)
     {
+        // eventSystem.SetSelectedGameObject(button);
+        StartCoroutine(SetSelectedButtonCoroutine(button));
+    }
+    
+    private IEnumerator SetSelectedButtonCoroutine(GameObject button)
+    {
+        yield return null;
+        
         eventSystem.SetSelectedGameObject(button);
     }
 

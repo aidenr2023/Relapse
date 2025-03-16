@@ -66,6 +66,10 @@ public class LevelInformation : MonoBehaviour
 
     private static void AddToCheckpointManager(LevelInformation obj)
     {
+        // Return if the game is not running
+        if (!Application.isPlaying)
+            return;
+        
         if (!obj.addToCheckpointManagerOnLoad)
             return;
 
