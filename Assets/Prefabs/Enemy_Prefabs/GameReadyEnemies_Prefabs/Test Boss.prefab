@@ -126,6 +126,7 @@ GameObject:
   - component: {fileID: 1025745234992569360}
   - component: {fileID: 8544631876377783178}
   - component: {fileID: 6937686766923425247}
+  - component: {fileID: 2086305976083408121}
   m_Layer: 9
   m_Name: Test Boss
   m_TagString: Untagged
@@ -183,8 +184,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f5f533b130e40eca5347083903f3682, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  uniqueId: 66089b3f-1905-4056-ad6d-02565af52d20
-  originalScene: DimitriBossScene
+  uniqueId: 
+  originalScene: Test Boss
 --- !u!114 &7640973264778922529
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -209,28 +210,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1f2f7014adf46a88a0579b47084cca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  difficultyHealthMultiplier:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: cd5b9b53bc13f3a43acc87cda01e11f1, type: 2}
+  difficultyDamageMultiplier:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: cf7b75ebff401554a9d02aac6511f093, type: 2}
+  applyDifficultyMultiplier: 0
   maxHealth: 1000
   currentHealth: 1000
   moneyReward: 10000
   animator: {fileID: 0}
-  enemyHitEffect: {fileID: 0}
-  minVFXRangeDamage: 10
-  maxVFXRangeDamage: 50
-  minVFXDamage: 5
-  enemyDeathVfxPrefab: {fileID: 0}
-  enemyDeathSound:
-    clip: {fileID: 0}
-    soundType: 1
-    volume: 1
-    isPersistent: 0
-    isLooping: 0
-    pitch: 1
-    spatialBlend: 1
-  enemyMoanSource: {fileID: 0}
-  moanSounds: []
-  moanSoundChance: 1
-  moanSoundMinCooldown: 5
-  moanSoundMaxCooldown: 10
 --- !u!114 &4006056929535454685
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -243,6 +235,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff5a7496e1f39864e94e3699bad6a54d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bossHealthSlider: {fileID: 0}
   bossEnemyAttack: {fileID: 1025745234992569360}
   attack1: {fileID: 8544631876377783178}
   bossPhases:
@@ -444,6 +437,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lights:
   - {fileID: 0}
+--- !u!114 &2086305976083408121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3076724613918024673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c66c40959b244d3b31320da7a9df63c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyDeathSound:
+    clip: {fileID: 0}
+    soundType: 1
+    volume: 1
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 1
+  enemyMoanSource: {fileID: 0}
+  moanSounds: []
+  moanSoundChance: 1
+  moanSoundMinCooldown: 5
+  moanSoundMaxCooldown: 10
 --- !u!1 &4191248585579463893
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,9 +11,12 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
     #region Serialized Fields
 
-    [SerializeField] private float maxHealth = 3f;
-    [SerializeField] private float currentHealth;
+    [Header("Difficulty"), SerializeField] private FloatReference difficultyHealthMultiplier;
+    [SerializeField] private FloatReference difficultyDamageMultiplier;
+    [SerializeField] private bool applyDifficultyMultiplier = true;
 
+    [Header("Settings"), SerializeField] private float maxHealth = 3f;
+    [SerializeField] private float currentHealth;
     [SerializeField] [Min(0)] private int moneyReward;
 
     [SerializeField] private Animator animator;
@@ -44,6 +47,8 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
     public Vector3 DamagePosition => _damagePosition;
 
+    public float DifficultyDamageMultiplier => applyDifficultyMultiplier ? difficultyDamageMultiplier.Value : 1;
+
     #endregion
 
     #region Events
@@ -63,6 +68,17 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
     private void Start()
     {
+        // Apply the difficulty multiplier to the max health
+        if (applyDifficultyMultiplier)
+        {
+            var oldMaxHealth = maxHealth;
+            maxHealth *= difficultyHealthMultiplier.Value;
+
+            ForceCurrentHealth(currentHealth + (maxHealth - oldMaxHealth));
+            
+            Debug.Log($"Applied difficulty multiplier to {gameObject.name} health: {oldMaxHealth} -> {maxHealth}");
+        }
+        
         OnDamaged += AddDamageThisFrame;
         OnDamaged += SetDamagePositionOnDamaged;
 

@@ -6,5 +6,4 @@
 )]
 public class FloatVariable : GenericVariable<float>
 {
-
 }

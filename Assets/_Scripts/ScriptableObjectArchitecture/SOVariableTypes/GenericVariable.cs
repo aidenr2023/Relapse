@@ -14,10 +14,22 @@ public abstract class GenericVariable<T> : ScriptableObject
 #if UNITY_EDITOR
         if (Application.isPlaying)
             return;
+        
+        ResetToDefaultValue();
 
         // Subscribe to the play mode state changed event
         EditorApplication.playModeStateChanged -= OnPlayModeStateChanged;
         EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+#endif
+    }
+
+    private void OnDisable()
+    {
+#if UNITY_EDITOR
+        if (Application.isPlaying)
+            return;
+
+        ResetToDefaultValue();
 #endif
     }
 
@@ -26,8 +38,10 @@ public abstract class GenericVariable<T> : ScriptableObject
     private void OnValidate()
     {
         // If the game is currently NOT playing, reset the value to the default value
-        if (!Application.isPlaying)
-            ResetToDefaultValue();
+        if (Application.isPlaying)
+            return;
+
+        ResetToDefaultValue();
     }
 
     private void OnPlayModeStateChanged(PlayModeStateChange obj)
@@ -35,7 +49,7 @@ public abstract class GenericVariable<T> : ScriptableObject
         switch (obj)
         {
             case PlayModeStateChange.EnteredPlayMode:
-                ResetToDefaultValue();
+                // ResetToDefaultValue();
                 break;
 
             case PlayModeStateChange.ExitingPlayMode:
@@ -47,10 +61,8 @@ public abstract class GenericVariable<T> : ScriptableObject
 
 #endif
 
-    public void ResetToDefaultValue()
+    private void ResetToDefaultValue()
     {
         value = defaultValue;
-        
-        Debug.Log($"Resetting {name} to default value: {defaultValue}");
     }
 }

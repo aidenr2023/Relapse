@@ -15,8 +15,16 @@ public class LevelInformation : MonoBehaviour
     [SerializeField] private string levelName;
     [SerializeField] private bool skipIntroText;
     [SerializeField] private LevelCheckpointCheckpoint startingCheckpoint;
-    [SerializeField] private bool addToCheckpointManagerOnLoad;
+
+    [Header("Scene Manager Stuff"), SerializeField]
+    private bool addToCheckpointManagerOnLoad;
+
     [SerializeField] private LevelSectionSceneInfo forcedSectionSceneInfo;
+
+    [Header("Difficulty"), SerializeField] private FloatReference difficultyHealthMultiplierSo;
+    [SerializeField] private FloatReference difficultyDamageMultiplierSo;
+    [SerializeField] private float difficultyHealthMultiplier = 1;
+    [SerializeField] private float difficultyDamageMultiplier = 1;
 
     #endregion
 
@@ -29,8 +37,9 @@ public class LevelInformation : MonoBehaviour
     #region Getters
 
     public LevelCheckpointCheckpoint StartingCheckpoint => startingCheckpoint;
-    
-    private Vector3 StartingPosition => startingCheckpoint != null ? startingCheckpoint.RespawnPoint.position : transform.position;
+
+    private Vector3 StartingPosition =>
+        startingCheckpoint != null ? startingCheckpoint.RespawnPoint.position : transform.position;
 
     #endregion
 
@@ -52,7 +61,7 @@ public class LevelInformation : MonoBehaviour
         // Return if the forced section scene info is null
         if (obj.forcedSectionSceneInfo == null)
             return;
-        
+
         AsyncSceneManager.Instance.ForceManageScene(obj.forcedSectionSceneInfo);
     }
 
@@ -60,7 +69,7 @@ public class LevelInformation : MonoBehaviour
     {
         if (!obj.addToCheckpointManagerOnLoad)
             return;
-        
+
         // Save the starting checkpoint (if necessary)
         CheckpointManager.Instance.SaveCheckpoint(obj.StartingPosition);
     }
@@ -69,9 +78,25 @@ public class LevelInformation : MonoBehaviour
     {
         // Statically initialize the class
         StaticallyInitialize();
-        
+
+        // Apply the difficulty multiplier
+        ApplyDifficultyMultiplier();
+
         _sceneName = gameObject.scene.name;
         Instances.Add(_sceneName, this);
+    }
+
+    private void ApplyDifficultyMultiplier()
+    {
+        // Return if not in play mode
+        if (!Application.isPlaying)
+            return;
+        
+        // Set the difficulty multipliers
+        if (difficultyHealthMultiplierSo != null)
+            difficultyHealthMultiplierSo.Value = difficultyHealthMultiplier;
+        if (difficultyDamageMultiplierSo != null)
+            difficultyDamageMultiplierSo.Value = difficultyDamageMultiplier;
     }
 
     private void Start()
@@ -118,7 +143,7 @@ public class LevelInformation : MonoBehaviour
             Debug.LogError("CutsceneListener instance not found!");
             return;
         }
-        
+
         CutsceneListener.Instance.PlayBarsAnimation(true);
         CutsceneListener.Instance.LevelNameText.text = levelInfo.levelName;
     }
