@@ -79,7 +79,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
             // Return null if the powers array is empty
             if (powers.Value.Length == 0)
                 return null;
-            
+
             currentPowerIndex.Value %= powers.Value.Length;
 
             if (currentPowerIndex < 0)
@@ -768,7 +768,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         // Return null if the power is null
         if (power == null)
             return fireballChargeVfx;
-        
+
         return power.ChargeVfxType switch
         {
             PowerVfxType.Fireball => fireballChargeVfx,

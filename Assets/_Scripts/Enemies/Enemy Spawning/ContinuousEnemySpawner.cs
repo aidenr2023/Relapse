@@ -21,9 +21,4 @@ public class ContinuousEnemySpawner : ContinuousEnemySpawnerBase
     {
         return $"Remaining Enemies: {spawnerCompleteAmount - _enemyKilledCount}";
     }
-
-    protected override bool TooltipEndCondition()
-    {
-        return spawnerCompleteAmount - _enemyKilledCount >= 0;
-    }
 }

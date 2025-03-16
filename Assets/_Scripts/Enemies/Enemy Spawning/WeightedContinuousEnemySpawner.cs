@@ -58,11 +58,6 @@ public class WeightedContinuousEnemySpawner : ContinuousEnemySpawnerBase
         return $"Remaining Enemies: {spawnerCompleteAmount - _enemyKilledCount}";
     }
 
-    protected override bool TooltipEndCondition()
-    {
-        return _enemyKilledCount >= spawnerCompleteAmount;
-    }
-
     [Serializable]
     private struct WeightedEnemyInformation
     {

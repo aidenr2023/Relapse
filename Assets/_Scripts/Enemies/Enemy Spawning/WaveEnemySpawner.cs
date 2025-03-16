@@ -67,11 +67,6 @@ public class WaveEnemySpawner : EnemySpawner
         return $"Remaining Enemies: {_remainingWaveEnemies}";
     }
 
-    protected override bool TooltipEndCondition()
-    {
-        return _remainingWaveEnemies <= 0 && _currentWaveIndex >= waves.Length;
-    }
-
     #endregion
 
     private void DecrementEnemiesRemaining(object sender, HealthChangedEventArgs e)

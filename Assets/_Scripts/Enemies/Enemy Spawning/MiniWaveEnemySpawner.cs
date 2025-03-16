@@ -147,11 +147,6 @@ public class MiniWaveEnemySpawner : EnemySpawner
         return $"Remaining Enemies: {_totalEnemiesLeft}";
     }
 
-    protected override bool TooltipEndCondition()
-    {
-        return _totalEnemiesLeft <= 0;
-    }
-
     private void OnDrawGizmos()
     {
         const float sphereSize = 0.25f;

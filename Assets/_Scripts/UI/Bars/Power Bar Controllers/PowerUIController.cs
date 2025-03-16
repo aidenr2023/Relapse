@@ -56,12 +56,6 @@ public class PowerUIController : MonoBehaviour
 
     private void Update()
     {
-        // // If the player has no powers, turn the canvas group's opacity to 0
-        // if (Player.Instance.PlayerPowerManager.Powers.Count == 0)
-        //     canvasGroup.alpha = 0;
-        // else
-        //     canvasGroup.alpha = 1;
-
         // If the player has no powers, turn the canvas group's opacity to 0
         if (currentPowers.Value.Length == 0)
             canvasGroup.alpha = 0;

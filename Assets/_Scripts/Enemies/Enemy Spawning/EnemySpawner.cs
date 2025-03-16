@@ -26,8 +26,8 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
 
     protected bool hasStartedSpawning;
     
-    protected JournalTooltip journalTooltip;
-
+    protected bool isComplete;
+    
     #endregion
 
     protected void Start()
@@ -35,9 +35,15 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
         // Add this to the debug manager
         DebugManager.Instance.AddDebuggedObject(this);
 
+        onSpawnerComplete.AddListener(ChangeFlagOnSpawnerComplete);
         onSpawnerStart.AddListener(ShowTooltipOnStart);
         
         CustomStart();
+    }
+
+    private void ChangeFlagOnSpawnerComplete()
+    {
+        isComplete = true;
     }
 
     private void ShowTooltipOnStart()
@@ -48,12 +54,19 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
     }
     
     protected abstract string GetTooltipText();
-    protected abstract bool TooltipEndCondition();
+
+    protected virtual bool TooltipEndCondition()
+    {
+        return isComplete;
+    }
 
     protected abstract void CustomStart();
 
     private void OnDestroy()
     {
+        // Set the is complete flag to true
+        isComplete = true;
+        
         // Remove this from the debug manager
         DebugManager.Instance.RemoveDebuggedObject(this);
 
