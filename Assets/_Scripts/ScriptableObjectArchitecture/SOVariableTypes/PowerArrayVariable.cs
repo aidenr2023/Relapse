@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [CreateAssetMenu(
-    fileName = "FloatVariable",
+    fileName = "Power Array Variable",
     menuName = SOAHelper.ASSET_MENU_PATH + "Power Array Variable"
 )]
 public class PowerArrayVariable : GenericVariable<PowerScriptableObject[]>

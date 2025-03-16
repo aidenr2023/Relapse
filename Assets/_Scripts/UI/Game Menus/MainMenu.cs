@@ -10,6 +10,8 @@ public class MainMenu : GameMenu
 {
     #region Serialized Fields
 
+    [SerializeField] private ResetableSOArrayVariable variablesToReset;
+    
     [SerializeField] private Slider loadingBar;
 
     [SerializeField] private LevelStartupSceneInfo levelStartupSceneInfo;
@@ -86,6 +88,9 @@ public class MainMenu : GameMenu
 
     public void StartButton()
     {
+        // Reset the variables
+        variablesToReset.Reset();
+        
         // Load the scene asynchronously
         if (!_startedLoading)
         {
