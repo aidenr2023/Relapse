@@ -31,6 +31,9 @@ public class PowerUIController : MonoBehaviour
 
     [Space, SerializeField] private TMP_FontAsset font;
 
+    [SerializeField] private PowerArrayReference currentPowers;
+    [SerializeField] private IntReference currentPowerIndex;
+
     #endregion
 
     #region Private Fields
@@ -53,18 +56,30 @@ public class PowerUIController : MonoBehaviour
 
     private void Update()
     {
+        // // If the player has no powers, turn the canvas group's opacity to 0
+        // if (Player.Instance.PlayerPowerManager.Powers.Count == 0)
+        //     canvasGroup.alpha = 0;
+        // else
+        //     canvasGroup.alpha = 1;
+
         // If the player has no powers, turn the canvas group's opacity to 0
-        if (Player.Instance.PlayerPowerManager.Powers.Count == 0)
+        if (currentPowers.Value.Length == 0)
             canvasGroup.alpha = 0;
         else
             canvasGroup.alpha = 1;
 
+        PowerScriptableObject currentPower = null;
+        
+        if (currentPowers.Value.Length > 0)
+            currentPower = currentPowers.Value[currentPowerIndex.Value];
+        
         // If the current power is not null
-        if (Player.Instance.PlayerPowerManager.CurrentPower != null)
+        if (currentPower != null)
         {
-            currentPowerImage.sprite = Player.Instance.PlayerPowerManager.CurrentPower.Icon;
-            currentPowerImageBg.sprite = Player.Instance.PlayerPowerManager.CurrentPower.Icon;
+            currentPowerImage.sprite = currentPower.Icon;
+            currentPowerImageBg.sprite = currentPower.Icon;
 
+            // TODO: Remove the dependency on the player power manager
             var pToken = Player.Instance.PlayerPowerManager.CurrentPowerToken;
 
             foreach (var jitter in currentPowerJitters)

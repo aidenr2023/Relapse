@@ -28,4 +28,34 @@ public class FloatReference : GenericReference<float, FloatVariable>
     {
         return a.Value / b;
     }
+    
+    public static bool operator ==(FloatReference a, float b)
+    {
+        return a.Value == b;
+    }
+    
+    public static bool operator !=(FloatReference a, float b)
+    {
+        return a.Value != b;
+    }
+    
+    public static bool operator >(FloatReference a, float b)
+    {
+        return a.Value > b;
+    }
+    
+    public static bool operator <(FloatReference a, float b)
+    {
+        return a.Value < b;
+    }
+    
+    public static bool operator >=(FloatReference a, float b)
+    {
+        return a.Value >= b;
+    }
+    
+    public static bool operator <=(FloatReference a, float b)
+    {
+        return a.Value <= b;
+    }
 }

@@ -24,6 +24,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     [SerializeField] private PowerArrayReference allPowers;
     [SerializeField] private PowerArrayReference powers;
+    [SerializeField] private IntReference currentPowerIndex;
 
     [Header("Power Charged Vignette"), SerializeField, Range(0, 1)]
     private float chargedVignetteStrength = .25f;
@@ -52,7 +53,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     private Dictionary<PowerScriptableObject, PowerToken> _powerTokens;
 
-    private int _currentPowerIndex;
     private bool _isChargingPower;
 
     private TokenManager<float>.ManagedToken _powerChargeVignetteToken;
@@ -80,12 +80,12 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
             if (powers.Value.Length == 0)
                 return null;
             
-            _currentPowerIndex %= powers.Value.Length;
+            currentPowerIndex.Value %= powers.Value.Length;
 
-            if (_currentPowerIndex < 0)
-                _currentPowerIndex += powers.Value.Length;
+            if (currentPowerIndex < 0)
+                currentPowerIndex.Value += powers.Value.Length;
 
-            return powers.Value[_currentPowerIndex];
+            return powers.Value[currentPowerIndex];
         }
     }
 
@@ -95,7 +95,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     public IReadOnlyCollection<PowerScriptableObject> Powers => powers.Value;
 
-    public int CurrentPowerIndex => _currentPowerIndex;
+    public int CurrentPowerIndex => currentPowerIndex;
 
     public bool IsChargingPower => _isChargingPower;
 
@@ -297,7 +297,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         var direction = changePowerValue > 0 ? 1 : -1;
 
         // Set the current power index to the next power
-        ChangePower(_currentPowerIndex + direction);
+        ChangePower(currentPowerIndex + direction);
     }
 
     public void ChangePower(int index)
@@ -314,9 +314,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         if (_isChargingPower)
             StopCharge();
 
-        _currentPowerIndex = (index) % powers.Value.Length;
-        if (_currentPowerIndex < 0)
-            _currentPowerIndex += powers.Value.Length;
+        currentPowerIndex.Value = (index) % powers.Value.Length;
+        if (currentPowerIndex < 0)
+            currentPowerIndex.Value += powers.Value.Length;
     }
 
     private void OnPowerPerformed(InputAction.CallbackContext obj)
@@ -539,14 +539,14 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         }
 
         // clamp the current power index to the new powers array
-        _currentPowerIndex = Mathf.Clamp(_currentPowerIndex, 0, powers.Value.Length - 1);
+        currentPowerIndex.Value = Mathf.Clamp(currentPowerIndex, 0, powers.Value.Length - 1);
 
         // Skip if the current power is already set or if there are no powers
         if (CurrentPower != null || powers.Value.Length == 0)
             return;
 
         // Set the current power to the first power in the array
-        _currentPowerIndex = 0;
+        currentPowerIndex.Value = 0;
     }
 
     private void CreatePowerToken(PowerScriptableObject power)
@@ -760,7 +760,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         InitializePowerCollections();
 
         // Set the current power index
-        _currentPowerIndex = powerIndex;
+        currentPowerIndex.Value = powerIndex;
     }
 
     private VisualEffect GetChargeVfx(PowerScriptableObject power)
@@ -887,8 +887,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         if (isCurrentPower)
         {
-            _currentPowerIndex = Mathf.Clamp(_currentPowerIndex, 0, powers.Value.Length - 1);
-            ChangePower(_currentPowerIndex);
+            currentPowerIndex.Value = Mathf.Clamp(currentPowerIndex, 0, powers.Value.Length - 1);
+            ChangePower(currentPowerIndex);
         }
 
         if (isLastPower)
