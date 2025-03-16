@@ -95,6 +95,8 @@ public class JournalMenu : GameMenu
 
     public void OnJournalPerformed(InputAction.CallbackContext obj)
     {
+        return;
+        
         // Return if inputted this frame
         if (_inputtedThisFrame)
             return;
