@@ -11,19 +11,14 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 {
     #region Serialized Fields
 
-    [Header("Health Settings")] [SerializeField]
-    private FloatReference maxHealthSo;
-
+    [Header("Vars"), SerializeField] private FloatReference maxHealthSo;
     [SerializeField] private FloatReference currentHealthSo;
-
-    [SerializeField] [Min(0)] private float invincibilityDuration = 1f;
-
-    // TODO: Eventually, I might move this code to another script.
-    // For now though, I'm keeping this here to make things easier
-    [Header("Tolerance Meter Settings")] [SerializeField]
-    private FloatReference maxToxicitySo;
-
+    [Space, SerializeField] private FloatReference maxToxicitySo;
     [SerializeField] private FloatReference currentToxicitySo;
+    [SerializeField] private BoolReference isRelapsingSo;
+
+    [Header("Health Settings")] [SerializeField] [Min(0)]
+    private float invincibilityDuration = 1f;
 
     // [SerializeField] [Min(.001f)] private float maxTolerance;
     // [SerializeField] private float currentTolerance;
@@ -70,8 +65,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     private float _currentRelapseDuration;
 
-    private bool _isRelapsing;
-
     private CountdownTimer _passiveRegenTimer;
 
     #endregion
@@ -90,7 +83,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     public float ToxicityPercentage => currentToxicitySo / maxToxicitySo;
 
-    public bool IsRelapsing => _isRelapsing;
+    public bool IsRelapsing => isRelapsingSo.Value;
 
     public int RelapseCount => _relapseCount;
 
@@ -230,7 +223,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     private void UpdateRelapseDuration()
     {
         // Return if the player isn't relapsing
-        if (!_isRelapsing)
+        if (!isRelapsingSo.Value)
             return;
 
         // Increment the relapse duration
@@ -273,7 +266,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         // Update the relapse image's opacity
         var opacity = relapseOpacityCurve.Evaluate(relapseOpacityTimer.OutputValue);
 
-        if (!_isRelapsing)
+        if (!isRelapsingSo.Value)
             opacity = Mathf.Lerp(RelapseOverlayUI.Instance.CanvasGroup.alpha, 0, CustomFunctions.FrameAmount(.1f));
 
         // Set the opacity of the relapse image
@@ -288,9 +281,9 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         _passiveRegenTimer.SetActive(true);
 
         var actualPassiveRegenCap = passiveRegenCap * maxHealthSo;
-        
+
         // Return if the player is relapsing
-        if (_isRelapsing)
+        if (isRelapsingSo.Value)
             return;
 
         // Return if the player is at max health
@@ -417,11 +410,11 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     private void StartRelapse()
     {
         // Skip if the player is already relapsing
-        if (_isRelapsing)
+        if (isRelapsingSo.Value)
             return;
 
         // Set the isRelapsing flag to true
-        _isRelapsing = true;
+        isRelapsingSo.Value = true;
 
         // Increase the relapse count
         _relapseCount++;
@@ -436,7 +429,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     private void EndRelapse()
     {
         // Set the isRelapsing flag to false
-        _isRelapsing = false;
+        isRelapsingSo.Value = false;
 
         // Reset the relapse duration
         _currentRelapseDuration = 0;
@@ -470,12 +463,12 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     public void SetUpToxicity(float cToxicity, float mToxicity, int relapseCount, bool isRelapsing)
     {
-        var wasRelapsing = _isRelapsing;
+        var wasRelapsing = isRelapsingSo.Value;
 
         currentToxicitySo.Value = cToxicity;
         maxToxicitySo.Value = mToxicity;
         _relapseCount = relapseCount;
-        _isRelapsing = isRelapsing;
+        isRelapsingSo.Value = isRelapsing;
 
         if (!isRelapsing && wasRelapsing)
             EndRelapse();

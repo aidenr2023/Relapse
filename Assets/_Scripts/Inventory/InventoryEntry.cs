@@ -13,7 +13,7 @@ public class InventoryEntry
     public event Action<InventoryEntry, int> OnQuantityChanged;
     public event Action<InventoryEntry, int> OnEmpty;
 
-    public InventoryEntry()
+    public InventoryEntry(InventoryEntry entry) : this(entry.inventoryObject, entry.quantity)
     {
     }
 

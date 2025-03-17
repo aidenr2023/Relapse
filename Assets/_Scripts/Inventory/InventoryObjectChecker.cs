@@ -11,7 +11,7 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable, ILevelLoader
 
     [SerializeField] private InventoryEntry[] requiredItems;
 
-    [SerializeField] private bool requiresInteractionToActivate = true;
+    // [SerializeField] private bool requiresInteractionToActivate = true;
 
     [SerializeField] private bool destroyOnInteract;
 
@@ -38,19 +38,19 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable, ILevelLoader
     #region Getters
 
     public InteractableMaterialManager InteractableMaterialManager { get; set; }
-    
+
     public InventoryEntry[] RequiredItems => requiredItems;
 
     public GameObject GameObject => gameObject;
 
-    public bool IsInteractable => requiresInteractionToActivate;
+    public bool IsInteractable => true;
 
     public bool HasOutline { get; set; }
 
     public HashSet<Material> OutlineMaterials { get; } = new();
 
     public InteractionIcon InteractionIcon => interactionIcon;
-    
+
     public UnityEvent OnInteraction => onInventoryObjectFound;
 
     #endregion
@@ -68,7 +68,7 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable, ILevelLoader
             _isMarkedForDestruction = true;
     }
 
-    public void Interact(PlayerInteraction playerInteraction)
+    public void Interact(PlayerInteraction interaction)
     {
         // Return if the object has already been interacted with
         if (_hasInteracted)
@@ -79,7 +79,8 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable, ILevelLoader
         foreach (var requiredItem in requiredItems)
         {
             // Return if the player does not have the required inventory object
-            if (playerInteraction.Player.PlayerInventory.HasItem(requiredItem.InventoryObject, requiredItem.Quantity))
+            if (interaction.Player.PlayerInventory.InventoryVariable.HasItem(requiredItem.InventoryObject,
+                    requiredItem.Quantity))
                 continue;
 
             Debug.Log($"Player does not have {requiredItem.Quantity}x {requiredItem.InventoryObject.ItemName}!");
@@ -101,12 +102,8 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable, ILevelLoader
         if (removeFromInventory)
         {
             foreach (var requiredItem in requiredItems)
-            {
-                playerInteraction.Player.PlayerInventory.RemoveItem(
-                    requiredItem.InventoryObject,
-                    requiredItem.Quantity
-                );
-            }
+                interaction.Player.PlayerInventory.InventoryVariable.RemoveItem(requiredItem.InventoryObject,
+                    requiredItem.Quantity);
         }
 
         // Call the OnInteract method
@@ -126,56 +123,7 @@ public class InventoryObjectChecker : MonoBehaviour, IInteractable, ILevelLoader
     {
         // Destroy the game object if it is marked for destruction
         if (_isMarkedForDestruction)
-        {
             Destroy(gameObject);
-            return;
-        }
-
-        // If the object does not require interaction to activate,
-        // activate it if the conditions are met
-
-        if (!requiresInteractionToActivate)
-            ExternalActivate();
-    }
-
-    private void ExternalActivate()
-    {
-        // Return if the object has already been interacted with
-        if (_hasInteracted)
-            return;
-
-        var hasAllItems = true;
-
-        foreach (var requiredItem in requiredItems)
-        {
-            // Return if the player does not have the required inventory object
-            if (Player.Instance.PlayerInventory.HasItem(requiredItem.InventoryObject, requiredItem.Quantity))
-                continue;
-
-            hasAllItems = false;
-        }
-
-        // Return if the player does not have the required inventory object
-        if (!hasAllItems)
-            return;
-
-        // Set the object as interacted with
-        _hasInteracted = true;
-
-        // Invoke the event
-        onInventoryObjectFound.Invoke();
-
-        // Remove the inventory objects from the player's inventory
-        if (removeFromInventory)
-        {
-            foreach (var requiredItem in requiredItems)
-            {
-                Player.Instance.PlayerInventory.RemoveItem(
-                    requiredItem.InventoryObject,
-                    requiredItem.Quantity
-                );
-            }
-        }
     }
 
     #region ILevelLoaderInfo

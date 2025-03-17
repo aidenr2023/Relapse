@@ -5,6 +5,6 @@ using UnityEngine;
     fileName = "Tutorial Array Variable",
     menuName = SOAHelper.ASSET_MENU_PATH + SOAHelper.ADVANCED + "Tutorial Array Variable"
 )]
-public class TutorialArrayVariable : GenericVariable<List<Tutorial>>
+public class TutorialArrayVariable : GenericListVariable<Tutorial>
 {
 }

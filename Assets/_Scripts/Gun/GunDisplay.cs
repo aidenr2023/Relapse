@@ -27,7 +27,7 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
     private Vector3 _originalGunScale;
 
     private bool _hasOriginalGun = true;
-    
+
     #endregion
 
     #region Getters
@@ -207,7 +207,7 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
         var playerInventory = playerInteraction.Player.PlayerInventory;
 
         // Get the player's money count
-        var playerMoney = playerInventory.GetItemCount(playerInventory.MoneyObject);
+        var playerMoney = playerInventory.InventoryVariable.GetItemCount(playerInventory.InventoryVariable.MoneyObject);
 
         // If the gun is not free and the player does not have enough money, return
         if (!isFree)
@@ -226,7 +226,8 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
             }
 
             // Remove the money from the player's inventory
-            playerInventory.RemoveItem(playerInventory.MoneyObject, gun.GunInformation.Cost);
+            playerInventory.InventoryVariable.RemoveItem(playerInventory.InventoryVariable.MoneyObject,
+                gun.GunInformation.Cost);
 
             // Send a tooltip to the player
             JournalTooltipManager.Instance.AddTooltip(
@@ -263,7 +264,7 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
     public void LookAtUpdate(PlayerInteraction playerInteraction)
     {
         _isCurrentlyLookedAt = true;
-        
+
         // If there is a gun equipped,
         // Force the material manager to be selected
         if (EquippedGun != null)

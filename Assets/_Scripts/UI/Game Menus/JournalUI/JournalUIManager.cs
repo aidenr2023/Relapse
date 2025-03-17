@@ -347,78 +347,78 @@ public class JournalUIManager : MonoBehaviour
 
     private void PopulateInventory()
     {
-        // Clear the content area
-        foreach (Transform child in inventoryContentArea.transform)
-            Destroy(child.gameObject);
-
-        // Return if the instance of the InventoryManager is null
-        if (Player.Instance?.PlayerInventory == null)
-            return;
-
-        // Get the inventory entries
-        var inventoryEntries = Player.Instance.PlayerInventory.InventoryEntries;
-
-        JournalUIInventoryItem firstInventoryItem = null;
-
-        // Create a list for the inventory UI items
-        var inventoryItems = new List<JournalUIInventoryItem>();
-
-        // Populate the content area with the inventory entries
-        foreach (var entry in inventoryEntries)
-        {
-            var item = CreateInventoryItem(entry);
-
-            // Add the item to the list of inventory items
-            inventoryItems.Add(item);
-
-            if (firstInventoryItem == null)
-                firstInventoryItem = item;
-        }
-
-        // Set the header navigation down
-        if (firstInventoryItem != null)
-            SetHeaderNavDown(firstInventoryItem.Button);
-        else
-            SetHeaderNavDown(backButton);
-
-        // Set up the navigation between inventory items
-        for (var i = 0; i < inventoryItems.Count; i++)
-        {
-            var button = inventoryItems[i].Button;
-
-            var nav = button.navigation;
-
-            // Up navigation
-            nav.selectOnUp = i > 0
-                ? inventoryItems[i - 1].Button
-                : inventoryButton;
-
-            // Down navigation
-            nav.selectOnDown = i < inventoryItems.Count - 1
-                ? inventoryItems[i + 1].Button
-                : backButton;
-
-            // Set the navigation
-            button.navigation = nav;
-        }
-
-        // Set the back button's up navigation to the last inventory item
-        if (inventoryItems.Count > 0)
-        {
-            var lastItem = inventoryItems[^1];
-
-            var nav = backButton.navigation;
-            nav.selectOnUp = lastItem.Button;
-            backButton.navigation = nav;
-        }
-        else
-        {
-            SetHeaderNavDown(backButton);
-
-            var nav = backButton.navigation;
-            nav.selectOnUp = inventoryButton;
-            backButton.navigation = nav;
-        }
+        // // Clear the content area
+        // foreach (Transform child in inventoryContentArea.transform)
+        //     Destroy(child.gameObject);
+        //
+        // // Return if the instance of the InventoryManager is null
+        // if (Player.Instance?.PlayerInventory == null)
+        //     return;
+        //
+        // // Get the inventory entries
+        // var inventoryEntries = Player.Instance.PlayerInventory.InventoryEntries;
+        //
+        // JournalUIInventoryItem firstInventoryItem = null;
+        //
+        // // Create a list for the inventory UI items
+        // var inventoryItems = new List<JournalUIInventoryItem>();
+        //
+        // // Populate the content area with the inventory entries
+        // foreach (var entry in inventoryEntries)
+        // {
+        //     var item = CreateInventoryItem(entry);
+        //
+        //     // Add the item to the list of inventory items
+        //     inventoryItems.Add(item);
+        //
+        //     if (firstInventoryItem == null)
+        //         firstInventoryItem = item;
+        // }
+        //
+        // // Set the header navigation down
+        // if (firstInventoryItem != null)
+        //     SetHeaderNavDown(firstInventoryItem.Button);
+        // else
+        //     SetHeaderNavDown(backButton);
+        //
+        // // Set up the navigation between inventory items
+        // for (var i = 0; i < inventoryItems.Count; i++)
+        // {
+        //     var button = inventoryItems[i].Button;
+        //
+        //     var nav = button.navigation;
+        //
+        //     // Up navigation
+        //     nav.selectOnUp = i > 0
+        //         ? inventoryItems[i - 1].Button
+        //         : inventoryButton;
+        //
+        //     // Down navigation
+        //     nav.selectOnDown = i < inventoryItems.Count - 1
+        //         ? inventoryItems[i + 1].Button
+        //         : backButton;
+        //
+        //     // Set the navigation
+        //     button.navigation = nav;
+        // }
+        //
+        // // Set the back button's up navigation to the last inventory item
+        // if (inventoryItems.Count > 0)
+        // {
+        //     var lastItem = inventoryItems[^1];
+        //
+        //     var nav = backButton.navigation;
+        //     nav.selectOnUp = lastItem.Button;
+        //     backButton.navigation = nav;
+        // }
+        // else
+        // {
+        //     SetHeaderNavDown(backButton);
+        //
+        //     var nav = backButton.navigation;
+        //     nav.selectOnUp = inventoryButton;
+        //     backButton.navigation = nav;
+        // }
     }
 
     #endregion

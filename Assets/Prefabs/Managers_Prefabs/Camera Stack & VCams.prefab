@@ -8165,6 +8165,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3147a324deaa4c3a9f201f9f8d31e22d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxToxicity:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: 27ae6bb8251b4164c94c238ccdf37b4a, type: 2}
+  currentToxicity:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: 8a66f0e53e1ce3448bb60193f740b382, type: 2}
+  isRelapsing:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: 475cb4784a8151042a60be6e56c578c3, type: 2}
   jitter: {fileID: 3911365275855911416}
   maxJitterPercent: 0.75
 --- !u!114 &3911365275855911416
@@ -8607,6 +8619,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a06cddaf97354141baab43fbc720ef12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerInventory: {fileID: 11400000, guid: 01b8b9e03be16b6488d4a6270633bb4f, type: 2}
   canvasGroup: {fileID: 8907341364296713432}
   moneyAddedText: {fileID: 2266998758119521516}
   totalMoneyCanvasGroup: {fileID: 7374999677159889118}
@@ -13748,6 +13761,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8402bb0b52a64eb3af86aaf1d0b2e74d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerVelocity:
+    useConstant: 0
+    constantValue: {x: 0, y: 0, z: 0}
+    variable: {fileID: 11400000, guid: 3c8fd93338f2e4b438564cf538808009, type: 2}
   speedLines: {fileID: 7983743994360080295}
   multiplier: 17.5
   minSpeedThreshold: 16

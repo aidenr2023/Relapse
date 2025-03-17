@@ -14,13 +14,16 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     #region Serialized Fields
 
+    [Header("Vars"), SerializeField] private Vector3Variable playerVelocitySo;
+    [SerializeField] private TransformVariable playerTransform;
+    [SerializeField] private TransformVariable cameraPivotSo;
+    [SerializeField] private TransformVariable orientationSo;
+
     [Header("Important Transforms")]
 
-    [SerializeField] private TransformVariable playerTransform;
-    
     // Reference to the player's camera pivot
-    [SerializeField] private Transform cameraPivot;
-    [SerializeField] private TransformVariable cameraPivotSo;
+    [SerializeField]
+    private Transform cameraPivot;
 
     // Reference to the player's orientation transform
     [SerializeField] private Transform orientation;
@@ -206,8 +209,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         InputManager.Instance.Register(this);
 
         // Set the transform values
-        cameraPivotSo.value = cameraPivot;
         playerTransform.value = transform;
+        cameraPivotSo.value = cameraPivot;
+        orientationSo.value = orientation;
     }
 
     private void OnDisable()
@@ -346,6 +350,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         // Update the bullet time
         UpdateBulletTime();
+        
+        // Set the player velocity
+        playerVelocitySo.value = _rigidbody.velocity;
     }
 
     private void UpdateBulletTime()

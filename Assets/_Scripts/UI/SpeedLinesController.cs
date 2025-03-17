@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class SpeedLinesController : MonoBehaviour
 {
+    [SerializeField] private Vector3Reference playerVelocity;
+    
     [SerializeField] private ParticleSystem speedLines;
 
     [SerializeField, Min(0)] private float multiplier = 10;
@@ -17,13 +19,13 @@ public class SpeedLinesController : MonoBehaviour
 
     private void Update()
     {
-        var playerVelocity = Player.Instance.Rigidbody.velocity.magnitude;
-
+        var magnitude = playerVelocity.Value.magnitude;
+        
         // If the player's velocity is greater than the minimum speed threshold
         // Increase the current value by the fill speed
-        if (playerVelocity >= minSpeedThreshold)
+        if (magnitude >= minSpeedThreshold)
         {
-            var exceed = (playerVelocity / minSpeedThreshold) * exceedMultiplier;
+            var exceed = magnitude / minSpeedThreshold * exceedMultiplier;
             
             _currentValue += (1 / fillSpeed) * Time.deltaTime * exceed;
         }

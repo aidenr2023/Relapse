@@ -8739,7 +8739,6 @@ MonoBehaviour:
     useConstant: 0
     constantValue: 100
     variable: {fileID: 11400000, guid: 64b8812f46e1a9e4489520d211e0b652, type: 2}
-  invincibilityDuration: 1
   maxToxicitySo:
     useConstant: 0
     constantValue: 0
@@ -8748,6 +8747,11 @@ MonoBehaviour:
     useConstant: 0
     constantValue: 0
     variable: {fileID: 11400000, guid: 8a66f0e53e1ce3448bb60193f740b382, type: 2}
+  isRelapsingSo:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: 475cb4784a8151042a60be6e56c578c3, type: 2}
+  invincibilityDuration: 1
   relapseOpacityCurve:
     serializedVersion: 2
     m_Curve:
@@ -8920,9 +8924,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc2239b3085447aa97162efb8060164b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerVelocitySo: {fileID: 11400000, guid: 3c8fd93338f2e4b438564cf538808009, type: 2}
   playerTransform: {fileID: 11400000, guid: 95f92e08b24db834d9222effbee2e194, type: 2}
-  cameraPivot: {fileID: 5244302159661097867}
   cameraPivotSo: {fileID: 11400000, guid: 82965ac43c3a47a41814214cdc06b289, type: 2}
+  orientationSo: {fileID: 11400000, guid: 80ffaccf1623c85448f0b9100249a8df, type: 2}
+  cameraPivot: {fileID: 5244302159661097867}
   orientation: {fileID: 5224293575626551686}
   playerAnimator: {fileID: 4298942248171799672}
   desiredCapsuleHeightOffset: 0.5
@@ -9187,8 +9193,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 577fbb70976d4f93a44d375f1a4ff6ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moneyObject: {fileID: 11400000, guid: 7bd43e1ae76d24f428376e9e9b37133a, type: 2}
-  inventoryEntries: []
+  inventoryVariable: {fileID: 11400000, guid: 01b8b9e03be16b6488d4a6270633bb4f, type: 2}
 --- !u!114 &4146044329642554987
 MonoBehaviour:
   m_ObjectHideFlags: 0

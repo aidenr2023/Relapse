@@ -76,7 +76,7 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
             ForceCurrentHealth(currentHealth + (maxHealth - oldMaxHealth));
         }
-        
+
         OnDamaged += AddDamageThisFrame;
         OnDamaged += SetDamagePositionOnDamaged;
 
@@ -98,6 +98,14 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
             ParentComponent.NewMovement.RemoveMovementDisableToken(this);
             ParentComponent.AttackBehavior.RemoveAttackDisableToken(this);
         };
+
+        OnDeath += AddMoneyOnDeath;
+    }
+
+    private void AddMoneyOnDeath(object sender, HealthChangedEventArgs e)
+    {
+        var playerInventory = Player.Instance.PlayerInventory;
+        playerInventory.InventoryVariable.AddItem(playerInventory.InventoryVariable.MoneyObject, moneyReward);
     }
 
     private void SetDamagePositionOnDamaged(object sender, HealthChangedEventArgs args)
@@ -168,8 +176,6 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
         // Set the isDead flag to true
         _isDead = true;
-
-        Player.Instance.PlayerInventory.AddItem(Player.Instance.PlayerInventory.MoneyObject, moneyReward);
 
         // Implement death logic
         Destroy(gameObject);

@@ -15,6 +15,12 @@ public class VendorMenu : GameMenu
 
     #region Serialized Fields
 
+    [SerializeField] private FloatReference playerMaxHealth;
+    [SerializeField] private FloatReference playerCurrentHealth;
+    [SerializeField] private FloatReference playerMaxToxicity;
+    [SerializeField] private FloatReference playerCurrentToxicity;
+    [SerializeField] private InventoryVariable playerInventory;
+
     [Header("Powers Shop Screen")] [SerializeField]
     private VendorShopButton[] medButtons;
 
@@ -62,7 +68,6 @@ public class VendorMenu : GameMenu
     private GameObject _isolatedMenu;
     private bool _playTutorialAfterClose;
     private PowerScriptableObject _purchasedPower;
-    
 
     #endregion
 
@@ -98,7 +103,7 @@ public class VendorMenu : GameMenu
         // If the tutorial should be played after the menu is closed, play the tutorial
         if (_playTutorialAfterClose && _purchasedPower != null && _purchasedPower.Tutorial != null)
             TutorialScreen.Play(this, _purchasedPower.Tutorial, false);
-        
+
         // Reset the flags
         _playTutorialAfterClose = false;
         _purchasedPower = null;
@@ -119,8 +124,7 @@ public class VendorMenu : GameMenu
 
     protected override void CustomUpdate()
     {
-        if (MenuManager.Instance.ActiveMenu == this &&
-            eventSystem.currentSelectedGameObject == null)
+        if (MenuManager.Instance.ActiveMenu == this && eventSystem.currentSelectedGameObject == null)
         {
             if (_isolatedMenu == gossipMenu)
             {
@@ -154,7 +158,7 @@ public class VendorMenu : GameMenu
         gossipNotification.enabled = !_currentVendor.HasGossipped;
 
         // If the player can upgrade with the vendor, show the upgrade notification
-        upgradeNotification.enabled = Player.Instance.PlayerInventory.MoneyCount >= _currentVendor.UpgradeCost;
+        upgradeNotification.enabled = playerInventory.MoneyCount >= _currentVendor.UpgradeCost;
 
         // var scaleAdd = Mathf.Sin(Time.time * Mathf.PI * 2) * 0.1f;
         // var newScale = Vector3.one + new Vector3(scaleAdd, scaleAdd, 0);
@@ -225,7 +229,7 @@ public class VendorMenu : GameMenu
         };
 
         upgradeInfoText.text = $"Do you want to upgrade your maximum {statToUpgrade} for ${CurrentVendor.UpgradeCost}?";
-        upgradeMoneyText.text = $"Money: ${Player.Instance.PlayerInventory.MoneyCount}";
+        upgradeMoneyText.text = $"Money: ${playerInventory.MoneyCount}";
     }
 
     private void PopulateShop()
@@ -421,7 +425,7 @@ public class VendorMenu : GameMenu
 
         // Set the introduced flag in the vendor information
         vendor.HasIntroduced = true;
-        
+
         // Reset the play tutorial after close flag
         _playTutorialAfterClose = false;
         _purchasedPower = null;
@@ -436,8 +440,6 @@ public class VendorMenu : GameMenu
 
     public void BuyUpgrade()
     {
-        var playerInventory = Player.Instance.PlayerInventory;
-
         // If the player does not have enough money, return
         if (playerInventory.MoneyCount < CurrentVendor.UpgradeCost)
         {
@@ -448,26 +450,44 @@ public class VendorMenu : GameMenu
         // Deduct the cost of the upgrade from the player's money
         playerInventory.RemoveItem(playerInventory.MoneyObject, CurrentVendor.UpgradeCost);
 
-        var playerInfo = Player.Instance.PlayerInfo;
-
         switch (CurrentVendor.VendorType)
         {
             // If this vendor is a doctor, increase the player's max health
             case VendorType.Doctor:
-                Player.Instance.PlayerInfo.ChangeMaxHealth(playerInfo.MaxHealth + CurrentVendor.UpgradeAmount);
+                ChangeMaxValue(playerCurrentHealth, playerMaxHealth, CurrentVendor.UpgradeAmount);
                 JournalTooltipManager.Instance.AddTooltip(
-                    $"You have bought a health upgrade. Your max health is now {playerInfo.MaxHealth}.");
+                    $"You have bought a health upgrade. Your max health is now {playerMaxHealth.Value}.");
                 break;
 
             // If this vendor is a dealer, increase the player's toxicity
             case VendorType.Dealer:
-                Player.Instance.PlayerInfo.ChangeMaxToxicity(playerInfo.MaxToxicity + CurrentVendor.UpgradeAmount);
+                ChangeMaxValue(playerCurrentToxicity, playerMaxToxicity, CurrentVendor.UpgradeAmount);
                 JournalTooltipManager.Instance.AddTooltip(
-                    $"You have bought a toxicity upgrade. Your max toxicity is now {playerInfo.MaxToxicity}.");
+                    $"You have bought a toxicity upgrade. Your max toxicity is now {playerMaxToxicity.Value}.");
                 break;
         }
     }
-    
+
+    private void ChangeMaxValue(FloatReference current, FloatReference max, int amount)
+    {
+        var newValue = max.Value + amount;
+
+        // If the player is gaining health, increase the max health & health
+        if (newValue > max)
+        {
+            var healthDifference = newValue - max;
+            max.Value = newValue;
+            current.Value += healthDifference;
+        }
+
+        // If the player is losing health, decrease the max health & health
+        else if (newValue < max)
+            max.Value = newValue;
+
+        // Clamp the health
+        current.Value = Mathf.Clamp(current, 0, max);
+    }
+
     public void SetPurchasedPower(PowerScriptableObject power)
     {
         _purchasedPower = power;

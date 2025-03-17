@@ -8,6 +8,8 @@ public class MoneyNotificationUI : MonoBehaviour
 
     #region Serialized Fields
 
+    [SerializeField] private InventoryVariable playerInventory;
+
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private TMP_Text moneyAddedText;
 
@@ -51,8 +53,8 @@ public class MoneyNotificationUI : MonoBehaviour
         var playerInstance = Player.Instance;
         
         // Subscribe to the inventory's OnItemAdded event
-        playerInstance.PlayerInventory.OnItemAdded += MoneyNotificationOnPickup;
-        playerInstance.PlayerInventory.OnItemRemoved += MoneyNotificationOnRemoval;
+        playerInventory.OnItemAdded += MoneyNotificationOnPickup;
+        playerInventory.OnItemRemoved += MoneyNotificationOnRemoval;
     }
 
     private void MoneyNotificationOnPickup(InventoryObject item, int quantity)
@@ -64,7 +66,7 @@ public class MoneyNotificationUI : MonoBehaviour
             return;
 
         // If the item is not the money object, return
-        if (item != playerInstance.PlayerInventory.MoneyObject)
+        if (item != playerInventory.MoneyObject)
             return;
 
         // If the quantity is 0, return
@@ -144,10 +146,8 @@ public class MoneyNotificationUI : MonoBehaviour
         // Set the money added text
         moneyAddedText.text = $"{icon} ${Mathf.Abs(_moneyAmount)}";
 
-        var playerInstance = Player.Instance;
-        
         // Get the inventory entry for the money object
-        var totalMoneyCount = playerInstance.PlayerInventory.GetItemCount(playerInstance.PlayerInventory.MoneyObject);
+        var totalMoneyCount = playerInventory.GetItemCount(playerInventory.MoneyObject);
 
         // Set the total money text
         totalMoneyText.text = $"Total: ${totalMoneyCount}";

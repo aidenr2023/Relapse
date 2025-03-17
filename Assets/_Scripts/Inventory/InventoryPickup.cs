@@ -33,7 +33,7 @@ public class InventoryPickup : MonoBehaviour, IInteractable, ILevelLoaderInfo
     public HashSet<Material> OutlineMaterials { get; } = new();
 
     public InteractionIcon InteractionIcon => InteractionIcon.Pickup;
-    
+
     public UnityEvent OnInteraction => onInteract;
 
     #endregion
@@ -45,7 +45,7 @@ public class InventoryPickup : MonoBehaviour, IInteractable, ILevelLoaderInfo
     public void Interact(PlayerInteraction playerInteraction)
     {
         // Add the inventory entry to the player's inventory
-        playerInteraction.Player.PlayerInventory.AddItem(inventoryEntry);
+        playerInteraction.Player.PlayerInventory.InventoryVariable.AddItem(inventoryEntry);
 
         // Call the OnPickup method
         OnPickup();
@@ -78,7 +78,8 @@ public class InventoryPickup : MonoBehaviour, IInteractable, ILevelLoaderInfo
         sb.Append("Pick up ");
 
         // If the object is money, display the quantity w/ a $ sign
-        if (Player.Instance != null && Player.Instance.PlayerInventory.MoneyObject == inventoryEntry.InventoryObject)
+        if (Player.Instance != null && Player.Instance.PlayerInventory.InventoryVariable.MoneyObject ==
+            inventoryEntry.InventoryObject)
         {
             sb.Append($"${inventoryEntry.Quantity}");
             return sb.ToString();

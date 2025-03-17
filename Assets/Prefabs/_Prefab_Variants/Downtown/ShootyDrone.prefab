@@ -5660,6 +5660,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1f2f7014adf46a88a0579b47084cca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  difficultyHealthMultiplier:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: cd5b9b53bc13f3a43acc87cda01e11f1, type: 2}
+  difficultyDamageMultiplier:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: cf7b75ebff401554a9d02aac6511f093, type: 2}
+  applyDifficultyMultiplier: 1
   maxHealth: 99999
   currentHealth: 99999
   moneyReward: 0
@@ -5712,6 +5721,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6db7d14cf168478bacea0720a538d891, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerTransform:
+    useConstant: 0
+    constantValue: {fileID: 0}
+    variable: {fileID: 11400000, guid: 95f92e08b24db834d9222effbee2e194, type: 2}
   detectionOrigin: {fileID: 1477977328741824022}
   visionDistance: 70
   autoDetectionDistance: 30

@@ -98,10 +98,7 @@ public class WaveEnemySpawner : EnemySpawner
     {
         // Return if the wave index is out of bounds
         if (waveIndex < 0 || waveIndex >= waves.Length)
-        {
-            Debug.LogError($"Wave index out of bounds: {waveIndex}");
             return;
-        }
 
         // Get the current wave spawn info
         var currentSpawnInfo = waves[waveIndex];
