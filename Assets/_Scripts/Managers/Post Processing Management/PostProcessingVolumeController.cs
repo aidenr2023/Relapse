@@ -14,6 +14,7 @@ public class PostProcessingVolumeController : MonoBehaviour
 
     [Space, SerializeField] private DynamicPostProcessPair apartmentPair;
     [SerializeField] private DynamicPostProcessPair cityPair;
+    [SerializeField] private DynamicPostProcessPair cityCombatPair;
     [SerializeField] private DynamicPostProcessPair mindbreakPair;
 
     #endregion
@@ -71,10 +72,11 @@ public class PostProcessingVolumeController : MonoBehaviour
         // Set the current pair to the new pair
         _currentPair = type switch
         {
+            PostProcessingType.None => _currentPair,
             PostProcessingType.Apartment => apartmentPair,
             PostProcessingType.City => cityPair,
             PostProcessingType.Mindbreak => mindbreakPair,
-            PostProcessingType.None => _currentPair,
+            PostProcessingType.CityCombat => cityCombatPair,
             _ => throw new ArgumentOutOfRangeException()
         };
 

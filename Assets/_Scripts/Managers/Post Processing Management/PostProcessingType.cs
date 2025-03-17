@@ -1,7 +1,8 @@
 ﻿public enum PostProcessingType
 {
+    None,
     Apartment,
     City,
     Mindbreak,
-    None
+    CityCombat
 }
