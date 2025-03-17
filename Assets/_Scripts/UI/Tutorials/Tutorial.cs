@@ -4,10 +4,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Tutorial", menuName = "New Tutorial")]
 public class Tutorial : ScriptableObject
 {
-    private static readonly HashSet<Tutorial> tutorials = new();
-
-    public static IReadOnlyCollection<Tutorial> Tutorials => tutorials;
-
     [SerializeField] private string tutorialName;
     [SerializeField] private TutorialType tutorialType;
     [SerializeField, UniqueIdentifier] private string uniqueId;
@@ -20,9 +16,4 @@ public class Tutorial : ScriptableObject
 
     public string UniqueId => uniqueId;
 
-    public Tutorial()
-    {
-        // Add the tutorial to the hash set
-        tutorials.Add(this);
-    }
 }

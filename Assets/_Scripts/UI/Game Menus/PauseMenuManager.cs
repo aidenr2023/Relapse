@@ -42,9 +42,14 @@ public class PauseMenuManager : GameMenu
     [SerializeField] private GameObject tutorialsButtonParent;
     [SerializeField] private TutorialButton tutorialButtonPrefab;
     [SerializeField] private GameObject tutorialBack;
+    
+    [SerializeField] private TutorialArrayVariable allTutorials;
+    [SerializeField] private TutorialArrayVariable completedTutorials;
 
     [SerializeField] private PowerInfoScreen powerInfoScreen;
 
+    
+    
     #endregion
 
     #region Private Fields
@@ -307,15 +312,12 @@ public class PauseMenuManager : GameMenu
         foreach (Transform child in tutorialsButtonParent.transform)
             Destroy(child.gameObject);
 
-        // Get all the tutorials that the player has read
-        var allTutorials = Tutorial.Tutorials;
-
         var firstSelected = tutorialBack;
 
-        foreach (var tutorial in allTutorials)
+        foreach (var tutorial in allTutorials.value)
         {
             // Continue if the player has not read the tutorial
-            if (!TutorialManager.Instance.IsTutorialCompleted(tutorial))
+            if (!completedTutorials.value.Contains(tutorial))
                 continue;
 
             // Create a new button

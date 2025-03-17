@@ -7,7 +7,8 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
 {
     #region Serialized Fields
 
-    [SerializeField, Readonly] private Tutorial[] completedTutorials = Array.Empty<Tutorial>();
+    [SerializeField] private TutorialArrayVariable allTutorials;
+    [SerializeField] private TutorialArrayVariable completedTutorials;
 
     [Header("Tutorials")] [SerializeField] private Tutorial gunPickupTutorial;
     [SerializeField] private Tutorial interactWithCheckpointTutorial;
@@ -93,24 +94,14 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
 
     #endregion
 
-    private void Update()
-    {
-        // Refresh the completed tutorials
-        // completedTutorials = _completedTutorials.ToArray();
-        completedTutorials = TutorialManager.Instance.CompletedTutorials.ToArray();
-    }
-
     public void CompleteTutorial(Tutorial tutorial)
     {
-        // Add the tutorial to the completed tutorials
-        // _completedTutorials.Add(tutorial);
-        TutorialManager.Instance.CompleteTutorial(tutorial);
+        completedTutorials.value.Add(tutorial);
     }
 
     public bool HasCompletedTutorial(Tutorial tutorial)
     {
-        // return _completedTutorials.Contains(tutorial);
-        return TutorialManager.Instance.IsTutorialCompleted(tutorial);
+        return completedTutorials.value.Contains(tutorial);
     }
 
     #region Saving and Loading
@@ -121,11 +112,10 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
     public void LoadData(PlayerLoader playerLoader, bool restore)
     {
         // Clear the completed tutorials
-        // _completedTutorials.Clear();
-        TutorialManager.Instance.ClearCompletedTutorials();
+        completedTutorials.value.Clear();
 
         // For each tutorial in the save data, add it to the completed tutorials
-        foreach (var tutorial in Tutorial.Tutorials)
+        foreach (var tutorial in allTutorials.value)
         {
             // If the tutorial is not in the save data, skip it
             if (!playerLoader.TryGetDataFromMemory(Id, tutorial.UniqueId, out bool isComplete))
@@ -133,10 +123,7 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
 
             // Add the tutorial to the completed tutorials
             if (isComplete)
-            {
-                // _completedTutorials.Add(tutorial);
-                TutorialManager.Instance.CompleteTutorial(tutorial);
-            }
+                completedTutorials.value.Add(tutorial);
 
             Debug.Log($"Reloaded & added {tutorial.TutorialName} to the completed tutorials!");
         }
@@ -155,7 +142,7 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
 
     public void SaveData(PlayerLoader playerLoader)
     {
-        var tutorials = TutorialManager.Instance.CompletedTutorials;
+        var tutorials = completedTutorials.value;
 
         // For each completed tutorial, save the data
         // foreach (var tutorial in _completedTutorials)

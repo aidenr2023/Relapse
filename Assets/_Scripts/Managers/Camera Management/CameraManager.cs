@@ -38,9 +38,11 @@ public class CameraManager : MonoBehaviour
 
     private void Update()
     {
+        var playerInstance = Player.Instance;
+        
         // If the virtual camera's follow is ever null,
         // set it to the instance of the player
-        if (virtualCamera != null && virtualCamera.Follow == null && Player.Instance != null)
-            virtualCamera.Follow = Player.Instance.PlayerController.CameraPivot.transform;
+        if (virtualCamera != null && virtualCamera.Follow == null && playerInstance != null)
+            virtualCamera.Follow = playerInstance.PlayerController.CameraPivot.transform;
     }
 }

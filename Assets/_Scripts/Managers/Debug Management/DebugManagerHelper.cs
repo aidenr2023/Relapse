@@ -223,14 +223,14 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
             return;
 
         // If there is no player, return
-        if (Player.Instance == null)
+        if (Player == null)
             return;
 
         // Move the player back to their original scene
-        Player.Instance.transform.parent = Player.Instance.OriginalSceneObject.transform;
+        Player.transform.parent = Player.OriginalSceneObject.transform;
 
         // Find the scene the player is in
-        var playerSceneField = (SceneField)Player.Instance.gameObject.scene.name;
+        var playerSceneField = (SceneField)Player.gameObject.scene.name;
 
         // Get the currently managed scenes from the AsyncSceneManager
         var managedScenes = AsyncSceneManager.Instance.GetManagedScenes();
@@ -257,7 +257,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         AsyncSceneManager.Instance.DebugLoadSceneSynchronous(sceneLoaderInformation);
 
         // Set the parent of the player back to null
-        Player.Instance.transform.parent = null;
+        Player.transform.parent = null;
     }
 
     private void DebugLoadScene(DebugSceneLevelInfo sceneLevelInfo)
@@ -269,7 +269,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         if (sceneLevelInfo.Powers == null)
             return;
 
-        var player = Player.Instance;
+        var player = Player;
 
         // Clear the player's powers and add the new powers
         var powers = player.PlayerPowerManager.Powers;
@@ -325,11 +325,11 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         var allPowers = new List<PowerScriptableObject>(pso);
 
         // get the power at the given index
-        var indexedPower = Player.Instance.PlayerPowerManager.GetPowerAtIndex(equippedPowerIndex);
+        var indexedPower = Player.PlayerPowerManager.GetPowerAtIndex(equippedPowerIndex);
 
         // For each of the player's currently equipped powers,
         // remove them from the allPowersHashSet
-        foreach (var power in Player.Instance.PlayerPowerManager.Powers)
+        foreach (var power in Player.PlayerPowerManager.Powers)
         {
             // Skip if the power is the indexed power
             if (power == indexedPower)
@@ -341,12 +341,12 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         // If the indexed power is null, just add the first power
         if (indexedPower == null)
         {
-            Player.Instance.PlayerPowerManager.AddPower(allPowers[0]);
+            Player.PlayerPowerManager.AddPower(allPowers[0]);
             return;
         }
 
         // Store the current Power index
-        var currentPowerIndex = Player.Instance.PlayerPowerManager.CurrentPowerIndex;
+        var currentPowerIndex = Player.PlayerPowerManager.CurrentPowerIndex;
 
         var nextIndex = -1;
 
@@ -358,10 +358,10 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         var nextPower = allPowers[nextIndex % allPowers.Count];
 
         // Set the power at that powerIndex to the nextPower
-        Player.Instance.PlayerPowerManager.SetPowerAtIndex(nextPower, equippedPowerIndex);
+        Player.PlayerPowerManager.SetPowerAtIndex(nextPower, equippedPowerIndex);
 
         // Set the current power index to the current power index
-        Player.Instance.PlayerPowerManager.ChangePower(currentPowerIndex);
+        Player.PlayerPowerManager.ChangePower(currentPowerIndex);
     }
 
     private void UpdateToleranceAndHealth()

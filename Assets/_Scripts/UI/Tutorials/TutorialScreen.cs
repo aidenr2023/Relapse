@@ -18,6 +18,9 @@ public class TutorialScreen : GameMenu, IUsesInput
 
     #region Serialized Fields
 
+    [SerializeField] private TutorialArrayVariable allTutorials;
+    [SerializeField] private TutorialArrayVariable completedTutorials;
+    
     [SerializeField, Min(0)] private float slowDownTime = 1;
 
     [SerializeField] private VideoPlayer videoPlayer;
@@ -333,7 +336,7 @@ public class TutorialScreen : GameMenu, IUsesInput
         if (tutorial == null)
             return;
 
-        var isTutorialCompleted = TutorialManager.Instance.IsTutorialCompleted(tutorial);
+        var isTutorialCompleted = completedTutorials.value.Contains(tutorial);
 
         // Return if the tutorial has already been completed and we are not replaying it
         if (isTutorialCompleted && !replay)
@@ -341,29 +344,13 @@ public class TutorialScreen : GameMenu, IUsesInput
 
         // Start the coroutine
         StartCoroutine(TutorialCoroutine(tutorial, replay, isTutorialCompleted));
-
-        // ChangeTutorial(tutorial);
-        // Activate();
-        //
-        // // Hacky solution to force the exit button to pop up if the tutorial has already been completed
-        // if (replay && isTutorialCompleted)
-        // {
-        //     // Set the current page to the last page
-        //     SetTutorialPage(tutorial.TutorialPages.Count - 1);
-        //
-        //     // Force an update of the exit button
-        //     UpdateExitButton();
-        //
-        //     // Reset the current page to the first page
-        //     SetTutorialPage(0);
-        // }
-        //
-        // // Get the instance of the player tutorial manager & complete the tutorial
-        // Player.Instance.PlayerTutorialManager.CompleteTutorial(tutorial);
     }
 
     private IEnumerator TutorialCoroutine(Tutorial tutorial, bool replay, bool isTutorialCompleted)
     {
+        if (!replay && isTutorialCompleted)
+            yield break;
+        
         // Create a time scale token
         var timeToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(1, -1, true);
 
@@ -396,7 +383,7 @@ public class TutorialScreen : GameMenu, IUsesInput
         }
 
         // Get the instance of the player tutorial manager & complete the tutorial
-        Player.Instance.PlayerTutorialManager.CompleteTutorial(tutorial);
+        completedTutorials.value.Add(tutorial);
 
         yield return null;
     }
@@ -409,9 +396,9 @@ public class TutorialScreen : GameMenu, IUsesInput
 
     private static IEnumerator CreateTutorialSceneAndPlay(Tutorial tutorial, bool replay = true)
     {
-        // If the tutorial has already been completed and we are not replaying it, return
-        if (Player.Instance.PlayerTutorialManager.HasCompletedTutorial(tutorial) && !replay)
-            yield break;
+        // // If the tutorial has already been completed and we are not replaying it, return
+        // if (completedTutorials.value.Contains(tutorial) && !replay)
+        //     yield break;
 
         // If the instance is NOT null, just play the tutorial
         if (Instance != null)

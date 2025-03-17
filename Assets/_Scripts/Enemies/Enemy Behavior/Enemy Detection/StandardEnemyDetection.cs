@@ -108,12 +108,11 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         // Set the detection state to aware
         CurrentDetectionState = EnemyDetectionState.Aware;
 
-        // Set the target to the player
-        Target = Player.Instance.PlayerInfo;
+        Target = e.Changer;
 
-        // Set the last known player position to the player's current position
-        LastKnownTargetPosition = Player.Instance.transform.position;
-
+        if (Target != null)
+            LastKnownTargetPosition = e.Changer.GameObject.transform.position;
+        
         // Invoke the detection state changed event
         OnDetectionStateChanged?.Invoke(this, EnemyDetectionState.Unaware, CurrentDetectionState);
     }
@@ -183,8 +182,8 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
     private void UpdateLastKnownPlayerPosition()
     {
         // Update the last known player position
-        if (_isTargetInSight)
-            LastKnownTargetPosition = Player.Instance.transform.position;
+        if (_isTargetInSight && Target != null)
+            LastKnownTargetPosition = Target.GameObject.transform.position;
     }
 
     /// <summary>
@@ -315,14 +314,14 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
     private bool CheckPlayerInSight()
     {
         // Get the player instance
-        var player = Player.Instance;
+        var playerTransform = Player.Instance.transform;
 
         // Return false if the player instance is null
-        if (player == null)
+        if (playerTransform == null)
             return false;
 
         // Get the line between the enemy and the player
-        var line = player.transform.position - detectionOrigin.position;
+        var line = playerTransform.position - detectionOrigin.position;
 
         // Return false if the player is not within the vision distance
         // and the current state is not aware
@@ -361,7 +360,7 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
             return false;
 
         // Return false if the raycast does not hit the player
-        if (hit.collider.gameObject != player.gameObject)
+        if (hit.collider.gameObject != playerTransform.gameObject)
             return false;
 
         return true;
@@ -374,17 +373,6 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         // Draw a line from the enemy to the player
         var undetectedColor = Color.green;
         var detectedColor = Color.red;
-
-        if (Player.Instance != null)
-        {
-            // Get the line between the enemy and the player
-            var line = Player.Instance.transform.position - detectionOrigin.position;
-
-            var endPosition = detectionOrigin.position + line.normalized * visionDistance;
-
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(detectionOrigin.position, endPosition);
-        }
 
         // Draw the vision angle
         var halfAngle = visionAngle / 2;

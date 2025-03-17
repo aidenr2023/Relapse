@@ -32,8 +32,10 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
 
     private IEnumerator TransitionToNextScene(LevelSectionSceneInfo[] scenes)
     {
+        var playerInstance = Player.Instance;
+        
         // Disable the player's controls
-        SetPlayerControls(Player.Instance, false);
+        SetPlayerControls(playerInstance, false);
 
         // Create a chromatic aberration token
         var caToken =
@@ -80,7 +82,7 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
         // var checkpointRotation = LevelCheckpointManager.Instance.CurrentCheckpoint.transform.rotation;
 
         // Kill the player's velocity
-        Player.Instance.Rigidbody.velocity = Vector3.zero;
+        playerInstance.Rigidbody.velocity = Vector3.zero;
 
         // Unload the current scene
         var operations = LoadNextScenes(scenes);
@@ -97,7 +99,7 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
         yield return new WaitUntil(() => operations.All(operation => operation?.isDone ?? true));
 
         // Kill the player's velocity again
-        Player.Instance.Rigidbody.velocity = Vector3.zero;
+        playerInstance.Rigidbody.velocity = Vector3.zero;
 
         if (useLevelInformation)
         {
@@ -112,8 +114,8 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
                     LevelCheckpointManager.Instance.ResetToCheckpoint(levelInfo.StartingCheckpoint);
                 else
                 {
-                    Player.Instance.Rigidbody.Move(levelInfo.transform.position, Player.Instance.Rigidbody.rotation);
-                    Player.Instance.PlayerLook.ApplyRotation(levelInfo.transform.rotation);
+                    playerInstance.Rigidbody.Move(levelInfo.transform.position, playerInstance.Rigidbody.rotation);
+                    playerInstance.PlayerLook.ApplyRotation(levelInfo.transform.rotation);
                 }
             }
 
@@ -121,13 +123,13 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
             else
             {
                 Debug.LogError($"Resetting to checkpoint Old Checkpoint???");
-                // Player.Instance.Rigidbody.Move(checkpointPosition, Player.Instance.Rigidbody.rotation);
-                // Player.Instance.PlayerLook.ApplyRotation(checkpointRotation);
+                // playerInstance.Rigidbody.Move(checkpointPosition, playerInstance.Rigidbody.rotation);
+                // playerInstance.PlayerLook.ApplyRotation(checkpointRotation);
             }
         }
 
         // Enable the player's controls
-        SetPlayerControls(Player.Instance, true);
+        SetPlayerControls(playerInstance, true);
 
         startTime = Time.unscaledTime;
 
@@ -167,15 +169,17 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
         if (levelInfo == null || levelInfo.Length == 0)
             return new List<AsyncOperation>();
 
+        var playerInstance = Player.Instance;
+        
         // If there is no player, return
-        if (Player.Instance == null)
+        if (playerInstance == null)
             return new List<AsyncOperation>();
 
         // Move the player back to their original scene
-        Player.Instance.transform.parent = Player.Instance.OriginalSceneObject.transform;
+        playerInstance.transform.parent = playerInstance.OriginalSceneObject.transform;
 
         // Find the scene the player is in
-        var playerSceneField = (SceneField)Player.Instance.gameObject.scene.name;
+        var playerSceneField = (SceneField)playerInstance.gameObject.scene.name;
 
         // Get the currently managed scenes from the AsyncSceneManager
         var managedScenes = AsyncSceneManager.Instance.GetManagedScenes();
@@ -201,7 +205,7 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
         var operations = AsyncSceneManager.Instance.LoadSceneAsync(sceneLoaderInformation, true);
 
         // Set the parent of the player back to null
-        Player.Instance.transform.parent = null;
+        playerInstance.transform.parent = null;
 
         return operations;
     }

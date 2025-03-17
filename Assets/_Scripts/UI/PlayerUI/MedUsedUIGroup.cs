@@ -10,8 +10,6 @@ public class MedUsedUIGroup : MonoBehaviour
     [SerializeField, Range(0, 1)] private float maxOpacity = 1f;
     [SerializeField, Range(0, 1)] private float opacityLerpAmount = .15f;
 
-    private Player _player;
-
     private float _desiredOpacity;
 
     private void Awake()
@@ -22,13 +20,6 @@ public class MedUsedUIGroup : MonoBehaviour
 
     private void Update()
     {
-        // Get the instance of the player
-        if (_player != Player.Instance)
-        {
-            _player = Player.Instance;
-            _player.PlayerPowerManager.OnPowerUsed += OnPowerUsed;
-        }
-
         // Lerp the alpha of the canvas group
         canvasGroup.alpha =
             Mathf.Lerp(canvasGroup.alpha, _desiredOpacity, CustomFunctions.FrameAmount(opacityLerpAmount));
