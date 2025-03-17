@@ -28,7 +28,7 @@ public class PlayerVirtualCameraController : ComponentScript<Player>
 
     #region Getters
 
-    public CinemachineVirtualCamera VirtualCamera => cameraManager.Value.VirtualCamera;
+    public CinemachineVirtualCamera VirtualCamera => cameraManager.Value?.VirtualCamera;
 
     public DynamicFOVModule DynamicFOVModule => dynamicFOVModule;
     public DynamicRotationModule DynamicRotationModule => dynamicRotationModule;

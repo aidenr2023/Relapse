@@ -62,10 +62,16 @@ public class PlayerHealthImage : MonoBehaviour
 
     private void SetImageOpacity()
     {
+        var healthOverlayUI = HealthOverlayUI.Instance;
+        
+        // Return if the health overlay UI is null
+        if (healthOverlayUI == null)
+            return;
+        
         // If the player's health is above the max flashing health, set the opacity to max
         if (player.PlayerInfo.CurrentHealth >= healthForMaxFlashing)
         {
-            HealthOverlayUI.Instance.CanvasGroup.alpha = 0;
+            healthOverlayUI.CanvasGroup.alpha = 0;
             return;
         }
 
@@ -79,6 +85,6 @@ public class PlayerHealthImage : MonoBehaviour
         var opacity = (sinAmount * maxOpacity * healthPercentage);
 
         // Set the opacity
-        HealthOverlayUI.Instance.CanvasGroup.alpha = opacity;
+        healthOverlayUI.CanvasGroup.alpha = opacity;
     }
 }
