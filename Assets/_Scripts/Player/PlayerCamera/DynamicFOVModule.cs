@@ -120,7 +120,8 @@ public sealed class DynamicFOVModule : DynamicVCamModule
         newFOV = Mathf.Min(newFOV, maxFov);
 
         // Set the FOV of the virtual camera
-        playerVCamController.VirtualCamera.m_Lens.FieldOfView = newFOV;
+        if (playerVCamController.VirtualCamera != null)
+            playerVCamController.VirtualCamera.m_Lens.FieldOfView = newFOV;
     }
 
     private void UpdateSprintToken()

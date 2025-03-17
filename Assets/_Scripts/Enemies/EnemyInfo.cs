@@ -75,8 +75,6 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
             maxHealth *= difficultyHealthMultiplier.Value;
 
             ForceCurrentHealth(currentHealth + (maxHealth - oldMaxHealth));
-            
-            Debug.Log($"Applied difficulty multiplier to {gameObject.name} health: {oldMaxHealth} -> {maxHealth}");
         }
         
         OnDamaged += AddDamageThisFrame;

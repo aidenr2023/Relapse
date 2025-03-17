@@ -96,9 +96,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     public bool IsInvincible => _invincibilityTimer.IsActive;
 
-    // public CinemachineVirtualCamera VirtualCamera => vCam;
-    public CinemachineVirtualCamera VirtualCamera => CameraManager.Instance.VirtualCamera;
-
     public bool IsInvincibleBecauseDamaged => _invincibilityTimer.IsActive && _invincibilityTimer.Percentage < 1;
 
     public Sound NormalHitSfx => null;

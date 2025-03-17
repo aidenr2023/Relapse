@@ -58,8 +58,6 @@ public class ResetableScriptableObject : ScriptableObject
     public void Reset()
     {
         CustomReset();
-        
-        Debug.Log($"Resetting {name}");
     }
 
     protected virtual void CustomReset()

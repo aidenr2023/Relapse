@@ -5,8 +5,10 @@ using UnityEngine;
 
 public class PlayerDisable : MonoBehaviour
 {
+    [SerializeField] private CameraManagerReference cameraManager;
     [SerializeField] private GameObject player;
-    private Camera _cameraPlayer_hands;
+    
+    private Camera _cameraPlayerHands;
     //private Camera _cameraPlayer;
 
     private void Start()
@@ -21,9 +23,9 @@ public class PlayerDisable : MonoBehaviour
         CutsceneManager.Instance.CutsceneHandler.OnCutsceneStart.AddListener(DisablePlayer);
         CutsceneManager.Instance.CutsceneHandler.OnCutsceneEnd.AddListener(EnablePlayer);
 
-        if (CameraManager.Instance != null)
+        if (cameraManager.Value != null)
         {
-            _cameraPlayer_hands = CameraManager.Instance.HandsCamera;
+            _cameraPlayerHands = cameraManager.Value.HandsCamera;
             //_cameraPlayer = CameraManager.Instance.MainCamera;
         }
         else
@@ -42,10 +44,10 @@ public class PlayerDisable : MonoBehaviour
         }
 
         Debug.Log("Player Layer Index: " + playerLayer);
-        Debug.Log("Culling mask before: " + _cameraPlayer_hands.cullingMask);
-        _cameraPlayer_hands.cullingMask &= ~(1 << playerLayer);
+        Debug.Log("Culling mask before: " + _cameraPlayerHands.cullingMask);
+        _cameraPlayerHands.cullingMask &= ~(1 << playerLayer);
         //_cameraPlayer.cullingMask &= ~(1 << playerLayer);
-        Debug.Log("Culling mask after: " + _cameraPlayer_hands.cullingMask);
+        Debug.Log("Culling mask after: " + _cameraPlayerHands.cullingMask);
         Debug.Log("Player Disabled");
     }
 
@@ -59,10 +61,10 @@ public class PlayerDisable : MonoBehaviour
         }
 
         Debug.Log("Player Layer Index: " + playerLayer);
-        Debug.Log("Culling mask before: " + _cameraPlayer_hands.cullingMask);
-        _cameraPlayer_hands.cullingMask |= (1 << playerLayer); // Corrected line
+        Debug.Log("Culling mask before: " + _cameraPlayerHands.cullingMask);
+        _cameraPlayerHands.cullingMask |= (1 << playerLayer); // Corrected line
         //_cameraPlayer.cullingMask |= (1 << playerLayer); // Corrected line
-        Debug.Log("Culling mask after: " + _cameraPlayer_hands.cullingMask);
+        Debug.Log("Culling mask after: " + _cameraPlayerHands.cullingMask);
         Debug.Log("Player Enabled"); // Corrected log message
     }
 }

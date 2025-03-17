@@ -7,6 +7,8 @@ public class PlayerVirtualCameraController : ComponentScript<Player>
 {
     #region Serialized Fields
 
+    [SerializeField] private CameraManagerReference cameraManager;
+    
     [Header("Camera Modules")] [SerializeField]
     private DynamicFOVModule dynamicFOVModule;
 
@@ -20,15 +22,13 @@ public class PlayerVirtualCameraController : ComponentScript<Player>
 
     #region Private Fields
 
-    private CinemachineVirtualCamera _virtualCamera;
-
     private readonly HashSet<DynamicVCamModule> _cameraModules = new();
 
     #endregion
 
     #region Getters
 
-    public CinemachineVirtualCamera VirtualCamera => _virtualCamera;
+    public CinemachineVirtualCamera VirtualCamera => cameraManager.Value.VirtualCamera;
 
     public DynamicFOVModule DynamicFOVModule => dynamicFOVModule;
     public DynamicRotationModule DynamicRotationModule => dynamicRotationModule;
@@ -66,16 +66,6 @@ public class PlayerVirtualCameraController : ComponentScript<Player>
 
     private void Start()
     {
-        // var mainCam = Camera.main;
-        //
-        // // Set the virtual camera
-        // if (mainCam != null)
-        //     _virtualCamera = mainCam.GetComponent<CinemachineBrain>().ActiveVirtualCamera as CinemachineVirtualCamera;
-        // else
-        //     Debug.LogError("Main camera not found!");
-
-        _virtualCamera = ParentComponent.PlayerInfo.VirtualCamera;
-
         // Start the camera modules
         foreach (var module in _cameraModules)
             module.Start();

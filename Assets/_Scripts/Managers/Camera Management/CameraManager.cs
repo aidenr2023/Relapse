@@ -6,6 +6,7 @@ public class CameraManager : MonoBehaviour
 {
     public static CameraManager Instance { get; private set; }
     
+    [SerializeField] private CameraManagerVariable cameraManagerSo;
     [SerializeField] private TransformReference cameraPivot;
     
     [SerializeField] private Camera mainCamera;
@@ -29,6 +30,9 @@ public class CameraManager : MonoBehaviour
         
         // Set the instance
         Instance = this;
+        
+        // Set the camera manager in the scriptable object
+        cameraManagerSo.value = this;
     }
 
     private void OnDestroy()

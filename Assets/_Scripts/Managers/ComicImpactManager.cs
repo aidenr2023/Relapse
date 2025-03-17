@@ -6,7 +6,9 @@ public class ComicImpactManager : MonoBehaviour
 {
     public static ComicImpactManager Instance { get; private set; }
 
-    [SerializeField] private float impactDuration;
+    [SerializeField] private CameraManagerReference cameraManager;
+    
+    [Space, SerializeField] private float impactDuration;
     [SerializeField] private Vector3 minOffset;
     [SerializeField] private Vector3 maxOffset;
     [SerializeField] private GameObject[] comicUIPrefabs;
@@ -32,7 +34,7 @@ public class ComicImpactManager : MonoBehaviour
         Destroy(comicUI, impactDuration);
 
         // Get the main camera from the camera manager
-        var mainCamera = CameraManager.Instance.MainCamera;
+        var mainCamera = cameraManager.Value.MainCamera;
 
         var offset = new Vector3(
             Random.Range(minOffset.x, maxOffset.x),

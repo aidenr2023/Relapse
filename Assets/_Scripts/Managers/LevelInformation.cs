@@ -142,7 +142,6 @@ public class LevelInformation : MonoBehaviour
             levelInfo.levelName = "ADD LEVEL NAME";
 
         // Play the intro text
-        Debug.Log($"Playing intro text for {levelInfo.levelName}");
 
         // Return if the cutscene listener instance is null
         if (CutsceneListener.Instance == null)
