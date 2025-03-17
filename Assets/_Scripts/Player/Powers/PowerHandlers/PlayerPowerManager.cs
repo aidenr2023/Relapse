@@ -18,6 +18,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     #region Serialized Fields
 
+    [SerializeField] private PowerTokenListVariable powerTokensSo;
+
     [SerializeField] private Transform powerFirePoint;
 
     [SerializeField] private LayerMask powerAimIgnoreLayers;
@@ -560,6 +562,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
             return;
 
         _powerTokens.Add(power, new PowerToken(power));
+        powerTokensSo.value.Add(_powerTokens[power]);
     }
 
     private void UpdateVignetteToken()
@@ -882,6 +885,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         // Remove the associated power token
         _powerTokens.Remove(powerScriptableObject);
 
+        // Remove the power from the power tokens scriptable object
+        powerTokensSo.value.Remove(powerTokensSo.value.Find(n => n.PowerScriptableObject == powerScriptableObject));
+
         // Update the power collections
         UpdatePowerCollections();
 
@@ -892,10 +898,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         }
 
         if (isLastPower)
-        {
-            _powerTokens.Clear();
-            powers.Value = Array.Empty<PowerScriptableObject>();
-        }
+            ClearPowers();
     }
 
     public void ClearPowers()
@@ -903,6 +906,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         // Clear the power tokens, the drugs set, the meds set, and the powers array
         _powerTokens.Clear();
         powers.Value = Array.Empty<PowerScriptableObject>();
+        
+        powerTokensSo.value.Clear();
     }
 
     public bool HasPower(PowerScriptableObject powerScriptableObject)
@@ -1078,8 +1083,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         }
 
         // Clear the power tokens, the drugs set, the meds set, and the powers array
-        _powerTokens.Clear();
-        powers.Value = Array.Empty<PowerScriptableObject>();
+        ClearPowers();
 
         // Load the power scriptable objects
         foreach (var pso in PowerHelper.Instance.Powers)
@@ -1110,6 +1114,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
             // Add the power token
             AddPower(powerToken);
+
+            // Add the power token to the scriptable object
+            powerTokensSo.value.Add(powerToken);
         }
     }
 

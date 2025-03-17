@@ -4,6 +4,9 @@ public class GenericListVariable<T> : GenericVariable<List<T>>
 {
     protected override void CustomReset()
     {
+        if (defaultValue == null)
+            defaultValue = new List<T>();
+        
         // Create a new list for the value
         value = new List<T>();
         

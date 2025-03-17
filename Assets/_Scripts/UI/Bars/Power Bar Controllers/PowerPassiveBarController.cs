@@ -1,30 +1,24 @@
-﻿public class PowerPassiveBarController : TransparentBarController
+﻿using UnityEngine;
+
+public class PowerPassiveBarController : TransparentBarController
 {
-    #region Private Fields
-
-    private Player _player;
-
-    #endregion
-
+    [SerializeField] private PowerArrayReference equippedPowers;
+    [SerializeField] private IntReference currentPowerIndex;
+    [SerializeField] private PowerTokenListReference powerTokens;
+    
     protected override float CurrentValue { get; set; }
     protected override float PreviousValue { get; set; }
 
-    private void Start()
-    {
-        // Set the player
-        _player = Player.Instance;
-    }
-
     protected override void CustomUpdate()
     {
-        // if there is no player, try to get the player
-        if (_player == null)
-            _player = Player.Instance;
     }
 
     protected override void SetCurrentValue()
     {
-        var currentPower = _player.PlayerPowerManager.CurrentPower;
+        PowerScriptableObject currentPower = null;
+        
+        if (equippedPowers.Value.Length > 0)
+            currentPower = equippedPowers.Value[currentPowerIndex.Value];
 
         // If there is no power, set the current value to 0
         if (currentPower == null)
@@ -33,7 +27,7 @@
             return;
         }
 
-        var powerToken = _player.PlayerPowerManager.CurrentPowerToken;
+        var powerToken = powerTokens.GetPowerToken(currentPower);
 
         // If there is no power token, set the current value to 0
         if (powerToken == null)

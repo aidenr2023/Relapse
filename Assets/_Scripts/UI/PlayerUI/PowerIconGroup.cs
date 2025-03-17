@@ -7,6 +7,10 @@ public class PowerIconGroup : MonoBehaviour
 {
     #region Serialized Fields
 
+    [SerializeField] private PowerArrayReference equippedPowers;
+    [SerializeField] private IntReference currentPowerIndex;
+    [SerializeField] private PowerTokenListReference powerTokens;
+
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private PowerIconController[] powerImages;
     [SerializeField] private TMP_Text powerNameText;
@@ -58,7 +62,7 @@ public class PowerIconGroup : MonoBehaviour
         // Update the stay on screen timer
         _powerIconsStayOnScreenTimer.SetMaxTime(powerIconsStayOnScreenTime);
 
-        if (PauseMenuManager.Instance.IsPaused)
+        if (MenuManager.Instance.IsGamePausedInMenus)
             return;
 
         _powerIconsStayOnScreenTimer.Update(Time.unscaledDeltaTime);
@@ -81,21 +85,18 @@ public class PowerIconGroup : MonoBehaviour
 
     private void UpdateImages(PowerUIController controller)
     {
-        // Get the power manager
-        var powerManager = Player.Instance.PlayerPowerManager;
-
         // Get the powers
-        var powers = powerManager.Powers.ToArray();
+        var powers = equippedPowers.Value;
+
+        // Get the current power
+        PowerScriptableObject currentPower = null;
 
         // If there are no powers, hide the canvas group
         if (powers.Length == 0)
             canvasGroup.alpha = powerIconsMinOpacity;
 
-        // // Show the canvas group
-        // canvasGroup.alpha = 1;
-
-        // Get the current power
-        var currentPower = powerManager.CurrentPower;
+        else
+            currentPower = equippedPowers.Value[currentPowerIndex];
 
         // Set the rest of the power images
         for (var i = 0; i < powerImages.Length; i++)
@@ -120,7 +121,7 @@ public class PowerIconGroup : MonoBehaviour
                 powerImages[i].SetBgColor(controller.UnselectedColor);
 
             // Get the power token
-            var powerToken = powerManager.GetPowerToken(cPower);
+            var powerToken = powerTokens.GetPowerToken(cPower);
 
             // If there is no power token, set the fill amount to 1
             if (powerToken == null)
@@ -154,30 +155,13 @@ public class PowerIconGroup : MonoBehaviour
                 // Jitter the sprite if the power is the current power & the power is not cooling down
                 powerImages[i].SetJitters(currentPower == cPower && (!powerToken?.IsCoolingDown ?? false));
             }
-
-            // var angle = cPower.PowerType == PowerType.Drug
-            //     ? drugRotation
-            //     : medRotation;
-
-            // if (powerToken != null)
-            // {
-            //     var angle = powerToken.CooldownPercentage < 1
-            //         ? medRotation
-            //         : drugRotation;
-            //
-            //     // Set the power of the image
-            //     powerImages[i].SetRotation(angle);
-            // }
         }
     }
 
     private void UpdatePowerIconsOpacity(PowerUIController controller)
     {
-        // Get the current power index
-        var currentPowerIndex = Player.Instance.PlayerPowerManager.CurrentPowerIndex;
-
         // If the current power index is different from the previous power index, reset the stay on screen timer
-        if (currentPowerIndex != _previousPowerIndex)
+        if (currentPowerIndex.Value != _previousPowerIndex)
         {
             _powerIconsStayOnScreenTimer.Reset();
             _isFadingIn = true;
@@ -228,14 +212,17 @@ public class PowerIconGroup : MonoBehaviour
     private void UpdatePowerIconSize(PowerUIController controller)
     {
         // Get the current power
-        var currentPower = Player.Instance.PlayerPowerManager.CurrentPower;
+        PowerScriptableObject currentPower = null;
+
+        if (currentPowerIndex < equippedPowers.Value.Length && currentPowerIndex >= 0)
+            currentPower = equippedPowers.Value[currentPowerIndex];
 
         // Return if the current power is null
         if (currentPower == null)
             return;
 
         // Get the power token
-        var powerToken = Player.Instance.PlayerPowerManager.CurrentPowerToken;
+        var powerToken = powerTokens.GetPowerToken(currentPower);
 
         // Return if the power token is null
         if (powerToken == null)
@@ -246,7 +233,7 @@ public class PowerIconGroup : MonoBehaviour
         {
             var targetScale = 1f;
 
-            if (i == Player.Instance.PlayerPowerManager.CurrentPowerIndex)
+            if (i == currentPowerIndex.Value)
                 targetScale = 1.5f;
 
             // Lerp the scale of the power image
@@ -261,11 +248,15 @@ public class PowerIconGroup : MonoBehaviour
             return;
 
         // Get the current power
-        var currentPower = Player.Instance.PlayerPowerManager.CurrentPower;
-
+        PowerScriptableObject currentPower = null;
+        
+        if (currentPowerIndex < equippedPowers.Value.Length && currentPowerIndex >= 0)
+            currentPower = equippedPowers.Value[currentPowerIndex.Value];
+    
         // Return if the current power is null
         if (currentPower == null)
             powerNameText.text = "";
+
         // Set the text of the power name text
         else
             powerNameText.text = currentPower.PowerName;
