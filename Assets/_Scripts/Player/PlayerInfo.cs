@@ -23,17 +23,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     // [SerializeField] [Min(.001f)] private float maxTolerance;
     // [SerializeField] private float currentTolerance;
 
-    [Header("Relapse Image Overlay")]
-    // [SerializeField] private Image relapseImage;
-    [SerializeField]
-    private AnimationCurve relapseOpacityCurve;
-
-    [SerializeField] [Min(0.00001f)] private float relapseOpacityDuration = 1f;
-    [SerializeField] private CountdownTimer relapseOpacityTimer = new(1);
-
-    [Tooltip("The number of relapses the player can have before losing the level.")] [SerializeField]
-    private int relapsesToLose = 3;
-
     [Tooltip("What percent is the toxicity meter set to when the player relapses?")] [Range(0, 1)] [SerializeField]
     private float toleranceRelapsePercent = .75f;
 
@@ -119,10 +108,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     private void Start()
     {
-        // Disable the relapse image
-        // relapseImage.enabled = false;
-        relapseOpacityTimer.OnTimerEnd += () => { relapseOpacityTimer.Reset(); };
-
         // Initialize the events
         InitializeEvents();
 
@@ -137,14 +122,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     private void InitializeEvents()
     {
-        // Subscribe to the OnRelapseStart event
-        // Change the color of the relapse image
-        onRelapseStart += StartRelapseImage;
-
-        // Subscribe to the OnRelapseEnd event
-        // Change the color of the relapse image
-        onRelapseEnd += EndRelapseImage;
-
         // Subscribe to the OnDamaged event to play a sound
         OnDamaged += PlaySoundOnDamaged;
     }
@@ -161,39 +138,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         SoundManager.Instance.PlaySfx(cSound);
     }
 
-    private void StartRelapseImage(PlayerInfo obj)
-    {
-        // // Enable the relapse image
-        // relapseImage.enabled = true;
-
-        // Reset the relapse opacity timer
-        relapseOpacityTimer.Reset();
-
-        // Start the relapse opacity timer
-        relapseOpacityTimer.Start();
-
-        relapseOpacityTimer.SetActive(true);
-    }
-
-    private void EndRelapseImage(PlayerInfo obj)
-    {
-        // // Disable the relapse image
-        // relapseImage.enabled = false;
-
-        // Stop the relapse opacity timer
-        relapseOpacityTimer.Stop();
-
-        // Reset the relapse opacity timer
-        relapseOpacityTimer.Reset();
-    }
-
-    private void OnDestroy()
-    {
-        // Set the relapse overlay UI's alpha to 0
-        if (RelapseOverlayUI.Instance != null)
-            RelapseOverlayUI.Instance.CanvasGroup.alpha = 0;
-    }
-
     #endregion
 
     #region Update Functions
@@ -207,10 +151,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         UpdateRelapseEffects();
 
         // Prevent the toxicity from going below 0 or above the max value
-        ClampTolerance();
-
-        // Update the Relapse Image update
-        RelapseImageUpdate();
+        ClampToxicity();
 
         // Update the invincibility timer
         _invincibilityTimer.SetMaxTime(invincibilityDuration);
@@ -256,21 +197,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         //
         // // Apply the dampening to the virtual camera's aim
         // vCam.GetCinemachineComponent<CinemachineSameAsFollowTarget>().m_Damping = vCamDampening;
-    }
-
-    private void RelapseImageUpdate()
-    {
-        // Update the relapse opacity timer
-        relapseOpacityTimer.Update(Time.deltaTime);
-
-        // Update the relapse image's opacity
-        var opacity = relapseOpacityCurve.Evaluate(relapseOpacityTimer.OutputValue);
-
-        if (!isRelapsingSo.Value)
-            opacity = Mathf.Lerp(RelapseOverlayUI.Instance.CanvasGroup.alpha, 0, CustomFunctions.FrameAmount(.1f));
-
-        // Set the opacity of the relapse image
-        RelapseOverlayUI.Instance.CanvasGroup.alpha = opacity;
     }
 
     private void UpdatePassiveRegeneration()
@@ -357,7 +283,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         _passiveRegenTimer.Start();
     }
 
-    private void ClampTolerance()
+    private void ClampToxicity()
     {
         currentToxicitySo.Value = Mathf.Clamp(currentToxicitySo, 0, maxToxicitySo);
     }

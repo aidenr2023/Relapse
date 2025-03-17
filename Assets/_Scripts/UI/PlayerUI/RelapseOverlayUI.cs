@@ -4,34 +4,36 @@ using UnityEngine;
 [RequireComponent(typeof(CanvasGroup))]
 public class RelapseOverlayUI : MonoBehaviour
 {
-    public static RelapseOverlayUI Instance { get; private set; }
+    [SerializeField] private BoolReference isRelapsing;
 
-    public CanvasGroup CanvasGroup { get; private set; }
+    [SerializeField, Min(0)] private float duration = 1;
+    [SerializeField, Min(0)] private float notRelapsingLerpAmount = .15f;
+    [SerializeField] private AnimationCurve opacityCurve;
+
+    private CanvasGroup _canvasGroup;
 
     private void Awake()
     {
-        // Since this is part of the game UI, we want to make sure there is only one instance of this
-        // If the instance is not null and not this, destroy this
-        if (Instance != null && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        // Set the instance to this
-        Instance = this;
-
         // Get the CanvasGroup component
-        CanvasGroup = GetComponent<CanvasGroup>();
+        _canvasGroup = GetComponent<CanvasGroup>();
 
         // Set the alpha to 0
-        CanvasGroup.alpha = 0;
+        _canvasGroup.alpha = 0;
     }
 
-    private void OnDestroy()
+    private void Update()
     {
-        // Set the instance to null
-        if (Instance == this)
-            Instance = null;
+        float opacity;
+
+        if (!isRelapsing.Value)
+            opacity = Mathf.Lerp(_canvasGroup.alpha, 0, CustomFunctions.FrameAmount(notRelapsingLerpAmount));
+
+        else
+        {
+            var timeValue = Time.time % duration;
+            opacity = opacityCurve.Evaluate(timeValue);
+        }
+
+        _canvasGroup.alpha = opacity;
     }
 }
