@@ -1240,6 +1240,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2cdb2a8ca81b466c977417036305d7b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerCurrentHealth:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: 64b8812f46e1a9e4489520d211e0b652, type: 2}
+  minFlashTime: 0.25
+  maxFlashTime: 1
+  healthForMaxFlashing: 50
+  healthForMinFlashing: 10
+  maxOpacity: 0.75
 --- !u!1 &2209358848603189459
 GameObject:
   m_ObjectHideFlags: 0
@@ -1332,6 +1341,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3f4185ebce24b2d9b8fd23d613c4065, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHealth:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 0}
+  currentHealth:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 0}
 --- !u!1 &2348567457273182043
 GameObject:
   m_ObjectHideFlags: 0
@@ -1424,6 +1441,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3147a324deaa4c3a9f201f9f8d31e22d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxToxicity:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 0}
+  currentToxicity:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 0}
+  isRelapsing:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 0}
   jitter: {fileID: 0}
   maxJitterPercent: 0.75
 --- !u!1 &2405828156396800714
@@ -1727,6 +1756,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a06cddaf97354141baab43fbc720ef12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerInventory: {fileID: 0}
   canvasGroup: {fileID: 2590390833452059384}
   moneyAddedText: {fileID: 4406866068648984004}
   totalMoneyCanvasGroup: {fileID: 39945072905480462}
@@ -3206,6 +3236,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: afd8762c62f649e6a0f5acd2629c4bd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxStamina:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 0}
+  currentStamina:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 0}
 --- !u!1 &4753294408237830684
 GameObject:
   m_ObjectHideFlags: 0

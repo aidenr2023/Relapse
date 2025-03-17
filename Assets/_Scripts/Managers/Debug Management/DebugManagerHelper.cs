@@ -213,6 +213,10 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
             if (Input.GetKeyDown(KeyCode.Z))
                 FindBadInteractableMaterials();
         }
+        
+        // Decrease the health
+        if (Input.GetKeyDown(KeyCode.K))
+            Player.PlayerInfo.ChangeHealth(-10, Player.PlayerInfo, Player.PlayerInfo, Player.transform.position);
 
     }
 

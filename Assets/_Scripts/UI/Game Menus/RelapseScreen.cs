@@ -15,6 +15,9 @@ public class RelapseScreen : GameMenu
 
     #region Serialized Fields
 
+    [SerializeField] private SceneField mainMenuScene;
+    [SerializeField] private SceneField playerDataScene;
+
     [SerializeField] private Button firstSelectedButton;
 
     [Header("Background Image"), SerializeField]
@@ -92,7 +95,7 @@ public class RelapseScreen : GameMenu
     {
         // // Set the background image of the Relapse Screen
         // SetBackgroundImage(relapseImage);
-        
+
         // // Enable the respawn button
         // respawnButton.gameObject.SetActive(true);
     }
@@ -110,6 +113,12 @@ public class RelapseScreen : GameMenu
     {
         // Load the scene
         SceneManager.LoadScene(sceneName);
+    }
+
+    public void LoadMainMenu()
+    {
+        // Load the main menu scene
+        SceneManager.LoadScene(mainMenuScene);
     }
 
     public void RespawnAtLatestCheckpoint()
@@ -155,10 +164,17 @@ public class RelapseScreen : GameMenu
         // Get the currently managed scenes from the AsyncSceneManager
         var managedScenes = AsyncSceneManager.Instance.GetManagedScenes();
 
+        // Get the scene the player is in
+        var playerScene = playerDataScene?.SceneName ?? "";
+
         // Create a level section scene info array with all the managed scenes EXCEPT the player's scene
         var scenesToUnload = new List<string>();
         foreach (var scene in managedScenes)
         {
+            // Continue if the scene is the player's scene
+            if (scene == playerScene)
+                continue;
+
             scenesToUnload.Add(scene);
             Debug.Log($"Unload: {scene}");
         }
@@ -181,14 +197,17 @@ public class RelapseScreen : GameMenu
         void RespawnSubFunction()
         {
             // Create scene loader information for just the one scene
-            var loaderInfo = SceneLoaderInformation.Create(
+            var localLoaderInfo = SceneLoaderInformation.Create(
                 new[] { CheckpointManager.Instance.CurrentCheckpointInfo.levelSectionSceneInfo },
                 new LevelSectionSceneInfo[] { }
             );
 
+            Debug.Log(
+                $"Respawn at checkpoint: {CheckpointManager.Instance.CurrentCheckpointInfo.levelSectionSceneInfo.SectionScene.SceneName}");
+
             // Load the scene asynchronously
             AsyncSceneManager.Instance.LoadMultipleScenesAsynchronously(
-                loaderInfo, this, UpdateProgressBarPercent, RespawnOnCompletion
+                localLoaderInfo, this, UpdateProgressBarPercent, RespawnOnCompletion
             );
         }
     }

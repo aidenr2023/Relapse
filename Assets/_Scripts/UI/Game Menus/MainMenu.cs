@@ -37,6 +37,8 @@ public class MainMenu : GameMenu
 
     protected override void CustomAwake()
     {
+        // Reset the variables
+        variablesToReset.Reset();
     }
 
     protected override void CustomStart()

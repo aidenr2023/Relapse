@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -37,8 +38,7 @@ public class LevelInformation : MonoBehaviour
 
     public LevelCheckpointCheckpoint StartingCheckpoint => startingCheckpoint;
 
-    private Vector3 StartingPosition =>
-        startingCheckpoint != null ? startingCheckpoint.RespawnPoint.position : transform.position;
+    private Vector3 StartingPosition => startingCheckpoint?.RespawnPoint?.position ?? transform.position;
 
     #endregion
 
@@ -69,12 +69,22 @@ public class LevelInformation : MonoBehaviour
         // Return if the game is not running
         if (!Application.isPlaying)
             return;
-        
+
         if (!obj.addToCheckpointManagerOnLoad)
             return;
+        
+        obj.StartCoroutine(TryToAddToCheckpointManager(obj));
+    }
+
+    private static IEnumerator TryToAddToCheckpointManager(LevelInformation obj)
+    {
+        // Wait for the checkpoint manager to be initialized
+        yield return new WaitUntil(() => CheckpointManager.Instance != null);
+
+        var checkpointManager = CheckpointManager.Instance;
 
         // Save the starting checkpoint (if necessary)
-        CheckpointManager.Instance.SaveCheckpoint(obj.StartingPosition);
+        checkpointManager.SaveCheckpoint(obj.StartingPosition);
     }
 
     private void Awake()
@@ -94,7 +104,7 @@ public class LevelInformation : MonoBehaviour
         // Return if not in play mode
         if (!Application.isPlaying)
             return;
-        
+
         // Return if the difficulty settings are null
         if (difficultySettings == null)
             return;

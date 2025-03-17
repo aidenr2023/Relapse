@@ -308,42 +308,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     #endregion
 
-    public void ChangeMaxHealth(float newValue)
-    {
-        // If the player is gaining health, increase the max health & health
-        if (newValue > maxHealthSo)
-        {
-            var healthDifference = newValue - maxHealthSo;
-            maxHealthSo.Value = newValue;
-            currentHealthSo.Value += healthDifference;
-        }
-
-        // If the player is losing health, decrease the max health & health
-        else if (newValue < maxHealthSo)
-            maxHealthSo.Value = newValue;
-
-        // Clamp the health
-        currentHealthSo.Value = Mathf.Clamp(currentHealthSo, 0, maxHealthSo);
-    }
-
-    public void ChangeMaxToxicity(float newValue)
-    {
-        // If the player is gaining toxicity, increase the max toxicity & toxicity
-        if (newValue > maxToxicitySo)
-            maxToxicitySo.Value = newValue;
-
-        // If the player is losing toxicity, decrease the max toxicity & toxicity
-        else if (newValue < maxToxicitySo)
-        {
-            var toxicityDifference = newValue - maxToxicitySo;
-            maxToxicitySo.Value = newValue;
-            currentToxicitySo.Value += toxicityDifference;
-        }
-
-        // Clamp the toxicity
-        currentToxicitySo.Value = Mathf.Clamp(currentToxicitySo, 0, maxToxicitySo);
-    }
-
     public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position,
         bool isCriticalHit = false)
     {
