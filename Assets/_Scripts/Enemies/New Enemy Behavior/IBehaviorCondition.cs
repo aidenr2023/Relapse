@@ -139,8 +139,6 @@ public struct BehaviorConditionBool : IBehaviorCondition
         // XOR the result with isInverted to invert the result if necessary
         var returnValue = value == targetValue;
 
-        Debug.Log($"{conditionTarget} ({value}) == {targetValue}: {returnValue}");
-
         return returnValue;
     }
 }

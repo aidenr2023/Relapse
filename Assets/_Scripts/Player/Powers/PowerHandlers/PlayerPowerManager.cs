@@ -151,7 +151,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         InitializeEvents();
 
         // Initialize the vignette token
-        _powerChargeVignetteToken = PostProcessingVolumeController.Instance.VignetteModule.Tokens.AddToken(0, -1, true);
+        _powerChargeVignetteToken =
+            PostProcessingVolumeController.Instance?.VignetteModule.Tokens.AddToken(0, -1, true);
 
         // Add this to the debug manager
         DebugManager.Instance.AddDebuggedObject(this);
@@ -577,11 +578,14 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         var sineWave = Mathf.Sin(chargedVignetteFlashesPerSecond * Time.time * Mathf.PI * 2 + Mathf.PI / 2) / 2 + 0.5f;
 
         // Lerp the vignette value to the target value
-        _powerChargeVignetteToken.Value = Mathf.Lerp(
-            _powerChargeVignetteToken.Value * sineWave,
-            targetValue,
-            CustomFunctions.FrameAmount(chargedVignetteLerpAmount)
-        );
+        if (_powerChargeVignetteToken != null)
+        {
+            _powerChargeVignetteToken.Value = Mathf.Lerp(
+                _powerChargeVignetteToken.Value * sineWave,
+                targetValue,
+                CustomFunctions.FrameAmount(chargedVignetteLerpAmount)
+            );
+        }
     }
 
     private void UpdateGauntletChargeVFX()
@@ -906,7 +910,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         // Clear the power tokens, the drugs set, the meds set, and the powers array
         _powerTokens.Clear();
         powers.Value = Array.Empty<PowerScriptableObject>();
-        
+
         powerTokensSo.value.Clear();
     }
 

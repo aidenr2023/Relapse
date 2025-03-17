@@ -62,7 +62,7 @@ public sealed class DynamicRotationModule : DynamicVCamModule
         _flinchToken = _rotationTokens.AddToken(Vector3.zero, -1, true);
     }
 
-    public override void Start()
+    protected override void CustomStart()
     {
         // Get the recomposer component
         _recomposer = playerVCamController.VirtualCamera.gameObject.GetComponent<CinemachineRecomposer>();

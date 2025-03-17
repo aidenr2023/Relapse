@@ -909,7 +909,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         _isCurrentlyJumping = true;
 
         // Play the jump sound
-        SoundManager.Instance.PlaySfx(jumpSound);
+        SoundManager.Instance?.PlaySfx(jumpSound);
     }
 
     #region Event Functions

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Cinemachine;
 using UnityEngine;
@@ -8,7 +9,7 @@ public class PlayerVirtualCameraController : ComponentScript<Player>
     #region Serialized Fields
 
     [SerializeField] private CameraManagerReference cameraManager;
-    
+
     [Header("Camera Modules")] [SerializeField]
     private DynamicFOVModule dynamicFOVModule;
 
@@ -66,6 +67,15 @@ public class PlayerVirtualCameraController : ComponentScript<Player>
 
     private void Start()
     {
+        // Start the start modules coroutine
+        StartCoroutine(StartModulesCoroutine());
+    }
+
+    private IEnumerator StartModulesCoroutine()
+    {
+        // Wait until the camera manager is initialized
+        yield return new WaitUntil(() => cameraManager?.Value != null);
+
         // Start the camera modules
         foreach (var module in _cameraModules)
             module.Start();
@@ -76,7 +86,8 @@ public class PlayerVirtualCameraController : ComponentScript<Player>
     {
         // Update the camera modules
         foreach (var module in _cameraModules)
-            module.Update();
+            if (module.IsStarted)
+                module.Update();
     }
 
     public void AddCameraModule(DynamicVCamModule module)

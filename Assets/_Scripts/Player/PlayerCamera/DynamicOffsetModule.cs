@@ -30,7 +30,7 @@ public sealed class DynamicOffsetModule : DynamicVCamModule
         _offsetTokens = new(false, null, Vector3.zero);
     }
 
-    public override void Start()
+    protected override void CustomStart()
     {
         // Get the camera offset component
         _cameraOffset = playerVCamController.VirtualCamera.GetComponent<CinemachineCameraOffset>();

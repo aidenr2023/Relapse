@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -46,6 +47,14 @@ public class InteractableMaterialManager : MonoBehaviour
     private void Start()
     {
         // Set up the interactable materials
+        StartCoroutine(SetUpMaterialCoroutine());
+    }
+
+    private IEnumerator SetUpMaterialCoroutine()
+    {
+        // Wait until the interactable manager's instance is not null
+        yield return new WaitUntil(() => InteractableManager.Instance != null);
+        
         SetUpInteractableMaterials();
     }
 

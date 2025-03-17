@@ -166,6 +166,10 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
     private void PlayFootstepSound()
     {
+        // Return if the sound manager's instance is null
+        if (SoundManager.Instance == null)
+            return;
+        
         // Play the footstep sound
         SoundManager.Instance.PlaySfx(footstepSoundPool.GetRandomSound());
 
@@ -524,7 +528,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         ParentComponent.Rigidbody.AddForce(jumpDirection * jumpForce, ForceMode.VelocityChange);
 
         // Play the jump sound
-        SoundManager.Instance.PlaySfx(jumpSound);
+        SoundManager.Instance?.PlaySfx(jumpSound);
         // player_Animator?.SetBool(HasJumped, true);
 
         // Set the is trying to jump flag to true

@@ -5,6 +5,8 @@ public abstract class DynamicVCamModule
 {
     protected PlayerVirtualCameraController playerVCamController;
 
+    public bool IsStarted { get; private set; }
+    
     public void Initialize(PlayerVirtualCameraController controller)
     {
         playerVCamController = controller;
@@ -18,7 +20,16 @@ public abstract class DynamicVCamModule
 
     protected abstract void CustomInitialize(PlayerVirtualCameraController controller);
 
-    public abstract void Start();
+    public void Start()
+    {
+        // Set the module as started
+        IsStarted = true;
+        
+        // Custom start
+        CustomStart();
+    }
+    
+    protected abstract void CustomStart();
 
     public abstract void Update();
 }

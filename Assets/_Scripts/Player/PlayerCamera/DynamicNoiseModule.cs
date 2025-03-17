@@ -62,7 +62,7 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
         _groundShakeTimer = new CountdownTimer(groundShakeTime);
     }
 
-    public override void Start()
+    protected override void CustomStart()
     {
         // Get the noise component
         _noise = playerVCamController.VirtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
@@ -195,7 +195,7 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
     public struct NoiseTokenValue
     {
         public static NoiseTokenValue Zero => new(Vector3.zero, 0, 0);
-        
+
         [SerializeField] private Vector3 pivotOffset;
         [SerializeField] private float amplitudeGain;
         [SerializeField] private float frequencyGain;

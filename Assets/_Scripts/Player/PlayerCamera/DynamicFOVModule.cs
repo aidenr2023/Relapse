@@ -57,7 +57,7 @@ public sealed class DynamicFOVModule : DynamicVCamModule
         _aimToken = _fovTokens.AddToken(1f, -1, true);
     }
 
-    public override void Start()
+    protected override void CustomStart()
     {
         if (playerVCamController.ParentComponent.PlayerController is PlayerMovementV2 movementV2)
         {

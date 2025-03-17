@@ -8751,43 +8751,6 @@ MonoBehaviour:
     constantValue: 0
     variable: {fileID: 11400000, guid: 475cb4784a8151042a60be6e56c578c3, type: 2}
   invincibilityDuration: 1
-  relapseOpacityCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0.1125
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 136
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.75
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 136
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0.1125
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 136
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  relapseOpacityDuration: 1
-  relapseOpacityTimer:
-    maxTime: 1
-  relapsesToLose: 3
   toleranceRelapsePercent: 0
   relapseDuration: 10
   passiveRegenCap: 1
@@ -8839,6 +8802,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5488ce25ea9545c09c2c6a9899e017cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraManager:
+    useConstant: 0
+    constantValue: {fileID: 0}
+    variable: {fileID: 11400000, guid: be059df3880fbbd4ebb480f96f83335d, type: 2}
   originalScreenSize: {x: 1920, y: 1080}
   aimSquareSize: 384
   maxDistance: 40
@@ -8858,6 +8825,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20a4918e820e44cbb8bf591a9beab5ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraPivotSo:
+    useConstant: 0
+    constantValue: {fileID: 0}
+    variable: {fileID: 11400000, guid: 82965ac43c3a47a41814214cdc06b289, type: 2}
   interactDistance: 3
 --- !u!114 &27674651915690864
 MonoBehaviour:

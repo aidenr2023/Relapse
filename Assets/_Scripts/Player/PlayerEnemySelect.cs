@@ -6,6 +6,8 @@ public class PlayerEnemySelect : ComponentScript<Player>
 {
     #region Serialized Fields
 
+    [SerializeField] private CameraManagerReference cameraManager;
+
     [SerializeField] private Vector2 originalScreenSize = new Vector2(1920, 1080);
     [SerializeField] private float aimSquareSize = 400;
     [SerializeField] private float maxDistance = 100;
@@ -25,7 +27,7 @@ public class PlayerEnemySelect : ComponentScript<Player>
     #region Getters
 
     public Vector2 OriginalScreenSize => originalScreenSize;
-    
+
     public float MaxDistance => maxDistance;
 
     private float ActualAimSquareSize => aimSquareSize * (Screen.width / originalScreenSize.x);
@@ -41,18 +43,11 @@ public class PlayerEnemySelect : ComponentScript<Player>
     private void FixedUpdate()
     {
         // Get the main camera
-        var mainCam = ParentComponent.PlayerInteraction.Camera;
-
-        // // If the main camera is null, return
-        // if (mainCam == null ||
-        //     ParentComponent.PlayerPowerManager.CurrentPower == null ||
-        //     !ParentComponent.PlayerPowerManager.CurrentPower.UsesReticle
-        //    )
-        // {
-        //     SelectedEnemy = null;
-        //     return;
-        // }
+        var mainCam = cameraManager.Value?.MainCamera;
         
+        // Return if the main camera is null
+        if (mainCam == null)
+            return;
 
         // Get the screen dimensions
         var screenDimensions = new Vector2(Screen.width, Screen.height);
@@ -154,10 +149,15 @@ public class PlayerEnemySelect : ComponentScript<Player>
         const int squareSize = 64;
 
         // Draw a red box at the selected enemy's position
-        if (SelectedEnemy == null) 
+        if (SelectedEnemy == null)
             return;
-        
-        var screenPoint = ParentComponent.PlayerInteraction.Camera.WorldToScreenPoint(_enemyPosition);
+
+        // Return if the camera manager's value is null
+        if (cameraManager?.Value == null)
+            return;
+
+        var screenPoint = cameraManager.Value.MainCamera.WorldToScreenPoint(_enemyPosition);
+
         GUI.Box(
             new Rect(
                 screenPoint.x - squareSize / 2f,

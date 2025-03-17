@@ -135,7 +135,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
             return;
 
         // Play the sound
-        SoundManager.Instance.PlaySfx(cSound);
+        SoundManager.Instance?.PlaySfx(cSound);
     }
 
     #endregion
