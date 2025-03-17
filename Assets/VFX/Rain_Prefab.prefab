@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4064681338777472656}
   - component: {fileID: 3926592784768901104}
   - component: {fileID: 929938805871888488}
+  - component: {fileID: 248681744021989602}
   m_Layer: 0
   m_Name: Rain_Prefab
   m_TagString: Untagged
@@ -871,7 +872,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 100
+      scalar: 500
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -1549,8 +1550,8 @@ ParticleSystem:
     y:
       serializedVersion: 2
       minMaxState: 3
-      scalar: -35
-      minScalar: -99
+      scalar: -45
+      minScalar: -110
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -3812,7 +3813,7 @@ ParticleSystem:
     primitives: []
   SubModule:
     serializedVersion: 2
-    enabled: 1
+    enabled: 0
     subEmitters:
     - serializedVersion: 3
       emitter: {fileID: 8385082629035926695}
@@ -4831,6 +4832,27 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &248681744021989602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7494163501458316422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efa37bfe30734e48b14e5eb942d209b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetTransform:
+    useConstant: 0
+    constantValue: {fileID: 0}
+    variable: {fileID: 11400000, guid: 95f92e08b24db834d9222effbee2e194, type: 2}
+  followOffset:
+    useConstant: 1
+    constantValue: {x: 0, y: 50, z: 0}
+    variable: {fileID: 0}
+  useFixedUpdate: 0
 --- !u!1 &8942737916313948205
 GameObject:
   m_ObjectHideFlags: 0
