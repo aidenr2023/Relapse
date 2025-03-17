@@ -1,4 +1,7 @@
-﻿public class ResetableSOArrayReference : GenericReference<ResetableScriptableObject[], ResetableSOArrayVariable>
+﻿using System;
+
+[Serializable]
+public class ResetableSOArrayReference : GenericReference<ResetableScriptableObject[], ResetableSOArrayVariable>
 {
     
 }

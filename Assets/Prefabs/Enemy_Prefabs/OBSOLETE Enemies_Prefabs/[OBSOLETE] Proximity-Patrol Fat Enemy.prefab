@@ -451,6 +451,9 @@ GameObject:
   - component: {fileID: 7911376860155475657}
   - component: {fileID: 3095957901210559264}
   - component: {fileID: 7833135371815138931}
+  - component: {fileID: 5769374821420723978}
+  - component: {fileID: 3327763390804210658}
+  - component: {fileID: 1938617599084444021}
   m_Layer: 0
   m_Name: '[OBSOLETE] Proximity-Patrol Fat Enemy'
   m_TagString: Untagged
@@ -573,37 +576,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1f2f7014adf46a88a0579b47084cca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  difficultyHealthMultiplier:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 0}
+  difficultyDamageMultiplier:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 0}
+  applyDifficultyMultiplier: 1
   maxHealth: 12
   currentHealth: 12
   moneyReward: 50
   animator: {fileID: 0}
-  enemyHitEffect: {fileID: 0}
-  minVFXRangeDamage: 10
-  maxVFXRangeDamage: 50
-  minVFXDamage: 5
-  enemyDeathVfxPrefab: {fileID: 1316523376902277534, guid: dfc4fc5f6b6f93f47a16e7a3853a4f57,
-    type: 3}
-  enemyHitSound:
-    clip: {fileID: 0}
-    soundType: 1
-    volume: 1
-    isPersistent: 0
-    isLooping: 0
-    pitch: 1
-    spatialBlend: 1
-  enemyDeathSound:
-    clip: {fileID: 0}
-    soundType: 1
-    volume: 1
-    isPersistent: 0
-    isLooping: 0
-    pitch: 1
-    spatialBlend: 1
-  enemyMoanSource: {fileID: 0}
-  moanSounds: []
-  moanSoundChance: 1
-  moanSoundMinCooldown: 5
-  moanSoundMaxCooldown: 10
 --- !u!114 &2093531034627724029
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -616,6 +601,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6db7d14cf168478bacea0720a538d891, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerTransform:
+    useConstant: 0
+    constantValue: {fileID: 0}
+    variable: {fileID: 11400000, guid: 95f92e08b24db834d9222effbee2e194, type: 2}
   detectionOrigin: {fileID: 5567492738625143818}
   visionDistance: 30
   autoDetectionDistance: 5
@@ -645,20 +634,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cc601c4836b49da97804b75a0eec5b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementSpeed: 2
-  angularSpeed: 1500
-  unawareMovementMultiplier: 0.5
-  curiousMovementMultiplier: 0.75
   patrolCheckpoints:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   checkpointProximityThreshold: 0.5
-  stoppingDistance: 1.5
-  animator: {fileID: 0}
-  walkAnimationThreshold: 0
-  runAnimationThreshold: 0
-  animationSpeedCoefficient: 1
+  unawareMovementMultiplier: 0.5
 --- !u!114 &7911376860155475657
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -680,6 +661,14 @@ MonoBehaviour:
     type: 3}
   explosionVFX: {fileID: 6758546207660555887, guid: e844959fe8937b14097af37fa61e64e2,
     type: 3}
+  normalHitSfx:
+    clip: {fileID: 0}
+    soundType: 1
+    volume: 1
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 1
 --- !u!95 &3095957901210559264
 Animator:
   serializedVersion: 5
@@ -715,6 +704,65 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uniqueId: 
   originalScene: 
+--- !u!114 &5769374821420723978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8754773797763522373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 974ab9e8920745e4b7b55551bbb4c7f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updatesPerSecond: 4
+  behaviorStates: []
+--- !u!114 &3327763390804210658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8754773797763522373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3da0582bbf24cb9a3edaf8ba55221eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  updatesPerSecond: 8
+  movementSpeed: 14
+  strafeMultiplier: 0.5
+  strafeRotationLerpAmount: 0.075
+  animator: {fileID: 0}
+  walkAnimationThreshold: 0
+  runAnimationThreshold: 0
+  animationSpeedCoefficient: 1
+--- !u!114 &1938617599084444021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8754773797763522373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c66c40959b244d3b31320da7a9df63c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyDeathSound:
+    clip: {fileID: 0}
+    soundType: 1
+    volume: 1
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 1
+  enemyMoanSource: {fileID: 0}
+  moanSounds: []
+  moanSoundChance: 1
+  moanSoundMinCooldown: 5
+  moanSoundMaxCooldown: 10
 --- !u!1 &9135739522977811353
 GameObject:
   m_ObjectHideFlags: 0

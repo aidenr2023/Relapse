@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 3550124052841774315}
   - component: {fileID: 6029204599380018336}
   - component: {fileID: 1007671695337545249}
+  - component: {fileID: 3754872718867656067}
   m_Layer: 9
   m_Name: '[OBSOLETE] Ranged-Stationary Lesions Enemy'
   m_TagString: Enemy
@@ -136,36 +137,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1f2f7014adf46a88a0579b47084cca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  difficultyHealthMultiplier:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 0}
+  difficultyDamageMultiplier:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 0}
+  applyDifficultyMultiplier: 1
   maxHealth: 100
   currentHealth: 100
   moneyReward: 50
   animator: {fileID: 77801565629690777}
-  enemyHitEffect: {fileID: 8574345505854663627}
-  minVFXRangeDamage: 10
-  maxVFXRangeDamage: 50
-  minVFXDamage: 10
-  enemyDeathVfxPrefab: {fileID: 1316523376902277534, guid: dfc4fc5f6b6f93f47a16e7a3853a4f57,
-    type: 3}
-  enemyDeathSound:
-    clip: {fileID: 8300000, guid: 94981910bbf34bb43a109bca992410c3, type: 3}
-    soundType: 2
-    volume: 0.25
-    isPersistent: 0
-    isLooping: 0
-    pitch: 1
-    spatialBlend: 1
-  enemyMoanSource: {fileID: 4122662994728057661}
-  moanSounds:
-  - clip: {fileID: 8300000, guid: fb282b04bff6174458bff6d8ec3924d2, type: 3}
-    soundType: 2
-    volume: 0.35
-    isPersistent: 0
-    isLooping: 0
-    pitch: 0.8
-    spatialBlend: 1
-  moanSoundChance: 0.4
-  moanSoundMinCooldown: 8
-  moanSoundMaxCooldown: 15
 --- !u!114 &4664190417442151076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -213,6 +197,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6db7d14cf168478bacea0720a538d891, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerTransform:
+    useConstant: 0
+    constantValue: {fileID: 0}
+    variable: {fileID: 11400000, guid: 95f92e08b24db834d9222effbee2e194, type: 2}
   detectionOrigin: {fileID: 5741059139469186379}
   visionDistance: 30
   autoDetectionDistance: 7
@@ -433,6 +421,31 @@ MonoBehaviour:
   - {fileID: 833892673735049317}
   - {fileID: 6396907510397881072}
   - {fileID: 4771180784528646465}
+--- !u!114 &3754872718867656067
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 724212810724251753}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c66c40959b244d3b31320da7a9df63c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyDeathSound:
+    clip: {fileID: 0}
+    soundType: 1
+    volume: 1
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 1
+  enemyMoanSource: {fileID: 0}
+  moanSounds: []
+  moanSoundChance: 1
+  moanSoundMinCooldown: 5
+  moanSoundMaxCooldown: 10
 --- !u!1 &1240954815263545211
 GameObject:
   m_ObjectHideFlags: 0
@@ -1153,12 +1166,6 @@ PrefabInstance:
 --- !u!4 &4954134739459790599 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5000732514417507422, guid: 3c1f8f01ccbd7cf468d8cb01415eb15e,
-    type: 3}
-  m_PrefabInstance: {fileID: 118981409639869273}
-  m_PrefabAsset: {fileID: 0}
---- !u!2083052967 &8574345505854663627 stripped
-VisualEffect:
-  m_CorrespondingSourceObject: {fileID: 8599769969290018962, guid: 3c1f8f01ccbd7cf468d8cb01415eb15e,
     type: 3}
   m_PrefabInstance: {fileID: 118981409639869273}
   m_PrefabAsset: {fileID: 0}

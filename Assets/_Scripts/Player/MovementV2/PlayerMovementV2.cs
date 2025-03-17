@@ -16,9 +16,11 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     [Header("Important Transforms")]
 
+    [SerializeField] private TransformVariable playerTransform;
+    
     // Reference to the player's camera pivot
-    [SerializeField]
-    private Transform cameraPivot;
+    [SerializeField] private Transform cameraPivot;
+    [SerializeField] private TransformVariable cameraPivotSo;
 
     // Reference to the player's orientation transform
     [SerializeField] private Transform orientation;
@@ -202,6 +204,10 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     {
         // Register this to the input manager
         InputManager.Instance.Register(this);
+
+        // Set the transform values
+        cameraPivotSo.value = cameraPivot;
+        playerTransform.value = transform;
     }
 
     private void OnDisable()

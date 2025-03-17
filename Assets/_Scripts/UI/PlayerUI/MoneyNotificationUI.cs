@@ -48,19 +48,23 @@ public class MoneyNotificationUI : MonoBehaviour
 
     private void Start()
     {
+        var playerInstance = Player.Instance;
+        
         // Subscribe to the inventory's OnItemAdded event
-        Player.Instance.PlayerInventory.OnItemAdded += MoneyNotificationOnPickup;
-        Player.Instance.PlayerInventory.OnItemRemoved += MoneyNotificationOnRemoval;
+        playerInstance.PlayerInventory.OnItemAdded += MoneyNotificationOnPickup;
+        playerInstance.PlayerInventory.OnItemRemoved += MoneyNotificationOnRemoval;
     }
 
     private void MoneyNotificationOnPickup(InventoryObject item, int quantity)
     {
+        var playerInstance = Player.Instance;
+        
         // Return if there is no player
-        if (Player.Instance == null)
+        if (playerInstance == null)
             return;
 
         // If the item is not the money object, return
-        if (item != Player.Instance.PlayerInventory.MoneyObject)
+        if (item != playerInstance.PlayerInventory.MoneyObject)
             return;
 
         // If the quantity is 0, return
@@ -140,8 +144,10 @@ public class MoneyNotificationUI : MonoBehaviour
         // Set the money added text
         moneyAddedText.text = $"{icon} ${Mathf.Abs(_moneyAmount)}";
 
+        var playerInstance = Player.Instance;
+        
         // Get the inventory entry for the money object
-        var totalMoneyCount = Player.Instance.PlayerInventory.GetItemCount(Player.Instance.PlayerInventory.MoneyObject);
+        var totalMoneyCount = playerInstance.PlayerInventory.GetItemCount(playerInstance.PlayerInventory.MoneyObject);
 
         // Set the total money text
         totalMoneyText.text = $"Total: ${totalMoneyCount}";

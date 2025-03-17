@@ -6,6 +6,8 @@ public class CameraManager : MonoBehaviour
 {
     public static CameraManager Instance { get; private set; }
     
+    [SerializeField] private TransformReference cameraPivot;
+    
     [SerializeField] private Camera mainCamera;
     [SerializeField] private Camera handsCamera;
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
@@ -38,11 +40,9 @@ public class CameraManager : MonoBehaviour
 
     private void Update()
     {
-        var playerInstance = Player.Instance;
-        
         // If the virtual camera's follow is ever null,
         // set it to the instance of the player
-        if (virtualCamera != null && virtualCamera.Follow == null && playerInstance != null)
-            virtualCamera.Follow = playerInstance.PlayerController.CameraPivot.transform;
+        if (virtualCamera != null && virtualCamera.Follow == null && cameraPivot.Value != null)
+            virtualCamera.Follow = cameraPivot.Value;
     }
 }

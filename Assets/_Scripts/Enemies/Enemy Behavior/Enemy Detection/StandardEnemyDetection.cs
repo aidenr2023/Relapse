@@ -7,6 +7,8 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
 {
     #region Serialized Fields
 
+    [SerializeField] private TransformReference playerTransform;
+    
     [Header("Detection")] [SerializeField] private Transform detectionOrigin;
 
     [SerializeField] [Min(0)] private float visionDistance = 10f;
@@ -166,11 +168,11 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         UpdateLastKnownPlayerPosition();
 
         // Detect the player
-        _isTargetInSight = CheckPlayerInSight();
+        _isTargetInSight = CheckPlayerInSight(out var target);
 
         // If the target is in sight, set the target to the player
         if (_isTargetInSight)
-            Target = Player.Instance.PlayerInfo;
+            Target = target;
 
         // Update the detection state
         UpdateDetectionState();
@@ -311,17 +313,19 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
         pursuitDetectionText.text = $"{CurrentDetectionState.ToString()} {currentTimer.Percentage:0.00}";
     }
 
-    private bool CheckPlayerInSight()
+    private bool CheckPlayerInSight(out IActor target)
     {
-        // Get the player instance
-        var playerTransform = Player.Instance.transform;
-
+        target = null;
+        
         // Return false if the player instance is null
-        if (playerTransform == null)
+        if (playerTransform.Value == null)
             return false;
+        
+        // Find the IActor component in the parent
+        target = playerTransform.Value.GetComponentInParent<IActor>();
 
         // Get the line between the enemy and the player
-        var line = playerTransform.position - detectionOrigin.position;
+        var line = playerTransform.Value.position - detectionOrigin.position;
 
         // Return false if the player is not within the vision distance
         // and the current state is not aware
@@ -360,7 +364,7 @@ public class StandardEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
             return false;
 
         // Return false if the raycast does not hit the player
-        if (hit.collider.gameObject != playerTransform.gameObject)
+        if (hit.collider.gameObject != playerTransform.Value.gameObject)
             return false;
 
         return true;

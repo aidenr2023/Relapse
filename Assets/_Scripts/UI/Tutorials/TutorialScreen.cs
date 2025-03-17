@@ -396,10 +396,6 @@ public class TutorialScreen : GameMenu, IUsesInput
 
     private static IEnumerator CreateTutorialSceneAndPlay(Tutorial tutorial, bool replay = true)
     {
-        // // If the tutorial has already been completed and we are not replaying it, return
-        // if (completedTutorials.value.Contains(tutorial) && !replay)
-        //     yield break;
-
         // If the instance is NOT null, just play the tutorial
         if (Instance != null)
         {

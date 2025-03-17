@@ -89,6 +89,7 @@ GameObject:
   - component: {fileID: 3390496138749012948}
   - component: {fileID: 7600751794694071500}
   - component: {fileID: 7758698229290470282}
+  - component: {fileID: 5378852191740230487}
   m_Layer: 9
   m_Name: '[OBSOLETE] New Movement Test Enemy'
   m_TagString: Untagged
@@ -172,44 +173,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1f2f7014adf46a88a0579b47084cca5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  difficultyHealthMultiplier:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 0}
+  difficultyDamageMultiplier:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 0}
+  applyDifficultyMultiplier: 1
   maxHealth: 100
   currentHealth: 100
   moneyReward: 1000
   animator: {fileID: 0}
-  enemyHitEffect: {fileID: 0}
-  minVFXRangeDamage: 10
-  maxVFXRangeDamage: 50
-  minVFXDamage: 5
-  enemyDeathVfxPrefab: {fileID: 1316523376902277534, guid: dfc4fc5f6b6f93f47a16e7a3853a4f57,
-    type: 3}
-  enemyHitSound:
-    clip: {fileID: 8300000, guid: 94981910bbf34bb43a109bca992410c3, type: 3}
-    soundType: 2
-    volume: 0.03125
-    isPersistent: 0
-    isLooping: 0
-    pitch: 1
-    spatialBlend: 0.5
-  enemyDeathSound:
-    clip: {fileID: 8300000, guid: 94981910bbf34bb43a109bca992410c3, type: 3}
-    soundType: 2
-    volume: 0.0625
-    isPersistent: 0
-    isLooping: 0
-    pitch: 1
-    spatialBlend: 1
-  enemyMoanSource: {fileID: 0}
-  moanSounds:
-  - clip: {fileID: 8300000, guid: fb282b04bff6174458bff6d8ec3924d2, type: 3}
-    soundType: 2
-    volume: 0.35
-    isPersistent: 0
-    isLooping: 0
-    pitch: 0.8
-    spatialBlend: 1
-  moanSoundChance: 0.4
-  moanSoundMinCooldown: 8
-  moanSoundMaxCooldown: 15
 --- !u!114 &5654322750351747060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -241,6 +217,7 @@ MonoBehaviour:
   updatesPerSecond: 4
   movementSpeed: 11
   strafeMultiplier: 0.5
+  strafeRotationLerpAmount: 0.075
   animator: {fileID: 3284610305689870202}
   walkAnimationThreshold: 1
   runAnimationThreshold: 6
@@ -257,6 +234,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6db7d14cf168478bacea0720a538d891, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerTransform:
+    useConstant: 0
+    constantValue: {fileID: 0}
+    variable: {fileID: 11400000, guid: 95f92e08b24db834d9222effbee2e194, type: 2}
   detectionOrigin: {fileID: 186911439051987616}
   visionDistance: 30
   autoDetectionDistance: 7
@@ -311,6 +292,39 @@ MonoBehaviour:
     type: 3}
   projectileSpawnPoints:
   - {fileID: 7327048705021889240}
+  normalHitSfx:
+    clip: {fileID: 0}
+    soundType: 1
+    volume: 1
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 1
+--- !u!114 &5378852191740230487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4164510706451690082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c66c40959b244d3b31320da7a9df63c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyDeathSound:
+    clip: {fileID: 0}
+    soundType: 1
+    volume: 1
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 1
+  enemyMoanSource: {fileID: 0}
+  moanSounds: []
+  moanSoundChance: 1
+  moanSoundMinCooldown: 5
+  moanSoundMaxCooldown: 10
 --- !u!1 &4402423227930383045
 GameObject:
   m_ObjectHideFlags: 0
