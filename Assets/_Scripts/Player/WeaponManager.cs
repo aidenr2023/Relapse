@@ -5,9 +5,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
+public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, IPlayerLoaderInfo
 {
     #region Fields
+
+    [SerializeField] private GunInfoListVariable allGuns;
 
     [Tooltip("The position that the gun will fire from.")] [SerializeField]
     private Transform fireTransform;
@@ -78,7 +80,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
     public TokenManager<float> FireRateMultiplierTokens => _fireRateMultiplierTokens;
 
     public Transform GunHolder => gunHolder;
-        
+
     #endregion
 
     public Action<WeaponManager, IGun> OnGunEquipped { get; set; }
@@ -181,11 +183,11 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
         // Return if the current gun is null
         if (_equippedGun == null)
             return;
-        
+
         // Return if the current gun doesn't need to reload
         if (_equippedGun.CurrentAmmo > 0)
             return;
-        
+
         // Reload the gun
         EquippedGun.Reload();
     }
@@ -395,12 +397,10 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
         _damageMultiplierTokens.Clear();
     }
 
-    public void SetUpWeapon(GameObject newGun, int currentAmmo)
+    public void SetUpWeapon(GenericGun newGunPrefab, int currentAmmo)
     {
-        var spawnNewGun = false;
-
         // Remove the current gun (completely erase it, don't even drop it)
-        if (_equippedGun != null && _equippedGun.GameObject != newGun)
+        if (_equippedGun != null)
         {
             // Set the equipped gun's parent to null
             _equippedGun.GameObject.transform.SetParent(null, true);
@@ -410,24 +410,15 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
 
             // Set the equipped gun to null
             _equippedGun = null;
-
-            // Set the spawn new gun flag to true
-            spawnNewGun = true;
         }
 
-        IGun gun;
+        ;
 
-        if (spawnNewGun)
-        {
-            // Equip the new gun
-            gun = Instantiate(newGun).GetComponent<IGun>();
+        // Equip the new gun
+        var gun = Instantiate(newGunPrefab).GetComponent<IGun>();
 
-            // // Get the interactable materials of the gun
-            // gun.GetOutlineMaterials(Player.PlayerInteraction.OutlineMaterial.shader);
-
-            // Equip the gun
-            EquipGun(gun);
-        }
+        // Equip the gun
+        EquipGun(gun);
 
         gun = _equippedGun;
 
@@ -437,4 +428,53 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder
         // Set the ammo count
         gun.CurrentAmmo = currentAmmo;
     }
+
+    #region Saving and Loading
+
+    public GameObject GameObject => gameObject;
+    public string Id => "PlayerWeaponManager";
+
+    private const string CURRENT_GUN_KEY = "_currentGun";
+    private const string CURRENT_AMMO_KEY = "_currentAmmo";
+
+    public void LoadData(PlayerLoader playerLoader, bool restore)
+    {
+        var hasGun = playerLoader.TryGetDataFromMemory(Id, CURRENT_GUN_KEY, out string gunId);
+        var hasCurrentAmmo = playerLoader.TryGetDataFromMemory(Id, CURRENT_AMMO_KEY, out int currentAmmo);
+
+        if (!hasGun || gunId == "")
+            return;
+
+        // Find the first gun with the unique id
+        var gun = allGuns.value.FirstOrDefault(g => g.UniqueId == gunId);
+
+        if (gun == null)
+            return;
+
+        // Set up the weapon's ammo
+        var newGunAmmo = gun.GunPrefab.GunInformation.MagazineSize;
+
+        if (hasCurrentAmmo)
+            newGunAmmo = currentAmmo;
+
+        SetUpWeapon(gun.GunPrefab, newGunAmmo);
+    }
+
+    public void SaveData(PlayerLoader playerLoader)
+    {
+        // Create data for the current gun
+        // Save the data
+        var gunId = _equippedGun?.GunInformation.UniqueId ?? "";
+        var gunIdData = new DataInfo(CURRENT_GUN_KEY, gunId);
+        playerLoader.AddDataToMemory(Id, gunIdData);
+
+        // Create number data for the current ammo
+        // Save the data
+        var gunAmmoData = new DataInfo(CURRENT_AMMO_KEY, _equippedGun?.CurrentAmmo ?? 0);
+        playerLoader.AddDataToMemory(Id, gunAmmoData);
+        
+        Debug.Log($"Saved weapon data: [{gunId}, {_equippedGun?.CurrentAmmo}]");
+    }
+
+    #endregion
 }

@@ -9,6 +9,9 @@ public class GunInformation : ScriptableObject
         SemiAutomatic,
         Automatic
     }
+    
+    [SerializeField] private GenericGun gunPrefab;
+    [SerializeField, UniqueIdentifier] private string uniqueId;
 
     [Header("Gun Information")] [SerializeField]
     private string gunName;
@@ -66,6 +69,10 @@ public class GunInformation : ScriptableObject
 
     #region Getters
 
+    public GenericGun GunPrefab => gunPrefab;
+    
+    public string UniqueId => uniqueId;
+    
     public string GunName => gunName;
 
     public int Cost => cost;
