@@ -27,17 +27,19 @@ public class ResetableScriptableObject : ScriptableObject
 #endif
     }
 
-#if UNITY_EDITOR
 
-    protected void OnValidate()
+    protected virtual void OnValidate()
     {
+#if UNITY_EDITOR
         // If the game is currently NOT playing, reset the value to the default value
         if (Application.isPlaying)
             return;
 
         Reset();
+#endif
     }
 
+#if UNITY_EDITOR
     private void OnPlayModeStateChanged(PlayModeStateChange obj)
     {
         switch (obj)
@@ -52,8 +54,8 @@ public class ResetableScriptableObject : ScriptableObject
                 break;
         }
     }
-
 #endif
+
 
     public void Reset()
     {

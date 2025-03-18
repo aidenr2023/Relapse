@@ -375,8 +375,10 @@ GameObject:
   - component: {fileID: 3013382723394477936}
   - component: {fileID: 7750749473456080426}
   - component: {fileID: 1727656665701188761}
+  - component: {fileID: 8168597294099847136}
+  - component: {fileID: 7425575233087856301}
   m_Layer: 17
-  m_Name: Canvas
+  m_Name: Player Info Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -486,6 +488,32 @@ MonoBehaviour:
   originalScale: {x: 0.000275, y: 0.00275, z: 0.00275}
   originalFov: 70
   targetResolution: {x: 1920, y: 1080}
+--- !u!225 &8168597294099847136
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 553469621511136592}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
+--- !u!114 &7425575233087856301
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 553469621511136592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57f88320436f40b3996bb80d90d59852, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 8168597294099847136}
+  inGameUi: {fileID: 11400000, guid: 664e6875c4aa309449bd2c99df2ceff8, type: 2}
 --- !u!1 &615968315453546845
 GameObject:
   m_ObjectHideFlags: 0

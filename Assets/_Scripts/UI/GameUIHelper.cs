@@ -12,8 +12,8 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
     #region Serialized Fields
 
     [SerializeField] private bool showUI = true;
-
-    [SerializeField] private GameObject[] uiElements;
+    [SerializeField] private FloatReference uiOpacity;
+    [SerializeField] private CanvasGroupListVariable uiElements;
 
     #endregion
 
@@ -131,6 +131,18 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
             Instance = null;
     }
 
+    private void Update()
+    {
+        // Update the UI opacity
+        UpdateUIOpacity(uiElements.value, uiOpacity);
+    }
+
+    private static void UpdateUIOpacity(IEnumerable<CanvasGroup> uiElements, float opacity)
+    {
+        foreach (var uiElement in uiElements)
+            uiElement.alpha = opacity;
+    }
+
     public void ShowUI()
     {
         // Return if the UI is already shown
@@ -153,7 +165,7 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
 
     private void SetUIEnabled(bool isEnabled)
     {
-        foreach (var uiElement in uiElements)
-            uiElement.SetActive(isEnabled);
+        foreach (var uiElement in uiElements.value)
+            uiElement.gameObject.SetActive(isEnabled);
     }
 }
