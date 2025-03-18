@@ -63,7 +63,7 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
         }
     }
 
-    public void Interact(PlayerInteraction playerInteraction)
+    public void Interact(PlayerInteraction _)
     {
         CheckpointManager.Instance?.SaveCheckpoint(this);
 
@@ -86,7 +86,16 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
 
         // Set the has been collected flag to true
         HasBeenCollected = true;
+        
+        // Save the information
+        SaveInformation();
 
+        // Invoke the event
+        onInteraction.Invoke();
+    }
+
+    public static void SaveInformation()
+    {
         // Check if there is an instance of the level loader
         if (LevelLoader.Instance != null)
         {
@@ -109,12 +118,9 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
 
             Debug.Log("Checkpoint saved the player data to memory and disk.");
         }
-
-        // Invoke the event
-        onInteraction.Invoke();
     }
 
-    public string InteractText(PlayerInteraction playerInteraction)
+    public string InteractText(PlayerInteraction _)
     {
         if (HasBeenCollected)
             return "Checkpoint Saved!";
@@ -122,7 +128,7 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
         return "Save checkpoint";
     }
 
-    public void LookAtUpdate(PlayerInteraction playerInteraction)
+    public void LookAtUpdate(PlayerInteraction _)
     {
     }
 

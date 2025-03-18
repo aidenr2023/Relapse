@@ -412,9 +412,10 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
             _equippedGun = null;
         }
 
-        ;
+        if (newGunPrefab == null)
+            return;
 
-        // Equip the new gun
+        // Instantiate the new gun
         var gun = Instantiate(newGunPrefab).GetComponent<IGun>();
 
         // Equip the gun
@@ -442,15 +443,16 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         var hasGun = playerLoader.TryGetDataFromMemory(Id, CURRENT_GUN_KEY, out string gunId);
         var hasCurrentAmmo = playerLoader.TryGetDataFromMemory(Id, CURRENT_AMMO_KEY, out int currentAmmo);
 
-        if (!hasGun || gunId == "")
-            return;
-
         // Find the first gun with the unique id
-        var gun = allGuns.value.FirstOrDefault(g => g.UniqueId == gunId);
+        var gun = allGuns.value.FirstOrDefault(n => n.UniqueId == gunId);
 
+        // If there is no gun, set the gun to null
         if (gun == null)
+        {
+            SetUpWeapon(null, 0);
             return;
-
+        }
+        
         // Set up the weapon's ammo
         var newGunAmmo = gun.GunPrefab.GunInformation.MagazineSize;
 
@@ -472,7 +474,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         // Save the data
         var gunAmmoData = new DataInfo(CURRENT_AMMO_KEY, _equippedGun?.CurrentAmmo ?? 0);
         playerLoader.AddDataToMemory(Id, gunAmmoData);
-        
+
         Debug.Log($"Saved weapon data: [{gunId}, {_equippedGun?.CurrentAmmo}]");
     }
 

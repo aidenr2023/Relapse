@@ -81,10 +81,15 @@ public class LevelInformation : MonoBehaviour
         // Wait for the checkpoint manager to be initialized
         yield return new WaitUntil(() => CheckpointManager.Instance != null);
 
+        yield return new WaitForSeconds(1f);
+        
         var checkpointManager = CheckpointManager.Instance;
 
         // Save the starting checkpoint (if necessary)
         checkpointManager.SaveCheckpoint(obj.StartingPosition);
+        
+        // Save the checkpoint information
+        CheckpointInteractable.SaveInformation();
     }
 
     private void Awake()
