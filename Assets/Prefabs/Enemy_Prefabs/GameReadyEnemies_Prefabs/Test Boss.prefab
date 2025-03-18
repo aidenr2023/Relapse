@@ -220,8 +220,14 @@ MonoBehaviour:
     constantValue: 0
     variable: {fileID: 11400000, guid: cf7b75ebff401554a9d02aac6511f093, type: 2}
   applyDifficultyMultiplier: 0
-  maxHealth: 1000
-  currentHealth: 1000
+  maxHealth:
+    useConstant: 0
+    constantValue: 1000
+    variable: {fileID: 11400000, guid: 4dc8a0ec74b3c7040a51c4f3d2731043, type: 2}
+  currentHealth:
+    useConstant: 0
+    constantValue: 100
+    variable: {fileID: 11400000, guid: 7e8161a152d99d6458f1f866e6119d69, type: 2}
   moneyReward: 10000
   animator: {fileID: 0}
 --- !u!114 &4006056929535454685
@@ -236,6 +242,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff5a7496e1f39864e94e3699bad6a54d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bossMaxHealth: {fileID: 11400000, guid: 4dc8a0ec74b3c7040a51c4f3d2731043, type: 2}
+  bossCurrentHealth: {fileID: 11400000, guid: 7e8161a152d99d6458f1f866e6119d69, type: 2}
+  bossCurrentPhase:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: 275484cdc9fa7e049aa132b0cb37d12a, type: 2}
   bossHealthSlider: {fileID: 0}
   bossEnemyAttack: {fileID: 1025745234992569360}
   attack1: {fileID: 8544631876377783178}

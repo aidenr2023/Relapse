@@ -862,8 +862,14 @@ MonoBehaviour:
     constantValue: 0
     variable: {fileID: 11400000, guid: cf7b75ebff401554a9d02aac6511f093, type: 2}
   applyDifficultyMultiplier: 1
-  maxHealth: 150
-  currentHealth: 150
+  maxHealth:
+    useConstant: 1
+    constantValue: 150
+    variable: {fileID: 0}
+  currentHealth:
+    useConstant: 1
+    constantValue: 150
+    variable: {fileID: 0}
   moneyReward: 50
   animator: {fileID: 5835691382165057910}
 --- !u!114 &743209099562729217

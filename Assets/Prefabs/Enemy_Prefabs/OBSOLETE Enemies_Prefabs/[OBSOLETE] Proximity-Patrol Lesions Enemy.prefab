@@ -576,6 +576,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74185c730c3e4dfd992587b312b9a3b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  centerTransform: {fileID: 0}
 --- !u!114 &5830201516360384326
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -597,8 +598,14 @@ MonoBehaviour:
     constantValue: 0
     variable: {fileID: 0}
   applyDifficultyMultiplier: 1
-  maxHealth: 100
-  currentHealth: 100
+  maxHealth:
+    useConstant: 1
+    constantValue: 100
+    variable: {fileID: 0}
+  currentHealth:
+    useConstant: 1
+    constantValue: 100
+    variable: {fileID: 0}
   moneyReward: 50
   animator: {fileID: 0}
 --- !u!114 &1321240230866553819

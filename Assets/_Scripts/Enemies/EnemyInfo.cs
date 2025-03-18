@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.VFX;
@@ -15,8 +16,8 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
     [SerializeField] private FloatReference difficultyDamageMultiplier;
     [SerializeField] private bool applyDifficultyMultiplier = true;
 
-    [Header("Settings"), SerializeField] private float maxHealth = 3f;
-    [SerializeField] private float currentHealth;
+    [Header("Settings"), SerializeField] private FloatReference maxHealth;
+    [SerializeField] private FloatReference currentHealth;
     [SerializeField] [Min(0)] private int moneyReward;
 
     [SerializeField] private Animator animator;
@@ -31,6 +32,8 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
     private Vector3 _damagePosition;
 
     private float _remainingStunTime;
+
+    private readonly HashSet<object> _invincibilityTokens = new();
 
     #endregion
 
@@ -48,6 +51,8 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
     public Vector3 DamagePosition => _damagePosition;
 
     public float DifficultyDamageMultiplier => applyDifficultyMultiplier ? difficultyDamageMultiplier.Value : 1;
+    
+    public bool IsInvincible => _invincibilityTokens.Count > 0;
 
     #endregion
 
@@ -72,7 +77,7 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         if (applyDifficultyMultiplier)
         {
             var oldMaxHealth = maxHealth;
-            maxHealth *= difficultyHealthMultiplier.Value;
+            maxHealth.Value *= difficultyHealthMultiplier.Value;
 
             ForceCurrentHealth(currentHealth + (maxHealth - oldMaxHealth));
         }
@@ -127,10 +132,14 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         bool isCriticalHit = false)
     {
         // Clamp the health value between 0 and the max health
-        currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
+        currentHealth.Value = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
 
         HealthChangedEventArgs args;
 
+        // If the enemy is invincible and the enemy is taking damage, set the amount to 0
+        if (amount < 0 && IsInvincible)
+            amount = 0;
+        
         // If the amount is less than 0, invoke the OnDamaged event
         if (amount < 0)
         {
@@ -165,7 +174,12 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
     public void ForceCurrentHealth(float health)
     {
-        currentHealth = health;
+        currentHealth.Value = health;
+    }
+
+    public void ForceMaxHealth(float health)
+    {
+        maxHealth.Value = health;
     }
 
     private void Die()
@@ -231,5 +245,15 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
         // Invoke the OnStunEnd event
         OnStunEnd?.Invoke(e, duration);
+    }
+    
+    public void AddInvincibilityToken(object token)
+    {
+        _invincibilityTokens.Add(token);
+    }
+    
+    public void RemoveInvincibilityToken(object token)
+    {
+        _invincibilityTokens.Remove(token);
     }
 }

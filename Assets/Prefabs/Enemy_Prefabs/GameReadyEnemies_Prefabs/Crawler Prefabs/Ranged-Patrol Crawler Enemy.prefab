@@ -342,6 +342,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74185c730c3e4dfd992587b312b9a3b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  centerTransform: {fileID: 0}
 --- !u!114 &6522784205110466442
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -363,8 +364,14 @@ MonoBehaviour:
     constantValue: 0
     variable: {fileID: 11400000, guid: cf7b75ebff401554a9d02aac6511f093, type: 2}
   applyDifficultyMultiplier: 1
-  maxHealth: 80
-  currentHealth: 80
+  maxHealth:
+    useConstant: 1
+    constantValue: 75
+    variable: {fileID: 0}
+  currentHealth:
+    useConstant: 1
+    constantValue: 75
+    variable: {fileID: 0}
   moneyReward: 50
   animator: {fileID: 5463582841705759531}
 --- !u!114 &2314050373250607455

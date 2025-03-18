@@ -10,11 +10,11 @@ using UnityEngine.UI;
 [RequireComponent(typeof(EnemyInfo))]
 public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 {
-    private static float _bossHealth;
     private static bool _bossStarted;
-    private static int _staticPhase;
 
     #region Serialized Fields
+
+    [SerializeField] private IntReference bossCurrentPhase;
 
     [SerializeField] private Slider bossHealthSlider;
 
@@ -30,17 +30,10 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 
     #region Private Fields
 
-    private int _currentPhase;
-
     private IEnemyAttackBehavior _currentAttackBehavior;
 
     #endregion
 
-    #region Getters
-
-    public int CurrentPhase => _currentPhase;
-
-    #endregion
 
     protected override void CustomAwake()
     {
@@ -54,57 +47,30 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         // Switch to the first attack behavior
         ChangeAttackBehavior(attack1);
 
-        _currentPhase = -1;
-
         // Subscribe to the OnDamaged event
+        ParentComponent.OnDamaged += SetHealthScriptableObjects;
+        ParentComponent.OnHealed += SetHealthScriptableObjects;
+
         ParentComponent.OnDamaged += ActivatePhaseChange;
 
         ParentComponent.OnDamaged += ChangeHealthBar;
         ParentComponent.OnHealed += ChangeHealthBar;
 
-        ParentComponent.OnDamaged += ChangeStaticHealth;
-        ParentComponent.OnHealed += ChangeStaticHealth;
-
         ParentComponent.OnDeath += DetermineEndingOnDeath;
 
         ParentComponent.OnDeath += ResetStaticVariables;
+        
+        // Update the slider value
+        ChangeHealthBar(null, null);
+    }
 
-        // Set the max boss health
-        StaticallyInitialize(this);
+    private void SetHealthScriptableObjects(object sender, HealthChangedEventArgs e)
+    {
     }
 
     private void ResetStaticVariables(object sender, HealthChangedEventArgs e)
     {
         _bossStarted = false;
-        _bossHealth = 0;
-        _staticPhase = 0;
-    }
-
-    private void ChangeStaticHealth(object sender, HealthChangedEventArgs e)
-    {
-        // Change the static health
-        _bossHealth = ParentComponent.CurrentHealth;
-    }
-
-    private static void StaticallyInitialize(BossEnemy bossEnemy)
-    {
-        if (_bossStarted)
-        {
-            // Set the health of the boss using the static variables
-            bossEnemy.ParentComponent.ForceCurrentHealth(_bossHealth);
-            var healthPercentage = bossEnemy.ParentComponent.CurrentHealth / bossEnemy.ParentComponent.MaxHealth;
-            bossEnemy.SetHealthBar(healthPercentage);
-            Debug.Log($"SETTING BOSS HEALTH TO: {_bossHealth}");
-
-            // Set the current phase of the boss using the static variables
-            bossEnemy._currentPhase = _staticPhase;
-
-            return;
-        }
-
-        _bossStarted = true;
-        _bossHealth = bossEnemy.ParentComponent.CurrentHealth;
-        _staticPhase = bossEnemy._currentPhase;
     }
 
     private void DetermineEndingOnDeath(object sender, HealthChangedEventArgs e)
@@ -158,11 +124,11 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
     {
         var healthPercent = ParentComponent.CurrentHealth / ParentComponent.MaxHealth;
 
-        for (var i = bossPhases.Length - 1; i > _currentPhase; i--)
+        for (var i = bossPhases.Length - 1; i > bossCurrentPhase.Value; i--)
         {
             // If the current phase is completed,
             // then that means the rest are completed. Break
-            if (_currentPhase > i)
+            if (bossCurrentPhase.Value > i)
                 break;
 
             // If the health percent is lower than the phase end percent,
@@ -174,11 +140,10 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
             // If the player completes multiple phases in one frame,
             // only the highest phase will be activated.
 
-            _currentPhase = i;
-            _staticPhase = i;
+            bossCurrentPhase.Value = i;
             bossPhases[i].phaseEndEvent.Invoke();
-
-            Debug.Log($"Phase {_currentPhase + 1} activated! {healthPercent} <= {bossPhases[i].phaseEndPercent}");
+            
+            Debug.Log($"Phase {bossCurrentPhase.Value + 1} activated! {healthPercent} <= {bossPhases[i].phaseEndPercent}");
         }
     }
 
@@ -208,13 +173,23 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         _currentAttackBehavior = newBehavior;
     }
 
+    public void MakeInvincible()
+    {
+        // Prevent the current health from falling below the phase end percent
+        ParentComponent.ForceCurrentHealth(
+            Mathf.Max(bossPhases[bossCurrentPhase].phaseEndPercent * ParentComponent.MaxHealth, ParentComponent.CurrentHealth)
+        );
+        
+        ParentComponent.AddInvincibilityToken(this);
+    }
+
     public string GetDebugText()
     {
         StringBuilder sb = new();
 
         sb.AppendLine($"Boss Enemy: {name}");
         sb.AppendLine($"\tHealth: {(ParentComponent.CurrentHealth / ParentComponent.MaxHealth):0.00}");
-        sb.AppendLine($"\tCurrent Phase: {_currentPhase + 1}");
+        sb.AppendLine($"\tCurrent Phase: {bossCurrentPhase.Value + 1}");
 
         return sb.ToString();
     }
