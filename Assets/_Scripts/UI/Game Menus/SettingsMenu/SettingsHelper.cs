@@ -215,7 +215,7 @@ public class SettingsHelper : MonoBehaviour
 
     private void ChangeOtherSfxVolume(float value)
     {
-        settingsMenuSettings.value.SetSoundMusicVolume(value);
+        settingsMenuSettings.value.SetSoundOtherVolume(value);
 
         OnSettingChanged?.Invoke(SliderSettingType.OtherSfxVolume, value);
     }
