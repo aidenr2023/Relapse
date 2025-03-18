@@ -3,6 +3,9 @@ using UnityEngine;
 
 public class SettingsHelper : MonoBehaviour
 {
+    [SerializeField] private UserSettingsVariable settingsMenuSettings;
+    [SerializeField] private UserSettingsVariable userSettings;
+
     public event Action<SliderSettingType, float> OnSettingChanged;
 
     private void Awake()
@@ -84,33 +87,33 @@ public class SettingsHelper : MonoBehaviour
         }
     }
 
-    public static float GetSettingValue(SliderSettingType settingType)
+    public static float GetSettingValue(SliderSettingType settingType, UserSettingsVariable settingsMenuSettings)
     {
         return settingType switch
         {
             // input settings
-            SliderSettingType.MouseSensitivityX => UserSettings.Instance.MouseSens.x,
-            SliderSettingType.MouseSensitivityY => UserSettings.Instance.MouseSens.y,
+            SliderSettingType.MouseSensitivityX => settingsMenuSettings.value.MouseSens.x,
+            SliderSettingType.MouseSensitivityY => settingsMenuSettings.value.MouseSens.y,
 
-            SliderSettingType.ControllerSensitivityX => UserSettings.Instance.ControllerSens.x,
-            SliderSettingType.ControllerSensitivityY => UserSettings.Instance.ControllerSens.y,
+            SliderSettingType.ControllerSensitivityX => settingsMenuSettings.value.ControllerSens.x,
+            SliderSettingType.ControllerSensitivityY => settingsMenuSettings.value.ControllerSens.y,
 
-            SliderSettingType.ControllerMinLookDeadzone => UserSettings.Instance.MinimumLookDeadzone,
-            SliderSettingType.ControllerMaxLookDeadzone => UserSettings.Instance.MaximumLookDeadzone,
+            SliderSettingType.ControllerMinLookDeadzone => settingsMenuSettings.value.MinimumLookDeadzone,
+            SliderSettingType.ControllerMaxLookDeadzone => settingsMenuSettings.value.MaximumLookDeadzone,
 
-            SliderSettingType.ControllerMinMoveDeadzone => UserSettings.Instance.MinimumMoveDeadzone,
-            SliderSettingType.ControllerMaxMoveDeadzone => UserSettings.Instance.MaximumMoveDeadzone,
+            SliderSettingType.ControllerMinMoveDeadzone => settingsMenuSettings.value.MinimumMoveDeadzone,
+            SliderSettingType.ControllerMaxMoveDeadzone => settingsMenuSettings.value.MaximumMoveDeadzone,
 
             // Sound
-            SliderSettingType.MasterVolume => UserSettings.Instance.MasterVolume,
-            SliderSettingType.MusicVolume => UserSettings.Instance.MusicVolume,
-            SliderSettingType.PlayerSfxVolume => UserSettings.Instance.PlayerVolume,
-            SliderSettingType.EnemySfxVolume => UserSettings.Instance.EnemiesVolume,
-            SliderSettingType.OtherSfxVolume => UserSettings.Instance.OtherVolume,
-            SliderSettingType.UiSfxVolume => UserSettings.Instance.UISFXVolume,
+            SliderSettingType.MasterVolume => settingsMenuSettings.value.MasterVolume,
+            SliderSettingType.MusicVolume => settingsMenuSettings.value.MusicVolume,
+            SliderSettingType.PlayerSfxVolume => settingsMenuSettings.value.PlayerVolume,
+            SliderSettingType.EnemySfxVolume => settingsMenuSettings.value.EnemiesVolume,
+            SliderSettingType.OtherSfxVolume => settingsMenuSettings.value.OtherVolume,
+            SliderSettingType.UiSfxVolume => settingsMenuSettings.value.UISfxVolume,
 
             // Display
-            SliderSettingType.Brightness => UserSettings.Instance.Gamma,
+            SliderSettingType.Brightness => settingsMenuSettings.value.Gamma,
 
             _ => throw new ArgumentOutOfRangeException(nameof(settingType), settingType, null)
         };
@@ -124,56 +127,56 @@ public class SettingsHelper : MonoBehaviour
 
     private void ChangeMouseSensitivityX(float value)
     {
-        UserSettings.Instance.SetMouseSensitivity(value, UserSettings.Instance.MouseSens.y);
+        settingsMenuSettings.value.SetMouseSensitivity(value, settingsMenuSettings.value.MouseSens.y);
 
         OnSettingChanged?.Invoke(SliderSettingType.MouseSensitivityX, value);
     }
 
     public void ChangeMouseSensitivityY(float value)
     {
-        UserSettings.Instance.SetMouseSensitivity(UserSettings.Instance.MouseSens.x, value);
+        settingsMenuSettings.value.SetMouseSensitivity(settingsMenuSettings.value.MouseSens.x, value);
 
         OnSettingChanged?.Invoke(SliderSettingType.MouseSensitivityY, value);
     }
 
     public void ChangeControllerSensitivityX(float value)
     {
-        UserSettings.Instance.SetControllerSensitivity(value, UserSettings.Instance.ControllerSens.y);
+        settingsMenuSettings.value.SetControllerSensitivity(value, settingsMenuSettings.value.ControllerSens.y);
 
         OnSettingChanged?.Invoke(SliderSettingType.ControllerSensitivityX, value);
     }
 
     public void ChangeControllerSensitivityY(float value)
     {
-        UserSettings.Instance.SetControllerSensitivity(UserSettings.Instance.ControllerSens.x, value);
+        settingsMenuSettings.value.SetControllerSensitivity(settingsMenuSettings.value.ControllerSens.x, value);
 
         OnSettingChanged?.Invoke(SliderSettingType.ControllerSensitivityY, value);
     }
 
     public void ChangeControllerMinLookDeadzone(float value)
     {
-        UserSettings.Instance.MinimumLookDeadzone = value;
+        settingsMenuSettings.value.MinimumLookDeadzone = value;
 
         OnSettingChanged?.Invoke(SliderSettingType.ControllerMinLookDeadzone, value);
     }
 
     public void ChangeControllerMaxLookDeadzone(float value)
     {
-        UserSettings.Instance.MaximumLookDeadzone = value;
+        settingsMenuSettings.value.MaximumLookDeadzone = value;
 
         OnSettingChanged?.Invoke(SliderSettingType.ControllerMaxLookDeadzone, value);
     }
 
     public void ChangeControllerMinMoveDeadzone(float value)
     {
-        UserSettings.Instance.MinimumMoveDeadzone = value;
+        settingsMenuSettings.value.MinimumMoveDeadzone = value;
 
         OnSettingChanged?.Invoke(SliderSettingType.ControllerMinMoveDeadzone, value);
     }
 
     public void ChangeControllerMaxMoveDeadzone(float value)
     {
-        UserSettings.Instance.MaximumMoveDeadzone = value;
+        settingsMenuSettings.value.MaximumMoveDeadzone = value;
 
         OnSettingChanged?.Invoke(SliderSettingType.ControllerMaxMoveDeadzone, value);
     }
@@ -184,42 +187,42 @@ public class SettingsHelper : MonoBehaviour
 
     private void ChangeMasterVolume(float value)
     {
-        UserSettings.Instance.SetSoundMasterVolume(value);
+        settingsMenuSettings.value.SetSoundMasterVolume(value);
 
         OnSettingChanged?.Invoke(SliderSettingType.MasterVolume, value);
     }
 
     private void ChangeMusicVolume(float value)
     {
-        UserSettings.Instance.SetSoundMusicVolume(value);
+        settingsMenuSettings.value.SetSoundMusicVolume(value);
 
         OnSettingChanged?.Invoke(SliderSettingType.MusicVolume, value);
     }
 
     private void ChangePlayerSfxVolume(float value)
     {
-        UserSettings.Instance.SetSoundPlayerVolume(value);
+        settingsMenuSettings.value.SetSoundPlayerVolume(value);
 
         OnSettingChanged?.Invoke(SliderSettingType.PlayerSfxVolume, value);
     }
 
     private void ChangeEnemySfxVolume(float value)
     {
-        UserSettings.Instance.SetSoundEnemiesVolume(value);
+        settingsMenuSettings.value.SetSoundEnemiesVolume(value);
 
         OnSettingChanged?.Invoke(SliderSettingType.EnemySfxVolume, value);
     }
 
     private void ChangeOtherSfxVolume(float value)
     {
-        UserSettings.Instance.SetSoundMusicVolume(value);
+        settingsMenuSettings.value.SetSoundMusicVolume(value);
 
         OnSettingChanged?.Invoke(SliderSettingType.OtherSfxVolume, value);
     }
 
     private void ChangeUiSfxVolume(float value)
     {
-        UserSettings.Instance.SetSoundUISFXVolume(value);
+        settingsMenuSettings.value.SetSoundUISfxVolume(value);
 
         OnSettingChanged?.Invoke(SliderSettingType.UiSfxVolume, value);
     }
@@ -230,7 +233,7 @@ public class SettingsHelper : MonoBehaviour
 
     private void ChangeBrightness(float value)
     {
-        UserSettings.Instance.SetGamma(value);
+        settingsMenuSettings.value.SetGamma(value);
 
         OnSettingChanged?.Invoke(SliderSettingType.Brightness, value);
     }
@@ -238,4 +241,18 @@ public class SettingsHelper : MonoBehaviour
     #endregion
 
     #endregion
+
+    public void InitializeMenuSettings()
+    {
+        settingsMenuSettings.value.CopySettingsFrom(userSettings.value);
+    }
+    
+    public void SaveSettings()
+    {
+        // First, copy the settings from the settingsMenuSettings to the userSettings
+        userSettings.value.CopySettingsFrom(settingsMenuSettings.value);
+        
+        // Then, apply the userSettings
+        userSettings.value.ApplySettings();
+    }
 }

@@ -7,6 +7,8 @@ public class DynamicLiftGammaGainModule : DynamicPostProcessingModule
 {
     #region Serialized Fields
 
+    [SerializeField] private UserSettingsVariable userSettings;
+    
     [SerializeField, Range(-1, 1), Readonly]
     private float gammaSetting = 0;
 
@@ -58,7 +60,7 @@ public class DynamicLiftGammaGainModule : DynamicPostProcessingModule
     private void UpdateGammaSettingToken()
     {
         // Pull the gamma setting from the user settings
-        gammaSetting = UserSettings.Instance.Gamma;
+        gammaSetting = userSettings.value.Gamma;
 
         // Apply the gamma setting to the token
         _gammaSettingToken.Value = gammaSetting;

@@ -1,8 +1,11 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Processors;
 
-public class UserSettings
+[Serializable]
+public struct UserSettings
 {
     #region Constants
 
@@ -16,93 +19,47 @@ public class UserSettings
 
     #endregion
 
-    #region Singleton Pattern
-
-    private static UserSettings _instance;
-
-    public static UserSettings Instance
-    {
-        get
-        {
-            if (_instance == null)
-                _instance = new UserSettings();
-
-            return _instance;
-        }
-    }
-
-    #endregion
+    [field: SerializeField] public AudioMixer AudioMixer { get; private set; }
 
     #region Getters for Settings
 
-    // Input settings
+    #region Input Settings
 
-    public Vector2 MouseSens { get; private set; } = new(.5f, .5f);
-    public Vector2 ControllerSens { get; private set; } = new(.5f, .5f);
+    [field: SerializeField, Header("Input Settings")]
+    public Vector2 MouseSens { get; private set; }
 
-    private float _minimumLookDeadzone;
-    private float _maximumLookDeadzone;
-    private float _minimumMoveDeadzone;
-    private float _maximumMoveDeadzone;
+    [field: SerializeField] public Vector2 ControllerSens { get; private set; }
 
-    public float MinimumLookDeadzone
-    {
-        get => _minimumLookDeadzone;
-        set
-        {
-            _minimumLookDeadzone = Mathf.Clamp(value, 0, 1);
-            InputManager.Instance.PControls.Player.LookController.ApplyParameterOverride(
-                (StickDeadzoneProcessor d) => d.min, _minimumLookDeadzone
-            );
-        }
-    }
+    [field: SerializeField] public float MinimumLookDeadzone { get; set; }
 
-    public float MaximumLookDeadzone
-    {
-        get => _maximumLookDeadzone;
-        set
-        {
-            _maximumLookDeadzone = Mathf.Clamp(value, 0, 1);
-            InputManager.Instance.PControls.Player.LookController.ApplyParameterOverride(
-                (StickDeadzoneProcessor d) => d.max, _maximumLookDeadzone
-            );
-        }
-    }
+    [field: SerializeField] public float MaximumLookDeadzone { get; set; }
 
-    public float MinimumMoveDeadzone
-    {
-        get => _minimumMoveDeadzone;
-        set
-        {
-            _minimumMoveDeadzone = Mathf.Clamp(value, 0, 1);
-            InputManager.Instance.PControls.PlayerMovementBasic.Move.ApplyParameterOverride(
-                (StickDeadzoneProcessor d) => d.min, _minimumMoveDeadzone
-            );
-        }
-    }
+    [field: SerializeField] public float MinimumMoveDeadzone { get; set; }
 
-    public float MaximumMoveDeadzone
-    {
-        get => _maximumMoveDeadzone;
-        set
-        {
-            _maximumMoveDeadzone = Mathf.Clamp(value, 0, 1);
-            InputManager.Instance.PControls.PlayerMovementBasic.Move.ApplyParameterOverride(
-                (StickDeadzoneProcessor d) => d.max, _maximumMoveDeadzone
-            );
-        }
-    }
+    [field: SerializeField] public float MaximumMoveDeadzone { get; set; }
 
+    #endregion
+
+    #region Volume Settings
+
+    [field: SerializeField, Header("Volume Settings")]
+    public float MasterVolume { get; private set; }
+
+    [field: SerializeField] public float MusicVolume { get; private set; }
+    [field: SerializeField] public float GameSfxVolume { get; private set; }
+    [field: SerializeField] public float PlayerVolume { get; private set; }
+    [field: SerializeField] public float EnemiesVolume { get; private set; }
+    [field: SerializeField] public float OtherVolume { get; private set; }
+    [field: SerializeField] public float UISfxVolume { get; private set; }
+
+    #endregion
+
+    #region Display Settings
+
+    [field: SerializeField, Header("Display Settings")]
     public float Gamma { get; private set; }
 
-    // Volume settings
-    public float MasterVolume { get; private set; }
-    public float MusicVolume { get; private set; }
-    public float GameSFXVolume { get; private set; }
-    public float PlayerVolume { get; private set; }
-    public float EnemiesVolume { get; private set; }
-    public float OtherVolume { get; private set; }
-    public float UISFXVolume { get; private set; }
+    #endregion
 
     #endregion
 
@@ -146,9 +103,9 @@ public class UserSettings
         MusicVolume = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
     }
 
-    public void SetSoundGameSFXVolume(float value)
+    public void SetSoundGameSfxVolume(float value)
     {
-        GameSFXVolume = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
+        GameSfxVolume = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
     }
 
     public void SetSoundPlayerVolume(float value)
@@ -166,24 +123,62 @@ public class UserSettings
         OtherVolume = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
     }
 
-    public void SetSoundUISFXVolume(float value)
+    public void SetSoundUISfxVolume(float value)
     {
-        UISFXVolume = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
-    }
-
-
-    // This is probably better to use than the above methods
-    public void SetAllVolumes(float Master, float Music, float GameSFX, float Player, float Enemies, float Other,
-        float UISFX)
-    {
-        MasterVolume = Mathf.Clamp(Master, MIN_VOLUME, MAX_VOLUME);
-        MusicVolume = Mathf.Clamp(Music, MIN_VOLUME, MAX_VOLUME);
-        GameSFXVolume = Mathf.Clamp(GameSFX, MIN_VOLUME, MAX_VOLUME);
-        PlayerVolume = Mathf.Clamp(Player, MIN_VOLUME, MAX_VOLUME);
-        EnemiesVolume = Mathf.Clamp(Enemies, MIN_VOLUME, MAX_VOLUME);
-        OtherVolume = Mathf.Clamp(Other, MIN_VOLUME, MAX_VOLUME);
-        UISFXVolume = Mathf.Clamp(UISFX, MIN_VOLUME, MAX_VOLUME);
+        UISfxVolume = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
     }
 
     #endregion
+
+    public void CopySettingsFrom(UserSettings other)
+    {
+        // Sensitivity settings
+        MouseSens = other.MouseSens;
+        ControllerSens = other.ControllerSens;
+        MinimumLookDeadzone = other.MinimumLookDeadzone;
+        MaximumLookDeadzone = other.MaximumLookDeadzone;
+        MinimumMoveDeadzone = other.MinimumMoveDeadzone;
+        MaximumMoveDeadzone = other.MaximumMoveDeadzone;
+
+        // Sound Settings
+        MasterVolume = other.MasterVolume;
+        MusicVolume = other.MusicVolume;
+        GameSfxVolume = other.GameSfxVolume;
+        PlayerVolume = other.PlayerVolume;
+        EnemiesVolume = other.EnemiesVolume;
+        OtherVolume = other.OtherVolume;
+        UISfxVolume = other.UISfxVolume;
+
+        // Display Settings
+        Gamma = other.Gamma;
+    }
+
+    /// <summary>
+    /// Some settings require more than just a value to be set, so this method is used to apply those settings.
+    /// </summary>
+    public void ApplySettings()
+    {
+        // Apply the deadzone settings
+        InputManager.Instance.PControls.Player.LookController.ApplyParameterOverride(
+            (StickDeadzoneProcessor d) => d.min, MinimumLookDeadzone
+        );
+        InputManager.Instance.PControls.Player.LookController.ApplyParameterOverride(
+            (StickDeadzoneProcessor d) => d.max, MaximumLookDeadzone
+        );
+        InputManager.Instance.PControls.PlayerMovementBasic.Move.ApplyParameterOverride(
+            (StickDeadzoneProcessor d) => d.min, MinimumMoveDeadzone
+        );
+        InputManager.Instance.PControls.PlayerMovementBasic.Move.ApplyParameterOverride(
+            (StickDeadzoneProcessor d) => d.max, MaximumMoveDeadzone
+        );
+
+        // Apply the settings to the volume mixer
+        AudioMixer.SetFloat("MasterVolume", MasterVolume);
+        AudioMixer.SetFloat("MusicVolume", MusicVolume);
+        AudioMixer.SetFloat("GameSFXVolume", GameSfxVolume);
+        AudioMixer.SetFloat("PlayerVolume", PlayerVolume);
+        AudioMixer.SetFloat("EnemiesVolume", EnemiesVolume);
+        AudioMixer.SetFloat("OtherVolume", OtherVolume);
+        AudioMixer.SetFloat("UISFXVolume", UISfxVolume);
+    }
 }

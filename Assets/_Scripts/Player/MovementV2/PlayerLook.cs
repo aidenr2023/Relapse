@@ -9,6 +9,8 @@ public class PlayerLook : MonoBehaviour, IUsesInput
 {
     #region Serialized Fields
 
+    [SerializeField] private UserSettingsVariable userSettings;
+
     // Mouse sensitivity
     [Header("Settings")] [SerializeField] [Min(1)]
     private float sensitivityMultiplier = 50;
@@ -77,11 +79,11 @@ public class PlayerLook : MonoBehaviour, IUsesInput
     private void OnLookMousePerformed(InputAction.CallbackContext obj)
     {
         // Set the current sensitivity to the mouse sensitivity
-        _currentSens = UserSettings.Instance.MouseSens;
+        _currentSens = userSettings.value.MouseSens;
 
         // Read the value of the look input
         var value = obj.ReadValue<Vector2>();
-        
+
         // Call the look performed function
         OnLookPerformed(value);
     }
@@ -89,11 +91,11 @@ public class PlayerLook : MonoBehaviour, IUsesInput
     private void OnLookControllerPerformed(InputAction.CallbackContext obj)
     {
         // Set the current sensitivity to the controller sensitivity
-        _currentSens = UserSettings.Instance.ControllerSens;
+        _currentSens = userSettings.value.ControllerSens;
 
         // read the value of the look input
         var value = obj.ReadValue<Vector2>();
-        
+
         // Call the look performed function
         OnLookPerformed(value);
     }

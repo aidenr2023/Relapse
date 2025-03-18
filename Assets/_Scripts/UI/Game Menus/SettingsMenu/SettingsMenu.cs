@@ -13,10 +13,14 @@ public class SettingsMenu : GameMenu
 
     #region Serialized Fields
 
+    [SerializeField] private SettingsHelper settingsHelper;
+
     [Header("Settings Menu"), SerializeField]
     private GameObject firstSelectedButton;
 
     [SerializeField] private Button backButton;
+
+    [SerializeField] private Button saveButton;
 
     [Header("Content Panes"), SerializeField]
     private SettingsMenuContentPane generalSettingsPane;
@@ -63,6 +67,9 @@ public class SettingsMenu : GameMenu
 
     protected override void CustomActivate()
     {
+        // Copy the settings from the user settings to the menu settings
+        settingsHelper.InitializeMenuSettings();
+
         // Enable the UI controls
         _uiControls.Enable();
 
@@ -75,7 +82,6 @@ public class SettingsMenu : GameMenu
         // Set the event system's current selected game object to the first selected game object
         StartCoroutine(EnsureSelectObject(firstSelectedButton));
     }
-
 
     private void InitializeNavigation()
     {
@@ -161,11 +167,25 @@ public class SettingsMenu : GameMenu
             backUpNav = pane.LastItem.GetComponent<Selectable>();
 
         // Update the back button's navigation
+        var oldBackButtonNavigation = backButton.navigation;
         backButton.navigation = new Navigation()
         {
             mode = Navigation.Mode.Explicit,
             selectOnUp = backUpNav,
             selectOnDown = _currentPaneButton,
+            selectOnLeft = oldBackButtonNavigation.selectOnLeft,
+            selectOnRight = oldBackButtonNavigation.selectOnRight,
+        };
+
+        // Update the save button's navigation
+        var oldSaveButtonNavigation = saveButton.navigation;
+        saveButton.navigation = new Navigation()
+        {
+            mode = Navigation.Mode.Explicit,
+            selectOnUp = backUpNav,
+            selectOnDown = _currentPaneButton,
+            selectOnLeft = oldSaveButtonNavigation.selectOnLeft,
+            selectOnRight = oldSaveButtonNavigation.selectOnRight,
         };
 
         // Update the last item's navigation

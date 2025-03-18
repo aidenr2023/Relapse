@@ -6,6 +6,8 @@ public class SensitivitySettingsUI : MonoBehaviour
 {
     #region Serialized Fields
 
+    [SerializeField] private UserSettingsVariable settingsMenuSettings;
+    
     #region Input Settings
 
     [SerializeField] private SettingsSlider mouseSensXSlider;
@@ -29,19 +31,19 @@ public class SensitivitySettingsUI : MonoBehaviour
     private void Start()
     {
         // Set the sliders to the current sensitivity values
-        mouseSensXSlider.Value = UserSettings.Instance.MouseSens.x;
-        mouseSensYSlider.Value = UserSettings.Instance.MouseSens.y;
+        mouseSensXSlider.Value = settingsMenuSettings.value.MouseSens.x;
+        mouseSensYSlider.Value = settingsMenuSettings.value.MouseSens.y;
 
-        controllerSensXSlider.Value = UserSettings.Instance.ControllerSens.x;
-        controllerSensYSlider.Value = UserSettings.Instance.ControllerSens.y;
+        controllerSensXSlider.Value = settingsMenuSettings.value.ControllerSens.x;
+        controllerSensYSlider.Value = settingsMenuSettings.value.ControllerSens.y;
 
-        minLookDeadzoneSlider.Value = UserSettings.Instance.MinimumLookDeadzone;
-        maxLookDeadzoneSlider.Value = UserSettings.Instance.MaximumLookDeadzone;
+        minLookDeadzoneSlider.Value = settingsMenuSettings.value.MinimumLookDeadzone;
+        maxLookDeadzoneSlider.Value = settingsMenuSettings.value.MaximumLookDeadzone;
 
-        minMoveDeadzoneSlider.Value = UserSettings.Instance.MinimumMoveDeadzone;
-        maxMoveDeadzoneSlider.Value = UserSettings.Instance.MaximumMoveDeadzone;
+        minMoveDeadzoneSlider.Value = settingsMenuSettings.value.MinimumMoveDeadzone;
+        maxMoveDeadzoneSlider.Value = settingsMenuSettings.value.MaximumMoveDeadzone;
 
-        brightnessSlider.Value = UserSettings.Instance.Gamma;
+        brightnessSlider.Value = settingsMenuSettings.value.Gamma;
 
         // Initialize the slider events
         mouseSensXSlider.onValueChanged.AddListener(OnMouseSensChanged);
@@ -62,40 +64,40 @@ public class SensitivitySettingsUI : MonoBehaviour
     private void OnMouseSensChanged(float arg0)
     {
         // Set the mouse sensitivity
-        UserSettings.Instance.SetMouseSensitivity(mouseSensXSlider.Value, mouseSensYSlider.Value);
+        settingsMenuSettings.value.SetMouseSensitivity(mouseSensXSlider.Value, mouseSensYSlider.Value);
     }
 
     private void OnControllerSensChanged(float arg0)
     {
         // Set the controller sensitivity
-        UserSettings.Instance.SetControllerSensitivity(controllerSensXSlider.Value, controllerSensYSlider.Value);
+        settingsMenuSettings.value.SetControllerSensitivity(controllerSensXSlider.Value, controllerSensYSlider.Value);
     }
 
     private void OnMinLookDeadzoneChanged(float arg0)
     {
         // Set the minimum look deadzone
-        UserSettings.Instance.MinimumLookDeadzone = minLookDeadzoneSlider.Value;
+        settingsMenuSettings.value.MinimumLookDeadzone = minLookDeadzoneSlider.Value;
     }
 
     private void OnMinMoveDeadzoneChanged(float arg0)
     {
         // Set the minimum move deadzone
-        UserSettings.Instance.MinimumMoveDeadzone = minMoveDeadzoneSlider.Value;
+        settingsMenuSettings.value.MinimumMoveDeadzone = minMoveDeadzoneSlider.Value;
     }
 
     private void OnBrightnessChanged(float arg0)
     {
         // Set the gamma value
-        UserSettings.Instance.SetGamma(brightnessSlider.Value);
+        settingsMenuSettings.value.SetGamma(brightnessSlider.Value);
     }
 
     private void OnMaxMoveDeadzoneChanged(float arg0)
     {
-        UserSettings.Instance.MaximumMoveDeadzone = maxMoveDeadzoneSlider.Value;
+        settingsMenuSettings.value.MaximumMoveDeadzone = maxMoveDeadzoneSlider.Value;
     }
 
     private void OnMaxLookDeadzoneChanged(float arg0)
     {
-        UserSettings.Instance.MaximumLookDeadzone = maxLookDeadzoneSlider.Value;
+        settingsMenuSettings.value.MaximumLookDeadzone = maxLookDeadzoneSlider.Value;
     }
 }

@@ -5,7 +5,9 @@ using UnityEngine.UI;
 
 public class NewSettingsSlider : MonoBehaviour
 {
-    [SerializeField] private Slider slider;
+    [SerializeField] private UserSettingsVariable settingsMenuSettings;
+
+    [Space, SerializeField] private Slider slider;
 
     [Space, SerializeField] private SettingsHelper settingsHelper;
     [SerializeField] private SliderSettingType settingType;
@@ -39,7 +41,7 @@ public class NewSettingsSlider : MonoBehaviour
         settingsHelper.OnSettingChanged += ForceValueOnSettingChanged;
 
         // Set the slider to the current setting value
-        slider.value = SettingsHelper.GetSettingValue(settingType);
+        slider.value = SettingsHelper.GetSettingValue(settingType, settingsMenuSettings);
     }
 
     private void OnDisable()
