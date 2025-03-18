@@ -10,6 +10,8 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
 
     public static IReadOnlyCollection<Enemy> Enemies => _enemies;
 
+    [SerializeField] private Transform centerTransform;
+        
     #region Getters
 
     public EnemyInfo EnemyInfo { get; private set; }
@@ -25,9 +27,9 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
     public INewEnemyMovementBehavior MovementBehavior => Brain.MovementBehavior;
 
     public IEnemyAbilityBehavior AbilityBehavior { get; private set; }
-    
-    public Renderer[] Renderers { get; private set; }
 
+    public Transform CenterTransform => centerTransform != null ? centerTransform : transform;
+        
     #endregion
 
     private void Awake()
@@ -84,9 +86,6 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
         
         // Assert that the new movement component is not null
         Debug.Assert(NewMovement != null, "The new movement component is null.");
-        
-        // Get the renderers
-        Renderers = GetComponentsInChildren<Renderer>();
     }
 
     private void OnDestroy()

@@ -56,6 +56,7 @@ public class PlayerEnemySelect : ComponentScript<Player>
         float cDistance = 0;
         var selectedCenter = Vector3.zero;
 
+        
         // Get all the enemies in the scene
         foreach (var enemy in Enemy.Enemies)
         {
@@ -63,12 +64,7 @@ public class PlayerEnemySelect : ComponentScript<Player>
             if (enemy == null)
                 continue;
 
-            var renderers = enemy.Renderers;
-
-            var center = Vector3.zero;
-            foreach (var cRenderer in renderers)
-                center += cRenderer.bounds.center;
-            center /= renderers.Length;
+            var center = enemy.CenterTransform.position;
 
             // Get the enemy's position
             _enemyPosition = center;

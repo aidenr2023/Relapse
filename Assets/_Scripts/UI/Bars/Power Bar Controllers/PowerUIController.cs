@@ -29,8 +29,6 @@ public class PowerUIController : MonoBehaviour
 
     [SerializeField] private Color disabledColor = Color.HSVToRGB(0, 0, .25f);
 
-    [Space, SerializeField] private TMP_FontAsset font;
-
     [SerializeField] private PowerArrayReference currentPowers;
     [SerializeField] private IntReference currentPowerIndex;
 

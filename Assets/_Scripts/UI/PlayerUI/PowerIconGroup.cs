@@ -19,8 +19,6 @@ public class PowerIconGroup : MonoBehaviour
     [SerializeField, Range(0, 1)] private float powerIconsMinOpacity = .75f;
     [SerializeField] private Vector3 powerIconFadeInOffset;
 
-    [Space, SerializeField] private TMP_FontAsset font;
-
     [SerializeField] private Color disabledColor = Color.HSVToRGB(0, 0, .25f);
 
     #endregion
@@ -264,7 +262,7 @@ public class PowerIconGroup : MonoBehaviour
         // Set the opacity of the power name text
         powerNameText.alpha = canvasGroup.alpha;
 
-        // Set the font of the power name text
-        powerNameText.font = font;
+        // // Set the font of the power name text
+        // powerNameText.font = font;
     }
 }
