@@ -186,21 +186,29 @@ public class MainMenu : GameMenu
 
     public void ActiveSettingsMenu()
     {
-        var pauseMenuManager = PauseMenuManager.Instance;
+        // var pauseMenuManager = PauseMenuManager.Instance;
+        //
+        // // Throw an exception if the pause menu instance is null
+        // if (pauseMenuManager == null)
+        //     return;
+        //
+        // // Activate the settings menu
+        // pauseMenuManager.IsolateMenu(pauseMenuManager.SettingsPanel);
+        // pauseMenuManager.Activate();
+        //
+        // // Update the event system
+        // UpdateEventSystem();
+        // pauseMenuManager.UpdateEventSystem();
+        //
+        // // Set the event system's selected object to the first button
+        // pauseMenuManager.EventSystem.SetSelectedGameObject(pauseMenuManager.SettingsFirstSelected);
 
-        // Throw an exception if the pause menu instance is null
-        if (pauseMenuManager == null)
+        var settingsMenu = SettingsMenu.Instance;
+        
+        if (settingsMenu == null)
             return;
-
+        
         // Activate the settings menu
-        pauseMenuManager.IsolateMenu(pauseMenuManager.SettingsPanel);
-        pauseMenuManager.Activate();
-
-        // Update the event system
-        UpdateEventSystem();
-        pauseMenuManager.UpdateEventSystem();
-
-        // Set the event system's selected object to the first button
-        pauseMenuManager.EventSystem.SetSelectedGameObject(pauseMenuManager.SettingsFirstSelected);
+        settingsMenu.Activate();
     }
 }

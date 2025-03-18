@@ -64,8 +64,9 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
     {
         StartCoroutine(PauseMenuManager.LoadPauseMenuManager());
         StartCoroutine(VendorMenu.LoadVendorMenu());
+        StartCoroutine(SettingsMenu.LoadSettingsMenu());
         StartCoroutine(RelapseScreen.LoadDeathScene());
-        StartCoroutine(JournalMenu.LoadJournalMenu());
+        // StartCoroutine(JournalMenu.LoadJournalMenu());
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)

@@ -42,14 +42,12 @@ public class PauseMenuManager : GameMenu
     [SerializeField] private GameObject tutorialsButtonParent;
     [SerializeField] private TutorialButton tutorialButtonPrefab;
     [SerializeField] private GameObject tutorialBack;
-    
+
     [SerializeField] private TutorialArrayVariable allTutorials;
     [SerializeField] private TutorialArrayVariable completedTutorials;
 
     [SerializeField] private PowerInfoScreen powerInfoScreen;
 
-    
-    
     #endregion
 
     #region Private Fields
@@ -279,14 +277,18 @@ public class PauseMenuManager : GameMenu
     {
         ChangeClickColor(textObject);
 
-        // Push the settings panel onto the stack
-        _menuStack.Push(settingsPanel);
+        // // Push the settings panel onto the stack
+        // _menuStack.Push(settingsPanel);
+        //
+        // // Isolate the settings panel
+        // IsolateMenu(_menuStack.Peek());
+        //
+        // // Set the event system's selected object to the first button
+        // SetSelectedButton(settingsFirstSelected);
 
-        // Isolate the settings panel
-        IsolateMenu(_menuStack.Peek());
-
-        // Set the event system's selected object to the first button
-        SetSelectedButton(settingsFirstSelected);
+        // Activate the instance of the settings menu
+        if (SettingsMenu.Instance != null)
+            SettingsMenu.Instance.Activate();
     }
 
     public void Tutorials(GameObject textObject)
@@ -374,11 +376,11 @@ public class PauseMenuManager : GameMenu
         // eventSystem.SetSelectedGameObject(button);
         StartCoroutine(SetSelectedButtonCoroutine(button));
     }
-    
+
     private IEnumerator SetSelectedButtonCoroutine(GameObject button)
     {
         yield return null;
-        
+
         eventSystem.SetSelectedGameObject(button);
     }
 
