@@ -53,28 +53,19 @@ public class PlayerIkController : MonoBehaviour
     }
     
     //--- Update Loop ---
-    private void LateUpdate()
+    private void Update()
     {
         if (!wallRunningScript.IsWallRunningLeft) return;
     
-        // Get fresh wall data every frame
+        // Get fresh wall contact info every frame
         RaycastHit contactInfo = wallRunningScript.ContactInfo;
+    
+        // Only update if we have valid wall contact
         if (contactInfo.collider == null) return;
 
-        // Calculate wall-aligned directions
-        Vector3 wallRight = Vector3.Cross(contactInfo.normal, Vector3.up).normalized;
-        Vector3 wallForward = Vector3.Cross(contactInfo.normal, wallRight);
-
-        // Get player's movement direction along wall
-        Vector3 playerVelocity = wallRunningScript.ParentComponent.Rigidbody.velocity;
-        float velocityAlongWall = Vector3.Dot(playerVelocity, wallForward);
-
-        // Update hand position with velocity offset
-        Vector3 dynamicOffset = wallForward * (velocityAlongWall * Time.deltaTime * 0.5f);
+        UpdateHandPosition(contactInfo);
     
-        leftHandTarget.position += dynamicOffset;
-        
-        // Apply position offset
+        // Add movement-based offset
         ApplyMovementOffset(contactInfo);
     }
     /// <summary>
@@ -106,25 +97,35 @@ public class PlayerIkController : MonoBehaviour
     // --- Core Logic ---
     private void UpdateHandPosition(RaycastHit contactInfo)
     {
-        // Convert contact point to wall's local space
-        Vector3 wallLocalPos = contactInfo.collider.transform.InverseTransformPoint(contactInfo.point);
-    
-        // Maintain position in wall's space during movement
-        Vector3 anchoredPosition = contactInfo.collider.transform.TransformPoint(wallLocalPos);
-    
-        // Apply vertical offset from shoulder
-        anchoredPosition.y = shoulderBone.position.y + verticalOffset;
+        if (shoulderBone == null) return;
 
-        // Add forward offset relative to WALL (not player)
-        Vector3 wallForward = Vector3.Cross(contactInfo.normal, Vector3.up).normalized;
-        Vector3 finalPosition = anchoredPosition + 
-                                (wallForward * handForwardOffset) + 
-                                (contactInfo.normal * 0.05f);
+        // Base position with movement offset
+        Vector3 wallAnchorPoint = contactInfo.point + 
+                                  _currentWallForward * _positionAlongWall;
 
+        Vector3 handBasePos = new Vector3(
+            wallAnchorPoint.x,
+            shoulderBone.position.y + verticalOffset,
+            wallAnchorPoint.z
+        );
+
+        // Add forward offset relative to wall
+        Vector3 handPosition = handBasePos + 
+                               _currentWallForward * handForwardOffset +
+                               contactInfo.normal * 0.05f;
+
+        // Smoothly update position
         leftHandTarget.position = Vector3.Lerp(
             leftHandTarget.position,
-            finalPosition,
-            Time.deltaTime * ikTransitionSpeed * 2f // Faster follow speed
+            handPosition,
+            Time.deltaTime * ikTransitionSpeed
+        );
+
+        // Maintain rotation locked to wall surface
+        leftHandTarget.rotation = Quaternion.Lerp(
+            leftHandTarget.rotation,
+            Quaternion.LookRotation(-contactInfo.normal),
+            Time.deltaTime * ikTransitionSpeed
         );
     }
 
