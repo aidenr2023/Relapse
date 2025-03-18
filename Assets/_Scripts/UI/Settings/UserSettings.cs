@@ -132,63 +132,47 @@ public class UserSettings
 
     public void SetGamma(float value)
     {
-        value = Mathf.Clamp(value, MIN_GAMMA, MAX_GAMMA);
-
-        Gamma = value;
+        Gamma = Mathf.Clamp(value, MIN_GAMMA, MAX_GAMMA);
     }
 
     // Volume settings individual
     public void SetSoundMasterVolume(float value)
     {
-        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
-
-        MasterVolume = value;
+        MasterVolume = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
     }
 
     public void SetSoundMusicVolume(float value)
     {
-        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
-
-        MusicVolume = value;
+        MusicVolume = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
     }
 
     public void SetSoundGameSFXVolume(float value)
     {
-        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
-
-        GameSFXVolume = value;
+        GameSFXVolume = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
     }
 
     public void SetSoundPlayerVolume(float value)
     {
-        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
-
-        PlayerVolume = value;
+        PlayerVolume = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
     }
 
     public void SetSoundEnemiesVolume(float value)
     {
-        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
-
-        EnemiesVolume = value;
+        EnemiesVolume = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
     }
 
     public void SetSoundOtherVolume(float value)
     {
-        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
-
-        OtherVolume = value;
+        OtherVolume = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
     }
 
     public void SetSoundUISFXVolume(float value)
     {
-        value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
-
-        UISFXVolume = value;
+        UISFXVolume = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
     }
 
 
-//This is probably better to use than the above methods
+    // This is probably better to use than the above methods
     public void SetAllVolumes(float Master, float Music, float GameSFX, float Player, float Enemies, float Other,
         float UISFX)
     {
