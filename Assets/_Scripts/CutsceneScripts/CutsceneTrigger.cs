@@ -11,23 +11,22 @@ public class CutsceneTrigger : MonoBehaviour
     public string cutsceneName;
 
     private CutsceneHandler cutsceneHandler;
-    
+
     [SerializeField] private bool isCamChangeNeeded = false;
-    
+
     [SerializeField] private bool isPlayerMovementNeeded = false;
-    
+
     [SerializeField] private bool isCutsceneFirstPerson = false;
-    
-    
-    
+
+
     private CutsceneHandler.CutsceneType _cutscenePerspective;
     private BoxCollider _boxCollider;
-    
-    
+
+
     public bool IsCamChangeNeeded => isCamChangeNeeded;
 
     private bool cutscenePlayed = false;
-    
+
     private void Start()
     {
         cutsceneHandler = CutsceneManager.Instance.CutsceneHandler;
@@ -55,7 +54,7 @@ public class CutsceneTrigger : MonoBehaviour
             StartCoroutine(DestroyTrigger());
         }
     }
-    
+
     private IEnumerator TriggerCutsceneDelayed()
     {
         // Wait one frame after the player enters the trigger
@@ -65,13 +64,14 @@ public class CutsceneTrigger : MonoBehaviour
         CutsceneManager.Instance.PlayCutsceneByName(cutsceneName, isPlayerMovementNeeded, _cutscenePerspective);
         cutscenePlayed = true;
     }
-   
-    
-    
+
+
     //destroy the trigger after seconds 
     private IEnumerator DestroyTrigger()
     {
         yield return new WaitForSeconds(3f);
-        _boxCollider.enabled = false;
+
+        if (_boxCollider != null)
+            _boxCollider.enabled = false;
     }
 }

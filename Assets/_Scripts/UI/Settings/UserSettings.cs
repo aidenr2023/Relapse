@@ -137,7 +137,7 @@ public class UserSettings
         Gamma = value;
     }
 
-// Volume settings individual
+    // Volume settings individual
     public void SetSoundMasterVolume(float value)
     {
         value = Mathf.Clamp(value, MIN_VOLUME, MAX_VOLUME);
