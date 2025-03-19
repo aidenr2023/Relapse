@@ -72,7 +72,7 @@ public class LevelInformation : MonoBehaviour
 
         if (!obj.addToCheckpointManagerOnLoad)
             return;
-        
+
         obj.StartCoroutine(TryToAddToCheckpointManager(obj));
     }
 
@@ -82,12 +82,12 @@ public class LevelInformation : MonoBehaviour
         yield return new WaitUntil(() => CheckpointManager.Instance != null);
 
         yield return new WaitForSeconds(1f);
-        
+
         var checkpointManager = CheckpointManager.Instance;
 
         // Save the starting checkpoint (if necessary)
         checkpointManager.SaveCheckpoint(obj.StartingPosition);
-        
+
         // Save the checkpoint information
         CheckpointInteractable.SaveInformation();
     }
@@ -116,9 +116,28 @@ public class LevelInformation : MonoBehaviour
 
         // Set the difficulty multipliers
         if (difficultyHealthMultiplierSo != null)
-            difficultyHealthMultiplierSo.Value = difficultySettings.DifficultyHealthMultiplier;
+        {
+            try
+            {
+                difficultyHealthMultiplierSo.Value = difficultySettings.DifficultyHealthMultiplier;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
+
         if (difficultyDamageMultiplierSo != null)
-            difficultyDamageMultiplierSo.Value = difficultySettings.DifficultyDamageMultiplier;
+        {
+            try
+            {
+                difficultyDamageMultiplierSo.Value = difficultySettings.DifficultyDamageMultiplier;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+            }
+        }
     }
 
     private void Start()
