@@ -13,6 +13,8 @@ public class TempleRun : MonoBehaviour
       [SerializeField] public GameObject shatteredwall;
       [SerializeField] public GameObject doorFrame;
        [SerializeField] public GameObject brokenFrame;
+
+       [SerializeField] public GameObject particle;
     // Start is called before the first frame update
     void Awake()
     {
@@ -31,10 +33,18 @@ public class TempleRun : MonoBehaviour
                doorFrame.SetActive(false);
                brokenFrame.SetActive(true); 
                audioSource.PlayOneShot(debrisBreak, 1);
+               particle.SetActive(true);
+               StartCoroutine(End());
         }
     }
     private void OnTriggerExit(Collider other)
     {
         collider.enabled = false;
+    }
+
+    IEnumerator End ()
+    {
+        yield return new WaitForSeconds(5);
+        particle.SetActive(false);
     }
 }

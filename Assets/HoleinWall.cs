@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GlassShatter : MonoBehaviour
+public class HoleinWall : MonoBehaviour
 {
     [SerializeField] public GameObject brokenGlass;
     [SerializeField] public GameObject Glass;
@@ -20,11 +20,17 @@ public class GlassShatter : MonoBehaviour
     // Update is called once per frame
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player")
+        if (other.tag == "Enemy")
         {
             Glass.SetActive(false);
             brokenGlass.SetActive(true);
             audioSource.PlayOneShot(glassBreak, 1);
+            Debug.Log(other.tag);
+        }
+        else if (other.tag == "Player")
+
+        {
+            Debug.Log("I don't know what to do here");
         }
     }
 
