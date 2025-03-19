@@ -189,14 +189,14 @@ public class NewEnemyMovement : ComponentScript<Enemy>
                     break;
                 case BehaviorActionMove.MoveAction.StrafeRight:
                     _localVelX = 1;
-                    _localVelZ = 0;
+                    _localVelZ = 1;
                     break;
                 case BehaviorActionMove.MoveAction.StrafeForward:
                     _localVelX = 0;
                     _localVelZ = 1;
                     break;
                 case BehaviorActionMove.MoveAction.StrafeBackward:
-                    _localVelX = 0;
+                    _localVelX = 1;
                     _localVelZ = -1;
                     break;
             }
