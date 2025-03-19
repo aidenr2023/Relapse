@@ -7,11 +7,13 @@ public class voidphase2 : MonoBehaviour
     // Start is called before the first frame update
     
     [SerializeField] public GameObject Platforms;
+    [SerializeField] public GameObject Platform;
 
     void Start()
     {
        
         Platforms.SetActive(false);
+        Platform.SetActive(false);
         
     }
 
@@ -21,6 +23,7 @@ public class voidphase2 : MonoBehaviour
         if (other.tag == "Player")
         {
             Platforms.SetActive(true);
+            Platform.SetActive(true);
         }
     }
 }
