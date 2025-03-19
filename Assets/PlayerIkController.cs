@@ -11,6 +11,10 @@ public class PlayerIkController : MonoBehaviour
     [SerializeField] private Transform leftHandTarget;
     [SerializeField] private Transform shoulderBone;
     
+    [Header("Rotation Constraint")]
+    [SerializeField] private MultiRotationConstraint handRotationConstraint;
+    [SerializeField] private Transform handRotationSource; // Assign the dummy GameObject
+    
     [Header("Settings")]
     [SerializeField] private float handForwardOffset = 0.3f;
     [SerializeField] private float verticalOffset = 0.5f;
@@ -35,25 +39,27 @@ public class PlayerIkController : MonoBehaviour
     // --- Event Handlers ---
     private void HandleWallRunStart(PlayerWallRunning obj)
     {
-        if (!obj.IsWallRunningLeft) return; // Only activate for left runs
+        if (!obj.IsWallRunningLeft) return;
+
+        // Activate IK rig and update rotation source
         wallRunRig.weight = 1f;
         UpdateHandPosition(obj.ContactInfo);
+        UpdateRotationSource(obj.ContactInfo.normal);
     }
 
     private void HandleWallChanged(PlayerWallRunning obj)
     {
         if (!obj.IsWallRunningLeft) return;
-        UpdateHandPosition(obj.ContactInfo);
+        UpdateRotationSource(obj.ContactInfo.normal);
     }
 
     private void HandleWallRunEnd(PlayerWallRunning obj)
     {
-        _positionAlongWall = 0;
         StartCoroutine(BlendOutIK());
     }
     
     //--- Update Loop ---
-    private void Update()
+    private void LateUpdate()
     {
         if (!wallRunningScript.IsWallRunningLeft) return;
     
@@ -128,6 +134,13 @@ public class PlayerIkController : MonoBehaviour
             Time.deltaTime * ikTransitionSpeed
         );
     }
+    private void UpdateRotationSource(Vector3 wallNormal)
+    {
+        // Rotate the dummy to align with the wall's normal
+        handRotationSource.rotation = Quaternion.LookRotation(wallNormal);
+    }
+
+    
 
     private IEnumerator BlendOutIK()
     {
