@@ -196,7 +196,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
                     _localVelZ = 1;
                     break;
                 case BehaviorActionMove.MoveAction.StrafeBackward:
-                    _localVelX = 1;
+                    _localVelX = 0;
                     _localVelZ = -1;
                     break;
             }
