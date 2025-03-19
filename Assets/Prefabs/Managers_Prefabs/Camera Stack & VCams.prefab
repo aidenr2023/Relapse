@@ -1209,7 +1209,7 @@ GameObject:
   - component: {fileID: 7389802915432785418}
   - component: {fileID: 2894793623801640713}
   - component: {fileID: 2635284295597686708}
-  - component: {fileID: 855366192856091144}
+  - component: {fileID: 8028961294806795202}
   m_Layer: 17
   m_Name: Stamina Bar
   m_TagString: Untagged
@@ -1278,7 +1278,7 @@ MonoBehaviour:
   showWhenEmpty: 0
   alwaysShowWhileFull: 0
   alwaysShowWhileNotFull: 1
---- !u!114 &855366192856091144
+--- !u!114 &8028961294806795202
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1287,14 +1287,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1133833275208951420}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: afd8762c62f649e6a0f5acd2629c4bd3, type: 3}
+  m_Script: {fileID: 11500000, guid: 3141a850c5c4489aa88449c8a99c84e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxStamina:
+  maxValue:
     useConstant: 0
     constantValue: 0
     variable: {fileID: 11400000, guid: b0262a1af4da5404f9587d2837dac4d7, type: 2}
-  currentStamina:
+  currentValue:
     useConstant: 0
     constantValue: 0
     variable: {fileID: 11400000, guid: f00348c043d0deb448953ab57a3e325b, type: 2}
@@ -4871,6 +4871,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9237c07693e4e9cbdccda1fd3df5822, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentPowers:
+    useConstant: 0
+    constantValue: []
+    variable: {fileID: 11400000, guid: 330e22d8c4975114dac612f15a5e4fc2, type: 2}
+  currentPowerIndex:
+    useConstant: 0
+    constantValue: 0
+    variable: {fileID: 11400000, guid: f02246ba2fcd16446881cd05510bc80e, type: 2}
   canvasGroup: {fileID: 2868937017171625339}
   currentPowerImage: {fileID: 7602062805883682285}
   currentPowerImageBg: {fileID: 847502938209957195}
@@ -4888,14 +4896,6 @@ MonoBehaviour:
   selectedColor: {r: 1, g: 1, b: 1, a: 1}
   unselectedColor: {r: 1, g: 1, b: 1, a: 1}
   disabledColor: {r: 0.25, g: 0.25, b: 0.25, a: 1}
-  currentPowers:
-    useConstant: 0
-    constantValue: []
-    variable: {fileID: 11400000, guid: 330e22d8c4975114dac612f15a5e4fc2, type: 2}
-  currentPowerIndex:
-    useConstant: 0
-    constantValue: 0
-    variable: {fileID: 11400000, guid: f02246ba2fcd16446881cd05510bc80e, type: 2}
 --- !u!1 &4482250784300818540
 GameObject:
   m_ObjectHideFlags: 0
@@ -5959,7 +5959,7 @@ GameObject:
   - component: {fileID: 6003350061974101269}
   - component: {fileID: 3975027085707867180}
   - component: {fileID: 4239847186549826935}
-  - component: {fileID: 1612679889220532260}
+  - component: {fileID: 5477621649871948269}
   m_Layer: 17
   m_Name: Health Bar
   m_TagString: Untagged
@@ -6028,7 +6028,7 @@ MonoBehaviour:
   showWhenEmpty: 0
   alwaysShowWhileFull: 0
   alwaysShowWhileNotFull: 1
---- !u!114 &1612679889220532260
+--- !u!114 &5477621649871948269
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -6037,14 +6037,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 5755408077940791634}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3f4185ebce24b2d9b8fd23d613c4065, type: 3}
+  m_Script: {fileID: 11500000, guid: 3141a850c5c4489aa88449c8a99c84e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth:
+  maxValue:
     useConstant: 0
     constantValue: 0
     variable: {fileID: 11400000, guid: 2be4a18a9fe1ac4448535a1a7edf4ea3, type: 2}
-  currentHealth:
+  currentValue:
     useConstant: 0
     constantValue: 0
     variable: {fileID: 11400000, guid: 64b8812f46e1a9e4489520d211e0b652, type: 2}
@@ -8253,11 +8253,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3147a324deaa4c3a9f201f9f8d31e22d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxToxicity:
+  maxValue:
     useConstant: 0
     constantValue: 0
     variable: {fileID: 11400000, guid: 27ae6bb8251b4164c94c238ccdf37b4a, type: 2}
-  currentToxicity:
+  currentValue:
     useConstant: 0
     constantValue: 0
     variable: {fileID: 11400000, guid: 8a66f0e53e1ce3448bb60193f740b382, type: 2}

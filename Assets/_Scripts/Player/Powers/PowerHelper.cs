@@ -6,7 +6,7 @@ public class PowerHelper : MonoBehaviour
 {
     public static PowerHelper Instance { get; private set; }
     
-    [SerializeField] private PowerArrayReference powers;
+    [SerializeField] private PowerListReference powers;
     
     [SerializeField] private BossPowerScriptableObject[] bossPowers;
     

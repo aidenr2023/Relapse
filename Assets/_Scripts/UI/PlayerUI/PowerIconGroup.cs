@@ -7,7 +7,7 @@ public class PowerIconGroup : MonoBehaviour
 {
     #region Serialized Fields
 
-    [SerializeField] private PowerArrayReference equippedPowers;
+    [SerializeField] private PowerListReference equippedPowers;
     [SerializeField] private IntReference currentPowerIndex;
     [SerializeField] private PowerTokenListReference powerTokens;
 
@@ -90,7 +90,7 @@ public class PowerIconGroup : MonoBehaviour
         PowerScriptableObject currentPower = null;
 
         // If there are no powers, hide the canvas group
-        if (powers.Length == 0)
+        if (powers.Count == 0)
             canvasGroup.alpha = powerIconsMinOpacity;
 
         else
@@ -100,7 +100,7 @@ public class PowerIconGroup : MonoBehaviour
         for (var i = 0; i < powerImages.Length; i++)
         {
             // If there is no power at this index, set the fill amount to 1 and the sprite to null
-            if (i >= powers.Length)
+            if (i >= powers.Count)
             {
                 powerImages[i].SetFill(1);
                 powerImages[i].SetForeground(null);
@@ -212,7 +212,7 @@ public class PowerIconGroup : MonoBehaviour
         // Get the current power
         PowerScriptableObject currentPower = null;
 
-        if (currentPowerIndex < equippedPowers.Value.Length && currentPowerIndex >= 0)
+        if (currentPowerIndex < equippedPowers.Value.Count && currentPowerIndex >= 0)
             currentPower = equippedPowers.Value[currentPowerIndex];
 
         // Return if the current power is null
@@ -248,7 +248,7 @@ public class PowerIconGroup : MonoBehaviour
         // Get the current power
         PowerScriptableObject currentPower = null;
         
-        if (currentPowerIndex < equippedPowers.Value.Length && currentPowerIndex >= 0)
+        if (currentPowerIndex < equippedPowers.Value.Count && currentPowerIndex >= 0)
             currentPower = equippedPowers.Value[currentPowerIndex.Value];
     
         // Return if the current power is null

@@ -24,8 +24,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     [SerializeField] private LayerMask powerAimIgnoreLayers;
 
-    [SerializeField] private PowerArrayReference allPowers;
-    [SerializeField] private PowerArrayReference powers;
+    [SerializeField] private PowerListReference startingPowers;
+    [SerializeField] private PowerListReference allPowers;
+    [SerializeField] private PowerListReference powers;
     [SerializeField] private IntReference currentPowerIndex;
 
     [Header("Power Charged Vignette"), SerializeField, Range(0, 1)]
@@ -78,14 +79,16 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     {
         get
         {
+            var count = powers.Value.Count;
+
             // Return null if the powers array is empty
-            if (powers.Value.Length == 0)
+            if (count == 0)
                 return null;
 
-            currentPowerIndex.Value %= powers.Value.Length;
+            currentPowerIndex.Value %= count;
 
             if (currentPowerIndex < 0)
-                currentPowerIndex.Value += powers.Value.Length;
+                currentPowerIndex.Value += count;
 
             return powers.Value[currentPowerIndex];
         }
@@ -136,6 +139,18 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Initialize the power collections
         InitializePowerCollections();
+
+        // If there are no powers in Powers, then add the starting powers
+        if (powers.Value.Count == 0 && startingPowers.Value != null && startingPowers.Value.Count > 0)
+        {
+            foreach (var scriptableObject in startingPowers.Value)
+            {
+                if (scriptableObject == null)
+                    continue;
+
+                AddPower(scriptableObject, false);
+            }
+        }
 
         // Initialize the input
         InitializeInput();
@@ -277,9 +292,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
             CreatePowerToken(pso);
 
         // Update the power collections
-        UpdatePowerCollections(powers.Value);
+        UpdatePowerCollections(powers.Value.ToArray());
     }
-
 
     private void OnRelapseStart(PlayerInfo obj)
     {
@@ -306,7 +320,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     public void ChangePower(int index)
     {
         // Return if the powers array is empty
-        if (powers.Value.Length == 0)
+        if (powers.Value.Count == 0)
             return;
 
         // Don't change the power if the current power is active
@@ -317,9 +331,9 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         if (_isChargingPower)
             StopCharge();
 
-        currentPowerIndex.Value = (index) % powers.Value.Length;
+        currentPowerIndex.Value = (index) % powers.Value.Count;
         if (currentPowerIndex < 0)
-            currentPowerIndex.Value += powers.Value.Length;
+            currentPowerIndex.Value += powers.Value.Count;
     }
 
     private void OnPowerPerformed(InputAction.CallbackContext obj)
@@ -521,15 +535,15 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     {
         // Condense the powers array by trimming the null values at the end
         int removeAmount;
-        for (removeAmount = 0; removeAmount < powers.Value.Length; removeAmount++)
+        for (removeAmount = 0; removeAmount < powers.Value.Count; removeAmount++)
         {
-            if (powers.Value[powers.Value.Length - 1 - removeAmount] != null)
+            if (powers.Value[powers.Value.Count - 1 - removeAmount] != null)
                 break;
         }
 
         // Remove the null values from the end of the array if removeAmount is greater than 0
         if (removeAmount > 0)
-            PowerResize(powers.Value.Length - removeAmount);
+            PowerResize(powers.Value.Count - removeAmount);
 
         // Loop through all the new powers
         foreach (var power in newPowers)
@@ -542,10 +556,10 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         }
 
         // clamp the current power index to the new powers array
-        currentPowerIndex.Value = Mathf.Clamp(currentPowerIndex, 0, powers.Value.Length - 1);
+        currentPowerIndex.Value = Mathf.Clamp(currentPowerIndex, 0, powers.Value.Count - 1);
 
         // Skip if the current power is already set or if there are no powers
-        if (CurrentPower != null || powers.Value.Length == 0)
+        if (CurrentPower != null || powers.Value.Count == 0)
             return;
 
         // Set the current power to the first power in the array
@@ -757,19 +771,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         _isChargingPower = false;
     }
 
-    public void SetUpPowers(int powerIndex, PowerScriptableObject[] newPowers)
-    {
-        // Clone the powers array
-        powers.Value = new PowerScriptableObject[newPowers.Length];
-        Array.Copy(newPowers, powers.Value, newPowers.Length);
-
-        // Initialize the power collections
-        InitializePowerCollections();
-
-        // Set the current power index
-        currentPowerIndex.Value = powerIndex;
-    }
-
     private VisualEffect GetChargeVfx(PowerScriptableObject power)
     {
         // Return null if the power is null
@@ -803,13 +804,17 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     public void AddPower(PowerScriptableObject powerScriptableObject, bool toolTip = true)
     {
+        // Return if the power is null
+        if (powerScriptableObject == null)
+            return;
+
         // Check if the power is already in the array
         if (powers.Value.Contains(powerScriptableObject))
             return;
 
         // Add the power to the end of the powers array
-        // Array.Resize(ref powers, powers.Value.Length + 1);
-        PowerResize(powers.Value.Length + 1);
+        // Array.Resize(ref powers, powers.Value.Count + 1);
+        PowerResize(powers.Value.Count + 1);
         powers.Value[^1] = powerScriptableObject;
 
         // Update the power collections
@@ -837,8 +842,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         // add the power to the end of the powers array
         if (!powers.Value.Contains(powerToken.PowerScriptableObject))
         {
-            // Array.Resize(ref powers, powers.Value.Length + 1);
-            PowerResize(powers.Value.Length + 1);
+            // Array.Resize(ref powers, powers.Value.Count + 1);
+            PowerResize(powers.Value.Count + 1);
             powers.Value[^1] = powerToken.PowerScriptableObject;
         }
 
@@ -848,40 +853,47 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     private void PowerResize(int newSize)
     {
-        // Copy the original powers array
-        var powersCopy = new PowerScriptableObject[powers.Value.Length];
-        Array.Copy(powers.Value, powersCopy, powers.Value.Length);
+        // // Copy the original powers array
+        // var powersCopy = new PowerScriptableObject[powers.Value.Count];
+        // Array.Copy(powers.Value, powersCopy, powers.Value.Count);
+        //
+        // // Replace the powers array with a new empty array
+        // powers.Value = new PowerScriptableObject[newSize];
+        //
+        // // Copy the original powers back to the new array
+        // Array.Copy(powersCopy, powers.Value, powersCopy.Length);
 
-        // Replace the powers array with a new empty array
-        powers.Value = new PowerScriptableObject[newSize];
+        // Ensure the list does not contain any null values
+        while (powers.Value.Count < newSize)
+            powers.Value.Add(null);
 
-        // Copy the original powers back to the new array
-        Array.Copy(powersCopy, powers.Value, powersCopy.Length);
+        while (powers.Value.Count > newSize && powers.Value[^1] == null)
+            powers.Value.RemoveAt(powers.Value.Count - 1);
     }
 
     public void RemovePower(PowerScriptableObject powerScriptableObject)
     {
         var isCurrentPower = CurrentPower == powerScriptableObject;
-        var isLastPower = powers.Value.Length == 1;
+        var isLastPower = powers.Value.Count == 1;
 
         // Return if the player does not have the power
         if (!powers.Value.Contains(powerScriptableObject))
             return;
 
         // Remove the power from the powers array
-        for (int i = 0; i < powers.Value.Length; i++)
+        for (int i = 0; i < powers.Value.Count; i++)
         {
             // Look for the power in the array
             if (powers.Value[i] != powerScriptableObject)
                 continue;
 
             // Remove the power from the array by shifting all the elements to the left
-            for (int j = i; j < powers.Value.Length - 1; j++)
+            for (int j = i; j < powers.Value.Count - 1; j++)
                 powers.Value[j] = powers.Value[j + 1];
 
             // Resize the array
-            // Array.Resize(ref powers, powers.Value.Length - 1);
-            PowerResize(powers.Value.Length - 1);
+            // Array.Resize(ref powers, powers.Value.Count - 1);
+            PowerResize(powers.Value.Count - 1);
 
             break;
         }
@@ -897,7 +909,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         if (isCurrentPower)
         {
-            currentPowerIndex.Value = Mathf.Clamp(currentPowerIndex, 0, powers.Value.Length - 1);
+            currentPowerIndex.Value = Mathf.Clamp(currentPowerIndex, 0, powers.Value.Count - 1);
             ChangePower(currentPowerIndex);
         }
 
@@ -909,7 +921,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     {
         // Clear the power tokens, the drugs set, the meds set, and the powers array
         _powerTokens.Clear();
-        powers.Value = Array.Empty<PowerScriptableObject>();
+        // powers.Value = Array.Empty<PowerScriptableObject>();
+        powers.Value.Clear();
 
         powerTokensSo.value.Clear();
     }
@@ -969,19 +982,19 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     public PowerScriptableObject GetPowerAtIndex(int index)
     {
-        return index >= 0 && index < powers.Value.Length ? powers.Value[index] : null;
+        return index >= 0 && index < powers.Value.Count ? powers.Value[index] : null;
     }
 
     public void SetPowerAtIndex(PowerScriptableObject power, int index)
     {
-        if (index < 0 || index >= powers.Value.Length)
+        if (index < 0 || index >= powers.Value.Count)
             return;
 
         // Create an array that represents the new powers array
-        var newPowers = new PowerScriptableObject[powers.Value.Length];
+        var newPowers = new PowerScriptableObject[powers.Value.Count];
 
         // Populate the array with the current powers
-        for (int i = 0; i < powers.Value.Length; i++)
+        for (int i = 0; i < powers.Value.Count; i++)
             newPowers[i] = powers.Value[i];
 
         // Replace the power at the index

@@ -8,6 +8,9 @@ public class PowerUIController : MonoBehaviour
 {
     #region Serialized Fields
 
+    [SerializeField] private PowerListReference currentPowers;
+    [SerializeField] private IntReference currentPowerIndex;
+    
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private Image currentPowerImage;
     [SerializeField] private Image currentPowerImageBg;
@@ -28,9 +31,6 @@ public class PowerUIController : MonoBehaviour
     [SerializeField] private Color unselectedColor = Color.black;
 
     [SerializeField] private Color disabledColor = Color.HSVToRGB(0, 0, .25f);
-
-    [SerializeField] private PowerArrayReference currentPowers;
-    [SerializeField] private IntReference currentPowerIndex;
 
     #endregion
 
@@ -55,14 +55,14 @@ public class PowerUIController : MonoBehaviour
     private void Update()
     {
         // If the player has no powers, turn the canvas group's opacity to 0
-        if (currentPowers.Value.Length == 0)
+        if (currentPowers.Value.Count == 0)
             canvasGroup.alpha = 0;
         else
             canvasGroup.alpha = 1;
 
         PowerScriptableObject currentPower = null;
         
-        if (currentPowers.Value.Length > 0)
+        if (currentPowers.Value.Count > 0)
             currentPower = currentPowers.Value[currentPowerIndex.Value];
         
         // If the current power is not null

@@ -2,7 +2,7 @@
 
 public class PowerPassiveBarController : TransparentBarController
 {
-    [SerializeField] private PowerArrayReference equippedPowers;
+    [SerializeField] private PowerListReference equippedPowers;
     [SerializeField] private IntReference currentPowerIndex;
     [SerializeField] private PowerTokenListReference powerTokens;
     
@@ -17,7 +17,7 @@ public class PowerPassiveBarController : TransparentBarController
     {
         PowerScriptableObject currentPower = null;
         
-        if (equippedPowers.Value.Length > 0)
+        if (equippedPowers.Value.Count > 0)
             currentPower = equippedPowers.Value[currentPowerIndex.Value];
 
         // If there is no power, set the current value to 0

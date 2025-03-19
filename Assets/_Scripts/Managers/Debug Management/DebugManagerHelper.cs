@@ -281,7 +281,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         player.PlayerPowerManager.ClearPowers();
 
         foreach (var power in sceneLevelInfo.Powers)
-            player.PlayerPowerManager.AddPower(power);
+            player.PlayerPowerManager.AddPower(power, false);
 
         // If the player has no gun, add the level skip gun
         if (player.WeaponManager.EquippedGun == null && levelSkipGun != null)

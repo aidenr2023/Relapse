@@ -10,13 +10,9 @@ using UnityEngine.UI;
 [RequireComponent(typeof(EnemyInfo))]
 public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 {
-    private static bool _bossStarted;
-
     #region Serialized Fields
 
     [SerializeField] private IntReference bossCurrentPhase;
-
-    [SerializeField] private Slider bossHealthSlider;
 
     [SerializeField] private BossEnemyAttack bossEnemyAttack;
     [SerializeField] private TempShootingEnemyAttack attack1;
@@ -33,7 +29,6 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
     private IEnemyAttackBehavior _currentAttackBehavior;
 
     #endregion
-
 
     protected override void CustomAwake()
     {
@@ -53,24 +48,11 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 
         ParentComponent.OnDamaged += ActivatePhaseChange;
 
-        ParentComponent.OnDamaged += ChangeHealthBar;
-        ParentComponent.OnHealed += ChangeHealthBar;
-
         ParentComponent.OnDeath += DetermineEndingOnDeath;
-
-        ParentComponent.OnDeath += ResetStaticVariables;
-        
-        // Update the slider value
-        ChangeHealthBar(null, null);
     }
 
     private void SetHealthScriptableObjects(object sender, HealthChangedEventArgs e)
     {
-    }
-
-    private void ResetStaticVariables(object sender, HealthChangedEventArgs e)
-    {
-        _bossStarted = false;
     }
 
     private void DetermineEndingOnDeath(object sender, HealthChangedEventArgs e)
@@ -90,24 +72,6 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
             Debug.Log($"BAD ENDING: {relapseCount}");
             onBadEnding.Invoke();
         }
-    }
-
-    private void ChangeHealthBar(object sender, HealthChangedEventArgs e)
-    {
-        // TODO: Implement health bar change
-
-        var healthPercentage = ParentComponent.CurrentHealth / ParentComponent.MaxHealth;
-
-        // Change the fill of the health bar
-        SetHealthBar(healthPercentage);
-    }
-
-    private void SetHealthBar(float percent)
-    {
-        if (bossHealthSlider == null)
-            return;
-
-        bossHealthSlider.value = percent;
     }
 
     private void OnEnable()

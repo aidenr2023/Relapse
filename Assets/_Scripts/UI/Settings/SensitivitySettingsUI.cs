@@ -30,6 +30,8 @@ public class SensitivitySettingsUI : MonoBehaviour
 
     private void Start()
     {
+        return;
+        
         // Set the sliders to the current sensitivity values
         mouseSensXSlider.Value = settingsMenuSettings.value.MouseSens.x;
         mouseSensYSlider.Value = settingsMenuSettings.value.MouseSens.y;

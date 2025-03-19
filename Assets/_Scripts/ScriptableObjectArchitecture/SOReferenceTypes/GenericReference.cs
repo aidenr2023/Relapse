@@ -16,7 +16,16 @@ public abstract class GenericReference<TVarType, TSoType> where TSoType : Generi
 
     public TVarType Value
     {
-        get => useConstant ? constantValue : variable.value;
+        get
+        {
+            if (useConstant)
+                return constantValue;
+
+            if (variable == null)
+                return default(TVarType);
+
+            return variable.value;
+        }
         set
         {
             if (useConstant)

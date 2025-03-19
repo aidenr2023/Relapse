@@ -21,7 +21,6 @@ public class GenericReferencePropertyDrawer : PropertyDrawer
 
         // Calculate rects
         var dropdownRect = new Rect(position.x, position.y, 20, position.height);
-        var inputRect = new Rect(position.x + 20, position.y, position.width - 20, position.height);
 
         //get bool property
         var useConstantProp = prop.FindPropertyRelative("useConstant");
@@ -31,14 +30,16 @@ public class GenericReferencePropertyDrawer : PropertyDrawer
         GUI.contentColor = new Color(0, 0, 0, 0);
 
         // Draw Icon
-        var iconRect = new Rect(position.x, position.y, 20, position.height);
+        var iconRect = new Rect(position.x, position.y, 20, EditorGUIUtility.singleLineHeight);
         Texture icon = EditorGUIUtility.Load("icons/d_UnityEditor.SceneHierarchyWindow.png") as Texture2D;
         GUI.DrawTexture(iconRect, icon);
 
         // Create Popup and find bool value
-        int popup = EditorGUI.Popup(dropdownRect, useConstantProp.boolValue ? 0 : 1,
-            new string[] { "Use Constant", "Use Variable" });
-        useConstantProp.boolValue = popup == 0 ? true : false;
+        var popup = EditorGUI.Popup(
+            dropdownRect, useConstantProp.boolValue ? 0 : 1,
+            new[] { "Use Constant", "Use Variable" }
+        );
+        useConstantProp.boolValue = popup == 0;
 
         // Return colours
         GUI.backgroundColor = Color.white;
@@ -49,9 +50,26 @@ public class GenericReferencePropertyDrawer : PropertyDrawer
             ? prop.FindPropertyRelative("constantValue")
             : prop.FindPropertyRelative("variable");
 
+        // Get the height of the display property
+        var cHeight = EditorGUI.GetPropertyHeight(displayProperty, GUIContent.none, true);
+
+        var inputRect = new Rect(position.x + 20, position.y, position.width - 20, cHeight);
+
         EditorGUI.PropertyField(inputRect, displayProperty, GUIContent.none);
 
         EditorGUI.indentLevel = indent;
         EditorGUI.EndProperty();
+    }
+
+    public override float GetPropertyHeight(SerializedProperty prop, GUIContent label)
+    {
+        var useConstantProp = prop.FindPropertyRelative("useConstant");
+
+        // show appropriate input
+        var displayProperty = useConstantProp.boolValue
+            ? prop.FindPropertyRelative("constantValue")
+            : prop.FindPropertyRelative("variable");
+        
+        return EditorGUI.GetPropertyHeight(displayProperty, GUIContent.none, true);
     }
 }

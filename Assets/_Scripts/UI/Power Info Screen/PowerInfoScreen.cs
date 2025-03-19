@@ -7,8 +7,8 @@ using UnityEngine.UI;
 
 public class PowerInfoScreen : MonoBehaviour
 {
-    [SerializeField] private PowerArrayReference allPowers;
-    [SerializeField] private PowerArrayReference equippedPowers;
+    [SerializeField] private PowerListReference allPowers;
+    [SerializeField] private PowerListReference equippedPowers;
 
     [SerializeField] private Transform neuroButtonParent;
     [SerializeField] private Transform vitalButtonParent;
