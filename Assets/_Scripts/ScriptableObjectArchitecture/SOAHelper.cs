@@ -7,5 +7,6 @@
     public const string PLAYER = "Player/";
     public const string INSTANCE_HELPERS = "Instance Helpers/";
     public const string SETTINGS = "Settings/";
+    public const string EVENT = "Events/";
     
 }

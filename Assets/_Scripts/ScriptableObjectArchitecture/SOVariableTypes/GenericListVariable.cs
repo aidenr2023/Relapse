@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-public class GenericListVariable<T> : GenericVariable<List<T>>
+public abstract class GenericListVariable<T> : GenericVariable<List<T>>
 {
     protected override void CustomReset()
     {

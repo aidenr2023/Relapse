@@ -7,7 +7,8 @@ using UnityEngine;
 /// <typeparam name="TVarType">The type of the constant variable.</typeparam>
 /// <typeparam name="TSoType">The scriptable object type</typeparam>
 [Serializable]
-public abstract class GenericReference<TVarType, TSoType> where TSoType : GenericVariable<TVarType>
+public abstract class GenericReference<TVarType, TSoType>
+    where TSoType : ValueVariable<TVarType>
 {
     [SerializeField] private bool useConstant = false;
     [SerializeField] private TVarType constantValue;
@@ -31,7 +32,7 @@ public abstract class GenericReference<TVarType, TSoType> where TSoType : Generi
             if (variable == null)
                 return default(TVarType);
 
-            return variable.value;
+            return variable.GetValue();
         }
         set
         {
@@ -39,7 +40,7 @@ public abstract class GenericReference<TVarType, TSoType> where TSoType : Generi
                 constantValue = value;
 
             else
-                variable.value = value;
+                variable.SetValue(value);
         }
     }
 }
