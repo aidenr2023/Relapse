@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class BossEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
 {
+    [SerializeField] private TransformReference targetTransform;
+
     public event Action<IEnemyDetectionBehavior, EnemyDetectionState, EnemyDetectionState> OnDetectionStateChanged;
 
     #region Getters
@@ -16,11 +18,11 @@ public class BossEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
     public EnemyDetectionState CurrentDetectionState =>
         IsTargetDetected ? EnemyDetectionState.Aware : EnemyDetectionState.Unaware;
 
-    public bool IsTargetDetected => Player.Instance != null && Player.Instance.PlayerInfo.CurrentHealth > 0;
+    public bool IsTargetDetected => targetTransform?.Value != null;
 
     public IActor Target => Player.Instance?.PlayerInfo;
 
-    public Vector3 LastKnownTargetPosition => Player.Instance?.transform.position ?? Vector3.zero;
+    public Vector3 LastKnownTargetPosition => targetTransform?.Value?.position ?? Vector3.zero;
 
     public Transform DetectionOrigin => transform;
 
