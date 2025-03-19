@@ -11,6 +11,9 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
     private const float STRAFE_DISTANCE = 2f;
     private const float RANDOM_STRAFE_ANGLE = 25f;
+    
+    private float _localVelX;
+    private float _localVelZ;
 
     private static readonly int AnimatorIsMovingProperty = Animator.StringToHash("IsMoving");
     private static readonly int AnimatorSpeedProperty = Animator.StringToHash("Speed");
@@ -39,6 +42,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
     private NewEnemyBehaviorBrain _brain;
     private NavMeshAgent _navMeshAgent;
+    private Rigidbody _rigidbody;
 
     private BehaviorActionMove.MoveAction _currentMoveAction;
 
@@ -49,7 +53,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
     private readonly HashSet<object> _movementDisableTokens = new();
 
     private bool _hasStarted;
-
+    
     #endregion
 
     #region Getters
@@ -69,18 +73,19 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         get => movementSpeed;
         set => movementSpeed = value;
     }
-
     public HashSet<object> RotationDisableTokens { get; } = new();
 
-    #endregion
 
+    #endregion
+    
     protected override void CustomAwake()
     {
         _brain = GetComponent<NewEnemyBehaviorBrain>();
         _navMeshAgent = GetComponent<NavMeshAgent>();
+        _rigidbody = GetComponent<Rigidbody>();
 
         MovementSpeedTokens = new(false, null, 1);
-
+        
         // Turn the navmesh agent off
         _navMeshAgent.enabled = false;
     }
@@ -116,6 +121,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
         // Update the animator
         UpdateMovementAnimation();
+        UpdateAnimationDirection();
     }
 
     private void UpdateMovementAnimation()
@@ -140,7 +146,53 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
         animator.SetBool(AnimatorIsMovingProperty, isMoving);
         animator.SetFloat(AnimatorSpeedProperty, speedValue);
+        
         animator.SetBool(AnimatorIsRunningProperty, isRunning);
+    }
+    // Update the animation direction of the player
+    private void UpdateAnimationDirection()
+    {
+        if (animator == null || _navMeshAgent == null) return;
+
+        // Explicitly set directions during strafing
+        if (IsStrafing)
+        {
+            switch (_currentMoveAction)
+            {
+                case BehaviorActionMove.MoveAction.StrafeLeft:
+                    _localVelX = -1;
+                    _localVelZ = 1;
+                    break;
+                case BehaviorActionMove.MoveAction.StrafeRight:
+                    _localVelX = 1;
+                    _localVelZ = 0;
+                    break;
+                case BehaviorActionMove.MoveAction.StrafeForward:
+                    _localVelX = 0;
+                    _localVelZ = 1;
+                    break;
+                case BehaviorActionMove.MoveAction.StrafeBackward:
+                    _localVelX = 0;
+                    _localVelZ = -1;
+                    break;
+            }
+        }
+        else // Normal movement
+        {
+            var worldVelocity = _navMeshAgent.velocity;
+            var localVelocity = transform.InverseTransformDirection(worldVelocity);
+        
+            _localVelX = Mathf.Clamp(localVelocity.x / movementSpeed, -1, 1);
+            _localVelZ = Mathf.Clamp(localVelocity.z / movementSpeed, -1, 1);
+        }
+
+        // Apply deadzone for cleaner transitions
+        const float deadzone = 0.1f;
+        _localVelX = Mathf.Abs(_localVelX) > deadzone ? _localVelX : 0;
+        _localVelZ = Mathf.Abs(_localVelZ) > deadzone ? _localVelZ : 0;
+
+        animator.SetFloat("VelX", _localVelX, 0.1f, Time.deltaTime);
+        animator.SetFloat("VelZ", _localVelZ, 0.1f, Time.deltaTime);
     }
 
     private IEnumerator CoroutineUpdate()
@@ -153,7 +205,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
         // Make sure the navmesh agent is enabled
         _navMeshAgent.enabled = true;
-
+        
         while (enabled)
         {
             // Get the current move action
@@ -206,6 +258,8 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
             _ => throw new ArgumentOutOfRangeException()
         };
+
+
     }
 
     private void DetermineMovementSpeed(BehaviorActionMove.MoveAction moveAction)
@@ -404,7 +458,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         var newRotation = Quaternion.Lerp(currentRotation, desiredRotation,
             CustomFunctions.FrameAmount(strafeRotationLerpAmount)
         );
-
+        
         // Create a new rotation WITHOUT a rotation around the x or z axis
         var newRotationNoXZ = Quaternion.Euler(0, newRotation.eulerAngles.y, 0);
 
@@ -428,7 +482,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         // return if the agent is not on the navmesh
         if (!NavMeshAgent.enabled || !NavMeshAgent.isOnNavMesh)
             return;
-
+        
         // Set the destination of the nav mesh agent
         _navMeshAgent.SetDestination(_targetPosition);
     }
@@ -470,14 +524,14 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         // Warp the nav mesh agent to the position
         _navMeshAgent.Warp(pos);
     }
-
+    
     public float GetRemainingDistance()
     {
         // Return if the nav mesh agent is disabled OR
         // return if the agent is not on the navmesh
         if (!NavMeshAgent.enabled || !NavMeshAgent.isOnNavMesh)
             return 0;
-
+            
         return _navMeshAgent.remainingDistance;
     }
 
