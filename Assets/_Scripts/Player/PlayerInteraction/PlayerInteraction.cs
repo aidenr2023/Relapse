@@ -115,6 +115,13 @@ public class PlayerInteraction : MonoBehaviour, IUsesInput
         // var cameraPivot = cam.transform;
         var cameraPivot = cameraPivotSo.Value;
 
+        // Log an error if the camera pivot is null
+        if (cameraPivot == null)
+        {
+            Debug.LogError("Camera pivot is null");
+            return;
+        }
+        
         // Is there a ray cast hit within the interact distance?
         var hit = Physics.Raycast(
             cameraPivot.position,

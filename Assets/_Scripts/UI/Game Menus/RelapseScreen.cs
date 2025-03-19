@@ -15,6 +15,8 @@ public class RelapseScreen : GameMenu
 
     #region Serialized Fields
 
+    [SerializeField] private HealthChangedEventReference playerOnDeathEvent;
+
     [SerializeField] private SceneField mainMenuScene;
     [SerializeField] private SceneField playerDataScene;
 
@@ -22,9 +24,6 @@ public class RelapseScreen : GameMenu
 
     [Header("Background Image"), SerializeField]
     private Image backgroundImage;
-
-    [SerializeField] private Sprite deathImage;
-    [SerializeField] private Sprite relapseImage;
 
     [Space, SerializeField] private Button respawnButton;
 
@@ -38,17 +37,24 @@ public class RelapseScreen : GameMenu
 
     #endregion
 
-    #region Getters
-
-    public Sprite DeathImage => deathImage;
-    public Sprite RelapseImage => relapseImage;
-
-    #endregion
-
     protected override void CustomAwake()
     {
         // Set the instance to this
         Instance = this;
+
+        // Subscribe to the player's death event
+        playerOnDeathEvent += ShowScreenOnDeath;
+    }
+
+    private void ShowScreenOnDeath(object arg0, HealthChangedEventArgs arg1)
+    {
+        Activate();
+    }
+
+    private void OnDisable()
+    {
+        // Deactivate the menu
+        Deactivate();
     }
 
     protected override void CustomStart()
@@ -71,42 +77,14 @@ public class RelapseScreen : GameMenu
 
     protected override void CustomDestroy()
     {
+        // Unsubscribe from the player's death event
+        playerOnDeathEvent -= ShowScreenOnDeath;
     }
 
     protected override void CustomUpdate()
     {
         // Set the loading bar's visibility based on whether the scene is loading
         loadingBar.gameObject.SetActive(_respawnButtonClicked);
-    }
-
-    private void OnDisable()
-    {
-        // Deactivate the menu
-        Deactivate();
-    }
-
-    private void SetBackgroundImage(Sprite sprite)
-    {
-        // Set the background image sprite
-        backgroundImage.sprite = sprite;
-    }
-
-    public void InitializeRelapse()
-    {
-        // // Set the background image of the Relapse Screen
-        // SetBackgroundImage(relapseImage);
-
-        // // Enable the respawn button
-        // respawnButton.gameObject.SetActive(true);
-    }
-
-    public void InitializeDeath()
-    {
-        // // Set the background image of the Relapse Screen
-        // SetBackgroundImage(deathImage);
-
-        // // Enable the respawn button
-        // respawnButton.gameObject.SetActive(true);
     }
 
     public void LoadScene(string sceneName)

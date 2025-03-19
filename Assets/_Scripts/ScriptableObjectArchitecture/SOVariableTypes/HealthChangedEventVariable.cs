@@ -13,6 +13,11 @@ public class HealthChangedEventVariable : GenericEventVariable<object, HealthCha
         Debug.Log($"Player health changed: {e.Amount:0.00}!");
     }
 
+    public void LogString(string text)
+    {
+        Debug.Log(text);
+    }
+
     public static HealthChangedEventVariable operator +(
         HealthChangedEventVariable healthChangedEventVariable,
         UnityAction<object, HealthChangedEventArgs> action
