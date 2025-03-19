@@ -1140,7 +1140,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     public void SaveData(PlayerLoader playerLoader)
     {
         // For each power, save the data
-        foreach (var power in _powerTokens.Keys)
+        foreach (var power in powers.Value)
         {
             var powerToken = _powerTokens[power];
 

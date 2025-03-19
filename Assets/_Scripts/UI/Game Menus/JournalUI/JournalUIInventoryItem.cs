@@ -44,9 +44,6 @@ public class JournalUIInventoryItem : MonoBehaviour
             countText = $" x{inventoryEntry.Quantity}";
 
         itemNameText.text = $"{inventoryEntry.InventoryObject.ItemName}{countText}";
-
-        // if (inventoryEntry.InventoryObject == Player.Instance.PlayerInventory.MoneyObject)
-        //     itemNameText.text = $"{inventoryEntry.InventoryObject.ItemName}: ${inventoryEntry.Quantity}";
     }
 
 
