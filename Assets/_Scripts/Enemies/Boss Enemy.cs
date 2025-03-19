@@ -11,7 +11,6 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 
     [SerializeField] private IntReference bossCurrentPhase;
     [SerializeField] private IntReference playerRelapseCount;
-    [SerializeField] private PowerListReference playerPowers;
 
     [SerializeField] private BossEnemyAttack bossEnemyAttack;
     [SerializeField] private TempShootingEnemyAttack attack1;

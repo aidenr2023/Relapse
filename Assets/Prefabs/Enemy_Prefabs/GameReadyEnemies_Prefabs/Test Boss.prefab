@@ -250,10 +250,6 @@ MonoBehaviour:
     useConstant: 0
     constantValue: 0
     variable: {fileID: 11400000, guid: 920ad9ec8c7ae80498d01e715f90b364, type: 2}
-  playerPowers:
-    useConstant: 0
-    constantValue: []
-    variable: {fileID: 11400000, guid: 330e22d8c4975114dac612f15a5e4fc2, type: 2}
   bossEnemyAttack: {fileID: 1025745234992569360}
   attack1: {fileID: 8544631876377783178}
   bossPhases:
@@ -404,11 +400,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d3739a074a349a8b497724d4f2da064, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  powers:
-  - {fileID: 11400000, guid: 95a33adb530a5c44baa76d83475c07f7, type: 2}
+  playerPowers:
+    useConstant: 0
+    constantValue: []
+    variable: {fileID: 11400000, guid: 330e22d8c4975114dac612f15a5e4fc2, type: 2}
+  allBossPowers:
   - {fileID: 11400000, guid: 030c4116ed8f34b40977e9e5ff3b1492, type: 2}
   - {fileID: 11400000, guid: 79ab2497e639e074dabe4e8e435172d9, type: 2}
+  - {fileID: 11400000, guid: 95a33adb530a5c44baa76d83475c07f7, type: 2}
   - {fileID: 11400000, guid: 717594ff39f2a274fb5c3534223b84a2, type: 2}
+  bossPowers: []
   normalHitSfx:
     clip: {fileID: 0}
     soundType: 1

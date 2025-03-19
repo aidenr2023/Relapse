@@ -8,13 +8,15 @@ public class PowerScriptableObject : ScriptableObject
 {
     private static GameObject _logicParent;
 
+    [SerializeField] private BossPowerScriptableObject bossPower;
+    
     [Header("Overview Information")] [SerializeField]
     private string powerName;
 
     [SerializeField] private PowerType powerType;
     [SerializeField] private Sprite icon;
     [SerializeField] private bool usesReticle;
-    [SerializeField] [TextArea(3, 10)] private string description;
+    [SerializeField, TextArea(3, 10)] private string description;
     [SerializeField] private PowerFovZoomBehavior fovZoomBehavior;
     [SerializeField] private Tutorial tutorial;
     [SerializeField] private PowerVfxType chargeVfxType;
@@ -48,6 +50,8 @@ public class PowerScriptableObject : ScriptableObject
 
     #region Getters
 
+    public BossPowerScriptableObject BossPower => bossPower;
+    
     public string PowerName => powerName;
     public PowerType PowerType => powerType;
     public Sprite Icon => icon;
@@ -115,9 +119,6 @@ public class PowerScriptableObject : ScriptableObject
 
         // Attach the PowerScriptableObject to the PowerLogic
         _powerLogic.AttachToScriptableObject(this);
-
-        // // Hide the PowerLogic object in the hierarchy
-        // _powerLogic.GameObject.hideFlags = HideFlags.HideInHierarchy;
     }
 
     /// <summary>
