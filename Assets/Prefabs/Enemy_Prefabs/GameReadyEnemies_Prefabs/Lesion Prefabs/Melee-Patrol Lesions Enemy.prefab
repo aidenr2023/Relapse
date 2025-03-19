@@ -902,7 +902,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   updatesPerSecond: 4
   movementSpeed: 10
-  strafeMultiplier: 0.45
+  strafeMultiplier: 0.25
   strafeRotationLerpAmount: 0.075
   animator: {fileID: 5835691382165057910}
   walkAnimationThreshold: 0.25
@@ -968,6 +968,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9083e2e854be4d118acc056af513d3d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rotationLerpAmount: 0.45
   damage: 15
   meleeAttackRange: 4
   attackCooldown: 1

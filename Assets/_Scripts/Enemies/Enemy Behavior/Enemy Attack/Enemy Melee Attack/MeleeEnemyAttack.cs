@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
@@ -7,6 +8,8 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     private static readonly int AnimatorAttackProperty = Animator.StringToHash("Attack");
 
     #region Serialized Fields
+
+    [SerializeField, Range(0, 1)] private float rotationLerpAmount = 0.15f;
 
     [SerializeField] [Min(0)] private float damage;
 
@@ -44,10 +47,10 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     public HashSet<object> AttackDisableTokens { get; } = new();
 
     public IReadOnlyList<MeleeAttackHitbox> MeleeAttackHitboxes => meleeAttackHitboxes;
-    
-    
+
+
     [SerializeField] private Sound normalHitSfx;
-    
+
     public Sound NormalHitSfx => normalHitSfx;
     public Sound CriticalHitSfx => null;
 
@@ -112,9 +115,46 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         if (!IsAttackEnabled)
             return;
 
+        // Update the rotation of the enemy
+        UpdateRotation();
+
         // If the player is in range and the attack cooldown has expired, attack the player
         if (isTargetInRange && _canAttack)
             Attack();
+    }
+
+    private void UpdateRotation()
+    {
+        if (meleeAttackHitboxes == null)
+            Debug.LogError("Melee Attack Hitboxes are null");
+
+        // If there are any melee attack hitboxes that are enabled, add a movement disable token
+        if (meleeAttackHitboxes?.Any(n => n != null && n.IsEnabled) ?? false)
+            Enemy.NewMovement.RotationDisableTokens.Add(this);
+        else if (Enemy.NewMovement.RotationDisableTokens.Contains(this))
+            Enemy.NewMovement.RotationDisableTokens.Remove(this);
+
+        // Set the forward of the transform to the detection target
+        if (!Enemy.DetectionBehavior.IsTargetDetected)
+            return;
+
+        // Get the current rotation of the forward vector
+        var currentRotation = transform.rotation;
+
+        // Get the desired rotation of the forward vector
+        var difference = Enemy.DetectionBehavior.LastKnownTargetPosition - transform.position;
+        var desiredRotation = Quaternion.LookRotation(difference, Vector3.up);
+
+        // Rotate the forward of the transform towards the target forward
+        var newRotation = Quaternion.Lerp(currentRotation, desiredRotation,
+            CustomFunctions.FrameAmount(rotationLerpAmount)
+        );
+
+        // Create a new rotation WITHOUT a rotation around the x or z axis
+        var newRotationNoXZ = Quaternion.Euler(0, newRotation.eulerAngles.y, 0);
+
+        // Set the rotation of the transform
+        transform.rotation = newRotationNoXZ;
     }
 
     private void Attack()
@@ -143,8 +183,8 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         if (Enemy.DetectionBehavior.CurrentDetectionState != EnemyDetectionState.Aware)
             return false;
 
-        var distance = Vector3.Distance(transform.position,
-            Enemy.DetectionBehavior.Target.GameObject.transform.position);
+        var distance =
+            Vector3.Distance(transform.position, Enemy.DetectionBehavior.Target.GameObject.transform.position);
 
         // Check if the player is in range
         return distance <= meleeAttackRange;
@@ -165,7 +205,7 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         // Debug.Log($"Activating Hit Box {index}");
 
         meleeAttackHitboxes[index]?.SetEnabled(true);
-        
+
         // Play the c
         meleeAttackHitboxes[index]?.PlayTrail();
     }
@@ -176,7 +216,7 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
             return;
 
         meleeAttackHitboxes[index]?.SetEnabled(false);
-        
+
         // Stop the trail
         meleeAttackHitboxes[index]?.StopTrail();
     }

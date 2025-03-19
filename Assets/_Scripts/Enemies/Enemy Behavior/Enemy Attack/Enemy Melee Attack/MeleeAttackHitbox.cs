@@ -14,7 +14,7 @@ public class MeleeAttackHitbox : MonoBehaviour
 
     #region Private Fields
 
-    private bool _isEnabled;
+    public bool IsEnabled { get; private set; }
 
     #endregion
 
@@ -22,17 +22,17 @@ public class MeleeAttackHitbox : MonoBehaviour
     {
         // Assert that the meleeEnemyAttack is not null
         Debug.Assert(meleeEnemyAttack != null, "The meleeEnemyAttack is null.");
-        
+
         // Set the attack sound to be permanent
         attackSound.SetPermanent(true);
-        
+
         // Stop the trail renderer
         StopTrail();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!_isEnabled)
+        if (!IsEnabled)
             return;
 
         // Return if the other collider is not an actor
@@ -55,40 +55,40 @@ public class MeleeAttackHitbox : MonoBehaviour
 
     public void SetEnabled(bool on)
     {
-        _isEnabled = on;
+        IsEnabled = on;
     }
 
     private void OnDrawGizmos()
     {
         // Return if not enabled
-        if (!_isEnabled)
+        if (!IsEnabled)
             return;
 
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(transform.position, 1f);
     }
-    
+
     public void PlayAttackSound()
     {
         attackSound.SetPermanent(true);
         attackSound.Play(attackSoundClip);
     }
-    
+
     public void PlayTrail()
     {
         // Return if the trail renderer is null
         if (trailRenderer == null)
             return;
-        
+
         trailRenderer.emitting = true;
     }
-    
+
     public void StopTrail()
     {
         // Return if the trail renderer is null
         if (trailRenderer == null)
             return;
-        
+
         trailRenderer.emitting = false;
     }
 }

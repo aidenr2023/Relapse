@@ -49,7 +49,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
     private readonly HashSet<object> _movementDisableTokens = new();
 
     private bool _hasStarted;
-    
+
     #endregion
 
     #region Getters
@@ -70,15 +70,17 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         set => movementSpeed = value;
     }
 
+    public HashSet<object> RotationDisableTokens { get; } = new();
+
     #endregion
-    
+
     protected override void CustomAwake()
     {
         _brain = GetComponent<NewEnemyBehaviorBrain>();
         _navMeshAgent = GetComponent<NavMeshAgent>();
 
         MovementSpeedTokens = new(false, null, 1);
-        
+
         // Turn the navmesh agent off
         _navMeshAgent.enabled = false;
     }
@@ -151,7 +153,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
         // Make sure the navmesh agent is enabled
         _navMeshAgent.enabled = true;
-        
+
         while (enabled)
         {
             // Get the current move action
@@ -204,8 +206,6 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
             _ => throw new ArgumentOutOfRangeException()
         };
-
-
     }
 
     private void DetermineMovementSpeed(BehaviorActionMove.MoveAction moveAction)
@@ -231,7 +231,11 @@ public class NewEnemyMovement : ComponentScript<Enemy>
 
     private void DetermineRotationMode(BehaviorActionMove.MoveAction moveAction)
     {
-        _navMeshAgent.updateRotation = (!IsStrafing && moveAction != BehaviorActionMove.MoveAction.Idle);
+        _navMeshAgent.updateRotation = !(
+            IsStrafing ||
+            moveAction == BehaviorActionMove.MoveAction.Idle ||
+            RotationDisableTokens.Count == 0
+        );
     }
 
     private MovementFunction DetermineUpdateFunction(BehaviorActionMove.MoveAction moveAction)
@@ -400,7 +404,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         var newRotation = Quaternion.Lerp(currentRotation, desiredRotation,
             CustomFunctions.FrameAmount(strafeRotationLerpAmount)
         );
-        
+
         // Create a new rotation WITHOUT a rotation around the x or z axis
         var newRotationNoXZ = Quaternion.Euler(0, newRotation.eulerAngles.y, 0);
 
@@ -424,7 +428,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         // return if the agent is not on the navmesh
         if (!NavMeshAgent.enabled || !NavMeshAgent.isOnNavMesh)
             return;
-        
+
         // Set the destination of the nav mesh agent
         _navMeshAgent.SetDestination(_targetPosition);
     }
@@ -466,14 +470,14 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         // Warp the nav mesh agent to the position
         _navMeshAgent.Warp(pos);
     }
-    
+
     public float GetRemainingDistance()
     {
         // Return if the nav mesh agent is disabled OR
         // return if the agent is not on the navmesh
         if (!NavMeshAgent.enabled || !NavMeshAgent.isOnNavMesh)
             return 0;
-            
+
         return _navMeshAgent.remainingDistance;
     }
 
