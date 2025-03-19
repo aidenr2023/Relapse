@@ -21603,13 +21603,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wallRunning: {fileID: -2300652163101954379}
   animator: {fileID: 4298942248171799672}
-  ikWeightTransitionSpeed: 5
-  maxArmExtension: 0.85
   verticalOffset: 0.5
   forwardOffset: 0.3
   handPositionOffset: 0.2
-  elbowRotationOffset: {x: -30, y: 0, z: 0}
   positionPrediction: 0.1
+  handRotationOffset: {x: 43.1, y: 97.8, z: -57.7}
+  elbowRotationOffset: {x: -30, y: 0, z: 0}
+  rotationSmoothing: 0.2
+  ikWeightTransitionSpeed: 5
+  maxArmExtension: 0.85
 --- !u!1 &8818440328132041162
 GameObject:
   m_ObjectHideFlags: 0
