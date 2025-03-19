@@ -13,6 +13,13 @@ public abstract class GenericReference<TVarType, TSoType> where TSoType : Generi
     [SerializeField] private TVarType constantValue;
     [SerializeField] private TSoType variable;
 
+    /// <summary>
+    /// Forces the reference to use the constant value.
+    /// </summary>
+    public void ForceUseConstant()
+    {
+        useConstant = true;
+    }
 
     public TVarType Value
     {

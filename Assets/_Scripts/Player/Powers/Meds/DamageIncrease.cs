@@ -44,8 +44,12 @@ public class DamageIncrease : MonoBehaviour, IPower
     private void CreateEffectToken(PlayerPowerManager powerManager, PowerToken pToken)
     {
         // Instantiate the regeneration particles
-        var particles = Instantiate(damageIncreaseParticles, powerManager.transform);
+        var particles = Instantiate(damageIncreaseParticles);
 
+        // Add a new follow transform component to the particles
+        var followTransform = particles.gameObject.AddComponent<FollowTransform>();
+        followTransform.SetTargetTransform(powerManager.transform);
+        
         // Set the regeneration particles to follow the player
         particles.transform.localPosition = Vector3.zero;
 
