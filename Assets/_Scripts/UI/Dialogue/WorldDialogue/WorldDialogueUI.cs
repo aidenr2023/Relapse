@@ -6,19 +6,19 @@ using UnityEngine;
 public class WorldDialogueUI : MonoBehaviour
 {
     private static event Action<WorldDialogue> OnStartDialogue;
-    
+
     [SerializeField] private CanvasGroup canvasGroup;
     [SerializeField] private TMP_Text dialogueText;
     [SerializeField, Range(0, 1)] private float maxOpacity = 1;
     [SerializeField] private float fadeTime = .5f;
 
-    private Coroutine _dialogueCoroutine;
-    
+    private static Coroutine _dialogueCoroutine;
+
     private void OnEnable()
     {
         // Subscribe to the event
         OnStartDialogue += StartDialogueSingle;
-        
+
         // Set the opacity to 0
         canvasGroup.alpha = 0;
     }
@@ -31,7 +31,7 @@ public class WorldDialogueUI : MonoBehaviour
             StopCoroutine(_dialogueCoroutine);
             _dialogueCoroutine = null;
         }
-        
+
         // Unsubscribe from the event
         OnStartDialogue -= StartDialogueSingle;
     }
@@ -63,27 +63,29 @@ public class WorldDialogueUI : MonoBehaviour
             canvasGroup.alpha = Mathf.Lerp(0, maxOpacity, (Time.time - startTime) / fadeTime);
             yield return null;
         }
-        
+
         // Set the alpha to the max value
         canvasGroup.alpha = maxOpacity;
-        
+
         // Wait for the dialogue fade out time
         while (Time.time < outroFadeStartTime)
             yield return null;
-        
+
         // Fade the dialogue out
         while (Time.time < endTime)
         {
             canvasGroup.alpha = Mathf.Lerp(maxOpacity, 0, (Time.time - outroFadeStartTime) / fadeTime);
             yield return null;
         }
-        
+
         // Set the alpha to 0
         canvasGroup.alpha = 0;
     }
 
-    public static void StartDialogue(WorldDialogue dialogue)
+    public static Coroutine StartDialogue(WorldDialogue dialogue)
     {
         OnStartDialogue?.Invoke(dialogue);
+
+        return _dialogueCoroutine;
     }
 }
