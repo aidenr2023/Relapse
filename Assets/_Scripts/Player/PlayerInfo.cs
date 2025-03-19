@@ -16,6 +16,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     [Space, SerializeField] private FloatReference maxToxicitySo;
     [SerializeField] private FloatReference currentToxicitySo;
     [SerializeField] private BoolReference isRelapsingSo;
+    [SerializeField] private IntReference relapseCountSo;
 
     [Header("Health Settings")] [SerializeField] [Min(0)]
     private float invincibilityDuration = 1f;
@@ -47,11 +48,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     private CountdownTimer _invincibilityTimer;
 
-    /// <summary>
-    /// The number of times the player has relapsed during this level.
-    /// </summary>
-    private int _relapseCount;
-
     private float _currentRelapseDuration;
 
     private CountdownTimer _passiveRegenTimer;
@@ -74,7 +70,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     public bool IsRelapsing => isRelapsingSo.Value;
 
-    public int RelapseCount => _relapseCount;
+    public int RelapseCount => relapseCountSo.Value;
 
     public bool IsInvincible => _invincibilityTimer.IsActive;
 
@@ -307,7 +303,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         isRelapsingSo.Value = true;
 
         // Increase the relapse count
-        _relapseCount++;
+        relapseCountSo.Value++;
 
         // Reset the relapse duration
         _currentRelapseDuration = 0;
@@ -357,7 +353,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
         currentToxicitySo.Value = cToxicity;
         maxToxicitySo.Value = mToxicity;
-        _relapseCount = relapseCount;
+        relapseCountSo.Value = relapseCount;
         isRelapsingSo.Value = isRelapsing;
 
         if (!isRelapsing && wasRelapsing)

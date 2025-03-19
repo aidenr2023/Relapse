@@ -10,10 +10,12 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
     #region Serialized Fields
 
     [SerializeField] private IntReference bossCurrentPhase;
+    [SerializeField] private IntReference playerRelapseCount;
+    [SerializeField] private PowerListReference playerPowers;
 
     [SerializeField] private BossEnemyAttack bossEnemyAttack;
     [SerializeField] private TempShootingEnemyAttack attack1;
-
+    
     [SerializeField] private BossPhaseInfo[] bossPhases;
 
     [SerializeField] private UnityEvent onGoodEnding;
@@ -40,22 +42,14 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         ChangeAttackBehavior(attack1);
 
         // Subscribe to the OnDamaged event
-        ParentComponent.OnDamaged += SetHealthScriptableObjects;
-        ParentComponent.OnHealed += SetHealthScriptableObjects;
-
         ParentComponent.OnDamaged += ActivatePhaseChange;
 
         ParentComponent.OnDeath += DetermineEndingOnDeath;
     }
-
-    private void SetHealthScriptableObjects(object sender, HealthChangedEventArgs e)
-    {
-    }
-
     private void DetermineEndingOnDeath(object sender, HealthChangedEventArgs e)
     {
         // Get the relapse count
-        var relapseCount = Player.Instance?.PlayerInfo.RelapseCount ?? 0;
+        var relapseCount = playerRelapseCount ?? 0;
 
         // Get the instance of the player.
         // If the player has relapsed at all, then it's a bad ending.

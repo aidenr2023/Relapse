@@ -49,8 +49,8 @@ public class CheckpointManager : MonoBehaviour
             position = position
         };
 
-        Debug.Assert(currentSceneInfo.SectionScene != null, "currentSceneInfo.SectionScene == null");
-        Debug.Log($"Saved Checkpoint: {currentSceneInfo.SectionScene.SceneName} - {CurrentCheckpointInfo.position}");
+        // Debug.Assert(currentSceneInfo.SectionScene != null, "currentSceneInfo.SectionScene == null");
+        // Debug.Log($"Saved Checkpoint: {currentSceneInfo.SectionScene.SceneName} - {CurrentCheckpointInfo.position}");
     }
 
     // public void RespawnAtCurrentCheckpoint(Rigidbody rb) =>
