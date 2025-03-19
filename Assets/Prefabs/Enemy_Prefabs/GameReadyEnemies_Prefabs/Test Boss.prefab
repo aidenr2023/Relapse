@@ -221,15 +221,33 @@ MonoBehaviour:
     variable: {fileID: 11400000, guid: cf7b75ebff401554a9d02aac6511f093, type: 2}
   applyDifficultyMultiplier: 0
   maxHealth:
-    useConstant: 0
+    useConstant: 1
     constantValue: 1000
     variable: {fileID: 11400000, guid: 4dc8a0ec74b3c7040a51c4f3d2731043, type: 2}
   currentHealth:
-    useConstant: 0
+    useConstant: 1
     constantValue: 100
     variable: {fileID: 11400000, guid: 7e8161a152d99d6458f1f866e6119d69, type: 2}
   moneyReward: 10000
   animator: {fileID: 0}
+  <OnDamaged>k__BackingField:
+    useConstant: 1
+    constantValue:
+      m_PersistentCalls:
+        m_Calls: []
+    variable: {fileID: 0}
+  <OnHealed>k__BackingField:
+    useConstant: 1
+    constantValue:
+      m_PersistentCalls:
+        m_Calls: []
+    variable: {fileID: 0}
+  <OnDeath>k__BackingField:
+    useConstant: 1
+    constantValue:
+      m_PersistentCalls:
+        m_Calls: []
+    variable: {fileID: 0}
 --- !u!114 &4006056929535454685
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -359,6 +377,9 @@ MonoBehaviour:
   walkAnimationThreshold: 0
   runAnimationThreshold: 0
   animationSpeedCoefficient: 1
+  animationStrafeSpeedCoefficient: 1
+  animationStrafeBackSpeedCoefficient: 1
+  animationStrafeForwardSpeedCoefficient: 1
 --- !u!114 &4280559571454393231
 MonoBehaviour:
   m_ObjectHideFlags: 0

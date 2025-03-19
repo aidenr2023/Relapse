@@ -26,14 +26,19 @@ public class AndreEnemy : MonoBehaviour, IActor, IDamager
 
     #region Events
 
-    public event HealthChangedEventHandler OnDamaged;
-    public event HealthChangedEventHandler OnHealed;
-    public event HealthChangedEventHandler OnDeath;
+    public HealthChangedEventReference OnDamaged { get; set; }
+    public HealthChangedEventReference OnHealed { get; set; }
+    public HealthChangedEventReference OnDeath { get; set; }
 
     #endregion
 
     private void Awake()
     {
+        // Force the events to be set to constant
+        OnDamaged.ForceUseConstant();
+        OnHealed.ForceUseConstant();
+        OnDeath.ForceUseConstant();
+        
         // Set the enemy's max health to the initial health value
         _maxHealth = enemyHealth;
 
@@ -95,12 +100,12 @@ public class AndreEnemy : MonoBehaviour, IActor, IDamager
 
         // Invoke the OnDamaged event
         var args = new HealthChangedEventArgs(this, changer, damager, damageAmount, position);
-        OnDamaged?.Invoke(this, args);
+        OnDamaged?.Value.Invoke(this, args);
 
         if (enemyHealth <= 0)
         {
             // Invoke the OnDeath event
-            OnDeath?.Invoke(this, args);
+            OnDeath?.Value.Invoke(this, args);
 
             explosionSound.Play();
             Destroy(gameObject);

@@ -22,6 +22,12 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
     [SerializeField] private Animator animator;
 
+    [field: Header("Events"), SerializeField]
+    public HealthChangedEventReference OnDamaged { get; set; }
+
+    [field: SerializeField] public HealthChangedEventReference OnHealed { get; set; }
+    [field: SerializeField] public HealthChangedEventReference OnDeath { get; set; }
+
     #endregion
 
     #region Private Fields
@@ -51,16 +57,12 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
     public Vector3 DamagePosition => _damagePosition;
 
     public float DifficultyDamageMultiplier => applyDifficultyMultiplier ? difficultyDamageMultiplier.Value : 1;
-    
+
     public bool IsInvincible => _invincibilityTokens.Count > 0;
 
     #endregion
 
     #region Events
-
-    public event HealthChangedEventHandler OnDamaged;
-    public event HealthChangedEventHandler OnHealed;
-    public event HealthChangedEventHandler OnDeath;
 
     public event StunnedEventHandler OnStunStart;
     public event StunnedEventHandler OnStunEnd;
@@ -139,19 +141,19 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         // If the enemy is invincible and the enemy is taking damage, set the amount to 0
         if (amount < 0 && IsInvincible)
             amount = 0;
-        
+
         // If the amount is less than 0, invoke the OnDamaged event
         if (amount < 0)
         {
             args = new HealthChangedEventArgs(this, changer, damager, -amount, position, isCriticalHit);
-            OnDamaged?.Invoke(this, args);
+            OnDamaged?.Value.Invoke(this, args);
         }
 
         // If the amount is greater than 0, invoke the OnHealed event
         else if (amount > 0)
         {
             args = new HealthChangedEventArgs(this, changer, damager, amount, position, false);
-            OnHealed?.Invoke(this, args);
+            OnHealed?.Value.Invoke(this, args);
         }
 
         // If the amount is 0, do nothing
@@ -166,7 +168,7 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         if (currentHealth <= 0)
         {
             // Invoke the OnDeath event
-            OnDeath?.Invoke(this, args);
+            OnDeath?.Value.Invoke(this, args);
 
             Die();
         }
@@ -246,12 +248,12 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         // Invoke the OnStunEnd event
         OnStunEnd?.Invoke(e, duration);
     }
-    
+
     public void AddInvincibilityToken(object token)
     {
         _invincibilityTokens.Add(token);
     }
-    
+
     public void RemoveInvincibilityToken(object token)
     {
         _invincibilityTokens.Remove(token);

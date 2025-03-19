@@ -26,9 +26,9 @@ public class CustomShootable : MonoBehaviour, IActor
     public float MaxHealth { get; } = 900;
     public float CurrentHealth { get; private set; }
 
-    public event HealthChangedEventHandler OnDamaged;
-    public event HealthChangedEventHandler OnHealed;
-    public event HealthChangedEventHandler OnDeath;
+    public HealthChangedEventReference OnDamaged { get; set; }
+    public HealthChangedEventReference OnHealed { get; set; }
+    public HealthChangedEventReference OnDeath { get; set; }
 
     #endregion
 
@@ -43,6 +43,11 @@ public class CustomShootable : MonoBehaviour, IActor
 
     private void InitializeEvents()
     {
+        // Force the events to be set to constant
+        OnDamaged.ForceUseConstant();
+        OnHealed.ForceUseConstant();
+        OnDeath.ForceUseConstant();
+        
         // Subscribe to the OnDeath event
         OnDeath += ActivateEventOnDeath;
 
@@ -82,10 +87,10 @@ public class CustomShootable : MonoBehaviour, IActor
             // If the current health is less than or equal to 0
             // Invoke the OnDeath event
             if (CurrentHealth <= 0)
-                OnDeath?.Invoke(this, eventArgs);
+                OnDeath?.Value.Invoke(this, eventArgs);
             // Invoke the OnDamaged event
             else
-                OnDamaged?.Invoke(this, eventArgs);
+                OnDamaged?.Value.Invoke(this, eventArgs);
         }
         // If the amount is positive, the actor is being healed
         else if (amount > 0)
@@ -101,7 +106,7 @@ public class CustomShootable : MonoBehaviour, IActor
             // Invoke the OnHealed event
             // Create a new HealthChangedEventArgs object
             var eventArgs = new HealthChangedEventArgs(this, changer, damager, amount, position);
-            OnHealed?.Invoke(this, eventArgs);
+            OnHealed?.Value.Invoke(this, eventArgs);
         }
     }
 }

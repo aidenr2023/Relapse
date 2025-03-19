@@ -18,6 +18,13 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     [SerializeField] private BoolReference isRelapsingSo;
     [SerializeField] private IntReference relapseCountSo;
 
+    [field: Header("Event Vars"), SerializeField]
+    public HealthChangedEventReference OnDamaged { get; set; }
+
+    [field: SerializeField] public HealthChangedEventReference OnHealed { get; set; }
+    [field: SerializeField] public HealthChangedEventReference OnDeath { get; set; }
+
+
     [Header("Health Settings")] [SerializeField] [Min(0)]
     private float invincibilityDuration = 1f;
 
@@ -93,10 +100,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     /// An event that is called when the player's relapse ends.
     /// </summary>
     public Action<PlayerInfo> onRelapseEnd;
-
-    public event HealthChangedEventHandler OnDamaged;
-    public event HealthChangedEventHandler OnHealed;
-    public event HealthChangedEventHandler OnDeath;
 
     #endregion
 
@@ -244,7 +247,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
             // Invoke the OnHealed event
             var args = new HealthChangedEventArgs(this, changer, damager, amount, position);
-            OnHealed?.Invoke(this, args);
+            OnHealed?.Value.Invoke(this, args);
         }
     }
 
@@ -262,12 +265,12 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
         // Invoke the OnDamaged event
         var args = new HealthChangedEventArgs(this, changer, damager, damageAmount, position, isCriticalHit);
-        OnDamaged?.Invoke(this, args);
+        OnDamaged?.Value.Invoke(this, args);
 
         if (currentHealthSo <= 0)
         {
             // Invoke the OnDeath event
-            OnDeath?.Invoke(this, args);
+            OnDeath?.Value.Invoke(this, args);
         }
 
         // Start the invincibility timer

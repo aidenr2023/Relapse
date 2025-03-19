@@ -5680,6 +5680,24 @@ MonoBehaviour:
     variable: {fileID: 0}
   moneyReward: 0
   animator: {fileID: 3092743919417664935}
+  <OnDamaged>k__BackingField:
+    useConstant: 1
+    constantValue:
+      m_PersistentCalls:
+        m_Calls: []
+    variable: {fileID: 0}
+  <OnHealed>k__BackingField:
+    useConstant: 1
+    constantValue:
+      m_PersistentCalls:
+        m_Calls: []
+    variable: {fileID: 0}
+  <OnDeath>k__BackingField:
+    useConstant: 1
+    constantValue:
+      m_PersistentCalls:
+        m_Calls: []
+    variable: {fileID: 0}
 --- !u!114 &881294577806582655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5716,6 +5734,9 @@ MonoBehaviour:
   walkAnimationThreshold: 1
   runAnimationThreshold: 6
   animationSpeedCoefficient: 0.125
+  animationStrafeSpeedCoefficient: 1
+  animationStrafeBackSpeedCoefficient: 1
+  animationStrafeForwardSpeedCoefficient: 1
 --- !u!114 &3980648523557764990
 MonoBehaviour:
   m_ObjectHideFlags: 0

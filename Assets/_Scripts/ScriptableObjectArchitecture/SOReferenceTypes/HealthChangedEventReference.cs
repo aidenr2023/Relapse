@@ -6,4 +6,21 @@ using UnityEngine.Events;
 public class HealthChangedEventReference : GenericReference<UnityEvent<object, HealthChangedEventArgs>,
     HealthChangedEventVariable>
 {
+    public static HealthChangedEventReference operator +(
+        HealthChangedEventReference healthChangedEventVariable,
+        UnityAction<object, HealthChangedEventArgs> action
+    )
+    {
+        healthChangedEventVariable.Value.AddListener(action);
+        return healthChangedEventVariable;
+    }
+
+    public static HealthChangedEventReference operator -(
+        HealthChangedEventReference healthChangedEventVariable,
+        UnityAction<object, HealthChangedEventArgs> action
+    )
+    {
+        healthChangedEventVariable.Value.RemoveListener(action);
+        return healthChangedEventVariable;
+    }
 }
