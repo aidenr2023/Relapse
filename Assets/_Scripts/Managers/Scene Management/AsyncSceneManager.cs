@@ -129,7 +129,7 @@ public class AsyncSceneManager : IDebugged
         if (!_scenesThatNeedToLoadFromDisk.Contains(scene.name))
             return;
 
-        Debug.Log($"Running the event callback for {scene.name}");
+        // Debug.Log($"Running the event callback for {scene.name}");
 
         // Remove the scene from the list
         _scenesThatNeedToLoadFromDisk.Remove(scene.name);

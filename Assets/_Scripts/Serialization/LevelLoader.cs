@@ -225,7 +225,7 @@ public class LevelLoader : MonoBehaviour
                 }
             }
 
-            Debug.Log(str);
+            // Debug.Log(str);
         }
     }
 

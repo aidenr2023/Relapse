@@ -475,7 +475,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         var gunAmmoData = new DataInfo(CURRENT_AMMO_KEY, _equippedGun?.CurrentAmmo ?? 0);
         playerLoader.AddDataToMemory(Id, gunAmmoData);
 
-        Debug.Log($"Saved weapon data: [{gunId}, {_equippedGun?.CurrentAmmo}]");
+        // Debug.Log($"Saved weapon data: [{gunId}, {_equippedGun?.CurrentAmmo}]");
     }
 
     #endregion

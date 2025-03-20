@@ -96,7 +96,7 @@ public class PlayerLoader : MonoBehaviour
             foreach (var dataWrapper in dataObjectWrapper.Data)
                 ParseDataWrapper(dataWrapper, dataObjectWrapper.UniqueId);
 
-            Debug.Log(str);
+            // Debug.Log(str);
         }
     }
 
@@ -109,7 +109,7 @@ public class PlayerLoader : MonoBehaviour
         // Load the data
         foreach (var levelLoaderInfo in playerLoaderInfos)
         {
-            Debug.Log($"Loading data for {levelLoaderInfo.GameObject.name} {levelLoaderInfo.Id}");
+            // Debug.Log($"Loading data for {levelLoaderInfo.GameObject.name} {levelLoaderInfo.Id}");
             levelLoaderInfo.LoadData(this, restore);
         }
     }
