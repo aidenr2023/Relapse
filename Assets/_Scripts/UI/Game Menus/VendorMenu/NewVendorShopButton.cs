@@ -19,6 +19,7 @@ public class NewVendorShopButton : MonoBehaviour
     [SerializeField] private Color alreadyBoughtColor;
     [SerializeField] private Color unavailableColor;
 
+    public PowerScriptableObject Power => power;
 
     public void Initialize(PowerScriptableObject newPower, bool active)
     {
@@ -39,7 +40,7 @@ public class NewVendorShopButton : MonoBehaviour
         else if (isActive)
         {
             powerNameText.text = power.PowerName;
-            
+
             // Set the select image's color to normal
             selectImage.color = normalColor;
         }
@@ -94,4 +95,6 @@ public class NewVendorShopButton : MonoBehaviour
 
         JournalTooltipManager.Instance.AddTooltip($"You can no longer buy from {vendorMenu.CurrentVendor.VendorName}.");
     }
+
+    public void SetVendorMenuInfo() => vendorMenu.SetShopDescriptions(this);
 }

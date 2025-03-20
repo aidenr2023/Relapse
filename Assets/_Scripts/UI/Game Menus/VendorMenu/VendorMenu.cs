@@ -7,6 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class VendorMenu : GameMenu
 {
@@ -35,8 +36,10 @@ public class VendorMenu : GameMenu
     [SerializeField] private TMP_Text cooldownText;
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private Image biggerPowerImage;
+    [SerializeField] private VideoPlayer videoPlayer;
+    [SerializeField] private TMP_Text powerNameText;
 
-    [SerializeField] private TMP_Text upgradeInfoText;
+    [Header("Upgrades"), SerializeField] private TMP_Text upgradeInfoText;
     [SerializeField] private TMP_Text upgradeMoneyText;
 
     [Header("Gossip Dialogue")] [SerializeField]
@@ -241,11 +244,11 @@ public class VendorMenu : GameMenu
         allVendorPowers.UnionWith(_currentVendor.DrugPowers);
 
         var alreadyBoughtPowers = new HashSet<PowerScriptableObject>(playerPowers.Value);
-        
+
         // Remove all the powers the player currently has
         foreach (var power in alreadyBoughtPowers)
             allVendorPowers.Remove(power);
-        
+
         // Create a list for each type of power
         var neuroList = new List<PowerScriptableObject>();
         var vitalList = new List<PowerScriptableObject>();
@@ -253,22 +256,22 @@ public class VendorMenu : GameMenu
         // Go through the vendors powers first
         foreach (var power in allVendorPowers)
             SetButtonPower(power, neuroList, vitalList);
-        
+
         // Create a hash set of ALL the powers
         var remainingPowers = new HashSet<PowerScriptableObject>(allPowers.Value);
-        
+
         // Remove the player powers from the all powers hash set
         foreach (var power in alreadyBoughtPowers)
         {
             remainingPowers.Remove(power);
-            
+
             SetButtonPower(power, neuroList, vitalList);
         }
-        
+
         // Remove the vendor powers from the all powers hash set
         foreach (var power in allVendorPowers)
             remainingPowers.Remove(power);
-        
+
         // For each of the remaining powers, set the button power
         foreach (var power in remainingPowers)
             SetButtonPower(power, neuroList, vitalList);
@@ -284,43 +287,72 @@ public class VendorMenu : GameMenu
         {
             case PowerType.Medicine:
                 Debug.Log($"VITAL INDEX: {vitalList.Count} ({power.PowerName})");
-                
+
                 medButtons[vitalList.Count].Initialize(power, _currentVendor.MedicinePowers.Contains(power));
-                
+
                 vitalList.Add(power);
-                
+
                 break;
 
             case PowerType.Drug:
                 Debug.Log($"NEURO INDEX: {vitalList.Count} ({power.PowerName})");
-                
+
                 drugButtons[neuroList.Count].Initialize(power, _currentVendor.DrugPowers.Contains(power));
-                
+
                 neuroList.Add(power);
-                
+
                 break;
         }
     }
 
-    public void SetShopDescriptions(VendorShopButton button)
+    public void SetShopDescriptions(NewVendorShopButton button)
     {
         // Get the power
         var power = button.Power;
 
+        // Set the power name text
+        powerNameText.text = power.PowerName;
+        
         // Set the power type
-        powerTypeText.text = $"Power Type: {power.PowerType}";
+        powerTypeText.text = power.PowerType switch
+        {
+            PowerType.Medicine => "Power Type: Vital",
+            PowerType.Drug => "Power Type: Neuro",
+            _ => "Unknown"
+        };
 
         // Set the price
         priceText.text = $"Price: $PLACEHOLDER PRICE";
 
         // Set the tolerance impact
-        toleranceImpactText.text = $"Tolerance Impact: {power.BaseToleranceMeterImpact}";
+        toleranceImpactText.text = $"Toxicity Impact: {power.BaseToleranceMeterImpact}%";
 
         // Set the cooldown
-        cooldownText.text = $"Cooldown: {power.Cooldown:0.00}s";
+        cooldownText.text = $"Cooldown: {power.Cooldown:0.00} Seconds";
 
         // Set the description
         descriptionText.text = power.Description;
+
+        // Set the video to the first video
+        try
+        {
+            videoPlayer.clip = power.Tutorial.TutorialPages[0].VideoClip;
+            
+            // Restart the video player
+            videoPlayer.Stop();
+            videoPlayer.time = 0;
+            videoPlayer.Play();
+        }
+        catch (Exception e)
+        {
+            // Log the exception
+            Debug.LogError(e);
+            
+            // Stop the video player
+            videoPlayer.Stop();
+
+            videoPlayer.clip = null;
+        }
 
         // Set the bigger icon image
         SetBiggerIconImage(power);
