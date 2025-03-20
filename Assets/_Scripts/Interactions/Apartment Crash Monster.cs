@@ -4,25 +4,36 @@ using UnityEngine;
 
 public class ApartmentCrashMonster : MonoBehaviour
 {
-    [SerializeField] public GameObject enemy;
+    [SerializeField] public Enemy enemy;
 
     [SerializeField] public float delay = 3f;
+
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        enemy.SetActive(false);
+        // Disable the monster at the start
+        SetMonster(false);
     }
 
     // Update is called once per frame
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player")
+        if (other.CompareTag("Player"))
             StartCoroutine(Delay());
     }
 
-    IEnumerator Delay()
+    private IEnumerator Delay()
     {
         yield return new WaitForSeconds(delay);
-        enemy.SetActive(true);
+
+        // Enable the monster
+        SetMonster(true);
+    }
+
+    public void SetMonster(bool isOn)
+    {
+        // enemy.gameObject.SetActive(isOn);
+        
+        enemy.DetectionBehavior.SetDetectionEnabled(isOn);
     }
 }
