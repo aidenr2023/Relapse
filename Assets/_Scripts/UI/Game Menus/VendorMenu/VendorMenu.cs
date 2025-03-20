@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -20,11 +21,13 @@ public class VendorMenu : GameMenu
     [SerializeField] private FloatReference playerMaxToxicity;
     [SerializeField] private FloatReference playerCurrentToxicity;
     [SerializeField] private InventoryVariable playerInventory;
+    [SerializeField] private PowerListReference allPowers;
+    [SerializeField] private PowerListReference playerPowers;
 
     [Header("Powers Shop Screen")] [SerializeField]
-    private VendorShopButton[] medButtons;
+    private NewVendorShopButton[] medButtons;
 
-    [SerializeField] private VendorShopButton[] drugButtons;
+    [SerializeField] private NewVendorShopButton[] drugButtons;
 
     [SerializeField] private TMP_Text powerTypeText;
     [SerializeField] private TMP_Text priceText;
@@ -234,111 +237,69 @@ public class VendorMenu : GameMenu
 
     private void PopulateShop()
     {
-        // Reset all the power buttons
-        foreach (var button in medButtons)
-            button.Reset();
+        var allVendorPowers = new HashSet<PowerScriptableObject>(_currentVendor.MedicinePowers);
+        allVendorPowers.UnionWith(_currentVendor.DrugPowers);
 
-        // Reset all the power buttons
-        foreach (var button in drugButtons)
-            button.Reset();
+        var alreadyBoughtPowers = new HashSet<PowerScriptableObject>(playerPowers.Value);
+        
+        // Remove all the powers the player currently has
+        foreach (var power in alreadyBoughtPowers)
+            allVendorPowers.Remove(power);
+        
+        // Create a list for each type of power
+        var neuroList = new List<PowerScriptableObject>();
+        var vitalList = new List<PowerScriptableObject>();
 
-        // Enable buttons
-        for (var i = 0; i < _medPowers.Length; i++)
+        // Go through the vendors powers first
+        foreach (var power in allVendorPowers)
+            SetButtonPower(power, neuroList, vitalList);
+        
+        // Create a hash set of ALL the powers
+        var remainingPowers = new HashSet<PowerScriptableObject>(allPowers.Value);
+        
+        // Remove the player powers from the all powers hash set
+        foreach (var power in alreadyBoughtPowers)
         {
-            // Get the current power
-            var power = _medPowers[i];
-
-            // Get the current power button
-            var button = medButtons[i];
-
-            // Set the power
-            button.SetPower(power);
-
-            // Enable the button
-            button.Enable();
+            remainingPowers.Remove(power);
+            
+            SetButtonPower(power, neuroList, vitalList);
         }
+        
+        // Remove the vendor powers from the all powers hash set
+        foreach (var power in allVendorPowers)
+            remainingPowers.Remove(power);
+        
+        // For each of the remaining powers, set the button power
+        foreach (var power in remainingPowers)
+            SetButtonPower(power, neuroList, vitalList);
+    }
 
-        for (var i = 0; i < _drugPowers.Length; i++)
+    private void SetButtonPower(
+        PowerScriptableObject power,
+        List<PowerScriptableObject> neuroList,
+        List<PowerScriptableObject> vitalList
+    )
+    {
+        switch (power.PowerType)
         {
-            // Get the current power
-            var power = _drugPowers[i];
+            case PowerType.Medicine:
+                Debug.Log($"VITAL INDEX: {vitalList.Count} ({power.PowerName})");
+                
+                medButtons[vitalList.Count].Initialize(power, _currentVendor.MedicinePowers.Contains(power));
+                
+                vitalList.Add(power);
+                
+                break;
 
-            // Get the current power button
-            var button = drugButtons[i];
-
-            // Set the power
-            button.SetPower(power);
-
-            // Enable the button
-            button.Enable();
+            case PowerType.Drug:
+                Debug.Log($"NEURO INDEX: {vitalList.Count} ({power.PowerName})");
+                
+                drugButtons[neuroList.Count].Initialize(power, _currentVendor.DrugPowers.Contains(power));
+                
+                neuroList.Add(power);
+                
+                break;
         }
-
-        var backButton = shopSelectedButton.GetComponent<Button>();
-
-        // Set up navigation
-        for (var i = 0; i < _medPowers.Length; i++)
-        {
-            // Get the current power
-            var power = _medPowers[i];
-
-            // Get the current power button
-            var button = medButtons[i];
-
-            // If there is a button before this one, set up the up navigation
-            if (i > 0)
-                button.SetNavigationUp(medButtons[i - 1].Button);
-
-            // If there is a button after this one, set up the down navigation
-            if (i < _medPowers.Length - 1)
-                button.SetNavigationDown(medButtons[i + 1].Button);
-            // Otherwise, set the down navigation to the shop selected button
-            else
-                button.SetNavigationDown(backButton);
-
-            // Set the left navigation to the back button
-            button.SetNavigationLeft(backButton);
-
-            // Set the right navigation to the first drug button (if it is enabled)
-            if (drugButtons[0].isActiveAndEnabled)
-                button.SetNavigationRight(drugButtons[0].Button);
-        }
-
-        for (var i = 0; i < _drugPowers.Length; i++)
-        {
-            // Get the current power
-            var power = _drugPowers[i];
-
-            // Get the current power button
-            var button = drugButtons[i];
-
-            // If there is a button before this one, set up the up navigation
-            if (i > 0)
-                button.SetNavigationUp(drugButtons[i - 1].Button);
-
-            // If there is a button after this one, set up the down navigation
-            if (i < _drugPowers.Length - 1)
-                button.SetNavigationDown(drugButtons[i + 1].Button);
-            // Otherwise, set the down navigation to the shop selected button
-            else
-                button.SetNavigationDown(backButton);
-
-            // If there is a drug button, set the left navigation to the first drug button
-            if (medButtons[0].isActiveAndEnabled)
-                button.SetNavigationLeft(medButtons[0].Button);
-
-            // Set the right navigation to the back button
-            button.SetNavigationRight(backButton);
-        }
-
-        var nav = backButton.navigation;
-
-        // Set the back button's up to be the first med or drug
-        if (medButtons[0].isActiveAndEnabled)
-            nav.selectOnUp = medButtons[0].Button;
-        else if (drugButtons[0].isActiveAndEnabled)
-            nav.selectOnUp = drugButtons[0].Button;
-
-        backButton.navigation = nav;
     }
 
     public void SetShopDescriptions(VendorShopButton button)
