@@ -4,20 +4,21 @@
 public class BossPowerScriptableObject : ScriptableObject
 {
     #region Serialized Fields
-    
+
     [SerializeField] private PowerScriptableObject correspondingPower;
-    
+
+    [SerializeField, ColorUsage(true, true)]
+    private Color color = Color.white;
+
     /// <summary>
     /// How does the enemy move AFTER they decide to use this power, but BEFORE they use it?
     /// </summary>
     [SerializeField] private BossPowerMovementBehavior beforeUseMovementBehavior;
-    
+
     #endregion
-    
+
     #region Getters
-    
-    
-    
+
     #endregion
 
     public enum BossPowerMovementBehavior

@@ -20,6 +20,8 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
     [SerializeField] private UnityEvent onGoodEnding;
     [SerializeField] private UnityEvent onBadEnding;
 
+    // [SerializeField] private 
+        
     #endregion
 
     #region Private Fields

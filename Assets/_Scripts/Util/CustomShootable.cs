@@ -43,11 +43,18 @@ public class CustomShootable : MonoBehaviour, IActor
 
     private void InitializeEvents()
     {
+        if (OnDamaged == null)
+            OnDamaged = new HealthChangedEventReference();
+        if (OnHealed == null)
+            OnHealed = new HealthChangedEventReference();
+        if (OnDeath == null)
+            OnDeath = new HealthChangedEventReference();
+
         // Force the events to be set to constant
         OnDamaged.ForceUseConstant();
         OnHealed.ForceUseConstant();
         OnDeath.ForceUseConstant();
-        
+
         // Subscribe to the OnDeath event
         OnDeath += ActivateEventOnDeath;
 
@@ -71,7 +78,8 @@ public class CustomShootable : MonoBehaviour, IActor
             Destroy(gameObject);
     }
 
-    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position, bool isCriticalHit = false)
+    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position,
+        bool isCriticalHit = false)
     {
         // If the amount is negative, the actor is taking damage
         if (amount < 0)
