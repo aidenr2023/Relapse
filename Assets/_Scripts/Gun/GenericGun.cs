@@ -155,7 +155,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Get the animator component from KinBody
         //_playerAnimator = GetComponentInParent<Animator>();
-        
+
         // Connect the animator to the gun
         OnHit += PlayHitMarkerOnHit;
     }
@@ -367,9 +367,13 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             // Decrease the magazine size
             currentMagazineSize--;
 
+            IActor actor = null;
+            var hitActor = hit && hitInfo.collider.TryGetComponentInParent(out actor, 20);
+
             // Spawn a bullet trail
             StartCoroutine(
-                SpawnBulletTrail(bulletTrailRenderer, new Ray(muzzleLocation.position, spreadDirection), hitInfo)
+                SpawnBulletTrail(bulletTrailRenderer, new Ray(muzzleLocation.position, spreadDirection), hitInfo,
+                    hitActor)
             );
 
             // Continue if the raycast did not hit anything
@@ -380,7 +384,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             // PlayParticles(impactParticles, hitInfo.point, impactParticlesCount);
 
             // Test if the cast hit an IActor (test the root object)
-            if (!hitInfo.collider.TryGetComponentInParent(out IActor actor, 20))
+            if (!hitActor)
                 continue;
 
             var damageMultiplier = 1f;
@@ -415,7 +419,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             // Deal damage to the actor
             actor.ChangeHealth(-damage * damageMultiplier, weaponManager.Player.PlayerInfo, this, hitInfo.point,
                 isCriticalHit);
-            
+
             // Invoke the on hit event
             OnHit?.Invoke(this, actor, isCriticalHit);
         }
@@ -435,7 +439,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         playerRecoil.AddRecoil(GunInformation);
     }
 
-    private IEnumerator SpawnBulletTrail(TrailRenderer trailPrefab, Ray ray, RaycastHit hit)
+    private IEnumerator SpawnBulletTrail(TrailRenderer trailPrefab, Ray ray, RaycastHit hit, bool hitActor)
     {
         var startPosition = ray.origin;
 
@@ -470,7 +474,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         trail.autodestruct = true;
 
         // Instantiate the bullet hole decal
-        if (hit.collider != null)
+        if (hit.collider != null && !hitActor)
         {
             // Choose a random decal from the array
             var bulletHoleDecal = bulletHoleDecals[Random.Range(0, bulletHoleDecals.Length)];
