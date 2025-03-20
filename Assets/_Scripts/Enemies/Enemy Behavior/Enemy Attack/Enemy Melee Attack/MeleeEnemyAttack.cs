@@ -105,9 +105,6 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         // Update the attack cooldown timer
         _attackCooldownTimer.Update(Time.deltaTime);
 
-        // // Update the movement disable timer
-        // _movementDisableTimer?.Update(Time.deltaTime);
-
         // Check if the player is in range
         var isTargetInRange = IsTargetInRange();
 
@@ -128,11 +125,17 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         if (meleeAttackHitboxes == null)
             Debug.LogError("Melee Attack Hitboxes are null");
 
+        var anyActiveHitboxes = meleeAttackHitboxes?.Any(n => n != null && n.IsEnabled) ?? false;
+        var isTargetInRange = IsTargetInRange();
+
         // If there are any melee attack hitboxes that are enabled, add a movement disable token
-        if (meleeAttackHitboxes?.Any(n => n != null && n.IsEnabled) ?? false)
+        if (meleeAttackHitboxes?.Length > 0 && anyActiveHitboxes && isTargetInRange)
             Enemy.NewMovement.RotationDisableTokens.Add(this);
-        else if (Enemy.NewMovement.RotationDisableTokens.Contains(this))
+        else
+        {
             Enemy.NewMovement.RotationDisableTokens.Remove(this);
+            return;
+        }
 
         // Set the forward of the transform to the detection target
         if (!Enemy.DetectionBehavior.IsTargetDetected)

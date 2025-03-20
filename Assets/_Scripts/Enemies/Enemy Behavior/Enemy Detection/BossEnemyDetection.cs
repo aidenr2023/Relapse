@@ -13,12 +13,12 @@ public class BossEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
 
     public Enemy Enemy { get; private set; }
 
-    public bool IsDetectionEnabled => true;
+    [field: SerializeField] public bool IsDetectionEnabled { get; private set; } = true;
 
     public EnemyDetectionState CurrentDetectionState =>
         IsTargetDetected ? EnemyDetectionState.Aware : EnemyDetectionState.Unaware;
 
-    public bool IsTargetDetected => targetTransform?.Value != null;
+    public bool IsTargetDetected => IsDetectionEnabled && targetTransform?.Value != null;
 
     public IActor Target => Player.Instance?.PlayerInfo;
 
@@ -36,5 +36,6 @@ public class BossEnemyDetection : MonoBehaviour, IEnemyDetectionBehavior
 
     public void SetDetectionEnabled(bool on)
     {
+        IsDetectionEnabled = on;
     }
 }

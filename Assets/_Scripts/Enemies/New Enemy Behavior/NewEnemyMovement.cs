@@ -150,7 +150,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
             if (Mathf.Abs(_localVelZ) < 0.001f)
             {
                 speedValue = velocity * animationStrafeSpeedCoefficient;
-                Debug.Log($"Strafing Sideways: {speedValue:0.00}");   
+                Debug.Log($"Strafing Sideways: {speedValue:0.00}");
             }
             else if (_localVelZ < 0)
             {
@@ -214,7 +214,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         const float deadzone = 0.1f;
         _localVelX = Mathf.Abs(_localVelX) > deadzone ? _localVelX : 0;
         _localVelZ = Mathf.Abs(_localVelZ) > deadzone ? _localVelZ : 0;
-        
+
         // animator.SetFloat(AnimatorVelXProperty, _localVelX, 0.1f, Time.deltaTime);
         // animator.SetFloat(AnimatorVelZProperty, _localVelZ, 0.1f, Time.deltaTime);
 
@@ -313,7 +313,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         _navMeshAgent.updateRotation = !(
             IsStrafing ||
             moveAction == BehaviorActionMove.MoveAction.Idle ||
-            RotationDisableTokens.Count == 0
+            RotationDisableTokens.Count > 0
         );
     }
 

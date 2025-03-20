@@ -56,12 +56,18 @@ public class DrunkardEnemy : ComponentScript<EnemyInfo>
             if (cBehavior == newBehavior)
                 continue;
 
-            // Disable the attack behavior
-            (cBehavior as MonoBehaviour)!.enabled = false;
+            // // Disable the attack behavior
+            // (cBehavior as MonoBehaviour)!.enabled = false;
+            
+            // Add the attack disable token to the current behavior
+            cBehavior.AddAttackDisableToken(this);
         }
 
-        // Enable the new behavior
-        (newBehavior as MonoBehaviour)!.enabled = true;
+        // // Enable the new behavior
+        // (newBehavior as MonoBehaviour)!.enabled = true;
+        
+        // Remove the attack disable token from the new behavior
+        newBehavior.RemoveAttackDisableToken(this);
 
         // Set the current attack behavior
         _currentAttackBehavior = newBehavior;

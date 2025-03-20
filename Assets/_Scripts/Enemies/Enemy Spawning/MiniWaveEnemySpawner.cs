@@ -112,6 +112,8 @@ public class MiniWaveEnemySpawner : EnemySpawner
     private void DecrementEnemiesRemaining(object sender, HealthChangedEventArgs e)
     {
         _waveEnemiesRemaining--;
+
+        _totalEnemiesLeft--;
     }
 
     private void OnEnemyDeath(object sender, HealthChangedEventArgs e)

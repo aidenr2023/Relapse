@@ -77,7 +77,14 @@ public class DrunkardEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
             // Continue if there is no target
             if (!Enemy.DetectionBehavior.IsTargetDetected)
             {
-                yield return new WaitForSeconds(updatesPerSecond);
+                yield return new WaitForSeconds(1 / updatesPerSecond);
+                continue;
+            }
+
+            // Continue if the attack is not enabled
+            if (!IsAttackEnabled)
+            {
+                yield return new WaitForSeconds(1 / updatesPerSecond);
                 continue;
             }
 
@@ -90,7 +97,7 @@ public class DrunkardEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
             // Continue if the target is too far away
             if (distance > explosionRange)
             {
-                yield return new WaitForSeconds(updatesPerSecond);
+                yield return new WaitForSeconds(1 / updatesPerSecond);
                 continue;
             }
 
@@ -98,7 +105,7 @@ public class DrunkardEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
             StartCoroutine(ExplodeCoroutine());
 
             // Wait for the next update
-            yield return new WaitForSeconds(updatesPerSecond);
+            yield return new WaitForSeconds(1 / updatesPerSecond);
         }
     }
 
