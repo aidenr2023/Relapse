@@ -6,18 +6,23 @@ public class NewVendorShopButton : MonoBehaviour
 {
     [SerializeField] private PowerListReference playerPowers;
 
-    [SerializeField] private VendorMenu vendorMenu;
     [SerializeField] private TMP_Text powerNameText;
     [SerializeField] private Image powerImage;
     [SerializeField] private Image selectImage;
+    [SerializeField] private UIJitter uiJitter;
 
-    [SerializeField, Readonly] private PowerScriptableObject power;
+    [Space, SerializeField, Readonly] private PowerScriptableObject power;
     [SerializeField, Readonly] private bool isActive;
     [SerializeField, Readonly] private bool hasPower;
 
     [SerializeField] private Color normalColor;
     [SerializeField] private Color alreadyBoughtColor;
     [SerializeField] private Color unavailableColor;
+
+    [Space, SerializeField] private Color normalImageColor = Color.white;
+    [SerializeField] private Color greyedOutImageColor = Color.grey;
+
+    [Space, SerializeField] private VendorMenu vendorMenu;
 
     public PowerScriptableObject Power => power;
 
@@ -30,26 +35,34 @@ public class NewVendorShopButton : MonoBehaviour
         // Set the text and image
         powerImage.sprite = power.Icon;
 
-        if (hasPower)
+        if (hasPower || !isActive)
         {
-            powerNameText.text = $"{power.PowerName}\n(Sold Out!)";
+            if (hasPower)
+                powerNameText.text = $"{power.PowerName}\n(Sold Out!)";
+            else
+                powerNameText.text = $"{power.PowerName}\n(Unavailable!)";
 
             // Set the select image's color to unavailable
             selectImage.color = alreadyBoughtColor;
+
+            // Disable the jitter
+            uiJitter.SetLerpAmount(0);
+
+            // Set the power image's color to greyed out
+            powerImage.color = greyedOutImageColor;
         }
-        else if (isActive)
+        else
         {
             powerNameText.text = power.PowerName;
 
             // Set the select image's color to normal
             selectImage.color = normalColor;
-        }
-        else
-        {
-            powerNameText.text = $"{power.PowerName}\n(Unavailable!)";
 
-            // Set the image's color to unavailable
-            selectImage.color = unavailableColor;
+            // Enable the jitter
+            uiJitter.SetLerpAmount(1);
+            
+            // Set the power image's color to normal
+            powerImage.color = normalImageColor;
         }
     }
 
