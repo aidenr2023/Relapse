@@ -8,7 +8,7 @@ public class DrunkardEnemy : ComponentScript<EnemyInfo>
     [SerializeField] private MeleeEnemyAttack meleeEnemyAttack;
     [SerializeField, Range(0, 1)] private float phaseChangePercent = .5f;
     [SerializeField] private ParticleSystem drunkardParticles;
-    
+
     private IEnemyAttackBehavior _currentAttackBehavior;
 
     private void Start()
@@ -18,9 +18,12 @@ public class DrunkardEnemy : ComponentScript<EnemyInfo>
 
         // Subscribe to the OnDamaged event
         ParentComponent.OnDamaged += ActivatePhaseChange;
-        
+
         // Stop the particles
         drunkardParticles?.Stop();
+
+        // Force run the activate phase change method to check if the phase change should be activated
+        ActivatePhaseChange(null, null);
     }
 
     private void ActivatePhaseChange(object sender, HealthChangedEventArgs e)
@@ -58,20 +61,20 @@ public class DrunkardEnemy : ComponentScript<EnemyInfo>
 
             // // Disable the attack behavior
             // (cBehavior as MonoBehaviour)!.enabled = false;
-            
+
             // Add the attack disable token to the current behavior
             cBehavior.AddAttackDisableToken(this);
         }
 
         // // Enable the new behavior
         // (newBehavior as MonoBehaviour)!.enabled = true;
-        
+
         // Remove the attack disable token from the new behavior
         newBehavior.RemoveAttackDisableToken(this);
 
         // Set the current attack behavior
         _currentAttackBehavior = newBehavior;
-        
+
         // Set the current movement behavior to the new behavior's movement behavior
         ParentComponent.ParentComponent.Brain.BehaviorMode = newBehavior switch
         {
