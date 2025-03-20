@@ -6,6 +6,11 @@ using UnityEngine.Events;
 public class HealthChangedEventReference : GenericReference<UnityEvent<object, HealthChangedEventArgs>,
     HealthChangedEventVariable>
 {
+    public HealthChangedEventReference()
+    {
+        constantValue = new UnityEvent<object, HealthChangedEventArgs>();
+    }
+    
     public static HealthChangedEventReference operator +(
         HealthChangedEventReference healthChangedEventVariable,
         UnityAction<object, HealthChangedEventArgs> action

@@ -10,9 +10,9 @@ using UnityEngine;
 public abstract class GenericReference<TVarType, TSoType>
     where TSoType : ValueVariable<TVarType>
 {
-    [SerializeField] private bool useConstant = true;
-    [SerializeField] private TVarType constantValue;
-    [SerializeField] private TSoType variable;
+    [SerializeField] protected bool useConstant = true;
+    [SerializeField] protected TVarType constantValue;
+    [SerializeField] protected TSoType variable;
 
     /// <summary>
     /// Forces the reference to use the constant value.

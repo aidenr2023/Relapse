@@ -45,8 +45,10 @@ public class CustomShootable : MonoBehaviour, IActor
     {
         if (OnDamaged == null)
             OnDamaged = new HealthChangedEventReference();
+
         if (OnHealed == null)
             OnHealed = new HealthChangedEventReference();
+
         if (OnDeath == null)
             OnDeath = new HealthChangedEventReference();
 
