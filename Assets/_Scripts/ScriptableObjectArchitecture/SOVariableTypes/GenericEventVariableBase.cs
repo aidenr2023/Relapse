@@ -15,6 +15,10 @@ public abstract class GenericEventVariableBase<TEventType> : ValueVariable<TEven
     {
         base.CustomReset();
 
+        // Return if the value is null
+        if (value == null) 
+            return;
+        
         // Clear all NON-PERSISTENT listeners from the event
         value.RemoveAllListeners();
     }
@@ -29,6 +33,11 @@ public abstract class GenericEventVariableBase<TEventType> : ValueVariable<TEven
         Debug.LogError("You probably shouldn't be setting the value of an event variable directly.");
 
         value = newValue;
+    }
+    
+    public void LogString(string text)
+    {
+        Debug.Log(text);
     }
 }
 

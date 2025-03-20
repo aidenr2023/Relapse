@@ -24,6 +24,19 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
     [field: SerializeField] public HealthChangedEventReference OnHealed { get; set; }
     [field: SerializeField] public HealthChangedEventReference OnDeath { get; set; }
 
+    /// <summary>
+    /// An event that is called when the player relapses.
+    /// Used mostly to connect to outside scripts.
+    /// </summary>
+    [field: SerializeField]
+    public PlayerInfoEventReference OnRelapseStart { get; set; }
+
+    /// <summary>
+    /// An event that is called when the player's relapse ends.
+    /// </summary>
+    [field: SerializeField]
+    public PlayerInfoEventReference OnRelapseEnd { get; set; }
+
 
     [Header("Health Settings")] [SerializeField] [Min(0)]
     private float invincibilityDuration = 1f;
@@ -85,21 +98,6 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     public Sound NormalHitSfx => null;
     public Sound CriticalHitSfx => null;
-
-    #endregion
-
-    #region Events
-
-    /// <summary>
-    /// An event that is called when the player relapses.
-    /// Used mostly to connect to outside scripts.
-    /// </summary>
-    public Action<PlayerInfo> onRelapseStart;
-
-    /// <summary>
-    /// An event that is called when the player's relapse ends.
-    /// </summary>
-    public Action<PlayerInfo> onRelapseEnd;
 
     #endregion
 
@@ -312,7 +310,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         _currentRelapseDuration = 0;
 
         // Invoke the relapse event
-        onRelapseStart?.Invoke(this);
+        OnRelapseStart?.Value.Invoke(this);
     }
 
     private void EndRelapse()
@@ -324,7 +322,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         _currentRelapseDuration = 0;
 
         // Invoke the end relapse event
-        onRelapseEnd?.Invoke(this);
+        OnRelapseEnd?.Value.Invoke(this);
     }
 
     private void DieFromRelapse()

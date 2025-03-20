@@ -53,7 +53,7 @@ public class PlayerTutorialManager : ComponentScript<Player>, IPlayerLoaderInfo
     {
         // ParentComponent.WeaponManager.OnGunEquipped += OnGunEquipped;
         // ParentComponent.PlayerDeathController.onRespawn += OnRespawn;
-        ParentComponent.PlayerInfo.onRelapseStart += OnRelapseStart;
+        ParentComponent.PlayerInfo.OnRelapseStart += OnRelapseStart;
     }
 
     private void OnRelapseStart(PlayerInfo obj)
