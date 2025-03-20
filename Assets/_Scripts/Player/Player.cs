@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using _Scripts.Util.Interfaces;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,8 +9,10 @@ using UnityEngine.SceneManagement;
 /// </summary>
 [RequireComponent(typeof(PlayerInfo))]
 [RequireComponent(typeof(PlayerPowerManager))]
-public class Player : MonoBehaviour, IPlayerLoaderInfo
+public class Player : MonoBehaviour, IPlayerLoaderInfo, IGameReset
 {
+    [field: SerializeField] public EventVariable OnGameReset { get; private set; }
+
     public static Player Instance { get; private set; }
 
     #region Serialized Fields
@@ -17,7 +20,7 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
     [SerializeField, Min(0)] private float enemyDetectionDistance = 20;
 
     [SerializeField, Min(0)] private float levelCheckpointDamage = 10;
-        
+
     #endregion
 
     #region Getters
@@ -57,7 +60,7 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
     public float EnemyDetectionDistance => enemyDetectionDistance;
 
     public bool AreEnemiesNearby { get; private set; }
-    
+
     public float LevelCheckpointDamage => levelCheckpointDamage;
 
     #endregion
@@ -85,10 +88,15 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
 
         // Set the original scene
         OriginalSceneObject = new GameObject("OriginalSceneObject");
+
+        // Bind this to the OnGameReset event
+        OnGameReset += GameResetAction;
     }
 
     private void OnDestroy()
     {
+        // Remove this from the OnGameReset event
+        OnGameReset -= GameResetAction;
     }
 
     private void InitializeComponents()
@@ -141,10 +149,13 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo
             Vector3.Distance(transform.position, enemy.transform.position) <= enemyDetectionDistance);
     }
 
-    public void ResetPlayer()
+    public void GameResetAction()
     {
         Debug.Log("Resetting Player");
 
+        // Reset the player's movement
+        (PlayerController as PlayerMovementV2)?.ResetPlayer();
+        
         // Reset the health
         PlayerInfo.ResetPlayer();
 

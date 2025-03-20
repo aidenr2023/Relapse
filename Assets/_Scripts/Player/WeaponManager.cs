@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using _Scripts.Util.Interfaces;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, IPlayerLoaderInfo
 {
-    #region Fields
+    #region Serialized Fields
+
+    public EventVariable OnGameReset => Player.OnGameReset;
 
     [SerializeField] private GunInfoListVariable allGuns;
 
@@ -393,6 +396,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
 
     public void ResetPlayer()
     {
+        // Completely discard the equipped weapon
+        SetUpWeapon(null, 0);
+
         // Clear the damage multipliers
         _damageMultiplierTokens.Clear();
     }
@@ -452,7 +458,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
             SetUpWeapon(null, 0);
             return;
         }
-        
+
         // Set up the weapon's ammo
         var newGunAmmo = gun.GunPrefab.GunInformation.MagazineSize;
 

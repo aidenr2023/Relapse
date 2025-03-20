@@ -209,9 +209,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         InputManager.Instance.Register(this);
 
         // Set the transform values
-        playerTransform.value = transform;
-        cameraPivotSo.value = cameraPivot;
-        orientationSo.value = orientation;
+        SetVars();
     }
 
     private void OnDisable()
@@ -350,7 +348,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
         // Update the bullet time
         UpdateBulletTime();
-        
+
         // Set the player velocity
         playerVelocitySo.value = _rigidbody.velocity;
     }
@@ -947,6 +945,19 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Apply the settings
         desiredCapsuleHeightOffset = cSettings.desiredCapsuleHeightOffset;
         sphereCastRadius = cSettings.sphereCastRadius;
+    }
+
+    public void ResetPlayer()
+    {
+        // Set the vars
+        SetVars();
+    }
+
+    private void SetVars()
+    {
+        playerTransform.value = transform;
+        cameraPivotSo.value = cameraPivot;
+        orientationSo.value = orientation;
     }
 
     [Serializable]

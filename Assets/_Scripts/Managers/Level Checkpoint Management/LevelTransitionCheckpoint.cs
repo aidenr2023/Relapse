@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -33,7 +32,7 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
     private IEnumerator TransitionToNextScene(LevelSectionSceneInfo[] scenes)
     {
         var playerInstance = Player.Instance;
-        
+
         // Disable the player's controls
         SetPlayerControls(playerInstance, false);
 
@@ -48,7 +47,6 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
         while (Time.unscaledTime - startTime < TRANSITION_TIME)
         {
             var lerpValue = Mathf.InverseLerp(startTime, startTime + TRANSITION_TIME, Time.unscaledTime);
-            // TransitionOverlay.Instance.SetOpacity(lerpValue);
 
             var randomValue = Random.Range(-CA_JITTER, CA_JITTER);
 
@@ -71,6 +69,9 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
         }
 
         TransitionOverlay.Instance.SetOpacity(1);
+
+        // Do something while the screen is white
+        yield return StartCoroutine(DoSomethingWhileScreenIsWhite());
 
         var loadStartTime = Time.unscaledTime;
 
@@ -163,6 +164,11 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
         PostProcessingVolumeController.Instance.ScreenVolume.ChromaticAberrationModule.Tokens.RemoveToken(caToken);
     }
 
+    protected virtual IEnumerator DoSomethingWhileScreenIsWhite()
+    {
+        yield return null;
+    }
+
     private static List<AsyncOperation> LoadNextScenes(LevelSectionSceneInfo[] levelInfo)
     {
         // If the array is empty or null, return
@@ -170,7 +176,7 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
             return new List<AsyncOperation>();
 
         var playerInstance = Player.Instance;
-        
+
         // If there is no player, return
         if (playerInstance == null)
             return new List<AsyncOperation>();

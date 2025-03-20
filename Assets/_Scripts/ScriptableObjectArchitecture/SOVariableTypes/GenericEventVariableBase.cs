@@ -41,6 +41,14 @@ public abstract class GenericEventVariableBase<TEventType> : ValueVariable<TEven
     }
 }
 
+public abstract class GenericEventVariable : GenericEventVariableBase<UnityEvent>
+{
+    public void Invoke()
+    {
+        value.Invoke();
+    }
+}
+
 public abstract class GenericEventVariable<T1> : GenericEventVariableBase<UnityEvent<T1>>
 {
     public void Invoke(T1 arg1)
