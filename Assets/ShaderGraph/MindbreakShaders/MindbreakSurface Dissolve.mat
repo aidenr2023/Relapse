@@ -82,23 +82,24 @@ Material:
     - _CastShadows: 1
     - _Contrast: 131.68
     - _Cull: 2
-    - _Density: 0.02
+    - _Density: 0.03
     - _DissolveNoiseScale: 2
     - _DissolveStrength: 0
     - _DstBlend: 0
     - _FlickerSpeed: 3
-    - _FloatSpeed: 0.65
+    - _FloatSpeed: 1
     - _FresnelPower: 0
     - _IntersectPower: 1.09
-    - _Max: 0.4
+    - _Max: 0.79
     - _Min: 0.001
-    - _NoiseScale: 0.19
-    - _Power: 3
+    - _NoiseScale: 0.2
+    - _Power: 5.89
     - _QueueControl: 0
     - _QueueOffset: 0
     - _SrcBlend: 1
     - _Surface: 0
     - _Tiling: 0
+    - _Transparency: 1
     - _ZTest: 4
     - _ZWrite: 1
     - _ZWriteControl: 0
@@ -109,7 +110,9 @@ Material:
     - _Color: {r: 0.53333336, g: 0.92156863, b: 0.7176471, a: 1}
     - _Color_1: {r: 0.25943398, g: 0.99274844, b: 1, a: 0}
     - _IntersectColor: {r: 0.7490195, g: 0.7490195, b: 0.7490195, a: 0}
-    - _Tiling: {r: 5, g: 5, b: 0, a: 0}
+    - _RadialStrength: {r: 0, g: 0, b: 0, a: 0}
+    - _RipplesColor: {r: 1.4980392, g: 1.4980392, b: 1.4980392, a: 0}
+    - _Tiling: {r: 4.37, g: 5, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &7229746274556451154
 MonoBehaviour:
