@@ -261,6 +261,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     {
         // Remove this object from the debug manager
         DebugManager.Instance.RemoveDebuggedObject(this);
+        
+        // Remove the bullet time token
+        TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(_bulletTimeToken);
     }
 
     public void InitializeInput()

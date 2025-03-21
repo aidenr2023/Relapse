@@ -13,6 +13,12 @@ public class ComicCutsceneHelper : MonoBehaviour
         _timeToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(1, -1, true);
     }
 
+    private void OnDestroy()
+    {
+        // Remove the time token
+        TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(_timeToken);
+    }
+
     private void Update()
     {
         // Update the time scale
