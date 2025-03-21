@@ -5,17 +5,13 @@ using UnityEngine;
 public class DrunkardEnemy : ComponentScript<EnemyInfo>
 {
     [SerializeField] private DrunkardEnemyAttack drunkardEnemyAttack;
-    [SerializeField] private MeleeEnemyAttack meleeEnemyAttack;
     [SerializeField, Range(0, 1)] private float phaseChangePercent = .5f;
     [SerializeField] private ParticleSystem drunkardParticles;
 
-    private IEnemyAttackBehavior _currentAttackBehavior;
+    private (short min, short max) _particleBurstCount = (0, 0);
 
     private void Start()
     {
-        // Change the attack behavior to the melee attack
-        ChangeAttackBehavior(meleeEnemyAttack);
-
         // Subscribe to the OnDamaged event
         ParentComponent.OnDamaged += ActivatePhaseChange;
 
@@ -24,6 +20,17 @@ public class DrunkardEnemy : ComponentScript<EnemyInfo>
 
         // Force run the activate phase change method to check if the phase change should be activated
         ActivatePhaseChange(null, null);
+
+        // Get the burst count of the first burst
+        var burst = drunkardParticles.emission.GetBurst(0);
+        _particleBurstCount = (burst.minCount, burst.maxCount);
+        burst.minCount = burst.maxCount = 0;
+
+        // Set the burst
+        drunkardParticles.emission.SetBurst(0, burst);
+
+        // Start the particles by default
+        drunkardParticles.Play();
     }
 
     private void ActivatePhaseChange(object sender, HealthChangedEventArgs e)
@@ -34,61 +41,32 @@ public class DrunkardEnemy : ComponentScript<EnemyInfo>
         if (healthPercent > phaseChangePercent)
             return;
 
-        ChangeAttackBehavior(drunkardEnemyAttack);
         drunkardEnemyAttack.Activate();
 
         // Unsubscribe from the OnDamaged event
         ParentComponent.OnDamaged -= ActivatePhaseChange;
 
-        // Start the particles
+        // // Start the particles
+        // drunkardParticles?.Play();
+    }
+
+    public void StartParticles()
+    {
         drunkardParticles?.Play();
+
+        // Set the burst count to the original value
+        SetBurstCount(_particleBurstCount.min, _particleBurstCount.max);
     }
 
-    private void ChangeAttackBehavior(IEnemyAttackBehavior newBehavior)
+    public void SetBurstCount(short min, short max)
     {
-        // Create an array of all the attack behaviors
-        var attackBehaviors = new IEnemyAttackBehavior[]
-        {
-            drunkardEnemyAttack, meleeEnemyAttack
-        };
+        // Get the first burst
+        var burst = drunkardParticles.emission.GetBurst(0);
 
-        // Iterate through all of them and disable the ones that aren't the current one
-        foreach (var cBehavior in attackBehaviors)
-        {
-            // Skip the current behavior
-            if (cBehavior == newBehavior)
-                continue;
+        burst.minCount = min;
+        burst.maxCount = max;
 
-            // // Disable the attack behavior
-            // (cBehavior as MonoBehaviour)!.enabled = false;
-
-            // Add the attack disable token to the current behavior
-            cBehavior.AddAttackDisableToken(this);
-        }
-
-        // // Enable the new behavior
-        // (newBehavior as MonoBehaviour)!.enabled = true;
-
-        // Remove the attack disable token from the new behavior
-        newBehavior.RemoveAttackDisableToken(this);
-
-        // Set the current attack behavior
-        _currentAttackBehavior = newBehavior;
-
-        // Set the current movement behavior to the new behavior's movement behavior
-        ParentComponent.ParentComponent.Brain.BehaviorMode = newBehavior switch
-        {
-            MeleeEnemyAttack => (int)DrunkardBehavior.Melee,
-            DrunkardEnemyAttack => (int)DrunkardBehavior.Drunkard,
-            _ => ParentComponent.ParentComponent.Brain.BehaviorMode
-        };
-
-        Debug.Log($"Current attack behavior: {ParentComponent.ParentComponent.Brain.BehaviorMode}");
-    }
-
-    public enum DrunkardBehavior : byte
-    {
-        Melee,
-        Drunkard,
+        // Set the burst
+        drunkardParticles.emission.SetBurst(0, burst);
     }
 }

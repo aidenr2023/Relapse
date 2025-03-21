@@ -193,7 +193,6 @@ GameObject:
   - component: {fileID: 5377700300686321622}
   - component: {fileID: 9143735429684707639}
   - component: {fileID: 3211555531764007539}
-  - component: {fileID: 3860083044033091517}
   - component: {fileID: 8472600151036176868}
   - component: {fileID: 6375487390463003107}
   - component: {fileID: 5465492425596142432}
@@ -378,7 +377,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   updatesPerSecond: 8
-  movementSpeed: 8
+  movementSpeed: 10
   strafeMultiplier: 0.25
   strafeRotationLerpAmount: 0.075
   animator: {fileID: 6055747906437765735}
@@ -401,8 +400,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   drunkardEnemyAttack: {fileID: 3211555531764007539}
-  meleeEnemyAttack: {fileID: 3860083044033091517}
-  phaseChangePercent: 0.5
+  phaseChangePercent: 1
   drunkardParticles: {fileID: 1946210502116029729}
 --- !u!114 &5377700300686321622
 MonoBehaviour:
@@ -466,34 +464,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chargeMovementSpeed: 12
   updatesPerSecond: 4
-  explosionRange: 10
+  explosionRange: 12
+  chargeUpTime: 3
   explosionTime: 3
-  normalHitSfx:
-    clip: {fileID: 0}
-    soundType: 1
-    volume: 1
-    isPersistent: 0
-    isLooping: 0
-    pitch: 1
-    spatialBlend: 1
---- !u!114 &3860083044033091517
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5397329162327813186}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9083e2e854be4d118acc056af513d3d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rotationLerpAmount: 0.15
-  damage: 5
-  meleeAttackRange: 5
-  attackCooldown: 5
-  animator: {fileID: 6055747906437765735}
-  meleeAttackHitboxes: []
+  tooFarTimeMultiplier: 0.5
   normalHitSfx:
     clip: {fileID: 0}
     soundType: 1

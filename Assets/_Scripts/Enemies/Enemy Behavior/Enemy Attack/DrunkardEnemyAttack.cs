@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(ExplosionHelper))]
+[RequireComponent(typeof(ExplosionHelper), typeof(DrunkardEnemy))]
 public class DrunkardEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 {
     #region Serialized Fields
@@ -13,7 +13,10 @@ public class DrunkardEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     [SerializeField, Min(0.0001f)] private float updatesPerSecond = 4f;
 
     [SerializeField, Min(0)] private float explosionRange = 5;
+    [SerializeField, Min(0)] private float chargeUpTime = 3;
     [SerializeField, Min(0)] private float explosionTime = 3;
+
+    [SerializeField, Min(0)] private float tooFarTimeMultiplier = 1f;
 
     [SerializeField] private Sound normalHitSfx;
 
@@ -28,6 +31,10 @@ public class DrunkardEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     private Coroutine _updateCoroutine;
 
     private bool _isExploding;
+
+    private float _currentChargeUpTime;
+
+    private DrunkardEnemy _drunkardEnemy;
 
     #endregion
 
@@ -47,6 +54,7 @@ public class DrunkardEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     {
         Enemy = GetComponent<Enemy>();
         _explosionHelper = GetComponent<ExplosionHelper>();
+        _drunkardEnemy = GetComponent<DrunkardEnemy>();
     }
 
     private void OnEnable()
@@ -74,17 +82,19 @@ public class DrunkardEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
         while (!_isExploding)
         {
+            var frameTime = 1 / updatesPerSecond;
+
             // Continue if there is no target
             if (!Enemy.DetectionBehavior.IsTargetDetected)
             {
-                yield return new WaitForSeconds(1 / updatesPerSecond);
+                yield return new WaitForSeconds(frameTime);
                 continue;
             }
 
             // Continue if the attack is not enabled
             if (!IsAttackEnabled)
             {
-                yield return new WaitForSeconds(1 / updatesPerSecond);
+                yield return new WaitForSeconds(frameTime);
                 continue;
             }
 
@@ -97,20 +107,41 @@ public class DrunkardEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
             // Continue if the target is too far away
             if (distance > explosionRange)
             {
-                yield return new WaitForSeconds(1 / updatesPerSecond);
+                // Decrement the charge time
+                ChangeChargeUpTime(-frameTime * tooFarTimeMultiplier);
+
+                yield return new WaitForSeconds(frameTime);
                 continue;
             }
 
-            // Start the explode coroutine
-            StartCoroutine(ExplodeCoroutine());
+            // Increment the charge time
+            ChangeChargeUpTime(frameTime);
+
+            // If the charge up time is less than the charge up time, continue
+            if (_currentChargeUpTime < chargeUpTime)
+            {
+                yield return new WaitForSeconds(frameTime);
+                continue;
+            }
+
+            // Turn on the fuse
+            TurnOnFuse();
 
             // Wait for the next update
-            yield return new WaitForSeconds(1 / updatesPerSecond);
+            yield return new WaitForSeconds(frameTime);
         }
+    }
+
+    private void ChangeChargeUpTime(float time)
+    {
+        _currentChargeUpTime = Mathf.Clamp(_currentChargeUpTime + time, 0, chargeUpTime);
     }
 
     private IEnumerator ExplodeCoroutine()
     {
+        // Start particles
+        _drunkardEnemy.StartParticles();
+
         // Set the is exploding flag to true
         _isExploding = true;
 
@@ -142,7 +173,14 @@ public class DrunkardEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     public void Activate()
     {
+    }
+
+    private void TurnOnFuse()
+    {
         // Change the movement speed of the movement
         Enemy.NewMovement.MovementSpeed = chargeMovementSpeed;
+
+        // Start the explode coroutine
+        StartCoroutine(ExplodeCoroutine());
     }
 }
