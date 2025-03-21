@@ -38,7 +38,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 512, y: 128}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6397099063472779010
 CanvasRenderer:
@@ -93,8 +93,9 @@ MonoBehaviour:
   pauseMenuManager: {fileID: 0}
   tutorialText: {fileID: 6817261196714702271}
   buttonImage: {fileID: 105649673670355552}
+  button: {fileID: 0}
   availableImageColor: {r: 1, g: 1, b: 1, a: 1}
-  unavailableImageColor: {r: 0.25, g: 0.25, b: 0.25, a: 1}
+  unavailableImageColor: {r: 1, g: 0, b: 0, a: 1}
   tutorial: {fileID: 0}
 --- !u!114 &7476428028257525219
 MonoBehaviour:
