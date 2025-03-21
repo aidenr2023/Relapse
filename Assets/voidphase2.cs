@@ -5,25 +5,27 @@ using UnityEngine;
 public class voidphase2 : MonoBehaviour
 {
     // Start is called before the first frame update
-    
+
     [SerializeField] public GameObject Platforms;
     [SerializeField] public GameObject Platform;
 
-    void Start()
+    private void Start()
     {
-       
-        Platforms.SetActive(false);
-        Platform.SetActive(false);
-        
+        SetPlatforms(false);
     }
 
     // Update is called once per frame
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "Player")
-        {
-            Platforms.SetActive(true);
-            Platform.SetActive(true);
-        }
+            SetPlatforms(true);
+    }
+
+    private void SetPlatforms(bool value)
+    {
+        if (Platforms != null)
+            Platforms.SetActive(value);
+        if (Platform != null)
+            Platform.SetActive(value);
     }
 }
