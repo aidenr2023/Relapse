@@ -319,31 +319,6 @@ public class PauseMenuManager : GameMenu
 
     private GameObject PopulateTutorialsPanel()
     {
-        // // Destroy all the children of the tutorials button parent
-        // foreach (Transform child in tutorialsButtonParent.transform)
-        //     Destroy(child.gameObject);
-        //
-        // var firstSelected = tutorialBack;
-        //
-        // foreach (var tutorial in allTutorials.value)
-        // {
-        //     // Continue if the player has not read the tutorial
-        //     if (!completedTutorials.value.Contains(tutorial))
-        //         continue;
-        //
-        //     // Create a new button
-        //     var tutorialButton = Instantiate(tutorialButtonPrefab, tutorialsButtonParent.transform);
-        //
-        //     // Set the tutorial button's text to the tutorial's name
-        //     tutorialButton.Initialize(this, tutorial);
-        //
-        //     // Set the first selected button
-        //     if (firstSelected == tutorialBack)
-        //         firstSelected = tutorialButton.gameObject;
-        // }
-        //
-        // return firstSelected;
-
         // Set the tutorial of the tutorial buttons
         foreach (var button in tutorialButtons)
             button.ResetTutorial();
@@ -356,9 +331,51 @@ public class PauseMenuManager : GameMenu
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        // Set the tutorial of the tutorial buttons
+        HashSet<Tutorial> addedTutorials = new();
+        var tutorialButtonIndex = 0;
+
+        // Go through the player's tutorials and set the tutorial buttons
+        for (var i = 0; i < completedTutorials.value.Count; i++)
+        {
+            var tutorial = completedTutorials.value[i];
+
+            // If the tutorial is not in the current tutorials, continue
+            if (!currentTutorials.Contains(tutorial))
+                continue;
+
+            // Add this tutorial to the added tutorials
+            addedTutorials.Add(tutorial);
+
+            // Set the tutorial of the tutorial button
+            tutorialButtons[tutorialButtonIndex].SetTutorial(tutorial, true);
+
+            // Increment the tutorial button index
+            tutorialButtonIndex++;
+        }
+
+        // Set the tutorial of the remaining tutorial buttons
         for (var i = 0; i < currentTutorials.Count; i++)
-            tutorialButtons[i].SetTutorial(currentTutorials[i]);
+        {
+            // If the tutorial button index is greater than the tutorial buttons length, break
+            if (tutorialButtonIndex >= tutorialButtons.Length)
+                break;
+            
+            var tutorial = currentTutorials[i];
+
+            // Continue if the tutorial has already been added
+            // Add this tutorial to the added tutorials
+            if (!addedTutorials.Add(tutorial))
+                continue;
+
+            // Determine if the tutorial is available
+            var isAvailable = completedTutorials.value.Contains(currentTutorials[i]);
+
+            // Set the tutorial of the tutorial button
+            tutorialButtons[tutorialButtonIndex].SetTutorial(tutorial, isAvailable);
+
+            // Increment the tutorial button index
+            tutorialButtonIndex++;
+        }
 
         // Depending on the tutorial menu type, set the first selected button
         return _tutorialMenuType switch

@@ -286,8 +286,6 @@ public class VendorMenu : GameMenu
         switch (power.PowerType)
         {
             case PowerType.Medicine:
-                Debug.Log($"VITAL INDEX: {vitalList.Count} ({power.PowerName})");
-
                 medButtons[vitalList.Count].Initialize(power, _currentVendor.MedicinePowers.Contains(power));
 
                 vitalList.Add(power);
@@ -295,8 +293,6 @@ public class VendorMenu : GameMenu
                 break;
 
             case PowerType.Drug:
-                Debug.Log($"NEURO INDEX: {vitalList.Count} ({power.PowerName})");
-
                 drugButtons[neuroList.Count].Initialize(power, _currentVendor.DrugPowers.Contains(power));
 
                 neuroList.Add(power);
