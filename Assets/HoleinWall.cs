@@ -20,7 +20,7 @@ public class HoleinWall : MonoBehaviour
     // Update is called once per frame
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Enemy")
+        if (other.CompareTag("Enemy"))
         {
             Glass.SetActive(false);
             brokenGlass.SetActive(true);
