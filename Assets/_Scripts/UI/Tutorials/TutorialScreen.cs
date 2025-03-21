@@ -20,7 +20,7 @@ public class TutorialScreen : GameMenu, IUsesInput
 
     [SerializeField] private TutorialArrayVariable allTutorials;
     [SerializeField] private TutorialArrayVariable completedTutorials;
-    
+
     [SerializeField, Min(0)] private float slowDownTime = 1;
 
     [SerializeField] private VideoPlayer videoPlayer;
@@ -63,6 +63,8 @@ public class TutorialScreen : GameMenu, IUsesInput
 
     private bool _hasReachedEnd;
 
+    private float _currentSlowTime;
+
     #endregion
 
     #region Getters
@@ -104,19 +106,19 @@ public class TutorialScreen : GameMenu, IUsesInput
 
         // Run the resume game coroutine
         if (IsActive)
-            StartCoroutine(ResumeGame());
+            StartCoroutine(ResumeGame(_currentSlowTime));
     }
 
-    private IEnumerator ResumeGame()
+    private IEnumerator ResumeGame(float slowTime)
     {
         // Create a new time scale token
         var timeToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(0, -1, true);
 
         var startTime = Time.unscaledTime;
 
-        while (Time.unscaledTime - startTime < slowDownTime)
+        while (slowTime != 0 && Time.unscaledTime - startTime < slowTime)
         {
-            timeToken.Value = Mathf.Clamp01((Time.unscaledTime - startTime) / slowDownTime);
+            timeToken.Value = Mathf.Clamp01((Time.unscaledTime - startTime) / slowTime);
 
             yield return null;
         }
@@ -332,6 +334,11 @@ public class TutorialScreen : GameMenu, IUsesInput
 
     public void PlayTutorial(Tutorial tutorial, bool replay = true)
     {
+        PlayTutorial(tutorial, slowDownTime, replay);
+    }
+
+    public void PlayTutorial(Tutorial tutorial, float slowTime, bool replay = true)
+    {
         // Return if the tutorial is null
         if (tutorial == null)
             return;
@@ -343,22 +350,25 @@ public class TutorialScreen : GameMenu, IUsesInput
             return;
 
         // Start the coroutine
-        StartCoroutine(TutorialCoroutine(tutorial, replay, isTutorialCompleted));
+        StartCoroutine(TutorialCoroutine(tutorial, replay, isTutorialCompleted, slowTime));
     }
 
-    private IEnumerator TutorialCoroutine(Tutorial tutorial, bool replay, bool isTutorialCompleted)
+    private IEnumerator TutorialCoroutine(Tutorial tutorial, bool replay, bool isTutorialCompleted, float slowTime)
     {
         if (!replay && isTutorialCompleted)
             yield break;
-        
+
+        // Set the current slow time
+        _currentSlowTime = slowTime;
+
         // Create a time scale token
         var timeToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(1, -1, true);
 
         var startTime = Time.unscaledTime;
 
-        while (Time.unscaledTime - startTime < slowDownTime)
+        while (slowTime > 0 && Time.unscaledTime - startTime < slowTime)
         {
-            timeToken.Value = 1 - Mathf.Clamp01((Time.unscaledTime - startTime) / slowDownTime);
+            timeToken.Value = 1 - Mathf.Clamp01((Time.unscaledTime - startTime) / slowTime);
 
             yield return null;
         }
@@ -392,6 +402,37 @@ public class TutorialScreen : GameMenu, IUsesInput
     {
         // Run the coroutine
         script.StartCoroutine(CreateTutorialSceneAndPlay(tutorial, replay));
+    }
+
+    public static void Play(MonoBehaviour script, Tutorial tutorial, float slowTime, bool replay = true)
+    {
+        // Run the coroutine
+        script.StartCoroutine(CreateTutorialSceneAndPlay(tutorial, slowTime, replay));
+    }
+
+    private static IEnumerator CreateTutorialSceneAndPlay(Tutorial tutorial, float slowTime, bool replay = true)
+    {
+        // If the instance is NOT null, just play the tutorial
+        if (Instance != null)
+        {
+            Instance.PlayTutorial(tutorial, slowTime, replay);
+            yield break;
+        }
+
+        // Load the tutorial scene
+        var asyncOperation = SceneManager.LoadSceneAsync(TUTORIAL_SCENE_NAME, LoadSceneMode.Additive);
+
+        // Wait until the scene is loaded
+        yield return new WaitUntil(() => asyncOperation.isDone);
+
+        var tutorialScene = SceneManager.GetSceneByName(TUTORIAL_SCENE_NAME);
+
+        // Get the tutorial screen instance
+        var tutorialScreen = FindObjectsOfType<TutorialScreen>()
+            .FirstOrDefault(n => n.gameObject.scene == tutorialScene);
+
+        // Play the tutorial
+        tutorialScreen?.PlayTutorial(tutorial, replay);
     }
 
     private static IEnumerator CreateTutorialSceneAndPlay(Tutorial tutorial, bool replay = true)

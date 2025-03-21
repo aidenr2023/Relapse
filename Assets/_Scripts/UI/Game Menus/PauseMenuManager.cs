@@ -18,7 +18,7 @@ public class PauseMenuManager : GameMenu
 
     #region Serialized Fields
 
-    [SerializeField] private string mainMenuScene = "MainMenu";
+    [SerializeField] private string mainMenuScene = "MainMenuRevamp";
 
     [SerializeField] private GameObject pauseMenuParent;
 
@@ -33,18 +33,22 @@ public class PauseMenuManager : GameMenu
     [SerializeField] private Color hoverColor = Color.yellow;
     [SerializeField] private Color clickColor = Color.red;
 
-    [Header("Navigation Control")] [SerializeField]
+    [Header("Navigation Control"), SerializeField]
     private GameObject firstSelectedButton;
 
     [SerializeField] private GameObject settingsFirstSelected;
     [SerializeField] private GameObject journalFirstSelected;
 
-    [SerializeField] private GameObject tutorialsButtonParent;
+    [Header("Tutorials"), SerializeField] private TutorialMenuButton[] tutorialButtons;
     [SerializeField] private TutorialButton tutorialButtonPrefab;
     [SerializeField] private GameObject tutorialBack;
+    [SerializeField] private Button generalTutorialHeader;
+    [SerializeField] private Button powerTutorialHeader;
 
     [SerializeField] private TutorialArrayVariable allTutorials;
     [SerializeField] private TutorialArrayVariable completedTutorials;
+    [SerializeField] private TutorialArrayVariable generalTutorials;
+    [SerializeField] private TutorialArrayVariable powerTutorials;
 
     [SerializeField] private PowerInfoScreen powerInfoScreen;
 
@@ -55,6 +59,8 @@ public class PauseMenuManager : GameMenu
     private readonly Stack<GameObject> _menuStack = new();
 
     private bool _inputtedThisFrame;
+
+    private TutorialMenuType _tutorialMenuType = TutorialMenuType.General;
 
     #endregion
 
@@ -293,6 +299,9 @@ public class PauseMenuManager : GameMenu
 
     public void Tutorials(GameObject textObject)
     {
+        // Force set the tutorial menu type to general
+        SetTutorialMenuType(TutorialMenuType.General);
+
         ChangeClickColor(textObject);
 
         // Push the tutorials panel onto the stack
@@ -310,30 +319,68 @@ public class PauseMenuManager : GameMenu
 
     private GameObject PopulateTutorialsPanel()
     {
-        // Destroy all the children of the tutorials button parent
-        foreach (Transform child in tutorialsButtonParent.transform)
-            Destroy(child.gameObject);
+        // // Destroy all the children of the tutorials button parent
+        // foreach (Transform child in tutorialsButtonParent.transform)
+        //     Destroy(child.gameObject);
+        //
+        // var firstSelected = tutorialBack;
+        //
+        // foreach (var tutorial in allTutorials.value)
+        // {
+        //     // Continue if the player has not read the tutorial
+        //     if (!completedTutorials.value.Contains(tutorial))
+        //         continue;
+        //
+        //     // Create a new button
+        //     var tutorialButton = Instantiate(tutorialButtonPrefab, tutorialsButtonParent.transform);
+        //
+        //     // Set the tutorial button's text to the tutorial's name
+        //     tutorialButton.Initialize(this, tutorial);
+        //
+        //     // Set the first selected button
+        //     if (firstSelected == tutorialBack)
+        //         firstSelected = tutorialButton.gameObject;
+        // }
+        //
+        // return firstSelected;
 
-        var firstSelected = tutorialBack;
+        // Set the tutorial of the tutorial buttons
+        foreach (var button in tutorialButtons)
+            button.ResetTutorial();
 
-        foreach (var tutorial in allTutorials.value)
+        // Get the correct tutorial array depending on the tutorial menu type
+        var currentTutorials = _tutorialMenuType switch
         {
-            // Continue if the player has not read the tutorial
-            if (!completedTutorials.value.Contains(tutorial))
-                continue;
+            TutorialMenuType.General => generalTutorials.value,
+            TutorialMenuType.Power => powerTutorials.value,
+            _ => throw new ArgumentOutOfRangeException()
+        };
 
-            // Create a new button
-            var tutorialButton = Instantiate(tutorialButtonPrefab, tutorialsButtonParent.transform);
+        // Set the tutorial of the tutorial buttons
+        for (var i = 0; i < currentTutorials.Count; i++)
+            tutorialButtons[i].SetTutorial(currentTutorials[i]);
 
-            // Set the tutorial button's text to the tutorial's name
-            tutorialButton.Initialize(this, tutorial);
+        // Depending on the tutorial menu type, set the first selected button
+        return _tutorialMenuType switch
+        {
+            TutorialMenuType.General => generalTutorialHeader.gameObject,
+            TutorialMenuType.Power => powerTutorialHeader.gameObject,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
 
-            // Set the first selected button
-            if (firstSelected == tutorialBack)
-                firstSelected = tutorialButton.gameObject;
-        }
+    private void SetTutorialMenuType(TutorialMenuType type)
+    {
+        _tutorialMenuType = type;
+    }
 
-        return firstSelected;
+    public void SetTutorialMenuTypeAndPopulate(int type)
+    {
+        SetTutorialMenuType((TutorialMenuType)type);
+
+        var firstSelected = PopulateTutorialsPanel();
+
+        SetSelectedButton(firstSelected);
     }
 
     /// <summary>
@@ -416,5 +463,12 @@ public class PauseMenuManager : GameMenu
 
         // // Call the OnPausePerformed method
         // Instance.OnPausePerformed(obj);
+    }
+
+    [Serializable]
+    public enum TutorialMenuType : byte
+    {
+        General,
+        Power
     }
 }
