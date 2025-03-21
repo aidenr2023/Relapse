@@ -20,6 +20,8 @@ public class GunInformation : ScriptableObject
 
     [SerializeField] private GunFireType gunFireType;
 
+    [SerializeField] private bool useAmmo = true;
+
     [Header("Stats")] [SerializeField] private float baseDamage;
     [SerializeField] private float criticalHitMultiplier = 1;
 
@@ -78,6 +80,8 @@ public class GunInformation : ScriptableObject
     public int Cost => cost;
 
     public GunFireType FireType => gunFireType;
+    
+    public bool UseAmmo => useAmmo;
 
     public float BaseDamage => baseDamage;
     

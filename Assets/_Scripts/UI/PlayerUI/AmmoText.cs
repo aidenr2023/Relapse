@@ -158,6 +158,10 @@ public class AmmoText : MonoBehaviour
         // If the equipped gun is null, set the desired opacity to 0
         else if (_weaponManager.EquippedGun == null)
             _desiredOpacity = 0;
+        
+        // If the equipped gun does not use ammo, set the desired opacity to 0
+        else if (!_weaponManager.EquippedGun.GunInformation.UseAmmo)
+            _desiredOpacity = 0;
 
         // Lerp the alpha of the canvas group's alpha to the desired opacity
         const float defaultFrameTime = 1 / 60f;
