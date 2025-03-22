@@ -8,12 +8,20 @@ public class ShootingEnemyAttackAnimationHelper : EnemyAttackAnimationHelper
 
     public override void ActivateHitBox(int index)
     {
+        // Return if the shooting enemy attack is not enabled
+        if (!shootingEnemyAttack.IsAttackEnabled)
+            return;
+        
         // Fire the projectile
         shootingEnemyAttack.FireProjectile(index);
     }
 
     public override void DeactivateHitBox(int index)
     {
+        // Return if the shooting enemy attack is not enabled
+        if (!shootingEnemyAttack.IsAttackEnabled)
+            return;
+        
     }
 
     public override void DeactivateMovement()

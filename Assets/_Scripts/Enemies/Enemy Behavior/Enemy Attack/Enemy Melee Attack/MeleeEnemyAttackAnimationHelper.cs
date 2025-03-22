@@ -12,13 +12,24 @@ public class MeleeEnemyAttackAnimationHelper : EnemyAttackAnimationHelper
 
     public override void ActivateHitBox(int index)
     {
+        // Return if the melee enemy attack is not enabled
+        if (!meleeEnemyAttack.IsAttackEnabled)
+            return;
+
         meleeEnemyAttack.ActivateHitBox(index);
 
         // Play the attack sound of the specific hit box
         meleeEnemyAttack.MeleeAttackHitboxes[index].PlayAttackSound();
     }
 
-    public override void DeactivateHitBox(int index) => meleeEnemyAttack.DeactivateHitBox(index);
+    public override void DeactivateHitBox(int index)
+    {
+        // Return if the shooting enemy attack is not enabled
+        if (!meleeEnemyAttack.IsAttackEnabled)
+            return;
+
+        meleeEnemyAttack.DeactivateHitBox(index);
+    }
 
     public override void DeactivateMovement()
     {

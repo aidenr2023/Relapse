@@ -15,22 +15,25 @@ public class DrunkardEnemy : ComponentScript<EnemyInfo>
         // Subscribe to the OnDamaged event
         ParentComponent.OnDamaged += ActivatePhaseChange;
 
-        // Stop the particles
-        drunkardParticles?.Stop();
+        if (drunkardParticles != null)
+        {
+            // Stop the particles
+            drunkardParticles.Stop();
+
+            // Get the burst count of the first burst
+            var burst = drunkardParticles.emission.GetBurst(0);
+            _particleBurstCount = (burst.minCount, burst.maxCount);
+            burst.minCount = burst.maxCount = 0;
+
+            // Set the burst
+            drunkardParticles.emission.SetBurst(0, burst);
+
+            // Start the particles by default
+            drunkardParticles.Play();
+        }
 
         // Force run the activate phase change method to check if the phase change should be activated
         ActivatePhaseChange(null, null);
-
-        // Get the burst count of the first burst
-        var burst = drunkardParticles.emission.GetBurst(0);
-        _particleBurstCount = (burst.minCount, burst.maxCount);
-        burst.minCount = burst.maxCount = 0;
-
-        // Set the burst
-        drunkardParticles.emission.SetBurst(0, burst);
-
-        // Start the particles by default
-        drunkardParticles.Play();
     }
 
     private void ActivatePhaseChange(object sender, HealthChangedEventArgs e)
