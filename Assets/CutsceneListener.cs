@@ -19,6 +19,7 @@ public class CutsceneListener : MonoBehaviour
     public static CutsceneListener Instance { get; private set; }
 
     [SerializeField] private TMP_Text levelNameText;
+    [SerializeField] private TMP_Text levelSubtitleText;
 
     // get instance of cutscene manager
     private CutsceneManager _cutsceneManager;
@@ -26,6 +27,8 @@ public class CutsceneListener : MonoBehaviour
     private Animator _cinematicAnimator;
 
     public TMP_Text LevelNameText => levelNameText;
+
+    public TMP_Text LevelSubtitleText => levelSubtitleText;
 
     private void Awake()
     {
@@ -92,7 +95,7 @@ public class CutsceneListener : MonoBehaviour
     public void PlayBarsAnimation(bool showTitle)
     {
         _cinematicAnimator.SetTrigger(ShowBarsAnimationID);
-        
+
         if (showTitle)
             _cinematicAnimator.SetTrigger(ShowTitleAnimationID);
 
@@ -103,7 +106,7 @@ public class CutsceneListener : MonoBehaviour
     private void StopBarsAnimation(bool showTitle)
     {
         _cinematicAnimator.SetTrigger(HideBarsAnimationID);
-        
+
         if (showTitle)
             _cinematicAnimator.SetTrigger(HideTitleAnimationID);
     }
