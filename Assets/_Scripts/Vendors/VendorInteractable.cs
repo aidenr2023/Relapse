@@ -11,12 +11,16 @@ public class VendorInteractable : MonoBehaviour, IInteractable, ILevelLoaderInfo
 
     [SerializeField] private UnityEvent onInteraction;
 
+    [SerializeField] private UnityEvent afterTalkingOnce;
+
     #endregion
+
+    public bool HasTalkedOnce { get; private set; }
 
     #region Getters
 
     public InteractableMaterialManager InteractableMaterialManager { get; set; }
-    
+
     public GameObject GameObject => gameObject;
 
     public bool IsInteractable { get; set; } = true;
@@ -34,8 +38,8 @@ public class VendorInteractable : MonoBehaviour, IInteractable, ILevelLoaderInfo
     public void Interact(PlayerInteraction playerInteraction)
     {
         // Get the vendor menu instance & activate the shop
-        VendorMenu.Instance.StartVendor(vendorInformation);
-        
+        VendorMenu.Instance.StartVendor(vendorInformation, this);
+
         // Invoke the on interaction event
         onInteraction.Invoke();
     }
@@ -47,6 +51,17 @@ public class VendorInteractable : MonoBehaviour, IInteractable, ILevelLoaderInfo
     public string InteractText(PlayerInteraction playerInteraction)
     {
         return $"Talk to {vendorInformation.VendorName}";
+    }
+
+    public void InvokeAfterTalkingOnce()
+    {
+        if (HasTalkedOnce)
+            return;
+
+        afterTalkingOnce.Invoke();
+        HasTalkedOnce = true;
+        
+        Debug.Log($"INVOKING THE EVENT AFTER TALKING ONCE");
     }
 
     #region ILevelLoaderInfo
@@ -71,11 +86,11 @@ public class VendorInteractable : MonoBehaviour, IInteractable, ILevelLoaderInfo
     {
         // Reset the vendor information
         vendorInformation.ResetVendorInformation();
-        
+
         // Load whether the player can buy from the vendor
         if (levelLoader.TryGetDataFromMemory(UniqueId, CAN_BUY_FROM_VENDOR, out bool canBuyFromVendor))
             vendorInformation.CanBuyFromVendor = canBuyFromVendor;
-        
+
         // Load whether the player has introduced to the vendor
         if (levelLoader.TryGetDataFromMemory(UniqueId, HAS_INTRODUCED, out bool hasIntroduced))
             vendorInformation.HasIntroduced = hasIntroduced;
@@ -87,7 +102,7 @@ public class VendorInteractable : MonoBehaviour, IInteractable, ILevelLoaderInfo
         // Save the data
         var canBuyFromVendorData = vendorInformation.CanBuyFromVendor;
         levelLoader.AddDataToMemory(UniqueId, new DataInfo(CAN_BUY_FROM_VENDOR, canBuyFromVendorData));
-        
+
         // Create a boolean to save whether the player has introduced to the vendor
         // Save the data
         var hasIntroducedData = vendorInformation.HasIntroduced;

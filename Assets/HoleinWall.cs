@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class HoleinWall : MonoBehaviour
 {
-    [SerializeField] public GameObject brokenGlass;
-    [SerializeField] public GameObject Glass;
-    [SerializeField] public AudioClip glassBreak;
+    [FormerlySerializedAs("brokenGlass")] [SerializeField] public GameObject AnimatedWall;
+    [FormerlySerializedAs("Glass")] [SerializeField] public GameObject StaticWall;
+    [FormerlySerializedAs("glassBreak")] [SerializeField] public AudioClip BreakSound;
     [SerializeField] public AudioSource audioSource;
 
     [SerializeField] public Collider collider;
@@ -20,22 +21,21 @@ public class HoleinWall : MonoBehaviour
     // Update is called once per frame
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Enemy")
+        if (other.CompareTag("Enemy"))
         {
-            Glass.SetActive(false);
-            brokenGlass.SetActive(true);
-            audioSource.PlayOneShot(glassBreak, 1);
-            Debug.Log(other.tag);
+            StaticWall.SetActive(false);
+            AnimatedWall.SetActive(true);
+            audioSource.PlayOneShot(BreakSound, 1);
+            Debug.Log(other.CompareTag("Enemy"));
         }
-        else if (other.tag == "Player")
-
+        else
         {
-            Debug.Log("I don't know what to do here");
+            Debug.Log("No Tag read");
         }
     }
 
-    private void OnTriggerExit(Collider other)
-    {
-        collider.enabled = false;
-    }
+    // private void OnTriggerExit(Collider other)
+    // {
+    //     collider.enabled = false;
+    // }
 }

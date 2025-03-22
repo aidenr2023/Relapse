@@ -14,6 +14,7 @@ public class LevelInformation : MonoBehaviour
     #region Serialized Fields
 
     [SerializeField] private string levelName;
+    [SerializeField] private string levelSubtitle;
     [SerializeField] private bool skipIntroText;
     [SerializeField] private LevelCheckpointCheckpoint startingCheckpoint;
 
@@ -186,5 +187,6 @@ public class LevelInformation : MonoBehaviour
 
         CutsceneListener.Instance.PlayBarsAnimation(true);
         CutsceneListener.Instance.LevelNameText.text = levelInfo.levelName;
+        CutsceneListener.Instance.LevelSubtitleText.text = levelInfo.levelSubtitle;
     }
 }

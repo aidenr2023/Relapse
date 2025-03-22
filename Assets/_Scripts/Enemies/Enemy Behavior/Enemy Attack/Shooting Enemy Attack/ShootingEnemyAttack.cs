@@ -27,7 +27,7 @@ public class ShootingEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     [SerializeField] private Transform[] projectileSpawnPoints;
 
     [SerializeField] private Sound normalHitSfx;
-    
+
     #endregion
 
     #region Private Fields
@@ -56,8 +56,8 @@ public class ShootingEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         ) <= fireRange;
 
     public HashSet<object> AttackDisableTokens { get; } = new();
-    
-    
+
+
     public Sound NormalHitSfx => normalHitSfx;
     public Sound CriticalHitSfx => null;
 

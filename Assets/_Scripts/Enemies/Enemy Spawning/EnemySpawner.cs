@@ -32,13 +32,23 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
 
     protected void Start()
     {
-        // Add this to the debug manager
-        DebugManager.Instance.AddDebuggedObject(this);
 
         onSpawnerComplete.AddListener(ChangeFlagOnSpawnerComplete);
         onSpawnerStart.AddListener(ShowTooltipOnStart);
         
         CustomStart();
+    }
+
+    private void OnEnable()
+    {
+        // Add this to the debug manager
+        DebugManager.Instance.AddDebuggedObject(this);
+
+    }
+
+    private void OnDisable()
+    {
+        DebugManager.Instance.RemoveDebuggedObject(this);
     }
 
     private void ChangeFlagOnSpawnerComplete()
@@ -67,9 +77,6 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
         // Set the is complete flag to true
         isComplete = true;
         
-        // Remove this from the debug manager
-        DebugManager.Instance.RemoveDebuggedObject(this);
-
         // Call the custom destroy method
         CustomDestroy();
     }

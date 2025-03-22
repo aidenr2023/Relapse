@@ -30,11 +30,15 @@ public class CutsceneObjectList : MonoBehaviour
 
     private void DisableObjects()
     {
-        // Disable each GameObject in the list when the cutscene starts.
+        // Disable and destroy each GameObject in the list
         foreach (GameObject obj in objectsToToggle)
         {
-            if (obj != null)
-                obj.SetActive(false);
+            if (obj == null) continue;
+
+            // Disable the object first
+            obj.SetActive(false);
+            // Then destroy it
+            Destroy(obj);
         }
     }
 

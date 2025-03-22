@@ -74,6 +74,8 @@ public class VendorMenu : GameMenu
     private GameObject _isolatedMenu;
     private bool _playTutorialAfterClose;
     private PowerScriptableObject _purchasedPower;
+    
+    private VendorInteractable _vendorInteractable;
 
     #endregion
 
@@ -113,6 +115,10 @@ public class VendorMenu : GameMenu
         // Reset the flags
         _playTutorialAfterClose = false;
         _purchasedPower = null;
+
+        // Invoke the event to run after talking once
+        if (_vendorInteractable != null)
+            _vendorInteractable.InvokeAfterTalkingOnce();
     }
 
     protected override void CustomDestroy()
@@ -321,7 +327,7 @@ public class VendorMenu : GameMenu
         priceText.text = $"Price: $PLACEHOLDER PRICE";
 
         // Set the tolerance impact
-        toleranceImpactText.text = $"Toxicity Impact: {power.BaseToleranceMeterImpact}%";
+        toleranceImpactText.text = $"Toxicity Impact: {power.BaseToleranceMeterImpact}";
 
         // Set the cooldown
         cooldownText.text = $"Cooldown: {power.Cooldown:0.00} Seconds";
@@ -375,24 +381,21 @@ public class VendorMenu : GameMenu
         }
     }
 
-    public void StartVendor(VendorScriptableObject vendor)
+    public void StartVendor(VendorScriptableObject vendor, VendorInteractable vendorInteractable)
     {
         // Set the current vendor
         _currentVendor = vendor;
+        _vendorInteractable = vendorInteractable;
 
         // Set the powers
         _medPowers = vendor.MedicinePowers;
         _drugPowers = vendor.DrugPowers;
 
-        // // Set this menu to active
-        // gameObject.SetActive(true);
+        // Set this menu to active
         Activate();
 
         // Populate the shop
         PopulateShop();
-
-        // // Isolate the initial menu
-        // IsolateMenu(initialMenu);
 
         // If the vendor has intro dialogue, start the dialogue
         if (vendor.IntroDialogue != null && !vendor.HasIntroduced)
@@ -422,8 +425,7 @@ public class VendorMenu : GameMenu
 
     public void EndVendor()
     {
-        // // Set this menu to inactive
-        // gameObject.SetActive(false);
+        // Set this menu to inactive
         Deactivate();
     }
 
