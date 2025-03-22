@@ -138,11 +138,18 @@ public class CrawlerEnemy : ComponentScript<EnemyInfo>
             // Wait for the attack update coroutine to finish
             yield return _currentAttackCoroutine;
 
-            // Get a random behavior
-            var randomBehavior = GetRandomBehaviorMode();
+            // // Get a random behavior
+            // var nextBehavior = GetRandomBehaviorMode();
+
+            // Get the index of the current attack mode
+            var currentBehaviorIndex = (int)_currentAttackMode;
+            var nextBehaviorIndex = (currentBehaviorIndex + 1) % EnemyAttackBehaviors.Length;
+
+            // Get the next behavior
+            var nextBehavior = (CrawlerAttackMode)nextBehaviorIndex;
 
             // Change the enemy attack behavior to the random behavior
-            ChangeEnemyAttack(randomBehavior);
+            ChangeEnemyAttack(nextBehavior);
         }
     }
 

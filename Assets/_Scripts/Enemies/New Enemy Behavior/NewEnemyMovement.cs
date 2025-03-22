@@ -150,17 +150,17 @@ public class NewEnemyMovement : ComponentScript<Enemy>
             if (Mathf.Abs(_localVelZ) < 0.001f)
             {
                 speedValue = velocity * animationStrafeSpeedCoefficient;
-                Debug.Log($"Strafing Sideways: {speedValue:0.00}");
+                // Debug.Log($"Strafing Sideways: {speedValue:0.00}");
             }
             else if (_localVelZ < 0)
             {
                 speedValue = velocity * animationStrafeBackSpeedCoefficient;
-                Debug.Log($"Strafing Backwards: {speedValue:0.00}");
+                // Debug.Log($"Strafing Backwards: {speedValue:0.00}");
             }
             else if (_localVelZ > 0)
             {
                 speedValue = velocity * animationStrafeForwardSpeedCoefficient;
-                Debug.Log($"Strafing Forwards: {speedValue:0.00}");
+                // Debug.Log($"Strafing Forwards: {speedValue:0.00}");
             }
         }
 

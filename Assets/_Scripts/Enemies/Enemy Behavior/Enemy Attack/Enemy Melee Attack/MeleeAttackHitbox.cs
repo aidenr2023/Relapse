@@ -30,7 +30,7 @@ public class MeleeAttackHitbox : MonoBehaviour
         StopTrail();
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         if (!IsEnabled)
             return;
@@ -41,7 +41,7 @@ public class MeleeAttackHitbox : MonoBehaviour
             return;
 
         // Return if the actor is an enemy
-        if (actor is EnemyInfo enemyInfo)
+        if (actor is EnemyInfo)
             return;
 
         // Deal damage to the actor

@@ -50,7 +50,7 @@ public class Regeneration : MonoBehaviour, IPower
         );
         
         // Instantiate the regeneration particles
-        var particles = Instantiate(regenerationParticles, powerManager.transform);
+        var particles = Instantiate(regenerationParticles);
 
         // Add a new follow transform component to the particles
         var followTransform = particles.gameObject.AddComponent<FollowTransform>();

@@ -35,4 +35,14 @@ public class ShootingEnemyAttackAnimationHelper : EnemyAttackAnimationHelper
         // shootingEnemyAttack.Enemy.MovementBehavior.RemoveMovementDisableToken(MovementDisableToken);
         shootingEnemyAttack.Enemy.NewMovement.RemoveMovementDisableToken(MovementDisableToken);
     }
+    
+    public void ActivateShootingEnemyAttackHitbox(int index)
+    {
+        ActivateHitBox(index);
+    }
+    
+    public void DeactivateShootingEnemyAttackHitbox(int index)
+    {
+        DeactivateHitBox(index);
+    }
 }

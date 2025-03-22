@@ -48,4 +48,14 @@ public class MeleeEnemyAttackAnimationHelper : EnemyAttackAnimationHelper
         // meleeEnemyAttack.Enemy.EnemyMovementBehavior.RemoveMovementDisableToken(MovementDisableToken);
         meleeEnemyAttack.Enemy.NewMovement.MovementSpeedTokens.RemoveToken(_movementSpeedToken);
     }
+    
+    public void ActivateMeleeAttackHitbox(int index)
+    {
+        ActivateHitBox(index);
+    }
+    
+    public void DeactivateMeleeAttackHitbox(int index)
+    {
+        DeactivateHitBox(index);
+    }
 }
