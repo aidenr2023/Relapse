@@ -8,6 +8,7 @@ public class PlayerInventory : MonoBehaviour, IPlayerLoaderInfo
     #region Serialized Fields
 
     [SerializeField] private InventoryVariable inventoryVariable;
+    [SerializeField] private IntVariable moneyCount;
 
     #endregion
     
@@ -17,6 +18,18 @@ public class PlayerInventory : MonoBehaviour, IPlayerLoaderInfo
     {
         // Subscribe to the OnItemAdded event
         inventoryVariable.OnItemAdded += ItemTooltipOnPickup;
+        
+        inventoryVariable.OnItemAdded += UpdateMoneyCount;
+        inventoryVariable.OnItemRemoved += UpdateMoneyCount;
+    }
+
+    private void UpdateMoneyCount(InventoryObject arg1, int _)
+    {
+        // Return if the money count is null
+        if (moneyCount == null)
+            return;
+        
+        moneyCount.value = inventoryVariable.MoneyCount;
     }
 
     private void ItemTooltipOnPickup(InventoryObject inventoryObject, int quantity)
