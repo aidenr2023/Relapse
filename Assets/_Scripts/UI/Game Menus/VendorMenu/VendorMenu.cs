@@ -327,7 +327,7 @@ public class VendorMenu : GameMenu
         priceText.text = $"Price: $PLACEHOLDER PRICE";
 
         // Set the tolerance impact
-        toleranceImpactText.text = $"Toxicity Impact: {power.BaseToleranceMeterImpact}%";
+        toleranceImpactText.text = $"Toxicity Impact: {power.BaseToleranceMeterImpact}";
 
         // Set the cooldown
         cooldownText.text = $"Cooldown: {power.Cooldown:0.00} Seconds";
