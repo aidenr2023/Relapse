@@ -37,6 +37,18 @@ public class MemoryPickup : MonoBehaviour, IInteractable, ILevelLoaderInfo
 
     #endregion
 
+    private void OnEnable()
+    {
+        // Add this to the pickup icon manager
+        PickupIconManager.Add(this);
+    }
+
+    private void OnDisable()
+    {
+        // Remove this from the pickup icon manager
+        PickupIconManager.Remove(this);
+    }
+    
     private void Update()
     {
         if (_isMarkedForDestruction)

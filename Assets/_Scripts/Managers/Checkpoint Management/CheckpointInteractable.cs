@@ -44,6 +44,24 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
 
     #endregion
 
+    private void OnEnable()
+    {
+        return;
+        
+        // TODO: If I uncomment this,
+        // the invisible checkpoints will be added to the pickup icon manager
+        
+        if (!isProximity)
+            PickupIconManager.Add(this);
+    }
+
+    private void OnDisable()
+    {
+        return;
+
+        PickupIconManager.Remove(this);
+    }
+
     private void Update()
     {
         // Check if the player is nearby 

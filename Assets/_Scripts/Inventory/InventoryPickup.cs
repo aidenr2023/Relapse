@@ -7,6 +7,8 @@ using UnityEngine.Events;
 [RequireComponent(typeof(UniqueId), typeof(InteractableMaterialManager))]
 public class InventoryPickup : MonoBehaviour, IInteractable, ILevelLoaderInfo
 {
+    public static HashSet<InventoryPickup> AllInventoryPickups { get; } = new();
+    
     #region Serialized Fields
 
     [SerializeField] private InventoryEntry inventoryEntry;
@@ -41,6 +43,25 @@ public class InventoryPickup : MonoBehaviour, IInteractable, ILevelLoaderInfo
     private bool _hasBeenInteracted;
 
     private bool _isMarkedForDestruction;
+
+    private void OnEnable()
+    {
+        // Add this to the pickup icon manager
+        PickupIconManager.Add(this);
+    }
+
+    private void OnDisable()
+    {
+        // Remove this from the pickup icon manager
+        PickupIconManager.Remove(this);
+    }
+
+    private void OnDestroy()
+    {
+        // Save the data
+        SaveData(LevelLoader.Instance);
+    }
+
 
     public void Interact(PlayerInteraction playerInteraction)
     {
@@ -101,12 +122,6 @@ public class InventoryPickup : MonoBehaviour, IInteractable, ILevelLoaderInfo
             Destroy(gameObject);
             return;
         }
-    }
-
-    private void OnDestroy()
-    {
-        // Save the data
-        SaveData(LevelLoader.Instance);
     }
 
     public void SetInventoryEntry(InventoryEntry entry)

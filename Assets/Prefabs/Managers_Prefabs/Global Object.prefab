@@ -1437,6 +1437,7 @@ GameObject:
   - component: {fileID: 7238507424579392411}
   - component: {fileID: 6119260393742430968}
   - component: {fileID: 6982121318557098911}
+  - component: {fileID: 6654829638327520531}
   m_Layer: 0
   m_Name: Global Object
   m_TagString: Untagged
@@ -1523,6 +1524,21 @@ MonoBehaviour:
   brightenLerpAmount: 0.3
   minAlpha: 0
   maxAlpha: 1
+--- !u!114 &6654829638327520531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6471966129962626125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d9e5e33db594570859db4549eb090b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pickupIconPrefab: {fileID: 646921848522316857, guid: dbdc2a970924f3a4daaf8ae3f7908df8,
+    type: 3}
+  offset: {x: 0, y: 1, z: 0}
 --- !u!1 &6568122993508415545
 GameObject:
   m_ObjectHideFlags: 0

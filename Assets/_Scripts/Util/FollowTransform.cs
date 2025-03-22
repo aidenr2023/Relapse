@@ -48,4 +48,16 @@ public class FollowTransform : MonoBehaviour
         // Set the constant value to the new target transform
         targetTransform.Value = newTargetTransform;
     }
+    
+    public void SetFollowOffset(Vector3 newFollowOffset)
+    {
+        if (followOffset == null)
+            followOffset = new Vector3Reference();
+        
+        // Force the reference to use the constant value
+        followOffset.ForceUseConstant();
+
+        // Set the constant value to the new follow offset
+        followOffset.Value = newFollowOffset;
+    }
 }
