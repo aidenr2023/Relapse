@@ -230,6 +230,7 @@ GameObject:
   - component: {fileID: 2933490079886811788}
   - component: {fileID: 2713872911484378305}
   - component: {fileID: 6562419817080747380}
+  - component: {fileID: 3428996827077262425}
   m_Layer: 9
   m_Name: Test Boss
   m_TagString: Untagged
@@ -710,6 +711,35 @@ MonoBehaviour:
     frequencyGain: 0.5
   shakeDuration: 0.5
   shakeFadeDuration: 0.5
+--- !u!114 &3428996827077262425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3076724613918024673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 232cd089d5c04fcfa2659c189aff88e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <BossPower>k__BackingField: {fileID: 11400000, guid: 717594ff39f2a274fb5c3534223b84a2,
+    type: 2}
+  <IsActive>k__BackingField: 0
+  <AttackMode>k__BackingField: 4
+  virusPrefab: {fileID: 3014718163577583157, guid: 975deedf3360c094c8fb0ee2a86679cd,
+    type: 3}
+  <VirusCloud>k__BackingField: {fileID: 4805854460633678004, guid: 31514fd28149c29449cbe4127c02f83e,
+    type: 3}
+  firePoint: {fileID: 3026418906037332311}
+  attackStartupTime: 3
+  <ProjectileDamage>k__BackingField: 15
+  <ProjectileVelocity>k__BackingField: 24
+  <TickDamage>k__BackingField: 10
+  <TickDelay>k__BackingField: 1
+  <TickDuration>k__BackingField: 5
+  virusProjectileDuration: 15
+  <VirusCloudDuration>k__BackingField: 5
 --- !u!1 &4191248585579463893
 GameObject:
   m_ObjectHideFlags: 0

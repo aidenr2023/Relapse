@@ -69,6 +69,9 @@ public class BossFireballBehavior : BossPowerBehavior
 
     private IEnumerator ShootProjectile()
     {
+        // Set the parent of the bullet to null
+        transform.SetParent(null);
+        
         // Calculate the direction of the bullet
         var direction = BossEnemyAttack.Enemy.DetectionBehavior.LastKnownTargetPosition - firePoint.position;
 
@@ -79,6 +82,10 @@ public class BossFireballBehavior : BossPowerBehavior
 
     private void OnDrawGizmos()
     {
+        // Return if the fire point is null or if the boss enemy attack is null
+        if (firePoint == null || BossEnemyAttack == null)
+            return;
+        
         // Draw the direction of the bullet
         Gizmos.DrawLine(firePoint.position, BossEnemyAttack.Enemy.DetectionBehavior.LastKnownTargetPosition);
     }
