@@ -34,6 +34,8 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 
     #endregion
 
+    public BossBehaviorMode BossBehaviorMode { get; private set; }
+    
     protected override void CustomAwake()
     {
         // Order the boss phases descending order by their phaseEndPercent
@@ -99,6 +101,16 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         }
     }
 
+    public void SetBossBehaviorMode(BossBehaviorMode mode)
+    {
+        BossBehaviorMode = mode;
+        
+        // Change the behavior of the brain
+        ParentComponent.ParentComponent.Brain.BehaviorMode = (int) mode;
+        
+        Debug.Log($"Boss Behavior Mode: {mode} ({(int) mode})", this);
+    }
+    
     public void MakeInvincible()
     {
         // Prevent the current health from falling below the phase end percent
@@ -149,4 +161,5 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         [Range(0, 1)] public float phaseEndPercent;
         public UnityEvent phaseEndEvent;
     }
+    
 }

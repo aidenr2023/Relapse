@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
 {
@@ -9,7 +10,7 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
 
     [SerializeField] private PowerListReference playerPowers;
 
-    [SerializeField] private BossGunAttack bossGunAttack;
+    [FormerlySerializedAs("bossGunAttack")] [SerializeField] private BossGunBehavior bossGunBehavior;
 
     [SerializeField] private List<BossPowerScriptableObject> allBossPowers;
     [SerializeField] private List<BossPowerScriptableObject> bossPowers;
@@ -52,7 +53,7 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
         foreach (var behavior in bossPowerBehaviors)
         {
             // Skip the gun attack
-            if (behavior is BossGunAttack)
+            if (behavior is BossGunBehavior)
                 continue;
 
             // Initialize the behavior
@@ -63,7 +64,7 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
         }
 
         // Initialize the gun attack
-        bossGunAttack.Initialize(this);
+        bossGunBehavior.Initialize(this);
     }
 
     private void Start()
@@ -160,8 +161,11 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
 
     private IEnumerator UpdateCoroutine()
     {
+        // Wait a frame before updating
+        yield return null;
+
         // Start the attack update coroutine with the gun attack
-        var cBehavior = ChangePowerBehavior(bossGunAttack);
+        var cBehavior = ChangePowerBehavior(bossGunBehavior);
 
         while (isActiveAndEnabled)
         {
@@ -169,8 +173,8 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
 
             // If the current power is not a gun attack,
             // set it to the gun attack
-            if (cBehavior != bossGunAttack)
-                cBehavior = ChangePowerBehavior(bossGunAttack);
+            if (cBehavior != bossGunBehavior)
+                cBehavior = ChangePowerBehavior(bossGunBehavior);
             else
                 cBehavior = ChangePowerBehavior(_bossPowerBehaviors[GetRandomPower()]);
         }
@@ -204,8 +208,8 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
 
         // Consider the gun attack as a special case.
         // Disable it if it's not the current behavior
-        if (behavior != bossGunAttack)
-            bossGunAttack.IsActive = false;
+        if (behavior != bossGunBehavior)
+            bossGunBehavior.IsActive = false;
 
         // Enable the power behavior
         behavior.IsActive = true;
