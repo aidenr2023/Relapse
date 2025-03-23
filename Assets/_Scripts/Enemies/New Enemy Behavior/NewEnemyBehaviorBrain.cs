@@ -236,7 +236,7 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
     {
         _isAttacking = false;
 
-        Debug.Log($"DONE ATTACKING");
+        // Debug.Log($"DONE ATTACKING");
     }
 
     private IEnumerator BehaviorStateCoroutine()

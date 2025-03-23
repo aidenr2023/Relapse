@@ -53,6 +53,17 @@ public class MultipleWorldDialogueTrigger : MonoBehaviour
         }
     }
 
+    public void ForceStart()
+    {
+        if (_dialogueCoroutine != null)
+        {
+            StopCoroutine(_dialogueCoroutine);
+            _dialogueCoroutine = null;
+        }
+
+        _dialogueCoroutine = StartCoroutine(DialogueCoroutine(worldDialogues));
+    }
+
     [Serializable]
     private struct WorldDialogueLine
     {

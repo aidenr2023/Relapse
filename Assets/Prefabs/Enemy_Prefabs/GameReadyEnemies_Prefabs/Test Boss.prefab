@@ -63,6 +63,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 1bce119571c734343a060df7ac11a540, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -105,6 +106,103 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &1840675555755795464
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6618571749784182150}
+  - component: {fileID: 4386988092340240066}
+  m_Layer: 9
+  m_Name: Bad ending dialogue
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6618571749784182150
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1840675555755795464}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7265894445928039829}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4386988092340240066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1840675555755795464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9342d010250b4e27a7e9dc3132ddbb8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activateOnce: 0
+  worldDialogues:
+  - worldDialogue: {fileID: 11400000, guid: c56f1ebc554acdd479a0436edd4fe347, type: 2}
+    onDialogueFinished:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: 
+          m_MethodName: 
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: 
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - worldDialogue: {fileID: 11400000, guid: dc7f53512186e71469f6c5479ba38d4e, type: 2}
+    onDialogueFinished:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: 
+          m_MethodName: 
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: 
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - worldDialogue: {fileID: 11400000, guid: 1442da63e1b538f4c85d14c825abf8ba, type: 2}
+    onDialogueFinished:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 0}
+          m_TargetAssemblyTypeName: 
+          m_MethodName: 
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: 
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  onTriggerEnter:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &3076724613918024673
 GameObject:
   m_ObjectHideFlags: 0
@@ -124,9 +222,11 @@ GameObject:
   - component: {fileID: 4280559571454393231}
   - component: {fileID: 4944811196102349600}
   - component: {fileID: 1025745234992569360}
-  - component: {fileID: 8544631876377783178}
   - component: {fileID: 6937686766923425247}
   - component: {fileID: 2086305976083408121}
+  - component: {fileID: 624289583850669222}
+  - component: {fileID: 842388156462436825}
+  - component: {fileID: 1670006569701614222}
   m_Layer: 9
   m_Name: Test Boss
   m_TagString: Untagged
@@ -148,6 +248,7 @@ Transform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 4045200387265000023}
+  - {fileID: 6618571749784182150}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!195 &3336736666930565522
@@ -269,7 +370,6 @@ MonoBehaviour:
     constantValue: 0
     variable: {fileID: 11400000, guid: 920ad9ec8c7ae80498d01e715f90b364, type: 2}
   bossEnemyAttack: {fileID: 1025745234992569360}
-  attack1: {fileID: 8544631876377783178}
   bossPhases:
   - phaseEndPercent: 0.75
     phaseEndEvent:
@@ -341,6 +441,7 @@ MonoBehaviour:
   onBadEnding:
     m_PersistentCalls:
       m_Calls: []
+  dialogueTrigger: {fileID: 0}
 --- !u!114 &7271788038619991390
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -396,6 +497,7 @@ MonoBehaviour:
     useConstant: 0
     constantValue: {fileID: 0}
     variable: {fileID: 11400000, guid: 95f92e08b24db834d9222effbee2e194, type: 2}
+  <IsDetectionEnabled>k__BackingField: 1
 --- !u!114 &4944811196102349600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -425,40 +527,13 @@ MonoBehaviour:
     useConstant: 0
     constantValue: []
     variable: {fileID: 11400000, guid: 330e22d8c4975114dac612f15a5e4fc2, type: 2}
+  bossGunAttack: {fileID: 624289583850669222}
   allBossPowers:
   - {fileID: 11400000, guid: 030c4116ed8f34b40977e9e5ff3b1492, type: 2}
   - {fileID: 11400000, guid: 79ab2497e639e074dabe4e8e435172d9, type: 2}
   - {fileID: 11400000, guid: 95a33adb530a5c44baa76d83475c07f7, type: 2}
   - {fileID: 11400000, guid: 717594ff39f2a274fb5c3534223b84a2, type: 2}
   bossPowers: []
-  normalHitSfx:
-    clip: {fileID: 0}
-    soundType: 1
-    volume: 1
-    isPersistent: 0
-    isLooping: 0
-    pitch: 1
-    spatialBlend: 1
---- !u!114 &8544631876377783178
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3076724613918024673}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b1586e0d9d54045836493aae58327bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  detectionFireDelay: 0.5
-  fireRange: 40
-  projectileSpeed: 48
-  attackCooldown: 1
-  projectileLifetime: 5
-  enemyBulletPrefab: {fileID: 2599755549081965391, guid: 8dfd2038ec9f3244a957428987fd8f79,
-    type: 3}
-  projectileSpawnPoint: {fileID: 2852102352220258566}
   normalHitSfx:
     clip: {fileID: 0}
     soundType: 1
@@ -506,6 +581,58 @@ MonoBehaviour:
   moanSoundChance: 1
   moanSoundMinCooldown: 5
   moanSoundMaxCooldown: 10
+--- !u!114 &624289583850669222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3076724613918024673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 917e6df82a194cc2828d9eb9d08f49b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <BossPower>k__BackingField: {fileID: 0}
+  <IsActive>k__BackingField: 0
+  <AttackMode>k__BackingField: 0
+  firePoint: {fileID: 2852102352220258566}
+  bulletPrefab: {fileID: 2599755549081965391, guid: 8dfd2038ec9f3244a957428987fd8f79,
+    type: 3}
+  fireRange: 40
+  projectileSpeed: 48
+  attackCooldown: 1
+  projectileLifetime: 5
+--- !u!114 &842388156462436825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3076724613918024673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b96a9680d0884493980ad407f3b4fd4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <BossPower>k__BackingField: {fileID: 11400000, guid: 95a33adb530a5c44baa76d83475c07f7,
+    type: 2}
+  <IsActive>k__BackingField: 0
+  <AttackMode>k__BackingField: 1
+--- !u!114 &1670006569701614222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3076724613918024673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94eab057769841bb9c0e4980280b3da5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  material: {fileID: 0}
+  renderersToExclude: []
 --- !u!1 &4191248585579463893
 GameObject:
   m_ObjectHideFlags: 0
@@ -571,6 +698,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 1bce119571c734343a060df7ac11a540, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

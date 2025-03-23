@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -9,24 +10,27 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 {
     #region Serialized Fields
 
-    [SerializeField] private IntReference bossCurrentPhase;
+    [Header("Vars"), SerializeField] private IntReference bossCurrentPhase;
     [SerializeField] private IntReference playerRelapseCount;
 
-    [SerializeField] private BossEnemyAttack bossEnemyAttack;
-    [SerializeField] private TempShootingEnemyAttack attack1;
-    
+    [Header("Attacking"), SerializeField] private BossEnemyAttack bossEnemyAttack;
+
     [SerializeField] private BossPhaseInfo[] bossPhases;
 
     [SerializeField] private UnityEvent onGoodEnding;
     [SerializeField] private UnityEvent onBadEnding;
 
-    // [SerializeField] private 
-        
+    [SerializeField] private MultipleWorldDialogueTrigger dialogueTrigger;
+
     #endregion
 
     #region Private Fields
 
-    private IEnemyAttackBehavior _currentAttackBehavior;
+    /*
+     * Have different scripts entirely for the different powers.
+     * Also, have an enum for the different attack types (gun + powers).
+     * Change the movement type according to the attack type.
+     */
 
     #endregion
 
@@ -39,14 +43,11 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
     // Start is called before the first frame update
     private void Start()
     {
-        // Switch to the first attack behavior
-        ChangeAttackBehavior(attack1);
-
         // Subscribe to the OnDamaged event
         ParentComponent.OnDamaged += ActivatePhaseChange;
-
         ParentComponent.OnDeath += DetermineEndingOnDeath;
     }
+
     private void DetermineEndingOnDeath(object sender, HealthChangedEventArgs e)
     {
         // Get the relapse count
@@ -55,15 +56,9 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         // Get the instance of the player.
         // If the player has relapsed at all, then it's a bad ending.
         if (relapseCount <= 0)
-        {
-            Debug.Log($"GOOD ENDING: {relapseCount}");
             onGoodEnding.Invoke();
-        }
         else
-        {
-            Debug.Log($"BAD ENDING: {relapseCount}");
             onBadEnding.Invoke();
-        }
     }
 
     private void OnEnable()
@@ -98,45 +93,41 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 
             bossCurrentPhase.Value = i;
             bossPhases[i].phaseEndEvent.Invoke();
-            
-            Debug.Log($"Phase {bossCurrentPhase.Value + 1} activated! {healthPercent} <= {bossPhases[i].phaseEndPercent}");
+
+            Debug.Log(
+                $"Phase {bossCurrentPhase.Value + 1} activated! {healthPercent} <= {bossPhases[i].phaseEndPercent}");
         }
-    }
-
-    private void ChangeAttackBehavior(IEnemyAttackBehavior newBehavior)
-    {
-        // Create an array of all the attack behaviors
-        var attackBehaviors = new IEnemyAttackBehavior[]
-        {
-            bossEnemyAttack, attack1
-        };
-
-        // Iterate through all of them and disable the ones that aren't the current one
-        foreach (var cBehavior in attackBehaviors)
-        {
-            // Skip the current behavior
-            if (cBehavior == newBehavior)
-                continue;
-
-            // Disable the attack behavior
-            (cBehavior as MonoBehaviour)!.enabled = false;
-        }
-
-        // Enable the new behavior
-        (newBehavior as MonoBehaviour)!.enabled = true;
-
-        // Set the current attack behavior
-        _currentAttackBehavior = newBehavior;
     }
 
     public void MakeInvincible()
     {
         // Prevent the current health from falling below the phase end percent
         ParentComponent.ForceCurrentHealth(
-            Mathf.Max(bossPhases[bossCurrentPhase].phaseEndPercent * ParentComponent.MaxHealth, ParentComponent.CurrentHealth)
+            Mathf.Max(bossPhases[bossCurrentPhase].phaseEndPercent * ParentComponent.MaxHealth,
+                ParentComponent.CurrentHealth)
         );
-        
+
         ParentComponent.AddInvincibilityToken(this);
+    }
+
+    public void BadEndingPhaseCheck()
+    {
+        // if the player has relapsed,
+        // then the boss will go into a bad ending phase
+        if (playerRelapseCount.Value <= 0)
+        {
+            Debug.Log("Player has not relapsed. No bad ending phase.");
+            return;
+        }
+
+        Debug.Log("Player has relapsed. Bad ending phase activated.");
+
+        // Force start the dialogue trigger
+        if (dialogueTrigger != null)
+            dialogueTrigger.ForceStart();
+
+        // Add an invincibility token
+        MakeInvincible();
     }
 
     public string GetDebugText()
@@ -146,14 +137,10 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         sb.AppendLine($"Boss Enemy: {name}");
         sb.AppendLine($"\tHealth: {(ParentComponent.CurrentHealth / ParentComponent.MaxHealth):0.00}");
         sb.AppendLine($"\tCurrent Phase: {bossCurrentPhase.Value + 1}");
+        sb.AppendLine($"\tPlayer Relapse Count: {playerRelapseCount.Value}");
+        sb.AppendLine($"\tIs Invincible: {ParentComponent.IsInvincible}");
 
         return sb.ToString();
-    }
-
-    public enum BossBehavior : byte
-    {
-        Gun,
-        Power,
     }
 
     [Serializable]

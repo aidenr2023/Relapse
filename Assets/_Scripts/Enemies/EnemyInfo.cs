@@ -133,14 +133,14 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
     public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position,
         bool isCriticalHit = false)
     {
+        // If the enemy is invincible and the enemy is taking damage, set the amount to 0
+        if (amount < 0 && IsInvincible)
+            amount = 0;
+        
         // Clamp the health value between 0 and the max health
         currentHealth.Value = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
 
         HealthChangedEventArgs args;
-
-        // If the enemy is invincible and the enemy is taking damage, set the amount to 0
-        if (amount < 0 && IsInvincible)
-            amount = 0;
 
         // If the amount is less than 0, invoke the OnDamaged event
         if (amount < 0)
