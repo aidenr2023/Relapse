@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class BossFireballProjectile : MonoBehaviour
@@ -8,6 +9,9 @@ public class BossFireballProjectile : MonoBehaviour
     [SerializeField, Min(0.001f)] private float startingScale = 1 / 16f;
     [SerializeField, Min(0.001f)] private float maxScale = 1;
     [SerializeField] private float damage = 100f;
+
+    [SerializeField] private ParticleSystem explosionParticles;
+    [SerializeField, Range(0, 500)] private int explosionParticlesCount = 200;
 
     #endregion
 
@@ -28,6 +32,12 @@ public class BossFireballProjectile : MonoBehaviour
     {
         // Get the rigidbody component
         _rigidbody = GetComponent<Rigidbody>();
+    }
+
+    private void OnDestroy()
+    {
+        // Create explosion particles
+        CreateExplosionParticles();
     }
 
     private void LateUpdate()
@@ -136,5 +146,24 @@ public class BossFireballProjectile : MonoBehaviour
 
         // Set the lifetime of the projectile
         Destroy(gameObject, lifetime);
+    }
+    
+    private void CreateExplosionParticles()
+    {
+        // Instantiate the explosion particles at the projectile's position
+        var explosion = Instantiate(explosionParticles, transform.position, Quaternion.identity);
+
+        // Create emit parameters for the explosion particles
+        var emitParams = new ParticleSystem.EmitParams
+        {
+            applyShapeToPosition = true,
+            position = transform.position
+        };
+
+        // Emit the explosion particles
+        explosion.Emit(emitParams, explosionParticlesCount);
+
+        // Destroy the explosion particles after the duration of the particles
+        Destroy(explosion.gameObject, explosion.main.duration);
     }
 }
