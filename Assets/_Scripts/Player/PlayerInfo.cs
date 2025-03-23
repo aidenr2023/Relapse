@@ -92,13 +92,15 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
 
     public int RelapseCount => relapseCountSo.Value;
 
-    public bool IsInvincible => _invincibilityTimer.IsActive;
+    public bool IsInvincible => _invincibilityTimer.IsActive || _invincibilityTokens.Count > 0;
 
     public bool IsInvincibleBecauseDamaged => _invincibilityTimer.IsActive && _invincibilityTimer.Percentage < 1;
 
     public Sound NormalHitSfx => null;
     public Sound CriticalHitSfx => null;
 
+    private readonly HashSet<object> _invincibilityTokens = new();
+        
     #endregion
 
     #region Initialization Functions
@@ -292,6 +294,16 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         // The player will relapse if the toxicity meter is too high
         if (currentToxicitySo >= maxToxicitySo)
             StartRelapse();
+    }
+    
+    public void AddInvincibilityToken(object token)
+    {
+        _invincibilityTokens.Add(token);
+    }
+    
+    public void RemoveInvincibilityToken(object token)
+    {
+        _invincibilityTokens.Remove(token);
     }
 
     private void StartRelapse()

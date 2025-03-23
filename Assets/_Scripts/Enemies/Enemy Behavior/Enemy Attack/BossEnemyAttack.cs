@@ -229,4 +229,21 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
     {
         _isExternallyEnabled = on;
     }
+
+    public void OnBadEndingStarted()
+    {
+        // Stop the update coroutine
+        if (_updateCoroutine != null)
+        {
+            StopCoroutine(_updateCoroutine);
+            _updateCoroutine = null;
+        }
+
+        // Disable all of the boss power behaviors
+        foreach (var behavior in _bossPowerBehaviors.Values)
+            behavior.IsActive = false;
+
+        // Disable the gun attack
+        bossGunBehavior.IsActive = false;
+    }
 }

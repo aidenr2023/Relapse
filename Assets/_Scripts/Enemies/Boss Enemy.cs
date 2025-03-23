@@ -24,16 +24,6 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 
     #endregion
 
-    #region Private Fields
-
-    /*
-     * Have different scripts entirely for the different powers.
-     * Also, have an enum for the different attack types (gun + powers).
-     * Change the movement type according to the attack type.
-     */
-
-    #endregion
-
     public BossBehaviorMode BossBehaviorMode { get; private set; }
     
     protected override void CustomAwake()
@@ -140,6 +130,9 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 
         // Add an invincibility token
         MakeInvincible();
+
+        // Set the boss behavior mode to the bad ending phase
+        bossEnemyAttack.OnBadEndingStarted();
     }
 
     public string GetDebugText()
