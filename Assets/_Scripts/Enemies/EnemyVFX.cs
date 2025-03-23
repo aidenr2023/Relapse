@@ -29,14 +29,15 @@ public class EnemyVFX : ComponentScript<EnemyInfo>
     {
         _comicImpactTimer = new(0.5f, true, true);
 
+        ParentComponent.OnDamaged += PlayVfxOnDamaged;
+        ParentComponent.OnDamaged += ComicImpactOnDamaged;
+
         ParentComponent.OnDeath += DetachVFXOnDeath;
         ParentComponent.OnDeath += CreateDeathVfx;
     }
 
     private void Start()
     {
-        ParentComponent.OnDamaged += ComicImpactOnDamaged;
-
         SpawnVfx();
     }
 
@@ -55,6 +56,21 @@ public class EnemyVFX : ComponentScript<EnemyInfo>
         Destroy(spawnVfx.gameObject, 5);
     }
 
+    private void PlayVfxOnDamaged(object arg0, HealthChangedEventArgs arg1)
+    {
+        // If there was no damage this frame, return
+        // If the damage this frame is less than the minimum damage for the visual effect, return
+        if (ParentComponent.DamageThisFrame < minVFXDamage)
+            return;
+
+        // If hit vfx has already played, return
+        if (_hasPlayedHitVFX)
+            return;
+        
+        PlayVfx(ParentComponent.DamageThisFrame);
+    }
+
+
     private void DetachVFXOnDeath(object sender, HealthChangedEventArgs args)
     {
         // Return if the visual effect is null
@@ -70,8 +86,8 @@ public class EnemyVFX : ComponentScript<EnemyInfo>
         // Force the hasPlayedHitVFX flag to false
         _hasPlayedHitVFX = false;
 
-        // Play the visual effect
-        PlayVFXAfterDamage();
+        // // Play the visual effect
+        // PlayVfx(true);
     }
 
     private void CreateDeathVfx(object sender, HealthChangedEventArgs e)
@@ -88,26 +104,17 @@ public class EnemyVFX : ComponentScript<EnemyInfo>
         Destroy(deathVfx.gameObject, 10f);
     }
 
-    private void PlayVFXAfterDamage()
+    private void PlayVfx(float damage)
     {
         // Return if the visual effect is null
         if (enemyHitEffect == null)
-            return;
-
-        // If there was no damage this frame, return
-        // If the damage this frame is less than the minimum damage for the visual effect, return
-        if (ParentComponent.DamageThisFrame <= 0 || ParentComponent.DamageThisFrame < minVFXDamage)
-            return;
-
-        // If hit vfx has already played, return
-        if (_hasPlayedHitVFX)
             return;
 
         // Set the visual effect's position to the position of the damage
         enemyHitEffect.SetVector3("StartPosition", ParentComponent.DamagePosition);
 
         // Calculate the damage percentage based on the amount of damage the enemy took this frame
-        var damagePercentage = Mathf.InverseLerp(minVFXRangeDamage, maxVFXRangeDamage, ParentComponent.DamageThisFrame);
+        var damagePercentage = Mathf.InverseLerp(minVFXRangeDamage, maxVFXRangeDamage, damage);
 
         // Set the damage amount float
         enemyHitEffect.SetFloat("DamageAmount", damagePercentage);
@@ -147,8 +154,8 @@ public class EnemyVFX : ComponentScript<EnemyInfo>
 
     private void Update()
     {
-        // If the enemy took damage this frame, play the visual effect
-        PlayVFXAfterDamage();
+        // // If the enemy took damage this frame, play the visual effect
+        // PlayVFXAfterDamage();
 
         // Update the comic pow timer
         _comicImpactTimer.Update(Time.deltaTime);
@@ -157,9 +164,6 @@ public class EnemyVFX : ComponentScript<EnemyInfo>
     private void LateUpdate()
     {
         // Reset the damage this frame if the visual effect has played
-        if (!_hasPlayedHitVFX)
-            return;
-
         _hasPlayedHitVFX = false;
     }
 }

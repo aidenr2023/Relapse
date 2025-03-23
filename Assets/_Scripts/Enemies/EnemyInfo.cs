@@ -56,6 +56,7 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
 
     public Vector3 DamagePosition => _damagePosition;
 
+    public float DifficultyHealthMultiplier => applyDifficultyMultiplier ? difficultyHealthMultiplier.Value : 1;
     public float DifficultyDamageMultiplier => applyDifficultyMultiplier ? difficultyDamageMultiplier.Value : 1;
 
     public bool IsInvincible => _invincibilityTokens.Count > 0;
@@ -84,7 +85,6 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
             ForceCurrentHealth(currentHealth + (maxHealth - oldMaxHealth));
         }
 
-        OnDamaged += AddDamageThisFrame;
         OnDamaged += SetDamagePositionOnDamaged;
 
         // Activate the animator's hit trigger
@@ -120,11 +120,6 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         _damagePosition = args.Position;
     }
 
-    private void AddDamageThisFrame(object sender, HealthChangedEventArgs args)
-    {
-        _damageThisFrame += args.Amount;
-    }
-
     private void LateUpdate()
     {
         _damageThisFrame = 0;
@@ -145,6 +140,9 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
         // If the amount is less than 0, invoke the OnDamaged event
         if (amount < 0)
         {
+            // Update the damage taken this frame
+            _damageThisFrame += -amount;
+            
             args = new HealthChangedEventArgs(this, changer, damager, -amount, position, isCriticalHit);
             OnDamaged?.Value.Invoke(this, args);
         }
