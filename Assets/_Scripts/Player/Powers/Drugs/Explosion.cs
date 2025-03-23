@@ -6,6 +6,8 @@ public class Explosion : MonoBehaviour, IPower
 {
     private const string EXPLOSION_KEY = "Explosion Power Key";
 
+    [SerializeField] private ExplosionHelper explosionHelper;
+    
     [SerializeField] private ParticleSystem explosionParticles;
     [SerializeField] [Min(0)] private int explosionParticlesCount = 200;
 
@@ -66,6 +68,9 @@ public class Explosion : MonoBehaviour, IPower
             if (enemy.TryGetComponent(out Rigidbody rb))
                 rb.AddExplosionForce(explosionForce, powerManager.Player.transform.position, explosionRadius);
         }
+        
+        // Explode the explosion helper
+        explosionHelper.Explode();
 
         // Create the explosion particles
         CreateExplosionParticles(powerManager, pToken);

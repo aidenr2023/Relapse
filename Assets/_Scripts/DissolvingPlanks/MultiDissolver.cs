@@ -92,6 +92,17 @@ public class MultiDissolver : MonoBehaviour
             renderer.sharedMaterial.SetFloat(DissolveStrengthProperty, targetStrength);
     }
 
+    public void SetDissolveStrength(float strength)
+    {
+        // Clamp the strength to the range [0, 1]
+        strength = Mathf.Clamp01(strength);
+        
+        // Set the dissolve strength for each renderer
+        foreach (var dissolveRenderer in dissolveRenderers)
+            SetDissolveStrength(dissolveRenderer, strength);
+        
+    }
+    
     private static void SetDissolveStrength(Renderer renderer, float strength)
     {
         // Clamp the strength to the range [0, 1]

@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7903629047514364045}
   - component: {fileID: 341355045557084652}
+  - component: {fileID: 8065201284169156858}
+  - component: {fileID: 1857641491060999755}
   m_Layer: 0
   m_Name: Explosion Logic
   m_TagString: Untagged
@@ -44,9 +46,53 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38ab2188f6b34afcaed98f6d047123af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  explosionHelper: {fileID: 8065201284169156858}
   explosionParticles: {fileID: 5786114173115362945, guid: fcc53f0a4f823b54ba9b28317207d3ff,
     type: 3}
   explosionParticlesCount: 500
   explosionDamage: 100
   explosionRadius: 15
   explosionForce: 1000
+--- !u!114 &8065201284169156858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3058926612469710390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fbc585a1fd4484ab8536e5987e9b051, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explosionRadius: 0
+  explosionDamage: 0
+  cameraShakeHelper: {fileID: 1857641491060999755}
+  explosionParticlePrefab: {fileID: 0}
+  explosionVfxPrefab: {fileID: 0}
+  sound:
+    clip: {fileID: 8300000, guid: fa0fffeaf853f5745b55dcc07c3bcc83, type: 3}
+    soundType: 1
+    volume: 0.15
+    isPersistent: 0
+    isLooping: 0
+    pitch: 0.875
+    spatialBlend: 0.4
+--- !u!114 &1857641491060999755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3058926612469710390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd570b33a22545959510a588bca9de67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  noiseToken:
+    pivotOffset: {x: 0, y: 0, z: 0}
+    amplitudeGain: 1
+    frequencyGain: 0.5
+  shakeDuration: 0.5
+  shakeFadeDuration: 0.5

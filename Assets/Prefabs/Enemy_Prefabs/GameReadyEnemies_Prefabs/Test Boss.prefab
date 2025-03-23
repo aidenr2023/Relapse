@@ -224,9 +224,12 @@ GameObject:
   - component: {fileID: 1025745234992569360}
   - component: {fileID: 6937686766923425247}
   - component: {fileID: 2086305976083408121}
+  - component: {fileID: 7329510127859318314}
   - component: {fileID: 624289583850669222}
   - component: {fileID: 842388156462436825}
-  - component: {fileID: 1670006569701614222}
+  - component: {fileID: 2933490079886811788}
+  - component: {fileID: 2713872911484378305}
+  - component: {fileID: 6562419817080747380}
   m_Layer: 9
   m_Name: Test Boss
   m_TagString: Untagged
@@ -582,6 +585,22 @@ MonoBehaviour:
   moanSoundChance: 1
   moanSoundMinCooldown: 5
   moanSoundMaxCooldown: 10
+--- !u!114 &7329510127859318314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3076724613918024673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4e4ba1113d14f91a203f1b8a3460d41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startingDissolveStrength: 0.862
+  dissolveInDuration: 3
+  dissolveOutDuration: 3
+  dissolveRenderers: []
 --- !u!114 &624289583850669222
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -626,7 +645,7 @@ MonoBehaviour:
   attackStartupTime: 5
   projectileVelocity: 48
   projectileLifetime: 10
---- !u!114 &1670006569701614222
+--- !u!114 &2933490079886811788
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -635,11 +654,62 @@ MonoBehaviour:
   m_GameObject: {fileID: 3076724613918024673}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94eab057769841bb9c0e4980280b3da5, type: 3}
+  m_Script: {fileID: 11500000, guid: b2153f2915704e19a666dd60ed9734ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  material: {fileID: 0}
-  renderersToExclude: []
+  <BossPower>k__BackingField: {fileID: 11400000, guid: 79ab2497e639e074dabe4e8e435172d9,
+    type: 2}
+  <IsActive>k__BackingField: 0
+  <AttackMode>k__BackingField: 3
+  explosionDissolver: {fileID: 7329510127859318314}
+  explosionHelper: {fileID: 2713872911484378305}
+  chargeTime: 8
+  explosionDissolveStrength: 0.25
+--- !u!114 &2713872911484378305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3076724613918024673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fbc585a1fd4484ab8536e5987e9b051, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  explosionRadius: 20
+  explosionDamage: 45
+  cameraShakeHelper: {fileID: 6562419817080747380}
+  explosionParticlePrefab: {fileID: 4941205562117832125, guid: 71640d54c52c5674383ab7e07eba6dc8,
+    type: 3}
+  explosionVfxPrefab: {fileID: 1316523376902277534, guid: 9079a3342c2258b4da48a9df04e51dcc,
+    type: 3}
+  sound:
+    clip: {fileID: 8300000, guid: fa0fffeaf853f5745b55dcc07c3bcc83, type: 3}
+    soundType: 2
+    volume: 0.15
+    isPersistent: 0
+    isLooping: 0
+    pitch: 0.875
+    spatialBlend: 0.4
+--- !u!114 &6562419817080747380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3076724613918024673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd570b33a22545959510a588bca9de67, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  noiseToken:
+    pivotOffset: {x: 0, y: 0, z: 0}
+    amplitudeGain: 1
+    frequencyGain: 0.5
+  shakeDuration: 0.5
+  shakeFadeDuration: 0.5
 --- !u!1 &4191248585579463893
 GameObject:
   m_ObjectHideFlags: 0

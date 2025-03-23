@@ -13,7 +13,7 @@ public class ExplosionHelper : MonoBehaviour, IDamager
     [SerializeField, Min(0)] private float explosionDamage;
 
     [SerializeField] private CameraShakeHelper cameraShakeHelper;
-    
+
     [SerializeField] private ParticleSystem explosionParticlePrefab;
     [SerializeField] private VisualEffect explosionVfxPrefab;
     [SerializeField] private Sound sound;
@@ -23,7 +23,7 @@ public class ExplosionHelper : MonoBehaviour, IDamager
     #region Getters
 
     public GameObject GameObject => gameObject;
-    
+
     public Sound NormalHitSfx => null;
     public Sound CriticalHitSfx => null;
 
@@ -38,7 +38,7 @@ public class ExplosionHelper : MonoBehaviour, IDamager
         Physics.OverlapSphereNonAlloc(transform.position, explosionRadius, colliders);
 
         var actors = new HashSet<IActor>();
-        
+
         // Loop through all the colliders
         foreach (var cCollider in colliders)
         {
@@ -49,11 +49,11 @@ public class ExplosionHelper : MonoBehaviour, IDamager
             // Try to get the IActor component from the collider
             if (!cCollider.TryGetComponentInParent(out IActor actor))
                 continue;
-            
+
             // Continue if the actor is a player
             if (actor is PlayerInfo && !canDamagePlayer)
                 continue;
-            
+
             if (!actors.Add(actor))
                 continue;
 
@@ -65,31 +65,31 @@ public class ExplosionHelper : MonoBehaviour, IDamager
         if (explosionVfxPrefab != null)
         {
             var explosionVfx = Instantiate(explosionVfxPrefab, transform.position, Quaternion.identity);
-            
+
             explosionVfx.Play();
-            
+
             Destroy(explosionVfx, 10);
         }
-        
+
         // Instantiate the explosion particle system
         if (explosionParticlePrefab != null)
         {
             var explosionParticle = Instantiate(explosionParticlePrefab, transform.position, Quaternion.identity);
             explosionParticle.Play();
-            
+
             // Set it to destroy itself after the duration of the particle system
             Destroy(explosionParticle.gameObject, explosionParticle.main.duration);
         }
-        
+
         // Play the sound
         if (sound != null)
             SoundManager.Instance.PlaySfxAtPoint(sound, transform.position);
-        
+
         // Shake the camera (if the camera shake helper is not null)
         if (cameraShakeHelper != null)
             cameraShakeHelper.ShakeCamera();
     }
-    
+
     public void Explode() => Explode(false);
 
     private void OnDrawGizmosSelected()
