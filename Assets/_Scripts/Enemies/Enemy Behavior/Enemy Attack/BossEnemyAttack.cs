@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BossEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
+public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
 {
     #region Serialized Fields
 
@@ -21,7 +21,7 @@ public class BossEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     #region Getters
 
     public GameObject GameObject => gameObject;
-    public Enemy Enemy { get; private set; }
+    public Enemy Enemy => ParentComponent.ParentComponent.ParentComponent;
     public HashSet<object> AttackDisableTokens { get; } = new();
 
     public bool IsAttackEnabled => _isExternallyEnabled && this.IsAttackEnabledTokens();
@@ -44,11 +44,8 @@ public class BossEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     #endregion
 
-    private void Awake()
+    protected override void CustomAwake()
     {
-        // Get the enemy component
-        Enemy = GetComponent<Enemy>();
-
         // Get the boss power behavior components
         var bossPowerBehaviors = GetComponents<BossPowerBehavior>();
 
@@ -64,7 +61,7 @@ public class BossEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
             // Add the behavior to the dictionary
             _bossPowerBehaviors.Add(behavior.BossPower, behavior);
         }
-        
+
         // Initialize the gun attack
         bossGunAttack.Initialize(this);
     }
@@ -181,23 +178,12 @@ public class BossEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     private IEnumerator Attack(BossPowerBehavior cBehavior)
     {
-        while (true)
-        {
-            if (IsAttackEnabled)
-            {
-                Debug.Log($"Started using power: {cBehavior.BossPower?.name ?? "GUN"}");
+        Debug.Log($"Started using power: {cBehavior.BossPower?.name ?? "GUN"}");
 
-                // Start the power
-                yield return StartCoroutine(cBehavior.UsePower());
+        // Start the power
+        yield return StartCoroutine(cBehavior.UsePower());
 
-                Debug.Log($"Finished using power: {cBehavior.BossPower?.name ?? "GUN"}");
-
-                // Wait for a bit
-                yield return new WaitForSeconds(1);
-            }
-            else
-                yield return new WaitForSeconds(.25f);
-        }
+        Debug.Log($"Finished using power: {cBehavior.BossPower?.name ?? "GUN"}");
     }
 
     private BossPowerBehavior ChangePowerBehavior(BossPowerBehavior behavior)

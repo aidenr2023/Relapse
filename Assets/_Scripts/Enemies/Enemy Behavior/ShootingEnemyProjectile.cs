@@ -7,7 +7,7 @@ public class ShootingEnemyProjectile : MonoBehaviour
 {
     [SerializeField] private float damage = 100f;
 
-    private IEnemyAttackBehavior _shootingEnemyAttack;
+    private IEnemyAttackBehavior _enemyAttackBehavior;
 
     private bool _isMarkedForDestruction;
 
@@ -40,7 +40,7 @@ public class ShootingEnemyProjectile : MonoBehaviour
     {
         // Return if the other collider is the shooter
         if (other.TryGetComponentInParent(out IEnemyAttackBehavior shootingEnemyAttack) &&
-            shootingEnemyAttack == _shootingEnemyAttack
+            shootingEnemyAttack == _enemyAttackBehavior
            )
             return;
 
@@ -51,14 +51,12 @@ public class ShootingEnemyProjectile : MonoBehaviour
         var hasActor = other.TryGetComponentInParent(out IActor actor);
         
         // Return if the actor is the shooter
-        if (actor as EnemyInfo == _shootingEnemyAttack.Enemy.EnemyInfo)
+        if (hasActor && actor as EnemyInfo == _enemyAttackBehavior.Enemy.EnemyInfo)
             return;
 
         // Return if the actor is an enemy
         if (actor is EnemyInfo)
-        {
             return;
-        }
         
         // // Mark this for destruction
         // _isMarkedForDestruction = true;
@@ -70,12 +68,12 @@ public class ShootingEnemyProjectile : MonoBehaviour
             return;
 
         // Damage the player
-        actor.ChangeHealth(-damage, actor, _shootingEnemyAttack, transform.position);
+        actor.ChangeHealth(-damage, actor, _enemyAttackBehavior, transform.position);
     }
 
     public void Shoot(IEnemyAttackBehavior shootingEnemyAttack, Vector3 direction, float velocity, float lifetime)
     {
-        _shootingEnemyAttack = shootingEnemyAttack;
+        _enemyAttackBehavior = shootingEnemyAttack;
         _direction = direction;
         _velocity = velocity;
 

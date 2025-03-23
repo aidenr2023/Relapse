@@ -249,6 +249,7 @@ Transform:
   m_Children:
   - {fileID: 4045200387265000023}
   - {fileID: 6618571749784182150}
+  - {fileID: 3026418906037332311}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!195 &3336736666930565522
@@ -619,6 +620,12 @@ MonoBehaviour:
     type: 2}
   <IsActive>k__BackingField: 0
   <AttackMode>k__BackingField: 1
+  firePoint: {fileID: 3026418906037332311}
+  bulletPrefab: {fileID: 5277310538140673506, guid: c9da985cfc43b104f9ba08d0f9740f68,
+    type: 3}
+  attackStartupTime: 5
+  projectileVelocity: 48
+  projectileLifetime: 10
 --- !u!114 &1670006569701614222
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -773,4 +780,35 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4045200387265000023}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8909406543154210009
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3026418906037332311}
+  m_Layer: 9
+  m_Name: Fireball Firepoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3026418906037332311
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8909406543154210009}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.5, y: 1.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7265894445928039829}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

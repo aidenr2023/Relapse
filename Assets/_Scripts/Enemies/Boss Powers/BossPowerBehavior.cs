@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public abstract class BossPowerBehavior : MonoBehaviour
@@ -9,6 +10,11 @@ public abstract class BossPowerBehavior : MonoBehaviour
     public BossEnemyAttack BossEnemyAttack { get; private set; }
 
     [field: SerializeField] public BossAttackMode AttackMode { get; private set; }
+
+    private void Awake()
+    {
+        BossEnemyAttack = GetComponentInParent<BossEnemyAttack>();
+    }
 
     public void Initialize(BossEnemyAttack bossEnemyAttack)
     {
