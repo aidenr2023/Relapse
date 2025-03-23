@@ -630,7 +630,7 @@ MonoBehaviour:
     useConstant: 0
     constantValue: []
     variable: {fileID: 11400000, guid: 330e22d8c4975114dac612f15a5e4fc2, type: 2}
-  bossGunAttack: {fileID: 624289583850669222}
+  bossGunBehavior: {fileID: 624289583850669222}
   allBossPowers:
   - {fileID: 11400000, guid: 030c4116ed8f34b40977e9e5ff3b1492, type: 2}
   - {fileID: 11400000, guid: 79ab2497e639e074dabe4e8e435172d9, type: 2}
@@ -741,7 +741,9 @@ MonoBehaviour:
   firePoint: {fileID: 3026418906037332311}
   bulletPrefab: {fileID: 5277310538140673506, guid: c9da985cfc43b104f9ba08d0f9740f68,
     type: 3}
-  attackStartupTime: 5
+  attackStartupTime: 1
+  repeatCount: 3
+  shootDistance: 25
   projectileVelocity: 48
   projectileLifetime: 10
 --- !u!114 &2933490079886811788

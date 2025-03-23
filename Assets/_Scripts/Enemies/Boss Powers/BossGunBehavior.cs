@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BossGunAttack : BossPowerBehavior
+public class BossGunBehavior : BossPowerBehavior
 {
     #region Serialized Fields
 
@@ -34,23 +34,34 @@ public class BossGunAttack : BossPowerBehavior
 
         for (var i = 0; i < shotCount; i++)
         {
+            // Set the boss's behavior mode to chase, maintain distance
+            BossEnemyAttack.ParentComponent.SetBossBehaviorMode(BossBehaviorMode.ChaseMaintainDistance);
+
             // Wait for the attack cooldown
             yield return new WaitForSeconds(attackCooldown);
 
+            // Set the boss's behavior mode to strafe left, right, back
+            BossEnemyAttack.ParentComponent.SetBossBehaviorMode(BossBehaviorMode.StrafeLeftRightBack);
+
             // Fire the projectile
-            FireProjectile();
+            yield return StartCoroutine(FireProjectile());
         }
+        
+        // Set the boss's behavior mode to strafe left, right, back
+        BossEnemyAttack.ParentComponent.SetBossBehaviorMode(BossBehaviorMode.StrafeLeftRightBack);
         
         // Wait for the attack cooldown
         yield return new WaitForSeconds(attackCooldown);
-        
+
         Debug.Log($"Finished using {BossPower?.name ?? "GUN"}");
     }
 
-    private void FireProjectile()
+    private IEnumerator FireProjectile()
     {
         // Shoot at the player
         CreateProjectile();
+
+        yield return null;
     }
 
     private void CreateProjectile()

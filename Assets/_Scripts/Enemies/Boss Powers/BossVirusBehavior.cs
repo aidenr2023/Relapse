@@ -37,9 +37,15 @@ public class BossVirusBehavior : BossPowerBehavior
 
     protected override IEnumerator CustomUsePower()
     {
+        // Set the movement mode to idle
+        BossEnemyAttack.ParentComponent.SetBossBehaviorMode(BossBehaviorMode.Idle);
+        
         // Create the projectile 
         yield return StartCoroutine(CreateProjectile());
 
+        // Set the movement mode to chase maintain distance
+        BossEnemyAttack.ParentComponent.SetBossBehaviorMode(BossBehaviorMode.ChaseMaintainDistance);
+        
         // Wait for a second
         yield return new WaitForSeconds(1);
         

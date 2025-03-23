@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class BossExplosionPower : BossPowerBehavior
+public class BossExplosionBehavior : BossPowerBehavior
 {
     [SerializeField] private MultiDissolver explosionDissolver;
     [SerializeField] private ExplosionHelper explosionHelper;
@@ -17,6 +17,9 @@ public class BossExplosionPower : BossPowerBehavior
 
     protected override IEnumerator CustomUsePower()
     {
+        // Set the movement mode to hard chase
+        BossEnemyAttack.ParentComponent.SetBossBehaviorMode(BossBehaviorMode.HardChase);
+        
         var startTime = Time.time;
 
         var target = 1 - explosionDissolveStrength;
@@ -35,6 +38,9 @@ public class BossExplosionPower : BossPowerBehavior
         // Set the dissolve strength to 0
         explosionDissolver.SetDissolveStrength(explosionDissolveStrength);
 
+        // Set the movement mode to idle 
+        BossEnemyAttack.ParentComponent.SetBossBehaviorMode(BossBehaviorMode.Idle);
+        
         // Wait a sec
         yield return new WaitForSeconds(1);
         
@@ -44,7 +50,8 @@ public class BossExplosionPower : BossPowerBehavior
         // Explode
         Explode();
         
-        yield return null;
+        // Wait for a sec
+        yield return new WaitForSeconds(1);
     }
 
     protected void Explode()
