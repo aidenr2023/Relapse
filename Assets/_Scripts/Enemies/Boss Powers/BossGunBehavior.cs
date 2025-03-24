@@ -32,6 +32,9 @@ public class BossGunBehavior : BossPowerBehavior
         // random number from 5 to 10;
         var shotCount = Random.Range(5, 11);
 
+        // Play the power ready sound
+        SoundManager.Instance.PlaySfxAtPoint(powerReadySound, transform.position);
+        
         for (var i = 0; i < shotCount; i++)
         {
             // Set the boss's behavior mode to chase, maintain distance
@@ -43,6 +46,9 @@ public class BossGunBehavior : BossPowerBehavior
             // Set the boss's behavior mode to strafe left, right, back
             BossEnemyAttack.ParentComponent.SetBossBehaviorMode(BossBehaviorMode.StrafeLeftRightBack);
 
+            // Play the power release sound
+            SoundManager.Instance.PlaySfxAtPoint(powerReleaseSound, transform.position);
+            
             // Fire the projectile
             yield return StartCoroutine(FireProjectile());
         }

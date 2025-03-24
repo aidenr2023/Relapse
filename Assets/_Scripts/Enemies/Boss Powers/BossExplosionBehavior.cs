@@ -94,8 +94,11 @@ public class BossExplosionBehavior : BossPowerBehavior
         // Return if the prefab is null
         if (fuseParticlesPrefab == null)
             return;
-
+        
         _fuseParticles = Instantiate(fuseParticlesPrefab, transform);
+        
+        // Set the local position to 0
+        _fuseParticles.transform.localPosition = Vector3.zero;
     }
 
     private void StopFuseParticles()
