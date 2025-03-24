@@ -559,7 +559,6 @@ GameObject:
   - component: {fileID: 1801652894398229600}
   - component: {fileID: 3684278755477651946}
   - component: {fileID: 7294235095540251026}
-  - component: {fileID: 9131613444061068536}
   - component: {fileID: 23606618357390537}
   - component: {fileID: 6632304591480369217}
   - component: {fileID: 3919439243002877267}
@@ -800,34 +799,6 @@ MonoBehaviour:
   patrolCheckpoints: []
   checkpointProximityThreshold: 0.5
   unawareMovementMultiplier: 0.75
---- !u!114 &9131613444061068536
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9186631886560993377}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b1586e0d9d54045836493aae58327bd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  detectionFireDelay: 0.5
-  fireRange: 20
-  projectileSpeed: 32
-  attackCooldown: 1.5
-  projectileLifetime: 5
-  enemyBulletPrefab: {fileID: 2599755549081965391, guid: 8dfd2038ec9f3244a957428987fd8f79,
-    type: 3}
-  projectileSpawnPoint: {fileID: 6765118164953129759}
-  normalHitSfx:
-    clip: {fileID: 0}
-    soundType: 1
-    volume: 1
-    isPersistent: 0
-    isLooping: 0
-    pitch: 1
-    spatialBlend: 1
 --- !u!114 &23606618357390537
 MonoBehaviour:
   m_ObjectHideFlags: 0
