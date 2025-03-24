@@ -85,6 +85,11 @@ public class RelapseScreen : GameMenu
     {
         // Set the loading bar's visibility based on whether the scene is loading
         loadingBar.gameObject.SetActive(_respawnButtonClicked);
+        
+        // If there is no currently selected game object,
+        // set it to the first selected button
+        if (eventSystem.currentSelectedGameObject == null)
+            eventSystem.SetSelectedGameObject(firstSelectedButton.gameObject);
     }
 
     public void LoadScene(string sceneName)
