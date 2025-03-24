@@ -58,6 +58,9 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
 
     private void ShowTooltipOnStart()
     {
+        if (!showPersistentTooltip)
+            return;
+        
         JournalTooltipManager.Instance.AddTooltip(
             GetTooltipText, 3, true, TooltipEndCondition
         );
@@ -67,7 +70,7 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
 
     protected virtual bool TooltipEndCondition()
     {
-        return isComplete;
+        return isComplete || !showPersistentTooltip;
     }
 
     protected abstract void CustomStart();
