@@ -50,6 +50,9 @@ public class BossExplosionBehavior : BossPowerBehavior
 
         // Stop the fuse particles
         StopFuseParticles();
+        
+        // Play the power ready sound
+        SoundManager.Instance.PlaySfxAtPoint(powerReadySound, transform.position);
 
         for (var i = 0; i < 3; i++)
         {
@@ -65,6 +68,9 @@ public class BossExplosionBehavior : BossPowerBehavior
 
         // Set the damage multiplier to the enemyInfo's damage multiplier
         explosionHelper.SetDamageMultiplier(BossEnemyAttack.ParentComponent.ParentComponent.DifficultyDamageMultiplier);
+
+        // Play the power release sound
+        SoundManager.Instance.PlaySfxAtPoint(powerReleaseSound, transform.position);
 
         // Explode
         Explode();

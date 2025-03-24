@@ -41,6 +41,9 @@ public class BossFireballBehavior : BossPowerBehavior
             // Play the power ready particles
             PlayPowerReadyParticles();
             
+            // Play the power ready sound
+            SoundManager.Instance.PlaySfxAtPoint(powerReadySound, transform.position);
+            
             // Wait a second before shooting the projectile
             while (Time.time - startTime < 1)
             {
@@ -64,6 +67,9 @@ public class BossFireballBehavior : BossPowerBehavior
             // Set the movement mode to idle
             BossEnemyAttack.ParentComponent.SetBossBehaviorMode(BossBehaviorMode.Idle);
             
+            // Play the power release sound
+            SoundManager.Instance.PlaySfxAtPoint(powerReleaseSound, transform.position);
+
             // Then, shoot the projectile
             yield return StartCoroutine(ShootProjectile());
             

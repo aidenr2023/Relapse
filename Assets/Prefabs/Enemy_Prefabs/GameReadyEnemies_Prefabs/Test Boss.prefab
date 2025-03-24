@@ -479,7 +479,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 0}
           m_TargetAssemblyTypeName: LightHelper, Assembly-CSharp
-          m_MethodName: ChangeColor
+          m_MethodName: 
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -495,7 +495,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 0}
           m_TargetAssemblyTypeName: LightHelper, Assembly-CSharp
-          m_MethodName: ChangeColor
+          m_MethodName: 
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -511,7 +511,7 @@ MonoBehaviour:
         m_Calls:
         - m_Target: {fileID: 0}
           m_TargetAssemblyTypeName: LightHelper, Assembly-CSharp
-          m_MethodName: ChangeColor
+          m_MethodName: 
           m_Mode: 5
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
@@ -711,6 +711,22 @@ MonoBehaviour:
   powerReadyParticlesTransform: {fileID: 0}
   powerReadyParticlesPrefab: {fileID: 0}
   powerReadyParticlesCount: 50
+  powerReadySound:
+    clip: {fileID: 0}
+    soundType: 1
+    volume: 1
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 1
+  powerReleaseSound:
+    clip: {fileID: 0}
+    soundType: 1
+    volume: 1
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 1
   firePoint: {fileID: 2208945495010608430}
   bulletPrefab: {fileID: 2599755549081965391, guid: 1da16d8087c78534299b87f4432a1387,
     type: 3}
@@ -738,6 +754,22 @@ MonoBehaviour:
   powerReadyParticlesPrefab: {fileID: -8517258377480905815, guid: 8ac33798a674d52499f4a8d14f7e2125,
     type: 3}
   powerReadyParticlesCount: 50
+  powerReadySound:
+    clip: {fileID: 8300000, guid: 29d917ed346b093478aa5bc1144d7fa9, type: 3}
+    soundType: 1
+    volume: 0.4
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 0.25
+  powerReleaseSound:
+    clip: {fileID: 8300000, guid: fa0fffeaf853f5745b55dcc07c3bcc83, type: 3}
+    soundType: 1
+    volume: 0.4
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 0.25
   firePoint: {fileID: 3026418906037332311}
   bulletPrefab: {fileID: 5277310538140673506, guid: c9da985cfc43b104f9ba08d0f9740f68,
     type: 3}
@@ -766,6 +798,22 @@ MonoBehaviour:
   powerReadyParticlesPrefab: {fileID: -8517258377480905815, guid: 4b669d61eb307ba42aae6391be7b3085,
     type: 3}
   powerReadyParticlesCount: 50
+  powerReadySound:
+    clip: {fileID: 8300000, guid: 29d917ed346b093478aa5bc1144d7fa9, type: 3}
+    soundType: 1
+    volume: 0.4
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 0.25
+  powerReleaseSound:
+    clip: {fileID: 8300000, guid: fa0fffeaf853f5745b55dcc07c3bcc83, type: 3}
+    soundType: 1
+    volume: 0.4
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 0.25
   explosionDissolver: {fileID: 7329510127859318314}
   explosionHelper: {fileID: 2713872911484378305}
   chargeTime: 8
@@ -838,6 +886,22 @@ MonoBehaviour:
   powerReadyParticlesPrefab: {fileID: -8517258377480905815, guid: 77441aa7442d97f4e804a891faaf7abd,
     type: 3}
   powerReadyParticlesCount: 50
+  powerReadySound:
+    clip: {fileID: 8300000, guid: 29d917ed346b093478aa5bc1144d7fa9, type: 3}
+    soundType: 1
+    volume: 0.4
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 0.25
+  powerReleaseSound:
+    clip: {fileID: 8300000, guid: fa0fffeaf853f5745b55dcc07c3bcc83, type: 3}
+    soundType: 1
+    volume: 0.4
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 0.25
   virusPrefab: {fileID: 3014718163577583157, guid: 975deedf3360c094c8fb0ee2a86679cd,
     type: 3}
   <VirusCloud>k__BackingField: {fileID: 4805854460633678004, guid: 31514fd28149c29449cbe4127c02f83e,
@@ -871,6 +935,22 @@ MonoBehaviour:
   powerReadyParticlesPrefab: {fileID: 5786114173115362945, guid: fcc53f0a4f823b54ba9b28317207d3ff,
     type: 3}
   powerReadyParticlesCount: 50
+  powerReadySound:
+    clip: {fileID: 8300000, guid: 29d917ed346b093478aa5bc1144d7fa9, type: 3}
+    soundType: 1
+    volume: 0.4
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 0.25
+  powerReleaseSound:
+    clip: {fileID: 8300000, guid: fa0fffeaf853f5745b55dcc07c3bcc83, type: 3}
+    soundType: 1
+    volume: 0.4
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 0.25
   projectilePrefab: {fileID: 4468249985507108820, guid: dd4fdc7429a1fd74ea921d7504a4aa19,
     type: 3}
   lightningPoints:

@@ -14,6 +14,9 @@ public abstract class BossPowerBehavior : MonoBehaviour
     [SerializeField] protected Transform powerReadyParticlesTransform;
     [SerializeField] protected ParticleSystem powerReadyParticlesPrefab;
     [SerializeField, Min(0)] protected int powerReadyParticlesCount = 50;
+    
+    [Header("Sounds"), SerializeField] protected Sound powerReadySound;
+    [SerializeField] protected Sound powerReleaseSound;
 
     private void Awake()
     {

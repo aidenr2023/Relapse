@@ -7,7 +7,7 @@ public class BossChainLightningBehavior : BossPowerBehavior
 {
     #region Serialized Fields
 
-    [SerializeField] private BossChainLightningProjectile projectilePrefab;
+    [Header("Power"), SerializeField] private BossChainLightningProjectile projectilePrefab;
     [SerializeField] private Transform[] lightningPoints;
 
     [SerializeField] private float lifeTime = 5;
@@ -43,10 +43,16 @@ public class BossChainLightningBehavior : BossPowerBehavior
 
         // Play the power ready particles
         PlayPowerReadyParticles();
+        
+        // Play the power ready sound
+        SoundManager.Instance.PlaySfxAtPoint(powerReadySound, transform.position);
 
         // Wait for a second
         yield return new WaitForSeconds(1);
 
+        // Play the power release sound
+        SoundManager.Instance.PlaySfxAtPoint(powerReleaseSound, transform.position);
+        
         // Shoot the projectiles
         yield return StartCoroutine(ShootProjectiles());
 

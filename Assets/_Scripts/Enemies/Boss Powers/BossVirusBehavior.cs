@@ -8,7 +8,7 @@ public class BossVirusBehavior : BossPowerBehavior
 
     #region Serialized Fields
 
-    [SerializeField] private BossVirusProjectile virusPrefab;
+    [Header("Power"), SerializeField] private BossVirusProjectile virusPrefab;
     [field: SerializeField] public BossVirusCloud VirusCloud { get; private set; }
     [SerializeField] private Transform firePoint;
 
@@ -49,9 +49,15 @@ public class BossVirusBehavior : BossPowerBehavior
         // Play the power ready particles
         PlayPowerReadyParticles();
         
+        // Play the power ready sound
+        SoundManager.Instance.PlaySfxAtPoint(powerReadySound, transform.position);
+        
         // Wait for a second
         yield return new WaitForSeconds(1);
         
+        // Play the power release sound
+        SoundManager.Instance.PlaySfxAtPoint(powerReleaseSound, transform.position);
+
         // Shoot the projectile
         yield return StartCoroutine(ShootProjectile());
 

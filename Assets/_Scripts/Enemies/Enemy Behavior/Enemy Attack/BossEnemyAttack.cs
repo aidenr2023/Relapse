@@ -16,8 +16,6 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
     [SerializeField] private List<BossPowerScriptableObject> allBossPowers;
     [SerializeField] private List<BossPowerScriptableObject> bossPowers;
 
-    // [SerializeField] private Sound normalHitSfx;
-
     [SerializeField] private Sound bossYellSfx;
     [SerializeField] private Transform bossYellUiParent;
     [SerializeField] private GameObject[] bossPowerYellUi;
