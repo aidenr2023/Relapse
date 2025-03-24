@@ -258,7 +258,7 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
             return;
 
         // Return if the player is invincible
-        if (_invincibilityTimer.IsActive)
+        if (IsInvincible)
             return;
 
         currentHealthSo.Value = Mathf.Clamp(currentHealthSo - damageAmount, 0, maxHealthSo);

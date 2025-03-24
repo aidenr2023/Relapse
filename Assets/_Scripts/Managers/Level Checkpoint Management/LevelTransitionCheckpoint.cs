@@ -32,6 +32,9 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
     private IEnumerator TransitionToNextScene(LevelSectionSceneInfo[] scenes)
     {
         var playerInstance = Player.Instance;
+        
+        // Add the debug manager to the player's invincibility tokens
+        playerInstance.PlayerInfo.AddInvincibilityToken(DebugManagerHelper.Instance);
 
         // Disable the player's controls
         SetPlayerControls(playerInstance, false);
@@ -146,6 +149,9 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
         // Set the opacity of the transition overlay to 0
         TransitionOverlay.Instance.SetOpacity(0);
 
+        // Remove the debug manager from the player's invincibility tokens
+        playerInstance.PlayerInfo.RemoveInvincibilityToken(DebugManagerHelper.Instance);
+        
         startTime = Time.unscaledTime;
 
         // While transitioning, fade the screen to black
