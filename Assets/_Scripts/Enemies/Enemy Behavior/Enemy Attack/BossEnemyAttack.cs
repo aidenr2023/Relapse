@@ -16,8 +16,9 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
     [SerializeField] private List<BossPowerScriptableObject> allBossPowers;
     [SerializeField] private List<BossPowerScriptableObject> bossPowers;
 
-    [SerializeField] private Sound normalHitSfx;
+    // [SerializeField] private Sound normalHitSfx;
 
+    [SerializeField] private Sound bossYellSfx;
     [SerializeField] private Transform bossYellUiParent;
     [SerializeField] private GameObject[] bossPowerYellUi;
 
@@ -31,7 +32,7 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
 
     public bool IsAttackEnabled => _isExternallyEnabled && this.IsAttackEnabledTokens();
 
-    public Sound NormalHitSfx => normalHitSfx;
+    public Sound NormalHitSfx => null;
     public Sound CriticalHitSfx => null;
 
     #endregion
@@ -186,6 +187,9 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
 
                 // Start the coroutine to do the boss yell, but don't wait for it to finish
                 StartCoroutine(BossYell(GetRandomBossPowerYellUi()));
+                
+                // Play the boss yell sfx
+                SoundManager.Instance.PlaySfxAtPoint(bossYellSfx, transform.position);
             }
         }
     }
