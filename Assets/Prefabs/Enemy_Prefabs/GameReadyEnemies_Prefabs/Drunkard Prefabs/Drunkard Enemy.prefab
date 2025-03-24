@@ -490,8 +490,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explosionRadius: 6
   explosionDamage: 40
+  damageMultiplier: 1
   cameraShakeHelper: {fileID: 6375487390463003107}
-  explosionParticlePrefab: {fileID: 0}
+  explosionParticlePrefab: {fileID: 4941205562117832125, guid: bda85682d75f3334085251ac7d5424b4,
+    type: 3}
   explosionVfxPrefab: {fileID: 1316523376902277534, guid: 9079a3342c2258b4da48a9df04e51dcc,
     type: 3}
   sound:
@@ -2750,45 +2752,60 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -10.07
       objectReference: {fileID: 0}
-    - target: {fileID: 4346473636438740194, guid: 305d709eb394500478cc1f11025cb6f8,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: c598b42a1f12c934fb2bc8ffe86be335, type: 3}
     - target: {fileID: 7379837026300833546, guid: 305d709eb394500478cc1f11025cb6f8,
         type: 3}
-      propertyPath: ShapeModule.angle
-      value: 45
-      objectReference: {fileID: 0}
-    - target: {fileID: 7379837026300833546, guid: 305d709eb394500478cc1f11025cb6f8,
-        type: 3}
-      propertyPath: moveWithTransform
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7379837026300833546, guid: 305d709eb394500478cc1f11025cb6f8,
-        type: 3}
-      propertyPath: NoiseModule.enabled
+      propertyPath: InitialModule.startColor.maxColor.b
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7379837026300833546, guid: 305d709eb394500478cc1f11025cb6f8,
         type: 3}
-      propertyPath: TrailModule.lifetime.scalar
-      value: 0.1
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7379837026300833546, guid: 305d709eb394500478cc1f11025cb6f8,
         type: 3}
-      propertyPath: InitialModule.startSpeed.minScalar
-      value: 10
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7379837026300833546, guid: 305d709eb394500478cc1f11025cb6f8,
+        type: 3}
+      propertyPath: InitialModule.startColor.minColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7379837026300833546, guid: 305d709eb394500478cc1f11025cb6f8,
+        type: 3}
+      propertyPath: InitialModule.startColor.minColor.g
+      value: 0.024047356
+      objectReference: {fileID: 0}
+    - target: {fileID: 7379837026300833546, guid: 305d709eb394500478cc1f11025cb6f8,
+        type: 3}
+      propertyPath: InitialModule.startColor.minColor.r
+      value: 0.24528301
+      objectReference: {fileID: 0}
+    - target: {fileID: 7379837026300833546, guid: 305d709eb394500478cc1f11025cb6f8,
+        type: 3}
+      propertyPath: InitialModule.startColor.minMaxState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7379837026300833546, guid: 305d709eb394500478cc1f11025cb6f8,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxGradient.key1.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7379837026300833546, guid: 305d709eb394500478cc1f11025cb6f8,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxGradient.key1.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7379837026300833546, guid: 305d709eb394500478cc1f11025cb6f8,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxGradient.key1.r
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8798523854466736998, guid: 305d709eb394500478cc1f11025cb6f8,
         type: 3}
       propertyPath: m_Name
       value: Drunkard Blood Particle
-      objectReference: {fileID: 0}
-    - target: {fileID: 8798523854466736998, guid: 305d709eb394500478cc1f11025cb6f8,
-        type: 3}
-      propertyPath: m_Layer
-      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
