@@ -52,8 +52,7 @@ public abstract class BossPowerBehavior : MonoBehaviour
         // Instantiate a new particle system
         var particles = Instantiate(
             powerReadyParticlesPrefab,
-            powerReadyParticlesTransform.position,
-            Quaternion.LookRotation(powerReadyParticlesTransform.forward)
+            powerReadyParticlesTransform
         );
 
         // // Play the particles
