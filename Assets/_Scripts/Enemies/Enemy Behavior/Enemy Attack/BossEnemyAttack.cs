@@ -10,12 +10,16 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
 
     [SerializeField] private PowerListReference playerPowers;
 
-    [FormerlySerializedAs("bossGunAttack")] [SerializeField] private BossGunBehavior bossGunBehavior;
+    [FormerlySerializedAs("bossGunAttack")] [SerializeField]
+    private BossGunBehavior bossGunBehavior;
 
     [SerializeField] private List<BossPowerScriptableObject> allBossPowers;
     [SerializeField] private List<BossPowerScriptableObject> bossPowers;
 
     [SerializeField] private Sound normalHitSfx;
+
+    [SerializeField] private Transform bossYellUiParent;
+    [SerializeField] private GameObject[] bossPowerYellUi;
 
     #endregion
 
@@ -169,6 +173,7 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
 
         while (isActiveAndEnabled)
         {
+            // Yield the attack coroutine
             yield return StartCoroutine(Attack(cBehavior));
 
             // If the current power is not a gun attack,
@@ -176,7 +181,12 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
             if (cBehavior != bossGunBehavior)
                 cBehavior = ChangePowerBehavior(bossGunBehavior);
             else
+            {
                 cBehavior = ChangePowerBehavior(_bossPowerBehaviors[GetRandomPower()]);
+
+                // Start the coroutine to do the boss yell, but don't wait for it to finish
+                StartCoroutine(BossYell(GetRandomBossPowerYellUi()));
+            }
         }
     }
 
@@ -188,6 +198,41 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
         yield return StartCoroutine(cBehavior.UsePower());
 
         Debug.Log($"Finished using power: {cBehavior.BossPower?.name ?? "GUN"}");
+    }
+
+    private GameObject GetRandomBossPowerYellUi()
+    {
+        return bossPowerYellUi[UnityEngine.Random.Range(0, bossPowerYellUi.Length)];
+    }
+
+    private IEnumerator BossYell(GameObject yellUiPrefab)
+    {
+        // Instantiate the yell UI
+        var yellUi = Instantiate(yellUiPrefab, bossYellUiParent);
+
+        // Set the local position to zero
+        yellUi.transform.localPosition = Vector3.zero;
+
+        const float maxTime = 3;
+
+        var startTime = Time.time;
+
+        while (Time.time - startTime < maxTime)
+        {
+            // make the yell UI hover
+            yellUi.transform.localPosition = new Vector3(
+                0,
+                Mathf.Sin(Time.time * Mathf.PI * 2) * 0.5f + .5f,
+                0
+            );
+
+            yield return null;
+        }
+
+        // Destroy the yell UI
+        Destroy(yellUi);
+
+        yield return null;
     }
 
     private BossPowerBehavior ChangePowerBehavior(BossPowerBehavior behavior)
