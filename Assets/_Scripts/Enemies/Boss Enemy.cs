@@ -12,6 +12,8 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 
     [Header("Vars"), SerializeField] private IntReference bossCurrentPhase;
     [SerializeField] private IntReference playerRelapseCount;
+    [SerializeField] private PlayerInfoEventVariable onRelapseStart;
+    [SerializeField] private PlayerInfoEventVariable onRelapseEnd;
 
     [Header("Attacking"), SerializeField] private BossEnemyAttack bossEnemyAttack;
 
@@ -22,10 +24,12 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 
     [SerializeField] private MultipleWorldDialogueTrigger dialogueTrigger;
 
+    [SerializeField] private RandomWorldDialogueTrigger relapseDialogueTrigger;
+
     #endregion
 
     public BossBehaviorMode BossBehaviorMode { get; private set; }
-    
+
     protected override void CustomAwake()
     {
         // Order the boss phases descending order by their phaseEndPercent
@@ -53,14 +57,26 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
             onBadEnding.Invoke();
     }
 
+    private void PlayRelapseDialogue(PlayerInfo arg0)
+    {
+        // Start the relapse dialogue trigger
+        relapseDialogueTrigger.ForceStart();
+    }
+
     private void OnEnable()
     {
         DebugManager.Instance.AddDebuggedObject(this);
+
+        // Subscribe to the onRelapseStart event
+        onRelapseStart.Value.AddListener(PlayRelapseDialogue);
     }
 
     private void OnDisable()
     {
         DebugManager.Instance.RemoveDebuggedObject(this);
+
+        // Unsubscribe from the onRelapseStart event
+        onRelapseStart.Value.RemoveListener(PlayRelapseDialogue);
     }
 
     private void ActivatePhaseChange(object sender, HealthChangedEventArgs e)
@@ -94,13 +110,13 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
     public void SetBossBehaviorMode(BossBehaviorMode mode)
     {
         BossBehaviorMode = mode;
-        
+
         // Change the behavior of the brain
-        ParentComponent.ParentComponent.Brain.BehaviorMode = (int) mode;
-        
-        Debug.Log($"Boss Behavior Mode: {mode} ({(int) mode})", this);
+        ParentComponent.ParentComponent.Brain.BehaviorMode = (int)mode;
+
+        Debug.Log($"Boss Behavior Mode: {mode} ({(int)mode})", this);
     }
-    
+
     public void MakeInvincible()
     {
         // Prevent the current health from falling below the phase end percent
@@ -154,5 +170,4 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         [Range(0, 1)] public float phaseEndPercent;
         public UnityEvent phaseEndEvent;
     }
-    
 }
