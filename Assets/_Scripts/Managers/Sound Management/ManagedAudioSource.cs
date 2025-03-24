@@ -74,39 +74,43 @@ public class ManagedAudioSource : MonoBehaviour
 
     public void Play(Sound sound)
     {
-        // Return if the sound is null
-        if (sound == null)
+        Play(_audioSource, sound, true);
+    }
+
+    public static void Play(AudioSource source, Sound sound, bool isPlayOneShot = false)
+    {
+        // Return if the source or sound is null
+        if (source == null || sound == null)
             return;
 
-        // Set the sound
-        _sound = sound;
-
         // Set the clip and volume
-        _audioSource.clip = sound.Clip;
-        _audioSource.volume = sound.Volume;
-        _audioSource.pitch = sound.Pitch;
-        _audioSource.spatialBlend = sound.SpatialBlend;
+        source.clip = sound.Clip;
+        source.volume = sound.Volume;
+        source.pitch = sound.Pitch;
+        source.spatialBlend = sound.SpatialBlend;
 
         // If the sound is persistent, set the priority to the max
         if (sound.IsPersistent)
-            _audioSource.priority = 256;
-        
+            source.priority = 256;
+
         // If the sound is looping, set the loop flag to true
-        _audioSource.loop = sound.IsLooping;
+        source.loop = sound.IsLooping;
 
         // Play the sound
-        // _audioSource.Play();
-        _audioSource.PlayOneShot(sound.Clip);
+        if (!isPlayOneShot)
+            source.Play();
+        else
+            source.PlayOneShot(sound.Clip);
     }
 
     public void Stop()
     {
         // Stop the audio source
         _audioSource.Stop();
-        
+
         // Set the clip to null
         _audioSource.clip = null;
-        
+
         // Set the is paused flag to false
         _isPaused = false;
     }
