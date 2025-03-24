@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 5082989974648995692}
   - component: {fileID: 3991656476995257548}
   - component: {fileID: 6731936246238988487}
-  - component: {fileID: 2409002761089976634}
   - component: {fileID: 6143515421399788582}
   - component: {fileID: 5909129057576781659}
+  - component: {fileID: 9056352102566599097}
   m_Layer: 19
   m_Name: Stun Mine Projectile
   m_TagString: Untagged
@@ -65,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: e6e637e06ed8eb7429d93e6e99571ddc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -87,29 +87,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &2409002761089976634
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4260119924742831828}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.62481195
-  m_Height: 4.9984956
-  m_Direction: 1
-  m_Center: {x: -0.0020295382, y: 0, z: -0.008680642}
 --- !u!54 &6143515421399788582
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -162,12 +139,35 @@ MonoBehaviour:
   inactiveDestroyTime: 10
   destroyOnExplode: 1
   stunDuration: 5
-  stunVfxPrefab: {fileID: 3385356646171980169, guid: 1938b1f9232829e4988a4e56c6bdfffb,
+  stunVfxPrefab: {fileID: 3385356646171980169, guid: c760880c691d6224197122422e8962f4,
     type: 3}
-  explosionParticles: {fileID: 0}
+  explosionParticles: {fileID: 5786114173115362945, guid: a5f7c16a47d87ff41a0ff59da91bf43d,
+    type: 3}
   particleCount: 50
-  explosionVfxPrefab: {fileID: 1316523376902277534, guid: aba397cc201ffb14e8ae6bedb301476c,
-    type: 3}
+  explosionVfxPrefab: {fileID: 0}
+--- !u!136 &9056352102566599097
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4260119924742831828}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.68
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &4917441897660047859
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -254,7 +254,11 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6405478cdf8689d45b18ecf7530e0fa3,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2198803224251838912}
   m_SourcePrefab: {fileID: 100100000, guid: 6405478cdf8689d45b18ecf7530e0fa3, type: 3}
 --- !u!4 &4878799343221147160 stripped
 Transform:
@@ -262,3 +266,31 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 4917441897660047859}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &5259969669731409058 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 6405478cdf8689d45b18ecf7530e0fa3,
+    type: 3}
+  m_PrefabInstance: {fileID: 4917441897660047859}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &2198803224251838912
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5259969669731409058}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -801319282681951034, guid: 6405478cdf8689d45b18ecf7530e0fa3, type: 3}

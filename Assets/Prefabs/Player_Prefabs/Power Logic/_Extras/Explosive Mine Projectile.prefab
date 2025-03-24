@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 5082989974648995692}
   - component: {fileID: 3991656476995257548}
   - component: {fileID: 6731936246238988487}
-  - component: {fileID: 2409002761089976634}
   - component: {fileID: 6143515421399788582}
   - component: {fileID: 1039811493297525285}
+  - component: {fileID: 1112360371509085434}
   m_Layer: 19
   m_Name: Explosive Mine Projectile
   m_TagString: Untagged
@@ -87,29 +87,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &2409002761089976634
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4260119924742831828}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.62781364
-  m_Height: 5.022509
-  m_Direction: 1
-  m_Center: {x: -0.007436335, y: 0, z: -0.00000011920929}
 --- !u!54 &6143515421399788582
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -162,10 +139,34 @@ MonoBehaviour:
   inactiveDestroyTime: 10
   destroyOnExplode: 1
   damage: 50
-  explosionParticles: {fileID: 0}
+  explosionParticles: {fileID: 5786114173115362945, guid: 7d0c02cf52550474d8267e516617de8c,
+    type: 3}
   particleCount: 0
   explosionVfxPrefab: {fileID: 1316523376902277534, guid: 9079a3342c2258b4da48a9df04e51dcc,
     type: 3}
+--- !u!136 &1112360371509085434
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4260119924742831828}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.71
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &7331021653386935683
 PrefabInstance:
   m_ObjectHideFlags: 0
