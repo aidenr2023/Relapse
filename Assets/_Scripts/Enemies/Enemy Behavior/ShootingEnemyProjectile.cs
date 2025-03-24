@@ -67,8 +67,10 @@ public class ShootingEnemyProjectile : MonoBehaviour
         if (!hasActor)
             return;
 
+        var currentDamage = damage * _enemyAttackBehavior.Enemy.EnemyInfo.DifficultyDamageMultiplier;
+        
         // Damage the player
-        actor.ChangeHealth(-damage, actor, _enemyAttackBehavior, transform.position);
+        actor.ChangeHealth(-currentDamage, actor, _enemyAttackBehavior, transform.position);
     }
 
     public void Shoot(IEnemyAttackBehavior shootingEnemyAttack, Vector3 direction, float velocity, float lifetime)

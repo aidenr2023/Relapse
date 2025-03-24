@@ -44,10 +44,10 @@ public class MeleeAttackHitbox : MonoBehaviour
         if (actor is EnemyInfo)
             return;
 
+        var damage = meleeEnemyAttack.Damage * meleeEnemyAttack.Enemy.EnemyInfo.DifficultyDamageMultiplier;
+
         // Deal damage to the actor
-        actor.ChangeHealth(-meleeEnemyAttack.Damage, meleeEnemyAttack.Enemy.EnemyInfo, meleeEnemyAttack,
-            transform.position
-        );
+        actor.ChangeHealth(-damage, meleeEnemyAttack.Enemy.EnemyInfo, meleeEnemyAttack, transform.position);
 
         // Disable the hit box
         SetEnabled(false);

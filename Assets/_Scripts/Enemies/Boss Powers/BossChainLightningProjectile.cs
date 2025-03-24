@@ -97,13 +97,14 @@ public class BossChainLightningProjectile : MonoBehaviour
             return;
 
         Destroy(gameObject);
-        
+
+        var damage = _chainLightningBehavior.Damage * _chainLightningBehavior.BossEnemyAttack.ParentComponent
+            .ParentComponent.DifficultyDamageMultiplier;
+
         // Damage the player
         actor.ChangeHealth(
-            -_chainLightningBehavior.Damage,
-            actor,
-            _chainLightningBehavior.BossEnemyAttack,
-            transform.position
+            -damage, actor,
+            _chainLightningBehavior.BossEnemyAttack, transform.position
         );
     }
 }

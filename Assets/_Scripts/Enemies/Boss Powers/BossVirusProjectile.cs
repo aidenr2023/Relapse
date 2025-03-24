@@ -11,16 +11,16 @@ public class BossVirusProjectile : MonoBehaviour
 
     [SerializeField, Min(0.001f)] private float startingScale = 1 / 16f;
     [SerializeField, Min(0.001f)] private float maxScale = 1;
-    
+
     #endregion
 
     #region Private Fields
 
     private bool _isActive;
-    
+
     private Rigidbody _rigidbody;
     private Vector3 _direction;
-    
+
     private BossVirusBehavior _attackBehavior;
     private Transform _target;
 
@@ -36,10 +36,10 @@ public class BossVirusProjectile : MonoBehaviour
     {
         if (!_isActive)
             return;
-        
+
         // Set the forward direction of the projectile
         transform.forward = _direction;
-        
+
         // Set the velocity of the projectile
         _rigidbody.velocity = _direction * _attackBehavior.ProjectileVelocity;
     }
@@ -48,10 +48,10 @@ public class BossVirusProjectile : MonoBehaviour
     {
         // Turn off the gravity for the projectile
         _rigidbody.useGravity = false;
-        
+
         // Set the rigidbody to kinematic
         _rigidbody.isKinematic = true;
-        
+
         // Set the enemy attack behavior
         _attackBehavior = attackBehavior;
         _target = target;
@@ -63,7 +63,7 @@ public class BossVirusProjectile : MonoBehaviour
         // Wait while the projectile scales up
         yield return StartCoroutine(ScaleSize(maxScale, time, target));
     }
-    
+
     private IEnumerator ScaleSize(float targetScale, float duration, Transform target)
     {
         var cScale = transform.localScale.x;
@@ -78,7 +78,7 @@ public class BossVirusProjectile : MonoBehaviour
         while (Time.time - startTime < duration)
         {
             transform.localPosition = Vector3.zero;
-            
+
             transform.localScale = Vector3.Lerp(startScale, targetScaleVector, (Time.time - startTime) / duration);
 
             // If the target is not null, set the forward direction of the projectile to the direction of the target
@@ -95,24 +95,24 @@ public class BossVirusProjectile : MonoBehaviour
     {
         // Set the parent to null
         transform.SetParent(null);
-        
+
         // Set the isActive flag to true
         _isActive = true;
-        
+
         // Turn off gravity for the projectile
         _rigidbody.useGravity = false;
-        
+
         // Set the rigidbody to non-kinematic
         _rigidbody.isKinematic = false;
-        
+
         _direction = (_target.position - transform.position).normalized;
-        
+
         // Set the forward direction of the projectile
         transform.forward = _direction;
-        
+
         // Set the velocity of the projectile
         _rigidbody.velocity = transform.forward * _attackBehavior.ProjectileVelocity;
-        
+
         yield return null;
     }
 
@@ -120,7 +120,7 @@ public class BossVirusProjectile : MonoBehaviour
     {
         if (!_isActive)
             return;
-        
+
         // Return if the projectile hits sender of the projectile
         if (other.gameObject == _attackBehavior.gameObject)
             return;
@@ -132,11 +132,12 @@ public class BossVirusProjectile : MonoBehaviour
         // If the projectile hits something with an IActor component, deal damage
         if (other.TryGetComponentInParent(out PlayerInfo actor))
         {
+            var damage = _attackBehavior.ProjectileDamage *
+                         _attackBehavior.BossEnemyAttack.Enemy.EnemyInfo.DifficultyDamageMultiplier;
+
             actor.ChangeHealth(
-                -_attackBehavior.ProjectileDamage,
-                _attackBehavior.BossEnemyAttack.ParentComponent.ParentComponent,
-                _attackBehavior.BossEnemyAttack,
-                transform.position
+                -damage, _attackBehavior.BossEnemyAttack.ParentComponent.ParentComponent,
+                _attackBehavior.BossEnemyAttack, transform.position
             );
         }
 
@@ -149,13 +150,13 @@ public class BossVirusProjectile : MonoBehaviour
         // Instantiate the boss virus cloud
         var cloud = Instantiate(_attackBehavior.VirusCloud, transform.position, Quaternion.identity);
         cloud.Initialize(_attackBehavior);
-        
+
         // Destroy the cloud after a certain amount of time
         Destroy(cloud.gameObject, _attackBehavior.VirusCloudDuration);
-        
+
         // Create the explosion particles
         CreateExplosionParticles();
-        
+
         // Destroy the game object
         Destroy(gameObject);
     }
