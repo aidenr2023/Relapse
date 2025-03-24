@@ -10,8 +10,8 @@ public class DamageIncrease : MonoBehaviour, IPower
 
     public GameObject GameObject => gameObject;
     public PowerScriptableObject PowerScriptableObject { get; set; }
-    
-    
+
+
     public Sound NormalHitSfx => PowerScriptableObject.NormalHitSfx;
     public Sound CriticalHitSfx => PowerScriptableObject.CriticalHitSfx;
 
@@ -49,7 +49,7 @@ public class DamageIncrease : MonoBehaviour, IPower
         // Add a new follow transform component to the particles
         var followTransform = particles.gameObject.AddComponent<FollowTransform>();
         followTransform.SetTargetTransform(powerManager.transform);
-        
+
         // Set the regeneration particles to follow the player
         particles.transform.localPosition = Vector3.zero;
 
@@ -93,11 +93,14 @@ public class DamageIncrease : MonoBehaviour, IPower
         if (!hasData)
             return;
 
-        // Stop the particle system
-        data.Particles.Stop();
+        if (data.Particles != null)
+        {
+            // Stop the particle system
+            data.Particles.Stop();
 
-        // Destroy the particles' game object after the duration of the particle system
-        Destroy(data.Particles.gameObject, data.Particles.main.duration);
+            // Destroy the particles' game object after the duration of the particle system
+            Destroy(data.Particles.gameObject, data.Particles.main.duration);
+        }
 
         // Remove the damage multiplier token
         powerManager

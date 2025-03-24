@@ -144,6 +144,9 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         if (dialogueTrigger != null)
             dialogueTrigger.ForceStart();
 
+        // Unsubscribe from the onRelapseStart event
+        onRelapseStart.Value.RemoveListener(PlayRelapseDialogue);
+        
         // Add an invincibility token
         MakeInvincible();
 
