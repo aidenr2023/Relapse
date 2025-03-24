@@ -3,18 +3,15 @@ using System.Collections;
 
 public class TriggerPlayTwoAnimators : MonoBehaviour
 {
-    [Header("First Animation Settings")]
-    public Animator firstAnimator;       // Assign in Inspector
-    public string firstAnimationName;    // The state name in the first Animator
+    [Header("First Animation Settings")] public Animator firstAnimator; // Assign in Inspector
+    public string firstAnimationName; // The state name in the first Animator
 
-    [Header("Second Animation Settings")]
-    public Animator secondAnimator;      // Assign in Inspector
-    public string secondAnimationName;   // The state name in the second Animator
+    [Header("Second Animation Settings")] public Animator secondAnimator; // Assign in Inspector
+    public string secondAnimationName; // The state name in the second Animator
 
-    [Header("Timing")]
-    public float delayBetweenAnimations = 0f;  // The delay after the first animation finishes
+    [Header("Timing")] public float delayBetweenAnimations = 0f; // The delay after the first animation finishes
 
-    private bool hasTriggered = false;   // Prevent multiple triggers
+    private bool hasTriggered = false; // Prevent multiple triggers
 
     private void OnTriggerEnter(Collider other)
     {
