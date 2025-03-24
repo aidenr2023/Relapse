@@ -3,5 +3,6 @@
     Fireball,
     GreenFireball,
     Electric,
-    HealthHalo
+    HealthHalo,
+    PurpleFireball,
 }
