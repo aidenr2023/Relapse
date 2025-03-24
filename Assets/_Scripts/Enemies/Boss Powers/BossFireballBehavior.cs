@@ -38,6 +38,9 @@ public class BossFireballBehavior : BossPowerBehavior
 
             var startTime = Time.time;
 
+            // Play the power ready particles
+            PlayPowerReadyParticles();
+            
             // Wait a second before shooting the projectile
             while (Time.time - startTime < 1)
             {
@@ -48,16 +51,13 @@ public class BossFireballBehavior : BossPowerBehavior
                 yield return null;
             }
             
-            // Play the power ready particles
-            PlayPowerReadyParticles();
-
             // Set the movement mode to hard chase
             BossEnemyAttack.ParentComponent.SetBossBehaviorMode(BossBehaviorMode.HardChase);
             
-            var targetTransform = BossEnemyAttack.Enemy.DetectionBehavior.Target.GameObject.transform;
-            
-            // Yield while the target is not in range
-            yield return new WaitUntil(() => Vector3.Distance(transform.position, targetTransform.position) < shootDistance);
+            // var targetTransform = BossEnemyAttack.Enemy.DetectionBehavior.Target.GameObject.transform;
+            //
+            // // Yield while the target is not in range
+            // yield return new WaitUntil(() => Vector3.Distance(transform.position, targetTransform.position) < shootDistance);
             
             Debug.Log($"Shooting {BossPower?.name}");
 
