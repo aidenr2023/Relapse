@@ -77,13 +77,9 @@ public class EnemyInfo : ComponentScript<Enemy>, IActor
     private void Start()
     {
         // Apply the difficulty multiplier to the max health
-        if (applyDifficultyMultiplier)
-        {
-            var oldMaxHealth = maxHealth;
-            maxHealth.Value *= difficultyHealthMultiplier.Value;
-
-            ForceCurrentHealth(currentHealth + (maxHealth - oldMaxHealth));
-        }
+        var oldMaxHealth = maxHealth;
+        maxHealth.Value *= DifficultyHealthMultiplier;
+        ForceCurrentHealth(currentHealth + (maxHealth - oldMaxHealth));
 
         OnDamaged += SetDamagePositionOnDamaged;
 

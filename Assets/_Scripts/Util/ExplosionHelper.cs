@@ -11,6 +11,7 @@ public class ExplosionHelper : MonoBehaviour, IDamager
 
     [SerializeField, Min(0)] private float explosionRadius;
     [SerializeField, Min(0)] private float explosionDamage;
+    [SerializeField, Min(0)] private float damageMultiplier = 1;
 
     [SerializeField] private CameraShakeHelper cameraShakeHelper;
 
@@ -58,7 +59,7 @@ public class ExplosionHelper : MonoBehaviour, IDamager
                 continue;
 
             // Now, I can calculate damage
-            actor.ChangeHealth(-explosionDamage, null, this, actor.GameObject.transform.position);
+            actor.ChangeHealth(-explosionDamage * damageMultiplier, null, this, actor.GameObject.transform.position);
         }
 
         // Instantiate the explosion VFX
@@ -92,6 +93,8 @@ public class ExplosionHelper : MonoBehaviour, IDamager
 
     public void Explode() => Explode(false);
 
+    public void SetDamageMultiplier(float multiplier) => damageMultiplier = multiplier;
+    
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

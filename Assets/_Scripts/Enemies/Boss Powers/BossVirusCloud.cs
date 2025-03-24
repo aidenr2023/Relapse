@@ -43,10 +43,13 @@ public class BossVirusCloud : MonoBehaviour
         while (Time.time - startTime < _virusBehavior.TickDuration)
         {
             yield return new WaitForSeconds(_virusBehavior.TickDelay);
+
+            var damage = _virusBehavior.TickDamage *
+                         _virusBehavior.BossEnemyAttack.Enemy.EnemyInfo.DifficultyDamageMultiplier;
             
             // Damage the actor
             actor.ChangeHealth(
-                -_virusBehavior.TickDamage,
+                -damage,
                 _virusBehavior.BossEnemyAttack.ParentComponent.ParentComponent,
                 _virusBehavior.BossEnemyAttack,
                 actor.GameObject.transform.position
