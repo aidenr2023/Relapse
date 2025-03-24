@@ -13,7 +13,7 @@ public class BossChainLightningBehavior : BossPowerBehavior
     [SerializeField] private float lifeTime = 5;
 
     [field: SerializeField, Min(0)] public float Damage { get; private set; } = 20f;
-    
+
     [field: SerializeField, Min(0)] public float MoveDelay { get; private set; } = 1 / 8f;
     [field: SerializeField, Min(0)] public float MaxMoveDistance { get; private set; } = 4f;
     [field: SerializeField, Min(0)] public float MaxMoveAngle { get; private set; } = 15;
@@ -34,12 +34,15 @@ public class BossChainLightningBehavior : BossPowerBehavior
     {
         // Set the movement mode to idle
         BossEnemyAttack.ParentComponent.SetBossBehaviorMode(BossBehaviorMode.Idle);
-        
+
         // Create the projectiles
         yield return StartCoroutine(CreateProjectiles());
-        
+
         // Set the movement mode to chase maintain distance
         BossEnemyAttack.ParentComponent.SetBossBehaviorMode(BossBehaviorMode.ChaseMaintainDistance);
+
+        // Play the power ready particles
+        PlayPowerReadyParticles();
 
         // Wait for a second
         yield return new WaitForSeconds(1);
@@ -67,7 +70,7 @@ public class BossChainLightningBehavior : BossPowerBehavior
         var coroutines = new Dictionary<Transform, Coroutine>();
 
         var targetTransform = BossEnemyAttack.Enemy.DetectionBehavior.Target.GameObject.transform;
-        
+
         // For each lightning point
         foreach (var point in randomLightningPoints)
         {
@@ -108,10 +111,10 @@ public class BossChainLightningBehavior : BossPowerBehavior
         {
             // Get the corresponding projectile
             var projectile = _projectiles[point];
-            
+
             // Set the projectile to destroy after a certain amount of time
             Destroy(projectile.gameObject, lifeTime);
-            
+
             // Shoot the projectile
             yield return StartCoroutine(projectile.ShootProjectile());
         }

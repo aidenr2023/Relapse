@@ -47,6 +47,9 @@ public class BossFireballBehavior : BossPowerBehavior
                 _bulletObj.transform.forward = forward;
                 yield return null;
             }
+            
+            // Play the power ready particles
+            PlayPowerReadyParticles();
 
             // Set the movement mode to hard chase
             BossEnemyAttack.ParentComponent.SetBossBehaviorMode(BossBehaviorMode.HardChase);

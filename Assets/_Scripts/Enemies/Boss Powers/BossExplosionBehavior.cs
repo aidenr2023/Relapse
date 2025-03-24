@@ -3,12 +3,16 @@ using UnityEngine;
 
 public class BossExplosionBehavior : BossPowerBehavior
 {
-    [SerializeField] private MultiDissolver explosionDissolver;
+    [Header("Power"), SerializeField] private MultiDissolver explosionDissolver;
     [SerializeField] private ExplosionHelper explosionHelper;
     
     [SerializeField, Min(0)] private float chargeTime = 5f;
     [SerializeField, Range(0, 1)] private float explosionDissolveStrength;
 
+    [SerializeField] private ParticleSystem fuseParticlesPrefab;
+    
+    private ParticleSystem _fuseParticles;
+    
     protected override void CustomInitialize(BossEnemyAttack bossEnemyAttack)
     {
         // Make the renderers fully dissolved
@@ -17,6 +21,9 @@ public class BossExplosionBehavior : BossPowerBehavior
 
     protected override IEnumerator CustomUsePower()
     {
+        // Start the fuse particles
+        StartFuseParticles();
+        
         // Set the movement mode to hard chase
         BossEnemyAttack.ParentComponent.SetBossBehaviorMode(BossBehaviorMode.HardChase);
         
@@ -40,9 +47,18 @@ public class BossExplosionBehavior : BossPowerBehavior
 
         // Set the movement mode to idle 
         BossEnemyAttack.ParentComponent.SetBossBehaviorMode(BossBehaviorMode.Idle);
+
+        // Stop the fuse particles
+        StopFuseParticles();
         
-        // Wait a sec
-        yield return new WaitForSeconds(1);
+        for (var i = 0; i < 3; i++)
+        {
+            // Play the power ready particles
+            PlayPowerReadyParticles();
+        
+            // Wait a sec
+            yield return new WaitForSeconds(1);
+        }
         
         // Set the dissolve strength to 0
         explosionDissolver.SetDissolveStrength(1);
@@ -58,5 +74,31 @@ public class BossExplosionBehavior : BossPowerBehavior
     {
         // Explode
         explosionHelper.Explode(true);
+    }
+
+    private void StartFuseParticles()
+    {
+        // Destroy the old particles if they exist
+        if (_fuseParticles != null)
+            Destroy(_fuseParticles.gameObject);
+        
+        // Return if the prefab is null
+        if (fuseParticlesPrefab == null)
+            return;
+        
+        _fuseParticles = Instantiate(fuseParticlesPrefab, transform);
+    }
+
+    private void StopFuseParticles()
+    {
+        // Return if the particles are null
+        if (_fuseParticles == null)
+            return;
+        
+        // Stop the particles
+        _fuseParticles.Stop();
+        
+        // Destroy the particles
+        Destroy(_fuseParticles.gameObject, 5);
     }
 }

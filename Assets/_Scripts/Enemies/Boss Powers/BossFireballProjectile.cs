@@ -25,6 +25,7 @@ public class BossFireballProjectile : MonoBehaviour
     private Vector3 _direction;
 
     private bool _isActive;
+    private Transform _target;
 
     #endregion
 
@@ -48,6 +49,13 @@ public class BossFireballProjectile : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // If not active, set the forward of the transform to direction fof the target
+        if (!_isActive)
+        {
+            transform.forward = _target.position - transform.position;
+            return;
+        }
+        
         // Set the forward direction of the projectile to the direction of the projectile
         transform.forward = _direction.normalized;
 
@@ -118,6 +126,9 @@ public class BossFireballProjectile : MonoBehaviour
     {
         // Set the enemy attack behavior
         _attackBehavior = attackBehavior;
+        
+        // Set the target of the projectile
+        _target = target;
 
         // Set the scale of the projectile to the starting scale
         var scale = new Vector3(startingScale, startingScale, startingScale);

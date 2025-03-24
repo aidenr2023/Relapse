@@ -11,6 +11,10 @@ public abstract class BossPowerBehavior : MonoBehaviour
 
     [field: SerializeField] public BossAttackMode AttackMode { get; private set; }
 
+    [SerializeField] protected Transform powerReadyParticlesTransform;
+    [SerializeField] protected ParticleSystem powerReadyParticlesPrefab;
+    [SerializeField, Min(0)] protected int powerReadyParticlesCount = 50;
+
     private void Awake()
     {
         BossEnemyAttack = GetComponentInParent<BossEnemyAttack>();
@@ -38,4 +42,27 @@ public abstract class BossPowerBehavior : MonoBehaviour
     }
 
     protected abstract IEnumerator CustomUsePower();
+
+    protected void PlayPowerReadyParticles()
+    {
+        // Return if the prefab is null
+        if (powerReadyParticlesPrefab == null)
+            return;
+
+        // Instantiate a new particle system
+        var particles = Instantiate(
+            powerReadyParticlesPrefab,
+            powerReadyParticlesTransform.position,
+            Quaternion.LookRotation(powerReadyParticlesTransform.forward)
+        );
+
+        // // Play the particles
+        // particles.Play();
+
+        // Emit the particles
+        particles.Emit(powerReadyParticlesCount);
+        
+        // Destroy the particles after 10 seconds
+        Destroy(particles.gameObject, 10);
+    }
 }

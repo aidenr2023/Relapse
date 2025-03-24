@@ -46,6 +46,9 @@ public class BossVirusBehavior : BossPowerBehavior
         // Set the movement mode to chase maintain distance
         BossEnemyAttack.ParentComponent.SetBossBehaviorMode(BossBehaviorMode.ChaseMaintainDistance);
         
+        // Play the power ready particles
+        PlayPowerReadyParticles();
+        
         // Wait for a second
         yield return new WaitForSeconds(1);
         

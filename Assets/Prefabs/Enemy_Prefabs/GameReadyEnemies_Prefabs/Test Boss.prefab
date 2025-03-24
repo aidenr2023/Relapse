@@ -673,6 +673,9 @@ MonoBehaviour:
   <BossPower>k__BackingField: {fileID: 0}
   <IsActive>k__BackingField: 0
   <AttackMode>k__BackingField: 0
+  powerReadyParticlesTransform: {fileID: 0}
+  powerReadyParticlesPrefab: {fileID: 0}
+  powerReadyParticlesCount: 50
   firePoint: {fileID: 2208945495010608430}
   bulletPrefab: {fileID: 2599755549081965391, guid: 8dfd2038ec9f3244a957428987fd8f79,
     type: 3}
@@ -696,6 +699,10 @@ MonoBehaviour:
     type: 2}
   <IsActive>k__BackingField: 0
   <AttackMode>k__BackingField: 1
+  powerReadyParticlesTransform: {fileID: 3026418906037332311}
+  powerReadyParticlesPrefab: {fileID: 5786114173115362945, guid: fcc53f0a4f823b54ba9b28317207d3ff,
+    type: 3}
+  powerReadyParticlesCount: 50
   firePoint: {fileID: 3026418906037332311}
   bulletPrefab: {fileID: 5277310538140673506, guid: c9da985cfc43b104f9ba08d0f9740f68,
     type: 3}
@@ -720,10 +727,16 @@ MonoBehaviour:
     type: 2}
   <IsActive>k__BackingField: 0
   <AttackMode>k__BackingField: 3
+  powerReadyParticlesTransform: {fileID: 7265894445928039829}
+  powerReadyParticlesPrefab: {fileID: 5786114173115362945, guid: fcc53f0a4f823b54ba9b28317207d3ff,
+    type: 3}
+  powerReadyParticlesCount: 50
   explosionDissolver: {fileID: 7329510127859318314}
   explosionHelper: {fileID: 2713872911484378305}
   chargeTime: 8
   explosionDissolveStrength: 0.25
+  fuseParticlesPrefab: {fileID: 5786114173115362945, guid: bef1acae9e887564ba52bdae798d6d41,
+    type: 3}
 --- !u!114 &2713872911484378305
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -785,6 +798,10 @@ MonoBehaviour:
     type: 2}
   <IsActive>k__BackingField: 0
   <AttackMode>k__BackingField: 4
+  powerReadyParticlesTransform: {fileID: 3026418906037332311}
+  powerReadyParticlesPrefab: {fileID: 5786114173115362945, guid: fcc53f0a4f823b54ba9b28317207d3ff,
+    type: 3}
+  powerReadyParticlesCount: 50
   virusPrefab: {fileID: 3014718163577583157, guid: 975deedf3360c094c8fb0ee2a86679cd,
     type: 3}
   <VirusCloud>k__BackingField: {fileID: 4805854460633678004, guid: 31514fd28149c29449cbe4127c02f83e,
@@ -814,6 +831,10 @@ MonoBehaviour:
     type: 2}
   <IsActive>k__BackingField: 0
   <AttackMode>k__BackingField: 2
+  powerReadyParticlesTransform: {fileID: 3026418906037332311}
+  powerReadyParticlesPrefab: {fileID: 5786114173115362945, guid: fcc53f0a4f823b54ba9b28317207d3ff,
+    type: 3}
+  powerReadyParticlesCount: 50
   projectilePrefab: {fileID: 4468249985507108820, guid: dd4fdc7429a1fd74ea921d7504a4aa19,
     type: 3}
   lightningPoints:
