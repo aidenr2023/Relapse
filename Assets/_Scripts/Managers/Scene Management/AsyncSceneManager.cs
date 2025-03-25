@@ -548,11 +548,10 @@ public class AsyncSceneManager : IDebugged
         if (sceneLoaderInformation.SectionScene != null)
         {
             ForceManageScene(sceneLoaderInformation.SectionScene);
-            
+
             // Set the current scene info
             if (sceneLoaderInformation.SetActiveSceneToSectionScene)
                 CurrentSceneInfo = sceneLoaderInformation;
-                
         }
 
         // Load the section persistent data
@@ -618,7 +617,7 @@ public class AsyncSceneManager : IDebugged
             if (startupSceneInfo.PlayerDataScene.SceneName == startupSceneInfo.ActiveScene.SceneName)
                 activeSceneOp = operation;
         }
-        
+
         // Load all the startup sections
         foreach (var section in startupSceneInfo.StartupSections)
         {
@@ -843,7 +842,7 @@ public class AsyncSceneManager : IDebugged
         // Set all the load operations to allow scene activation
         foreach (var operation in loadOperations)
             operation.allowSceneActivation = true;
-        
+
         // Wait for a frame
         yield return null;
 
@@ -865,7 +864,7 @@ public class AsyncSceneManager : IDebugged
 
             // Wait until the scene is loaded
             yield return new WaitUntil(() => activeScene.isLoaded);
-            
+
             // Set the active scene
             SceneManager.SetActiveScene(activeScene);
             break;
@@ -923,6 +922,32 @@ public class AsyncSceneManager : IDebugged
 
             break;
         }
+    }
+
+    public void UnloadAllActiveScenes()
+    {
+        // Get the currently managed scenes from the AsyncSceneManager
+        var managedScenes = AsyncSceneManager.Instance.GetManagedScenes();
+
+        // Create a level section scene info array with all the managed scenes EXCEPT the player's scene
+        var scenesToUnload = new List<string>();
+        foreach (var scene in managedScenes)
+        {
+            scenesToUnload.Add(scene);
+
+            Debug.Log($"Unload: {scene}");
+        }
+
+        // Convert the scenes to unload to a LevelSectionSceneInfo array
+        var scenesToUnloadInfo = scenesToUnload.Select(scene => LevelSectionSceneInfo.Create(null, scene)).ToArray();
+
+        var loadInfo = new LevelSectionSceneInfo[] { };
+        
+        // Create a new SceneLoaderInformation based on the input
+        var sceneLoaderInformation = SceneLoaderInformation.Create(loadInfo, scenesToUnloadInfo);
+
+        // Load the scene
+        Instance.DebugLoadSceneSynchronous(sceneLoaderInformation);
     }
 
     #endregion
