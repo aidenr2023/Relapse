@@ -21,7 +21,9 @@ public class PlayerWallRunningIK : MonoBehaviour
     [Header("IK Weights")]
     [SerializeField] private float ikWeightTransitionSpeed = 8f;
     [SerializeField] [Range(0, 1)] private float maxArmExtension = 0.85f;
-
+    
+    [SerializeField] WeaponManager weaponManager;
+    
     private float _currentIkWeight;
     private Vector3 _targetHandPosition;
     private Quaternion _targetHandRotation;
@@ -98,6 +100,19 @@ public class PlayerWallRunningIK : MonoBehaviour
             animator.SetIKRotation(hand, _smoothedRotation);
         }
     }
+    
+    //on Reload Start stop ik
+    public void OnReloadStart()
+    {
+        _isReloading = true;
+    }
+    
+    public void OnReloadStop()
+    {
+        _isReloading = false;
+    }
+    
+    
 
     private void Update() => _velocity = wallRunning.GetComponent<Rigidbody>().velocity;
 
