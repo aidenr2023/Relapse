@@ -79,6 +79,12 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         onRelapseStart.Value.RemoveListener(PlayRelapseDialogue);
     }
 
+    private void OnDestroy()
+    {
+        // Make the player invincible
+        Player.Instance?.PlayerInfo.RemoveInvincibilityToken(this);
+    }
+
     private void ActivatePhaseChange(object sender, HealthChangedEventArgs e)
     {
         var healthPercent = ParentComponent.CurrentHealth / ParentComponent.MaxHealth;
@@ -152,6 +158,9 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 
         // Set the boss behavior mode to the bad ending phase
         bossEnemyAttack.OnBadEndingStarted();
+        
+        // Make the player invincible
+        Player.Instance?.PlayerInfo.AddInvincibilityToken(this);
     }
 
     public string GetDebugText()
