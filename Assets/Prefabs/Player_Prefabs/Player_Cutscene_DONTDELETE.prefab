@@ -10565,6 +10565,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f220fffecabb47649091accdac1b8e0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <OnGameReset>k__BackingField: {fileID: 0}
   enemyDetectionDistance: 20
   levelCheckpointDamage: 10
 --- !u!114 &8526532061628918125
@@ -10579,51 +10580,64 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c95b9bc13bcc84644930bdfa9f40055c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  health: 100
+  maxHealthSo:
+    useConstant: 1
+    constantValue: 0
+    variable: {fileID: 0}
+  currentHealthSo:
+    useConstant: 1
+    constantValue: 0
+    variable: {fileID: 0}
+  maxToxicitySo:
+    useConstant: 1
+    constantValue: 0
+    variable: {fileID: 0}
+  currentToxicitySo:
+    useConstant: 1
+    constantValue: 0
+    variable: {fileID: 0}
+  isRelapsingSo:
+    useConstant: 1
+    constantValue: 0
+    variable: {fileID: 0}
+  relapseCountSo:
+    useConstant: 1
+    constantValue: 0
+    variable: {fileID: 0}
+  <OnDamaged>k__BackingField:
+    useConstant: 1
+    constantValue:
+      m_PersistentCalls:
+        m_Calls: []
+    variable: {fileID: 0}
+  <OnHealed>k__BackingField:
+    useConstant: 1
+    constantValue:
+      m_PersistentCalls:
+        m_Calls: []
+    variable: {fileID: 0}
+  <OnDeath>k__BackingField:
+    useConstant: 1
+    constantValue:
+      m_PersistentCalls:
+        m_Calls: []
+    variable: {fileID: 0}
+  <OnRelapseStart>k__BackingField:
+    useConstant: 1
+    constantValue:
+      m_PersistentCalls:
+        m_Calls: []
+    variable: {fileID: 0}
+  <OnRelapseEnd>k__BackingField:
+    useConstant: 1
+    constantValue:
+      m_PersistentCalls:
+        m_Calls: []
+    variable: {fileID: 0}
   invincibilityDuration: 1
-  maxTolerance: 100
-  currentTolerance: 0
-  relapseOpacityCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0.45
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 136
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.75
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 136
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0.45
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 136
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  relapseOpacityDuration: 1
-  relapseOpacityTimer:
-    maxTime: 1
-  relapsesToLose: 3
   toleranceRelapsePercent: 0
   relapseDuration: 10
-  passiveRegenCap: 50
+  passiveRegenCap: 1
   passiveRegenRate: 5
   passiveRegenDelay: 10
   hitSound:
@@ -10633,6 +10647,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 0.75
+    spatialBlend: 1
   deathSound:
     clip: {fileID: 8300000, guid: a07d4a0a361f338429c6b98e1d8a4499, type: 3}
     soundType: 1
@@ -10640,6 +10655,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 0.75
+    spatialBlend: 1
 --- !u!114 &8786925257116847127
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10652,6 +10668,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77183e8bd3658a5498311792be45966e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userSettings: {fileID: 0}
   sensitivityMultiplier: 15
   upDownAngleLimit: 5
   wallRunLookLockLerpAmount: 1
@@ -10670,6 +10687,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5488ce25ea9545c09c2c6a9899e017cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraManager:
+    useConstant: 1
+    constantValue: {fileID: 0}
+    variable: {fileID: 0}
   originalScreenSize: {x: 1920, y: 1080}
   aimSquareSize: 384
   maxDistance: 40
@@ -10689,6 +10710,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20a4918e820e44cbb8bf591a9beab5ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraPivotSo:
+    useConstant: 1
+    constantValue: {fileID: 0}
+    variable: {fileID: 0}
   interactDistance: 3
 --- !u!114 &4569864730928107544
 MonoBehaviour:
@@ -10702,19 +10727,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa03a7b8477941a4bf8821e2f2eb5bee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  powerTokensSo: {fileID: 0}
   powerFirePoint: {fileID: 4957212297315312823}
   powerAimIgnoreLayers:
     serializedVersion: 2
     m_Bits: 640264
+  startingPowers:
+    useConstant: 1
+    constantValue: []
+    variable: {fileID: 0}
+  allPowers:
+    useConstant: 1
+    constantValue: []
+    variable: {fileID: 0}
   powers:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+    useConstant: 1
+    constantValue: []
+    variable: {fileID: 0}
+  currentPowerIndex:
+    useConstant: 1
+    constantValue: 0
+    variable: {fileID: 0}
   chargedVignetteStrength: 0.25
   chargedVignetteLerpAmount: 0.125
   chargedVignetteFlashesPerSecond: 2
-  gauntletChargeVfx: {fileID: 2841633986636727626}
+  fireballChargeVfx: {fileID: 0}
+  greenFireballChargeVfx: {fileID: 0}
+  electricChargeVfx: {fileID: 0}
+  healthHaloChargeVfx: {fileID: 0}
   powerAudioSource: {fileID: 1753334415179995511}
 --- !u!114 &3403684430922170578
 MonoBehaviour:
@@ -10728,6 +10768,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54c6628818424a5688e5ffc42e6bcf05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allGuns: {fileID: 0}
   fireTransform: {fileID: 1628401368497139779}
   gunHolder: {fileID: 8707382033687266977}
   ShotgunHolder: {fileID: 1083350523894481973}
@@ -10744,6 +10785,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc2239b3085447aa97162efb8060164b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerVelocitySo: {fileID: 0}
+  playerTransform: {fileID: 0}
+  cameraPivotSo: {fileID: 0}
+  orientationSo: {fileID: 0}
   cameraPivot: {fileID: 717322085656418848}
   orientation: {fileID: 7442315352785651674}
   playerAnimator: {fileID: 4189263154125381019}
@@ -10758,6 +10803,12 @@ MonoBehaviour:
   slideInterpolationMultiplier: 10
   sphereCastRadius: 0.6
   maxSlopeAngle: 60
+  cityMovementSettings:
+    desiredCapsuleHeightOffset: 0
+    sphereCastRadius: 0
+  apartmentMovementSettings:
+    desiredCapsuleHeightOffset: 0
+    sphereCastRadius: 0
   maxSpeed: 12
   acceleration: 24
   accelerationFactorFromDot:
@@ -10808,7 +10859,14 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 755464
   staminaDrains: 1
-  maxStamina: 100
+  maxStaminaSo:
+    useConstant: 1
+    constantValue: 0
+    variable: {fileID: 0}
+  currentStaminaSo:
+    useConstant: 1
+    constantValue: 0
+    variable: {fileID: 0}
   staminaRegenRate: 50
   sprintStaminaDrainRate: 10
   staminaRegenDelay: 0.5
@@ -10837,6 +10895,7 @@ MonoBehaviour:
   variableJumpTime: 0
   groundFloorDistance: 100
   JumpHeightThreshold: 2
+  coyoteJumpTime: 0.5
   footstepSoundPool:
     sounds:
     - clip: {fileID: 8300000, guid: 81def98cd06884940b95459db1a841f7, type: 3}
@@ -10845,12 +10904,14 @@ MonoBehaviour:
       isPersistent: 0
       isLooping: 0
       pitch: 1
+      spatialBlend: 1
     - clip: {fileID: 8300000, guid: 5aa5e09256a042147921c24a52b741ae, type: 3}
       soundType: 1
       volume: 0.0625
       isPersistent: 0
       isLooping: 0
       pitch: 1
+      spatialBlend: 1
   walkingFootstepInterval: 0.35
   sprintingFootstepInterval: 0.25
   jumpSound:
@@ -10860,6 +10921,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 1
+    spatialBlend: 1
 --- !u!114 &6583002829018301799
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10899,6 +10961,7 @@ MonoBehaviour:
     isPersistent: 0
     isLooping: 0
     pitch: 1
+    spatialBlend: 1
   inwardLookLockAngle: 15
   outwardLookLockAngle: 40
   wallClimbLayer:
@@ -10938,6 +11001,7 @@ MonoBehaviour:
     isPersistent: 1
     isLooping: 0
     pitch: 1
+    spatialBlend: 1
 --- !u!114 &5012127524692541062
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10951,6 +11015,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerAnimator: {fileID: 0}
+  _slideMesh: {fileID: 0}
   isEnabled: 1
   slideStrength: 4
   slideHeight: 1
@@ -10989,8 +11054,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 577fbb70976d4f93a44d375f1a4ff6ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moneyObject: {fileID: 11400000, guid: 7bd43e1ae76d24f428376e9e9b37133a, type: 2}
-  inventoryEntries: []
+  inventoryVariable: {fileID: 0}
 --- !u!114 &4869019051370541630
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11003,6 +11067,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b12d418b5cc24222a2658502e095e0b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraManager:
+    useConstant: 1
+    constantValue: {fileID: 0}
+    variable: {fileID: 0}
   dynamicFOVModule:
     normalFOV: 70
     maxFov: 150
@@ -11093,12 +11161,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7be623d5c9b64fdc8f5e3216399b8c01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 1647350070132129577}
-  minFlashTime: 0.25
-  maxFlashTime: 1
-  healthForMaxFlashing: 50
-  healthForMinFlashing: 10
-  maxOpacity: 0.75
 --- !u!114 &4116790492319059057
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11138,11 +11200,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69f9b5c1ee5946faa0472c121c9c3401, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  completedTutorials: []
+  allTutorials: {fileID: 0}
+  completedTutorials: {fileID: 0}
   gunPickupTutorial: {fileID: 11400000, guid: 40ac18e7ad2988c4da8f8f4959532409, type: 2}
   interactWithCheckpointTutorial: {fileID: 11400000, guid: 40ac18e7ad2988c4da8f8f4959532409,
     type: 2}
   respawnTutorial: {fileID: 11400000, guid: 40ac18e7ad2988c4da8f8f4959532409, type: 2}
+  relapseTutorial: {fileID: 0}
 --- !u!114 &7268306547395596224
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11155,6 +11219,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 687e56aaf6600f34897d197342f70d4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _player: {fileID: 0}
   _playerTransform: {fileID: 4677907866296190199}
   _playerAnimator: {fileID: 0}
   _rotationResetDelay: 0.1
@@ -11964,6 +12029,7 @@ MonoBehaviour:
   lowAmmoBlinkFrequency: 10
   lowAmmoGradientStop: 0.1
   reloadColor: {r: 1, g: 0, b: 0, a: 1}
+  bgImage: {fileID: 0}
   lowAmmoText: 
   reloadText: RELOAD
   buttonsParent: {fileID: 8529374678886773360}
@@ -19533,6 +19599,7 @@ MonoBehaviour:
   lowAmmoBlinkFrequency: 10
   lowAmmoGradientStop: 0.1
   reloadColor: {r: 1, g: 0, b: 0, a: 1}
+  bgImage: {fileID: 0}
   lowAmmoText: 
   reloadText: RELOAD
   buttonsParent: {fileID: 6601521346112123397}
@@ -19758,6 +19825,7 @@ MonoBehaviour:
   lowAmmoBlinkFrequency: 10
   lowAmmoGradientStop: 0.1
   reloadColor: {r: 1, g: 0, b: 0, a: 1}
+  bgImage: {fileID: 0}
   lowAmmoText: 
   reloadText: RELOAD
   buttonsParent: {fileID: 1350009722282733749}
@@ -22434,12 +22502,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d948999c8957cae4189597d24181439c, type: 3}
---- !u!2083052967 &2841633986636727626 stripped
-VisualEffect:
-  m_CorrespondingSourceObject: {fileID: 3385356646171980169, guid: d948999c8957cae4189597d24181439c,
-    type: 3}
-  m_PrefabInstance: {fileID: 690371122473891011}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3453574828171745856 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2772283204555910787, guid: d948999c8957cae4189597d24181439c,
