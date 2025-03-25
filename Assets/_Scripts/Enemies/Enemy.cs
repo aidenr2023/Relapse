@@ -11,15 +11,15 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
     public static IReadOnlyCollection<Enemy> Enemies => _enemies;
 
     [SerializeField] private Transform centerTransform;
-        
+
     #region Getters
 
     public EnemyInfo EnemyInfo { get; private set; }
 
     public NewEnemyBehaviorBrain Brain { get; private set; }
-    
+
     public NewEnemyMovement NewMovement { get; private set; }
-    
+
     public IEnemyDetectionBehavior DetectionBehavior { get; private set; }
 
     public IEnemyAttackBehavior AttackBehavior { get; set; }
@@ -29,7 +29,7 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
     public IEnemyAbilityBehavior AbilityBehavior { get; private set; }
 
     public Transform CenterTransform => centerTransform != null ? centerTransform : transform;
-        
+
     #endregion
 
     private void Awake()
@@ -57,9 +57,9 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
 
         // Get the brain component
         Brain = GetComponent<NewEnemyBehaviorBrain>();
-        
+
         NewMovement = GetComponent<NewEnemyMovement>();
-        
+
         // Get the IEnemyDetectionBehavior component
         DetectionBehavior = GetComponent<IEnemyDetectionBehavior>();
 
@@ -83,7 +83,7 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
 
         // Assert that the brain component is not null
         Debug.Assert(Brain != null, "The brain component is null.");
-        
+
         // Assert that the new movement component is not null
         Debug.Assert(NewMovement != null, "The new movement component is null.");
     }
@@ -142,6 +142,12 @@ public class Enemy : MonoBehaviour, ILevelLoaderInfo
 
     public void SaveData(LevelLoader levelLoader)
     {
+        if (EnemyInfo == null)
+        {
+            Debug.LogError($"ENEMY IS NULL");
+            return;
+        }
+
         // Create boolean data for whether the enemy is alive or not
         // Save the data
         var isAliveData = new DataInfo(IS_ALIVE_KEY, EnemyInfo.CurrentHealth > 0);
