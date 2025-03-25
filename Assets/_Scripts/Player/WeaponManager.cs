@@ -19,6 +19,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
 
     [SerializeField] private Transform gunHolder;
     [SerializeField] private Transform ShotgunHolder;
+    [SerializeField] private Animator _shootingAnimator;
+
 
     /// <summary>
     /// A prefab that immediately equips the player with a gun.
@@ -153,6 +155,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
     {
         // Get the TestPlayer component
         _player = GetComponent<Player>();
+        
 
         // Get the Player info component
         _playerInfo = _player.PlayerInfo;
@@ -203,6 +206,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
 
         // Fire the IGun
         EquippedGun.OnFire(this);
+        
+        //Play the shoot animation
+        _shootingAnimator.SetTrigger("Shoot");
     }
 
     private void OnShootCanceled(InputAction.CallbackContext obj)
