@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class AudioSourceHelper : MonoBehaviour
 {
-    [SerializeField] Sound[] sounds;
+    [SerializeField] private Sound[] sounds;
 
     private AudioSource _audioSource;
 
@@ -23,6 +23,12 @@ public class AudioSourceHelper : MonoBehaviour
         }
 
         // Set the audio clip to the sound at the given index
-        ManagedAudioSource.Play(_audioSource, sounds[index]);
+        ManagedAudioSource.Play(_audioSource, sounds[index], false);
+    }
+    
+    public void StopAudio()
+    {
+        // Stop the audio source
+        _audioSource.Stop();
     }
 }

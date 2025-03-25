@@ -93,7 +93,7 @@ public class BossFireballProjectile : MonoBehaviour
         if (!hasActor)
             return;
 
-        var currentDamage = damage * attackBehavior.Enemy.EnemyInfo.DifficultyDamageMultiplier;
+        var currentDamage = damage * _attackBehavior.Enemy.EnemyInfo.DifficultyDamageMultiplier;
         
         // Damage the player
         actor.ChangeHealth(-currentDamage, actor, _attackBehavior, transform.position);
