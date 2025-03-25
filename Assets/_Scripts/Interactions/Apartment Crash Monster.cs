@@ -5,6 +5,7 @@ using UnityEngine;
 public class ApartmentCrashMonster : MonoBehaviour
 {
     [SerializeField] public Enemy enemy;
+    [SerializeField] public GameObject monsterPrefab;
 
     [SerializeField] public float delay = 3f;
 
@@ -13,6 +14,7 @@ public class ApartmentCrashMonster : MonoBehaviour
     {
         // Disable the monster at the start
         SetMonster(false);
+        monsterPrefab.SetActive(false);
     }
 
     // Update is called once per frame
@@ -28,6 +30,7 @@ public class ApartmentCrashMonster : MonoBehaviour
 
         // Enable the monster
         SetMonster(true);
+        monsterPrefab.SetActive(true);
     }
 
     public void SetMonster(bool isOn)
