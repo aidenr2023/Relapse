@@ -19,6 +19,12 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     [SerializeField] private TransformVariable cameraPivotSo;
     [SerializeField] private TransformVariable orientationSo;
 
+    /// <summary>
+    /// Flag for stamina recovery mode.
+    /// While this is on, the player cannot recover stamina.
+    /// </summary>
+    [SerializeField] private BoolVariable isStaminaRecovery;
+
     [Header("Important Transforms")]
 
     // Reference to the player's camera pivot
@@ -70,6 +76,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     [SerializeField, Min(0)] private float staminaRegenRate = 20f;
     [SerializeField, Min(0)] private float sprintStaminaDrainRate = 10f;
     [SerializeField, Min(0)] private float staminaRegenDelay = .5f;
+    [SerializeField, Range(0, 1)] private float staminaRecoveryExitPercent = .5f;
 
     [SerializeField, Range(0, 1)] private float relapseSpeedMult = .25f;
 
@@ -134,7 +141,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     public bool IsSprintToggled { get; set; }
 
-    public bool IsSprinting => (_isSprinting || IsSprintToggled) && MovementInput.magnitude > 0.25f;
+    public bool IsSprinting =>
+        (_isSprinting || IsSprintToggled) && MovementInput.magnitude > 0.25f && !isStaminaRecovery;
 
     public float MovementSpeed =>
         maxSpeed *
@@ -261,7 +269,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     {
         // Remove this object from the debug manager
         DebugManager.Instance.RemoveDebuggedObject(this);
-        
+
         // Remove the bullet time token
         TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(_bulletTimeToken);
     }
@@ -701,23 +709,12 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Update the stamina regen delay timer
         _staminaRegenDelayTimer.Update(Time.deltaTime);
 
-        // // If this is the active movement script, the player is on the ground, and they are sprinting,
-        // // drain the stamina
-        // if (CurrentMovementScript != BasicPlayerMovement)
-        //     return;
-
         if (IsSprinting && ((IsGrounded && CurrentMovementScript == BasicPlayerMovement) || WallRunning.IsWallRunning))
             ChangeStamina(-sprintStaminaDrainRate * Time.deltaTime);
 
-        // if (IsGrounded)
-        else
-        {
-            // If the player is not sprinting, regenerate the stamina
-            if (_staminaRegenDelayTimer.IsComplete)
-                ChangeStamina(StaminaRegenRate * Time.deltaTime);
-        }
-        // else if (IsSprinting)
-        //     ChangeStamina(-sprintStaminaDrainRate / 2 * Time.deltaTime);
+        // If the player is not sprinting, regenerate the stamina
+        else if (_staminaRegenDelayTimer.IsComplete)
+            ChangeStamina(StaminaRegenRate * Time.deltaTime);
     }
 
     #endregion
@@ -867,6 +864,13 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private void OnSprintTogglePerformed(InputAction.CallbackContext obj)
     {
+        // Return if the player is in stamina recovery mode
+        if (isStaminaRecovery)
+        {
+            IsSprintToggled = false;
+            return;
+        }
+
         // Return if the player cannot sprint
         if (!BasicPlayerMovement.CanSprint)
         {
@@ -913,6 +917,20 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         }
 
         currentStaminaSo.Value = Mathf.Clamp(currentStaminaSo + amount, 0, maxStaminaSo);
+
+        // If the player's current stamina value is <= 0,
+        // enter stamina recovery mode
+        if (currentStaminaSo.Value <= 0)
+        {
+            isStaminaRecovery.value = true;
+            _isSprinting = false;
+            IsSprintToggled = false;
+        }
+
+        // If the current stamina is >= the max stamina * the stamina recovery exit percent,
+        // exit stamina recovery mode
+        if (isStaminaRecovery && currentStaminaSo.Value >= maxStaminaSo * staminaRecoveryExitPercent)
+            isStaminaRecovery.value = false;
     }
 
     public void SetUpStamina(float cStamina, float mStamina)

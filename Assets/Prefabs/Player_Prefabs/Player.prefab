@@ -8936,6 +8936,7 @@ MonoBehaviour:
   playerTransform: {fileID: 11400000, guid: 95f92e08b24db834d9222effbee2e194, type: 2}
   cameraPivotSo: {fileID: 11400000, guid: 82965ac43c3a47a41814214cdc06b289, type: 2}
   orientationSo: {fileID: 11400000, guid: 80ffaccf1623c85448f0b9100249a8df, type: 2}
+  isStaminaRecovery: {fileID: 11400000, guid: 1ab018323ac32a1458b2b21aa18d70c9, type: 2}
   cameraPivot: {fileID: 5244302159661097867}
   orientation: {fileID: 5224293575626551686}
   playerAnimator: {fileID: 96788328598540561}
@@ -9014,9 +9015,10 @@ MonoBehaviour:
     useConstant: 0
     constantValue: 0
     variable: {fileID: 11400000, guid: f00348c043d0deb448953ab57a3e325b, type: 2}
-  staminaRegenRate: 50
+  staminaRegenRate: 33.33333
   sprintStaminaDrainRate: 25
-  staminaRegenDelay: 0.5
+  staminaRegenDelay: 1
+  staminaRecoveryExitPercent: 0.5
   relapseSpeedMult: 0.5
   enemyNearbySpeedMult: 1
   bulletTimeSpeedMult: 1
