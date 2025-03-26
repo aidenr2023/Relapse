@@ -31,7 +31,7 @@ public class PostProcessingVolumeController : MonoBehaviour
 
     private DynamicPostProcessPair[] Pairs => new[]
     {
-        apartmentPair, cityPair, mindbreakPair
+        apartmentPair, cityPair, cityCombatPair, mindbreakPair,
     };
 
     #endregion
@@ -45,7 +45,7 @@ public class PostProcessingVolumeController : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        
+
         // Set the instance to this
         Instance = this;
 
@@ -68,7 +68,7 @@ public class PostProcessingVolumeController : MonoBehaviour
 
         // Keep track of the old pair
         var oldPair = _currentPair;
-        
+
         // Set the current pair to the new pair
         _currentPair = type switch
         {
@@ -113,7 +113,7 @@ public class PostProcessingVolumeController : MonoBehaviour
 
         // Start the coroutine to fade the weight of the current pair IN
         _coroutines[_currentPair] = StartCoroutine(SetVolumeWeight(_currentPair, 1, duration));
-        
+
         // Transfer the tokens from the old pair to the new pair
         if (oldPair != null)
         {
