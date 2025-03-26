@@ -8956,7 +8956,7 @@ MonoBehaviour:
   apartmentMovementSettings:
     desiredCapsuleHeightOffset: 0.25
     sphereCastRadius: 0.3
-  maxSpeed: 12
+  maxSpeed: 9
   acceleration: 24
   accelerationFactorFromDot:
     serializedVersion: 2
@@ -9015,7 +9015,7 @@ MonoBehaviour:
     constantValue: 0
     variable: {fileID: 11400000, guid: f00348c043d0deb448953ab57a3e325b, type: 2}
   staminaRegenRate: 50
-  sprintStaminaDrainRate: 10
+  sprintStaminaDrainRate: 25
   staminaRegenDelay: 0.5
   relapseSpeedMult: 0.5
   enemyNearbySpeedMult: 1
@@ -9034,7 +9034,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canSprintWithoutPower: 1
   canJumpWithoutPower: 1
-  sprintMultiplier: 1.5
+  sprintMultiplier: 2
   jumpForce: 10
   jumpGraceTime: 0.25
   airMovementMultiplier: 0.25
