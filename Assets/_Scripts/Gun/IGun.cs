@@ -21,6 +21,8 @@ public interface IGun : IInteractable, IDamager
 
     public bool IsReloadAnimationPlaying { get; }
     
+    public bool IsFiring { get; }
+    
     public Action<IGun> OnReloadStart { get; set; }
     public Action<IGun> OnReloadStop { get; set; }
 

@@ -126,6 +126,19 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     public bool IsReloadAnimationPlaying { get; private set; } = false;
 
+    public bool IsFiring
+    {
+        get
+        {
+            return gunInformation.FireType switch
+            {
+                GunInformation.GunFireType.SemiAutomatic => hasFiredThisFrame,
+                GunInformation.GunFireType.Automatic => isFiring,
+                _ => throw new ArgumentOutOfRangeException()
+            };
+        }
+    }
+
     #region IInteractable
 
     public bool IsInteractable => true;
@@ -518,19 +531,19 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     }
 
     #region Animation Events
-    
+
     public void OnReloadAnimationStart()
     {
         IsReloadAnimationPlaying = true;
     }
-    
+
     public void OnReloadAnimationEnd()
     {
         IsReloadAnimationPlaying = false;
     }
-    
+
     #endregion
-    
+
     #region Event Functions
 
     public void OnEquipToPlayer(WeaponManager weaponManager)

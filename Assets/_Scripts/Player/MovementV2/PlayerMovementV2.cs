@@ -785,6 +785,13 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Return if the player cannot sprint
         if (!BasicPlayerMovement.CanSprint)
             return;
+        
+        // Get the weapon manager
+        var weaponManager = ParentComponent.WeaponManager;
+        
+        // If the equipped gun is firing, don't sprint
+        if (weaponManager.EquippedGun != null && weaponManager.EquippedGun.IsFiring)
+            return;
 
         // Set the sprinting flag to true
         _isSprinting = true;
@@ -823,11 +830,18 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             IsSprintToggled = false;
             return;
         }
-
+        
+        // Get the weapon manager
+        var weaponManager = ParentComponent.WeaponManager;
+        
+        // If the equipped gun is firing, don't sprint
+        if (weaponManager.EquippedGun != null && weaponManager.EquippedGun.IsFiring)
+        {
+            IsSprintToggled = false;
+            return;
+        }
         // Set the sprinting flag to true
         IsSprintToggled = true;
-
-        Debug.Log($"Sprint Toggle Performed: {IsSprintToggled}");
     }
 
     #endregion
