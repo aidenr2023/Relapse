@@ -101,7 +101,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     public bool IsMagazineEmpty => currentMagazineSize <= 0;
 
-    public bool IsReloading => isReloading;
+    public bool IsReloading => isReloading || IsReloadAnimationPlaying;
 
     public float ReloadingPercentage => (gunInformation.ReloadTime - currentReloadTime) / gunInformation.ReloadTime;
 
@@ -124,6 +124,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     public Sound NormalHitSfx => gunInformation.NormalHitSfx;
     public Sound CriticalHitSfx => gunInformation.CriticalHitSfx;
 
+    public bool IsReloadAnimationPlaying { get; private set; } = false;
+
     #region IInteractable
 
     public bool IsInteractable => true;
@@ -132,12 +134,16 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     #endregion
 
+    #region Events
+
     public Action<IGun> OnReloadStart { get; set; }
     public Action<IGun> OnReloadStop { get; set; }
 
     public Action<IGun> OnShoot { get; set; }
 
     public Action<IGun, IActor, bool> OnHit { get; set; }
+
+    #endregion
 
     protected virtual void Awake()
     {
@@ -158,13 +164,6 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Connect the animator to the gun
         OnHit += PlayHitMarkerOnHit;
-    }
-
-    private static void PlayHitMarkerOnHit(IGun gun, IActor actor, bool isCritical)
-    {
-        // Show the hit marker
-        // HitMarkerUIManager.Instance.ShowHitMarker(isCritical);
-        HitMarkerUIManager.ShowHitMarker(isCritical);
     }
 
     private void OnDestroy()
@@ -251,19 +250,6 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     }
 
     #endregion
-
-    public virtual void OnFire(WeaponManager weaponManager)
-    {
-        // Return if the gun is currently reloading
-        if (IsReloading)
-            return;
-
-        // Set the firing flag to true
-        isFiring = true;
-        //
-        // Set the fired this frame flag to true
-        hasFiredThisFrame = true;
-    }
 
     public virtual void OnFireReleased()
     {
@@ -499,15 +485,11 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     {
         // Return if the player is reloading
         if (IsReloading)
-
             return;
 
         // Return if the gun's magazine is full
         if (currentMagazineSize == gunInformation.MagazineSize)
             return;
-
-        //check to see if is reloading is false, if so, allow the player to jump
-        // HandleJumpAnimWhileReloading();
 
         // Force the firing flag to false
         isFiring = false;
@@ -535,20 +517,21 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         OnReloadStart?.Invoke(this);
     }
 
-    // this function gates the jump animation while reloading
-    // public void HandleJumpAnimWhileReloading()
-    // {
-    //     // Check if the player is reloading
-    //     if (isReloading)
-    //     {
-    //         // Optionally, you might want to clear the trigger in case it was set earlier
-    //         _playerAnimator.ResetTrigger(jumpTriggerID);
-    //         return;
-    //     }
-    //
-    //     // If not reloading, allow jump input
-    //     //_playerAnimator.SetTrigger(jumpTriggerID);
-    // }
+    #region Animation Events
+    
+    public void OnReloadAnimationStart()
+    {
+        IsReloadAnimationPlaying = true;
+    }
+    
+    public void OnReloadAnimationEnd()
+    {
+        IsReloadAnimationPlaying = false;
+    }
+    
+    #endregion
+    
+    #region Event Functions
 
     public void OnEquipToPlayer(WeaponManager weaponManager)
     {
@@ -576,6 +559,30 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Stop showing the outline
         InteractableMaterialManager.ShowOutline = true;
     }
+
+    public virtual void OnFire(WeaponManager weaponManager)
+    {
+        // Return if the gun is currently reloading
+        if (IsReloading)
+            return;
+
+        // Set the firing flag to true
+        isFiring = true;
+
+        // Set the fired this frame flag to true
+        hasFiredThisFrame = true;
+    }
+
+    private static void PlayHitMarkerOnHit(IGun gun, IActor actor, bool isCritical)
+    {
+        // Show the hit marker
+        // HitMarkerUIManager.Instance.ShowHitMarker(isCritical);
+        HitMarkerUIManager.ShowHitMarker(isCritical);
+    }
+
+    #endregion
+
+    #region Visual Effects
 
     protected static void PlayParticles(ParticleSystem system, Vector3 position, int count)
     {
@@ -641,6 +648,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         // Debug.Log($"MUZZLE FLASH: {muzzleFlash.culled}, {muzzleFlash.gameObject.activeInHierarchy}, {muzzleFlash.playRate}, {muzzleFlash.HasAnySystemAwake()}");;
     }
 
+    #endregion
+
+    #region Interactable
+
     public void Interact(PlayerInteraction playerInteraction)
     {
         // Equip the gun
@@ -658,6 +669,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     {
         return $"Pick up {gunInformation.GunName}";
     }
+
+    #endregion
 
     public string GetDebugText()
     {

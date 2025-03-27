@@ -19,6 +19,8 @@ public interface IGun : IInteractable, IDamager
 
     public int CurrentAmmo { get; set; }
 
+    public bool IsReloadAnimationPlaying { get; }
+    
     public Action<IGun> OnReloadStart { get; set; }
     public Action<IGun> OnReloadStop { get; set; }
 

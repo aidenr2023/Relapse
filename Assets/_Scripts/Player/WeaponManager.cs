@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using _Scripts.Util.Interfaces;
@@ -8,6 +9,8 @@ using UnityEngine.InputSystem;
 
 public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, IPlayerLoaderInfo
 {
+    private static readonly int ShootAnimationID = Animator.StringToHash("Shoot");
+
     #region Serialized Fields
 
     public EventVariable OnGameReset => Player.OnGameReset;
@@ -41,6 +44,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
     private TokenManager<float> _fireRateMultiplierTokens;
 
     private bool _spawnedInitialGun = false;
+    
+    private Coroutine _shootCoroutine;
 
     #endregion
 
@@ -155,7 +160,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
     {
         // Get the TestPlayer component
         _player = GetComponent<Player>();
-        
+
 
         // Get the Player info component
         _playerInfo = _player.PlayerInfo;
@@ -200,15 +205,11 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
 
     private void OnShoot(InputAction.CallbackContext obj)
     {
-        // If the current gun is null, return
-        if (_equippedGun == null)
+        // if the shoot coroutine is not null, return
+        if (_shootCoroutine != null)
             return;
-
-        // Fire the IGun
-        EquippedGun.OnFire(this);
         
-        //Play the shoot animation
-        _shootingAnimator.SetTrigger("Shoot");
+        _shootCoroutine = StartCoroutine(Shoot());
     }
 
     private void OnShootCanceled(InputAction.CallbackContext obj)
@@ -223,12 +224,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
 
     private void OnReload(InputAction.CallbackContext obj)
     {
-        // If the current gun is null, return
-        if (_equippedGun == null)
-            return;
-
-        // Reload the gun
-        EquippedGun.Reload();
+        Reload();
     }
 
     #endregion
@@ -242,8 +238,14 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         UpdateFireRateMultipliers();
     }
 
+    #region General Gun Functions
+
     public void EquipGun(IGun gun)
     {
+        // If the current gun's reload animation is playing, return
+        if (_equippedGun != null && _equippedGun.IsReloadAnimationPlaying)
+            return;
+        
         // Remove the current gun
         RemoveGun();
 
@@ -314,6 +316,10 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         // Set the current gun to null
         if (_equippedGun == null)
             return;
+        
+        // If the current gun's reload animation is playing, return
+        if (_equippedGun.IsReloadAnimationPlaying)
+            return;
 
         // Release the fire button on the gun
         EquippedGun.OnFireReleased();
@@ -355,6 +361,51 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         _equippedGun = null;
     }
 
+    private IEnumerator Shoot()
+    {
+        // If the current gun is null, return
+        if (_equippedGun == null)
+            yield break;
+
+        // Get the player movement component
+        var playerMovement = Player.PlayerController as PlayerMovementV2;
+
+        // If the player is currently sprinting, force them to stop and return
+        if (playerMovement != null && playerMovement.IsSprinting)
+        {
+            playerMovement.ForceStopSprinting();
+            
+            // Wait until the sprint animation has stopped playing
+            yield return new WaitUntil(() => !playerMovement.IsSprintAnimationPlaying);
+        }
+
+        // Fire the IGun
+        EquippedGun.OnFire(this);
+
+        //Play the shoot animation
+        _shootingAnimator.SetTrigger(ShootAnimationID);
+        
+        // Set the shoot coroutine to null
+        _shootCoroutine = null;
+    }
+
+    private void Reload()
+    {
+        // If the current gun is null, return
+        if (_equippedGun == null)
+            return;
+
+        // // Get the player movement component
+        // var playerMovement = Player.PlayerController as PlayerMovementV2;
+        //
+        // // If the player is currently sprinting, force them to stop
+        // if (playerMovement != null && playerMovement.IsSprinting)
+        //     playerMovement.ForceStopSprinting();
+
+        // Reload the gun
+        EquippedGun.Reload();
+    }
+
     private void ThrowRigidBody(Rigidbody rb)
     {
         const float throwForce = 5;
@@ -373,22 +424,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         rb.AddTorque(new Vector3(torqueX, torqueY, 0) / 10, ForceMode.Impulse);
     }
 
-    public string GetDebugText()
-    {
-        return
-            $"Equipped Gun: {_equippedGun?.GunInformation.name}\n" +
-            $"Damage Multiplier: {CurrentDamageMultiplier:0.00}x\n" +
-            $"Fire Rate Multiplier: {CurrentFireRateMultiplier:0.00}x\n";
-    }
-
-    private void OnDrawGizmos()
-    {
-        if (fireTransform == null)
-            return;
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawRay(fireTransform.position, fireTransform.forward * 10);
-    }
+    #endregion
 
     private void UpdateDamageMultipliers()
     {
@@ -441,6 +477,27 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         // Set the ammo count
         gun.CurrentAmmo = currentAmmo;
     }
+
+    #region Debugging
+
+    public string GetDebugText()
+    {
+        return
+            $"Equipped Gun: {_equippedGun?.GunInformation.name}\n" +
+            $"Damage Multiplier: {CurrentDamageMultiplier:0.00}x\n" +
+            $"Fire Rate Multiplier: {CurrentFireRateMultiplier:0.00}x\n";
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (fireTransform == null)
+            return;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(fireTransform.position, fireTransform.forward * 10);
+    }
+
+    #endregion
 
     #region Saving and Loading
 

@@ -155,6 +155,9 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
         if (!isEnabled)
             return;
 
+        // Force stop sprinting
+        ForceStopSprintingOnSlide(this);
+        
         // Restart the midAir grace timer
         _midAirGraceTimer.SetMaxTimeAndReset(midAirGraceTime);
         _midAirGraceTimer.Start();

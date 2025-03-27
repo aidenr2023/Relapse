@@ -185,6 +185,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     private bool CurrentlyUsesStamina => staminaDrains && ParentComponent.AreEnemiesNearby;
 
+    public bool IsSprintAnimationPlaying { get; private set; } = false;
+    
     #endregion
 
     public event Action OnSprintStart;
@@ -299,6 +301,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Update the stamina
         UpdateStamina();
 
+        // Force the player to stop sprinting if they are not allowed to sprint
         if (IsSprinting &&
             (
                 CurrentStamina <= 0 ||
@@ -309,16 +312,12 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             CurrentMovementScript == BasicPlayerMovement &&
             IsGrounded
            )
-        {
-            _isSprinting = false;
-            IsSprintToggled = false;
-        }
+            ForceStopSprinting();
 
         // Sprint events
         if (IsSprinting && !_wasPreviouslySprinting)
         {
             OnSprintStart?.Invoke();
-
             playerAnimator.SetBool(IsRunningAnimationID, true);
         }
         else if (!IsSprinting && _wasPreviouslySprinting)
@@ -779,6 +778,163 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
 
     #endregion
 
+    #region Input Functions
+
+    private void OnSprintPerformed(InputAction.CallbackContext obj)
+    {
+        // Return if the player cannot sprint
+        if (!BasicPlayerMovement.CanSprint)
+            return;
+
+        // Set the sprinting flag to true
+        _isSprinting = true;
+        //set animator isMoving to true
+
+        // if (playerAnimator != null)
+    }
+
+    private void OnSprintCanceled(InputAction.CallbackContext obj)
+    {
+        // Set the sprinting flag to false
+        _isSprinting = false;
+
+        //if (playerAnimator != null)
+    }
+
+    private void OnSprintTogglePerformed(InputAction.CallbackContext obj)
+    {
+        // Return if the player is in stamina recovery mode
+        if (isStaminaRecovery)
+        {
+            IsSprintToggled = false;
+            return;
+        }
+
+        // Return if the player cannot sprint
+        if (!BasicPlayerMovement.CanSprint)
+        {
+            IsSprintToggled = false;
+            return;
+        }
+
+        // If the sprint toggle flag is already on, return
+        if (IsSprintToggled && !IsSprinting)
+        {
+            IsSprintToggled = false;
+            return;
+        }
+
+        // Set the sprinting flag to true
+        IsSprintToggled = true;
+
+        Debug.Log($"Sprint Toggle Performed: {IsSprintToggled}");
+    }
+
+    #endregion
+
+    public void ForceSetSprinting(bool sprinting)
+    {
+        if (!sprinting)
+        {
+            ForceStopSprinting();
+            return;
+        }
+
+        _isSprinting = true;
+    }
+
+    public void ChangeStamina(float amount)
+    {
+        // Don't drain the stamina if the stamina drains flag is false
+        if (!staminaDrains && amount < 0)
+        {
+            currentStaminaSo = maxStaminaSo;
+            return;
+        }
+
+        if (amount < 0 && !CurrentlyUsesStamina)
+            amount = 0;
+
+        if (amount < 0)
+        {
+            // Reset the stamina regen delay timer
+            _staminaRegenDelayTimer.SetMaxTimeAndReset(staminaRegenDelay);
+        }
+
+        currentStaminaSo.Value = Mathf.Clamp(currentStaminaSo + amount, 0, maxStaminaSo);
+
+        // If the player's current stamina value is <= 0,
+        // enter stamina recovery mode
+        if (currentStaminaSo.Value <= 0)
+        {
+            isStaminaRecovery.value = true;
+
+            ForceStopSprinting();
+            ForceSetSprinting(true);
+        }
+
+        // If the current stamina is >= the max stamina * the stamina recovery exit percent,
+        // exit stamina recovery mode
+        if (isStaminaRecovery && currentStaminaSo.Value >= maxStaminaSo * staminaRecoveryExitPercent)
+            isStaminaRecovery.value = false;
+    }
+
+    public void SetUpStamina(float cStamina, float mStamina)
+    {
+        currentStaminaSo.Value = cStamina;
+        maxStaminaSo.Value = mStamina;
+    }
+
+    public void ForceStopSprinting()
+    {
+        // Set the sprinting flags to false
+        _isSprinting = false;
+        IsSprintToggled = false;
+    }
+
+    public void DisablePlayerControls()
+    {
+        InputManager.Instance.IsExternallyDisabled = true;
+        Debug.Log("Player Controls Disabled");
+    }
+
+    public void EnablePlayerControls()
+    {
+        InputManager.Instance.IsExternallyDisabled = false;
+        Debug.Log("Player Controls Enabled");
+    }
+
+    public void ApplyMovementTypeSettings(PlayerMovementType movementType)
+    {
+        Debug.Log($"Applying settings for {movementType}");
+
+        // Determine which settings to use
+        var cSettings = movementType switch
+        {
+            PlayerMovementType.City => cityMovementSettings,
+            PlayerMovementType.Apartment => apartmentMovementSettings,
+            _ => throw new ArgumentOutOfRangeException(nameof(movementType), movementType, null)
+        };
+
+        // Apply the settings
+        desiredCapsuleHeightOffset = cSettings.desiredCapsuleHeightOffset;
+        sphereCastRadius = cSettings.sphereCastRadius;
+    }
+
+    public void ResetPlayer()
+    {
+        // Set the vars
+        SetVars();
+    }
+
+    private void SetVars()
+    {
+        playerTransform.value = transform;
+        cameraPivotSo.value = cameraPivot;
+        orientationSo.value = orientation;
+    }
+
+
     #region Debugging
 
     public string GetDebugText()
@@ -837,149 +993,6 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     }
 
     #endregion
-
-    #region Input Functions
-
-    private void OnSprintPerformed(InputAction.CallbackContext obj)
-    {
-        // Return if the player cannot sprint
-        if (!BasicPlayerMovement.CanSprint)
-            return;
-
-        // Set the sprinting flag to true
-        _isSprinting = true;
-        //set animator isMoving to true
-
-        // if (playerAnimator != null)
-    }
-
-    private void OnSprintCanceled(InputAction.CallbackContext obj)
-    {
-        // Set the sprinting flag to false
-        _isSprinting = false;
-
-        //if (playerAnimator != null)
-    }
-
-
-    private void OnSprintTogglePerformed(InputAction.CallbackContext obj)
-    {
-        // Return if the player is in stamina recovery mode
-        if (isStaminaRecovery)
-        {
-            IsSprintToggled = false;
-            return;
-        }
-
-        // Return if the player cannot sprint
-        if (!BasicPlayerMovement.CanSprint)
-        {
-            IsSprintToggled = false;
-            return;
-        }
-
-        // If the sprint toggle flag is already on, return
-        if (IsSprintToggled && !IsSprinting)
-        {
-            IsSprintToggled = false;
-            return;
-        }
-
-        // Set the sprinting flag to true
-        IsSprintToggled = true;
-
-        Debug.Log($"Sprint Toggle Performed: {IsSprintToggled}");
-    }
-
-    #endregion
-
-    public void ForceSetSprinting(bool sprinting)
-    {
-        _isSprinting = sprinting;
-    }
-
-    public void ChangeStamina(float amount)
-    {
-        // Don't drain the stamina if the stamina drains flag is false
-        if (!staminaDrains && amount < 0)
-        {
-            currentStaminaSo = maxStaminaSo;
-            return;
-        }
-
-        if (amount < 0 && !CurrentlyUsesStamina)
-            amount = 0;
-
-        if (amount < 0)
-        {
-            // Reset the stamina regen delay timer
-            _staminaRegenDelayTimer.SetMaxTimeAndReset(staminaRegenDelay);
-        }
-
-        currentStaminaSo.Value = Mathf.Clamp(currentStaminaSo + amount, 0, maxStaminaSo);
-
-        // If the player's current stamina value is <= 0,
-        // enter stamina recovery mode
-        if (currentStaminaSo.Value <= 0)
-        {
-            isStaminaRecovery.value = true;
-            _isSprinting = false;
-            IsSprintToggled = false;
-        }
-
-        // If the current stamina is >= the max stamina * the stamina recovery exit percent,
-        // exit stamina recovery mode
-        if (isStaminaRecovery && currentStaminaSo.Value >= maxStaminaSo * staminaRecoveryExitPercent)
-            isStaminaRecovery.value = false;
-    }
-
-    public void SetUpStamina(float cStamina, float mStamina)
-    {
-        currentStaminaSo.Value = cStamina;
-        maxStaminaSo.Value = mStamina;
-    }
-
-    public void DisablePlayerControls()
-    {
-        InputManager.Instance.IsExternallyDisabled = true;
-        Debug.Log("Player Controls Disabled");
-    }
-
-    public void EnablePlayerControls()
-    {
-        InputManager.Instance.IsExternallyDisabled = false;
-        Debug.Log("Player Controls Enabled");
-    }
-
-    public void ApplyMovementTypeSettings(PlayerMovementType movementType)
-    {
-        Debug.Log($"Applying settings for {movementType}");
-
-        // Determine which settings to use
-        var cSettings = movementType switch
-        {
-            PlayerMovementType.City => cityMovementSettings,
-            PlayerMovementType.Apartment => apartmentMovementSettings,
-            _ => throw new ArgumentOutOfRangeException(nameof(movementType), movementType, null)
-        };
-
-        // Apply the settings
-        desiredCapsuleHeightOffset = cSettings.desiredCapsuleHeightOffset;
-        sphereCastRadius = cSettings.sphereCastRadius;
-    }
-
-    public void ResetPlayer()
-    {
-        // Set the vars
-        SetVars();
-    }
-
-    private void SetVars()
-    {
-        playerTransform.value = transform;
-        cameraPivotSo.value = cameraPivot;
-        orientationSo.value = orientation;
-    }
 
     [Serializable]
     private struct PlayerMovementTypeSettings
