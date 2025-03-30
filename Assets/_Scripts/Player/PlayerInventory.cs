@@ -14,7 +14,7 @@ public class PlayerInventory : MonoBehaviour, IPlayerLoaderInfo
     
     public InventoryVariable InventoryVariable => inventoryVariable;
 
-    private void Start()
+    private void Awake()
     {
         // Subscribe to the OnItemAdded event
         inventoryVariable.OnItemAdded += ItemTooltipOnPickup;

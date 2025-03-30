@@ -13,9 +13,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
 
     #region Serialized Fields
 
-    public EventVariable OnGameReset => Player.OnGameReset;
-
     [SerializeField] private GunInfoListVariable allGuns;
+
+    public GunEventVariable playerOnShoot;
 
     [Tooltip("The position that the gun will fire from.")] [SerializeField]
     private Transform fireTransform;
@@ -50,6 +50,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
     #endregion
 
     #region Getters
+
+    public EventVariable OnGameReset => Player.OnGameReset;
 
     public HashSet<InputData> InputActions { get; } = new();
 
@@ -137,7 +139,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         // Return if the gun is null
         if (gun == null || gun.GameObject == null)
             return;
-        
+
         // Play the shoot animation
         _shootingAnimator.SetTrigger(ShootAnimationID);
     }

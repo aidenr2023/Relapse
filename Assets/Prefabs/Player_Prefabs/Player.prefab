@@ -8915,6 +8915,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allGuns: {fileID: 11400000, guid: 9cc0252f3c892ad428a691717278fb86, type: 2}
+  playerOnShoot: {fileID: 11400000, guid: 24e7a2f5ee6bb0f4885023b53f7c715f, type: 2}
   fireTransform: {fileID: 1481313708076204363}
   gunHolder: {fileID: 3912969412776824690}
   ShotgunHolder: {fileID: 8617860558294485095}
@@ -9047,14 +9048,28 @@ MonoBehaviour:
   coyoteJumpTime: 0.15
   footstepSoundPool:
     sounds:
-    - clip: {fileID: 8300000, guid: 81def98cd06884940b95459db1a841f7, type: 3}
+    - clip: {fileID: 8300000, guid: ca9147c51084cee4a8772c819f2be558, type: 3}
       soundType: 1
       volume: 0.0625
       isPersistent: 0
       isLooping: 0
       pitch: 1
       spatialBlend: 1
-    - clip: {fileID: 8300000, guid: 5aa5e09256a042147921c24a52b741ae, type: 3}
+    - clip: {fileID: 8300000, guid: 7a53b4d7727df5741b2523095eb42fa2, type: 3}
+      soundType: 1
+      volume: 0.0625
+      isPersistent: 0
+      isLooping: 0
+      pitch: 1
+      spatialBlend: 1
+    - clip: {fileID: 8300000, guid: 7b6953e2314707c4691513bdb499d40c, type: 3}
+      soundType: 1
+      volume: 0.0625
+      isPersistent: 0
+      isLooping: 0
+      pitch: 1
+      spatialBlend: 1
+    - clip: {fileID: 8300000, guid: d8989f6005bbbf1478fea82bc78a3806, type: 3}
       soundType: 1
       volume: 0.0625
       isPersistent: 0
@@ -9189,8 +9204,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e5c5be46fefc4e2a8e5ec8f801f5a785, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canDie: 1
-  blackScreenOnTime: 1
 --- !u!114 &9038693709593017749
 MonoBehaviour:
   m_ObjectHideFlags: 0
