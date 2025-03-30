@@ -72,10 +72,22 @@ public class DamageIncrease : MonoBehaviour, IPower
 
     public void StartActiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
-        CreateEffectToken(powerManager, pToken);
     }
 
     public void UpdateActiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
+    {
+    }
+
+    public void EndActiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
+    {
+    }
+
+    public void StartPassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
+    {
+        CreateEffectToken(powerManager, pToken);
+    }
+
+    public void UpdatePassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
         var hasData = pToken.TryGetData<DamageIncreaseData>(DAMAGE_INCREASE_KEY, out var data);
 
@@ -84,7 +96,7 @@ public class DamageIncrease : MonoBehaviour, IPower
             CreateEffectToken(powerManager, pToken);
     }
 
-    public void EndActiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
+    public void EndPassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
     {
         // Get the particles from the power token's data dictionary
         // Remove the particles from the power token's data dictionary
@@ -108,18 +120,6 @@ public class DamageIncrease : MonoBehaviour, IPower
             .WeaponManager
             .DamageMultiplierTokens
             .RemoveToken(data.Token);
-    }
-
-    public void StartPassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
-    {
-    }
-
-    public void UpdatePassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
-    {
-    }
-
-    public void EndPassiveEffect(PlayerPowerManager powerManager, PowerToken pToken)
-    {
     }
 
     private class DamageIncreaseData
