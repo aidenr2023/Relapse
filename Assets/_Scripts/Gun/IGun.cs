@@ -23,6 +23,8 @@ public interface IGun : IInteractable, IDamager
     
     public bool IsFiring { get; }
     
+    public Action<IGun> OnShoot { get; set; }
+    
     public Action<IGun> OnReloadStart { get; set; }
     public Action<IGun> OnReloadStop { get; set; }
 

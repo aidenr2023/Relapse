@@ -44,7 +44,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
     private TokenManager<float> _fireRateMultiplierTokens;
 
     private bool _spawnedInitialGun = false;
-    
+
     private Coroutine _shootCoroutine;
 
     #endregion
@@ -119,7 +119,29 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
             (token1, token2) => token1.Value.CompareTo(token2.Value),
             1
         );
+
+        // Initialize the events
+        InitializeEvents();
     }
+
+    private void InitializeEvents()
+    {
+        OnGunEquipped += (manager, gun) => gun.OnShoot += PlayFireAnimationOnShoot;
+        OnGunRemoved += (manager, gun) => gun.OnShoot -= PlayFireAnimationOnShoot;
+
+        _shootingAnimator.SetTrigger(ShootAnimationID);
+    }
+
+    private void PlayFireAnimationOnShoot(IGun gun)
+    {
+        // Return if the gun is null
+        if (gun == null || gun.GameObject == null)
+            return;
+        
+        // Play the shoot animation
+        _shootingAnimator.SetTrigger(ShootAnimationID);
+    }
+
 
     private void Start()
     {
@@ -168,7 +190,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
 
     #endregion
 
-    # region Input Functions
+    #region Input Functions
 
     public void InitializeInput()
     {
@@ -208,7 +230,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         // if the shoot coroutine is not null, return
         if (_shootCoroutine != null)
             return;
-        
+
         _shootCoroutine = StartCoroutine(Shoot());
     }
 
@@ -245,7 +267,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         // If the current gun's reload animation is playing, return
         if (_equippedGun != null && _equippedGun.IsReloadAnimationPlaying)
             return;
-        
+
         // Remove the current gun
         RemoveGun();
 
@@ -316,7 +338,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         // Set the current gun to null
         if (_equippedGun == null)
             return;
-        
+
         // If the current gun's reload animation is playing, return
         if (_equippedGun.IsReloadAnimationPlaying)
             return;
@@ -374,7 +396,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         if (playerMovement != null && playerMovement.IsSprinting)
         {
             playerMovement.ForceStopSprinting();
-            
+
             // Wait until the sprint animation has stopped playing
             yield return new WaitUntil(() => !playerMovement.IsSprintAnimationPlaying);
         }
@@ -382,9 +404,6 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         // Fire the IGun
         EquippedGun.OnFire(this);
 
-        //Play the shoot animation
-        _shootingAnimator.SetTrigger(ShootAnimationID);
-        
         // Set the shoot coroutine to null
         _shootCoroutine = null;
     }
