@@ -13,10 +13,12 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
 
     [SerializeField] private Transform respawnPosition;
 
-    [SerializeField] private UnityEvent onInteraction;
-
     [SerializeField] private bool isProximity = false;
     [SerializeField, Min(0)] private float proximityRange = 15;
+
+    [SerializeField] private Sound checkpointCollectedSound;
+    
+    [SerializeField] private UnityEvent onInteraction;
 
     #endregion
 
@@ -102,6 +104,10 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
         // Make a tooltip appear
         JournalTooltipManager.Instance?.AddTooltip("Checkpoint saved!");
 
+        // Play the sound
+        if (checkpointCollectedSound != null)
+            SoundManager.Instance.PlaySfx(checkpointCollectedSound);
+        
         // Set the has been collected flag to true
         HasBeenCollected = true;
         
