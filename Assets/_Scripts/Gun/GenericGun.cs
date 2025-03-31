@@ -28,6 +28,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     protected Transform muzzleLocation;
 
     [SerializeField] protected VisualEffect muzzleFlash;
+    [SerializeField] protected ParticleSystem muzzleFlashParticles;
+    [SerializeField, Min(0)] protected int muzzleFlashParticlesCount = 100;
 
     [Header("Impact Particles")] [SerializeField]
     protected ParticleSystem impactParticles;
@@ -152,7 +154,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     public Action<IGun> OnEquip { get; set; }
 
     public Action<IGun> OnDequip { get; set; }
-    
+
     public Action<IGun> OnReloadStart { get; set; }
     public Action<IGun> OnReloadStop { get; set; }
 
@@ -563,7 +565,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Stop showing the outline
         InteractableMaterialManager.ShowOutline = false;
-        
+
         // Invoke the on equip event
         OnEquip?.Invoke(this);
     }
@@ -578,7 +580,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Stop showing the outline
         InteractableMaterialManager.ShowOutline = true;
-        
+
         // Invoke the on dequip event
         OnDequip?.Invoke(this);
     }
@@ -639,36 +641,26 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     protected void PlayMuzzleFlash()
     {
         // Return if the muzzle flash is null
-        if (muzzleFlash == null)
-            return;
+        if (muzzleFlash != null)
+        {
+            // Set the layer of the muzzle flash to the same layer as the gun
+            muzzleFlash.gameObject.layer = gameObject.layer;
 
-        // // Instantiate the muzzle flash VFX
-        // var muzzleFlashInstance = Instantiate(muzzleFlash, muzzleLocation.position, muzzleLocation.rotation);
+            // Set the layer of all the children of the muzzle flash to the same layer as the gun
+            foreach (Transform child in muzzleFlash.transform)
+                child.gameObject.layer = gameObject.layer;
 
-        // Set the layer of the muzzle flash to the same layer as the gun
-        muzzleFlash.gameObject.layer = gameObject.layer;
+            // Disable and re-enable the muzzle flash to reset the particles
+            muzzleFlash.gameObject.SetActive(false);
+            muzzleFlash.gameObject.SetActive(true);
 
-        // Set the layer of all the children of the muzzle flash to the same layer as the gun
-        foreach (Transform child in muzzleFlash.transform)
-            child.gameObject.layer = gameObject.layer;
-
-        // // Get the max lifetime of the muzzle flash
-        // var maxLifetime = 5;
-
-        // // Destroy the muzzle flash after the max lifetime
-        // Destroy(muzzleFlash.gameObject, maxLifetime);
-
-        // Disable and re-enable the muzzle flash to reset the particles
-        muzzleFlash.gameObject.SetActive(false);
-        muzzleFlash.gameObject.SetActive(true);
-
-        // Play the muzzle flash
-        muzzleFlash.Play();
-
-        // // Set the particles to be a child of the gun
-        // muzzleFlash.transform.SetParent(muzzleLocation);
-
-        // Debug.Log($"MUZZLE FLASH: {muzzleFlash.culled}, {muzzleFlash.gameObject.activeInHierarchy}, {muzzleFlash.playRate}, {muzzleFlash.HasAnySystemAwake()}");;
+            // Play the muzzle flash
+            muzzleFlash.Play();
+        }
+        
+        // Play the muzzle flash particles
+        if (muzzleFlashParticles != null)
+            PlayParticles(muzzleFlashParticles, muzzleLocation.position, muzzleFlashParticlesCount);
     }
 
     #endregion
