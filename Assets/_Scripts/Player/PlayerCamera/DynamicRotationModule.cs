@@ -6,6 +6,8 @@ public sealed class DynamicRotationModule : DynamicVCamModule
 {
     #region Serializable Fields
 
+    [SerializeField] private FloatReference gunShootRoll;
+
     [SerializeField] private Vector3 defaultRotation = Vector3.zero;
 
     [Header("Wall Running"), SerializeField]
@@ -30,6 +32,7 @@ public sealed class DynamicRotationModule : DynamicVCamModule
     private TokenManager<Vector3>.ManagedToken _wallRunToken;
     private TokenManager<Vector3>.ManagedToken _wallClimbToken;
     private TokenManager<Vector3>.ManagedToken _flinchToken;
+    private TokenManager<Vector3>.ManagedToken _gunShootRollToken;
 
     private bool _wallRunStart;
     private bool _wallRunEnd = true;
@@ -60,6 +63,7 @@ public sealed class DynamicRotationModule : DynamicVCamModule
         _wallRunToken = _rotationTokens.AddToken(Vector3.zero, -1, true);
         _wallClimbToken = _rotationTokens.AddToken(Vector3.zero, -1, true);
         _flinchToken = _rotationTokens.AddToken(Vector3.zero, -1, true);
+        _gunShootRollToken = _rotationTokens.AddToken(Vector3.zero, -1, true);
     }
 
     protected override void CustomStart()
@@ -143,6 +147,9 @@ public sealed class DynamicRotationModule : DynamicVCamModule
         // Update the flinch rotation
         UpdateFlinchToken();
 
+        // Update the gun shoot roll token
+        UpdateGunShootRollToken();
+
         // Update the token manager
         _rotationTokens.Update(Time.deltaTime);
 
@@ -153,6 +160,11 @@ public sealed class DynamicRotationModule : DynamicVCamModule
         _recomposer.m_Tilt = newRotation.x;
         _recomposer.m_Pan = newRotation.y;
         _recomposer.m_Dutch = newRotation.z;
+    }
+
+    private void UpdateGunShootRollToken()
+    {
+        _gunShootRollToken.Value = new Vector3(0, 0, gunShootRoll.Value);
     }
 
     private void UpdateWallRunToken()
@@ -180,7 +192,8 @@ public sealed class DynamicRotationModule : DynamicVCamModule
             targetValue = Vector3.zero;
 
         // Set the wall run token value
-        _wallRunToken.Value = Vector3.Lerp(_wallRunToken.Value, targetValue, CustomFunctions.FrameAmount(wallRunLerpAmount));
+        _wallRunToken.Value =
+            Vector3.Lerp(_wallRunToken.Value, targetValue, CustomFunctions.FrameAmount(wallRunLerpAmount));
     }
 
     private void UpdateWallClimbToken()
@@ -192,7 +205,7 @@ public sealed class DynamicRotationModule : DynamicVCamModule
         if (_wallClimbStart)
         {
             targetValue = wallClimbRotation;
-            
+
             // If the player is falling, invert the rotation
             if (playerVCamController.ParentComponent.PlayerController is PlayerMovementV2 movementV2)
             {
@@ -204,7 +217,8 @@ public sealed class DynamicRotationModule : DynamicVCamModule
             targetValue = Vector3.zero;
 
         // Set the wall run token value
-        _wallClimbToken.Value = Vector3.Lerp(_wallClimbToken.Value, targetValue, CustomFunctions.FrameAmount(wallRunLerpAmount));
+        _wallClimbToken.Value = Vector3.Lerp(_wallClimbToken.Value, targetValue,
+            CustomFunctions.FrameAmount(wallRunLerpAmount));
     }
 
     private void UpdateFlinchToken()

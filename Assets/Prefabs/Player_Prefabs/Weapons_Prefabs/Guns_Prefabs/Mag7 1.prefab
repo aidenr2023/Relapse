@@ -43,8 +43,10 @@ GameObject:
   - component: {fileID: 3015837065127820793}
   - component: {fileID: 4465589881162092546}
   - component: {fileID: 5074726822055609948}
-  - component: {fileID: 6664068473711133815}
   - component: {fileID: 8756966642331545968}
+  - component: {fileID: 6664068473711133815}
+  - component: {fileID: -7207915618807133989}
+  - component: {fileID: -8522163724213372233}
   m_Layer: 8
   m_Name: Mag7 1
   m_TagString: Untagged
@@ -120,6 +122,19 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &8756966642331545968
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1049920777318549282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 068ce04631044bf9bcc1d7f44c7c5f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showOutline: 1
 --- !u!114 &6664068473711133815
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -137,6 +152,8 @@ MonoBehaviour:
   animator: {fileID: 891329805443514385}
   muzzleLocation: {fileID: 9081700793990647355}
   muzzleFlash: {fileID: 3124696455069095509}
+  muzzleFlashParticles: {fileID: 0}
+  muzzleFlashParticlesCount: 100
   impactParticles: {fileID: 1365637259322421177}
   impactVfxPrefab: {fileID: 0}
   impactParticlesCount: 25
@@ -154,7 +171,7 @@ MonoBehaviour:
   muzzleParticles: {fileID: 6388012898772878341}
   muzzleParticlesCount: 70
   pelletsPerShot: 8
---- !u!114 &8756966642331545968
+--- !u!114 &-7207915618807133989
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -163,10 +180,77 @@ MonoBehaviour:
   m_GameObject: {fileID: 1049920777318549282}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 068ce04631044bf9bcc1d7f44c7c5f60, type: 3}
+  m_Script: {fileID: 11500000, guid: 97872d49ae4e4c6881f38d52e9df0b15, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  showOutline: 1
+  gunEventVariable: {fileID: 11400000, guid: 24e7a2f5ee6bb0f4885023b53f7c715f, type: 2}
+  gunFovZoomAmount: {fileID: 11400000, guid: f409c4915cc91364d9bbf9d9637cb029, type: 2}
+  targetZoom: 0.95
+  inDuration: 0.03125
+  inCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &-8522163724213372233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1049920777318549282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a662286f63f24ba1b40320d8cb9f1799, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gunEventVariable: {fileID: 11400000, guid: 24e7a2f5ee6bb0f4885023b53f7c715f, type: 2}
+  gunShootRoll: {fileID: 11400000, guid: 4227de34b843aa1429e3cae03d422d26, type: 2}
+  targetAngle: 15
+  inDuration: 0.03125
+  inCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1001 &642519195306453636
 PrefabInstance:
   m_ObjectHideFlags: 0

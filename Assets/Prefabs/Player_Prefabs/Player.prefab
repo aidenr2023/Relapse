@@ -9251,6 +9251,10 @@ MonoBehaviour:
     aimOutFovMultiplier: 1.25
     aimLerpAmount: 0.1
   dynamicRotationModule:
+    gunShootRoll:
+      useConstant: 0
+      constantValue: 0
+      variable: {fileID: 11400000, guid: 4227de34b843aa1429e3cae03d422d26, type: 2}
     defaultRotation: {x: 0, y: 0, z: 0}
     wallRunRotation: {x: 0, y: 0, z: 15}
     wallClimbRotation: {x: -45, y: 0, z: 0}
