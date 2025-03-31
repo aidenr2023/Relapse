@@ -149,6 +149,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     #region Events
 
+    public Action<IGun> OnEquip { get; set; }
+
+    public Action<IGun> OnDequip { get; set; }
+    
     public Action<IGun> OnReloadStart { get; set; }
     public Action<IGun> OnReloadStop { get; set; }
 
@@ -559,6 +563,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Stop showing the outline
         InteractableMaterialManager.ShowOutline = false;
+        
+        // Invoke the on equip event
+        OnEquip?.Invoke(this);
     }
 
     public void OnRemovalFromPlayer(WeaponManager weaponManager)
@@ -571,6 +578,9 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Stop showing the outline
         InteractableMaterialManager.ShowOutline = true;
+        
+        // Invoke the on dequip event
+        OnDequip?.Invoke(this);
     }
 
     public virtual void OnFire(WeaponManager weaponManager)

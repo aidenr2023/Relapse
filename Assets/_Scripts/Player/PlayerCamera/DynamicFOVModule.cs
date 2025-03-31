@@ -7,6 +7,8 @@ public sealed class DynamicFOVModule : DynamicVCamModule
 {
     #region Serialized Fields
 
+    [SerializeField] private FloatReference gunShootFovModifier;
+
     [SerializeField, Min(0)] private float normalFOV = 60f;
     [SerializeField, Min(0)] private float maxFov = 150;
 
@@ -30,6 +32,7 @@ public sealed class DynamicFOVModule : DynamicVCamModule
     private TokenManager<float>.ManagedToken _sprintToken;
     private TokenManager<float>.ManagedToken _dashToken;
     private TokenManager<float>.ManagedToken _aimToken;
+    private TokenManager<float>.ManagedToken _gunShootToken;
 
     private bool _sprintStart;
     private bool _sprintEnd = true;
@@ -55,6 +58,7 @@ public sealed class DynamicFOVModule : DynamicVCamModule
         _sprintToken = _fovTokens.AddToken(1f, -1, true);
         _dashToken = _fovTokens.AddToken(1f, -1, true);
         _aimToken = _fovTokens.AddToken(1f, -1, true);
+        _gunShootToken = _fovTokens.AddToken(1f, -1, true);
     }
 
     protected override void CustomStart()
@@ -109,6 +113,7 @@ public sealed class DynamicFOVModule : DynamicVCamModule
         UpdateSprintToken();
         UpdateDashToken();
         UpdateAimToken();
+        UpdateGunShootFovToken();
 
         // Update the token manager
         _fovTokens.Update(Time.deltaTime);
@@ -122,6 +127,17 @@ public sealed class DynamicFOVModule : DynamicVCamModule
         // Set the FOV of the virtual camera
         if (playerVCamController.VirtualCamera != null)
             playerVCamController.VirtualCamera.m_Lens.FieldOfView = newFOV;
+    }
+
+    private void UpdateGunShootFovToken()
+    {
+        var difference = gunShootFovModifier.Value - 1;
+        var settingsMultiplier = playerVCamController.CurrentUserSettings.value.ShootFovMultiplier;
+        
+        _gunShootToken.Value = Mathf.Clamp(
+            1 + (difference * settingsMultiplier),
+            0, 1
+        );
     }
 
     private void UpdateSprintToken()

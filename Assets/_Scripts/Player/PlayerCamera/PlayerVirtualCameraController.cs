@@ -9,7 +9,8 @@ public class PlayerVirtualCameraController : ComponentScript<Player>
     #region Serialized Fields
 
     [SerializeField] private CameraManagerReference cameraManager;
-
+    [field: SerializeField] public UserSettingsVariable CurrentUserSettings { get; private set; }
+    
     [Header("Camera Modules")] [SerializeField]
     private DynamicFOVModule dynamicFOVModule;
 

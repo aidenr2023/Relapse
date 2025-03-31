@@ -61,6 +61,13 @@ public struct UserSettings
 
     #endregion
 
+    #region Accessibility Settings
+
+    [field: SerializeField, Header("Accessibility Settings")]
+    public float ShootFovMultiplier { get; private set; }
+
+    #endregion
+
     #endregion
 
     #region Public Methods
@@ -151,6 +158,9 @@ public struct UserSettings
 
         // Display Settings
         Gamma = other.Gamma;
+
+        // Accessibility Settings
+        ShootFovMultiplier = other.ShootFovMultiplier;
     }
 
     /// <summary>

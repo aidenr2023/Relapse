@@ -129,9 +129,17 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
     private void InitializeEvents()
     {
         OnGunEquipped += (manager, gun) => gun.OnShoot += PlayFireAnimationOnShoot;
+        OnGunEquipped += (manager, gun) => gun.OnShoot += InvokePlayerShootOnShoot;
+        
         OnGunRemoved += (manager, gun) => gun.OnShoot -= PlayFireAnimationOnShoot;
+        OnGunRemoved += (manager, gun) => gun.OnShoot -= InvokePlayerShootOnShoot;
 
         _shootingAnimator.SetTrigger(ShootAnimationID);
+    }
+
+    private void InvokePlayerShootOnShoot(IGun obj)
+    {
+        playerOnShoot?.Invoke(obj);
     }
 
     private void PlayFireAnimationOnShoot(IGun gun)
