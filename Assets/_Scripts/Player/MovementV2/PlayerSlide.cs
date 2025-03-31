@@ -6,6 +6,8 @@ using UnityEngine.Serialization;
 
 public class PlayerSlide : PlayerMovementScript, IUsesInput
 {
+    private static string _isSlidingCheck = "Slide";
+    
     #region Serialized Fields
 
     [SerializeField] private Animator _playerAnimator;
@@ -49,8 +51,8 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
     private bool _useLandVelocity;
 
     private bool _slideInputThisFrame;
-
-    private static string _isSlidingCheck = "Slide";
+    
+    private bool _wasSprintingBefore;
 
     #endregion
 
@@ -155,8 +157,8 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
         if (!isEnabled)
             return;
 
-        // Force stop sprinting
-        ForceStopSprintingOnSlide(this);
+        // // Force stop sprinting
+        // ForceStopSprintingOnSlide(this);
         
         // Restart the midAir grace timer
         _midAirGraceTimer.SetMaxTimeAndReset(midAirGraceTime);
@@ -220,6 +222,7 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
 
         // Add the slide start events
         OnSlideStart += _ => _isSliding = true;
+        OnSlideStart += SetWasSprintingOnSlide;
         OnSlideStart += PushControls;
         OnSlideStart += AddVelocityOnSlideStart;
         OnSlideStart += ChangeHeightOnSlide;
@@ -229,6 +232,7 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
         OnSlideEnd += _ => _isSliding = false;
         OnSlideEnd += RemoveControls;
         OnSlideEnd += ChangeHeightOnSlide;
+        OnSlideEnd += SetSprintingOnSlideEnd;
     }
 
     #region Slide Events
@@ -284,6 +288,23 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
 
         // Set the flag to use the land velocity
         _useLandVelocity = true;
+    }
+
+    private void SetWasSprintingOnSlide(PlayerSlide obj)
+    {
+        _wasSprintingBefore = ParentComponent.IsSprinting;
+    }
+    
+    
+    private void SetSprintingOnSlideEnd(PlayerSlide obj)
+    {
+        // If the player was sprinting before, force sprinting to be true
+        if (_wasSprintingBefore)
+            ParentComponent.ForceSetSprinting(true);
+        
+        // If the player was not sprinting before, but is NOW sprinting, force sprinting to be true
+        else if (ParentComponent.IsSprinting)
+            ParentComponent.ForceSetSprinting(true);
     }
 
     #endregion
@@ -526,6 +547,7 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
     {
         // Invoke the slide end event
         OnSlideEnd?.Invoke(this);
+        
         //_slideMesh.SetActive(false);
         _playerAnimator.SetBool(_isSlidingCheck, IsSliding);
     }

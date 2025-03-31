@@ -855,6 +855,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         }
 
         _isSprinting = true;
+        IsSprintToggled = true;
     }
 
     public void ChangeStamina(float amount)
