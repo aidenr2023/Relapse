@@ -27,10 +27,19 @@ public class ExplosionHelper : MonoBehaviour, IDamager
 
     public Sound NormalHitSfx => null;
     public Sound CriticalHitSfx => null;
+    
+    public float Damage => explosionDamage;
 
     #endregion
 
     public void Explode(bool canDamagePlayer)
+    {
+        Explode(explosionDamage, null, this, canDamagePlayer);
+    }
+
+    public void Explode() => Explode(false);
+
+    public void Explode(float amount, IActor changer, IDamager damager, bool canDamagePlayer)
     {
         // Create an array of colliders to store the colliders in the explosion radius
         var colliders = new Collider[MAX_COLLIDERS];
@@ -59,7 +68,7 @@ public class ExplosionHelper : MonoBehaviour, IDamager
                 continue;
 
             // Now, I can calculate damage
-            actor.ChangeHealth(-explosionDamage * damageMultiplier, null, this, actor.GameObject.transform.position);
+            actor.ChangeHealth(-amount * damageMultiplier, changer, damager, actor.GameObject.transform.position);
         }
 
         // Instantiate the explosion VFX
@@ -91,10 +100,8 @@ public class ExplosionHelper : MonoBehaviour, IDamager
             cameraShakeHelper.ShakeCamera();
     }
 
-    public void Explode() => Explode(false);
-
     public void SetDamageMultiplier(float multiplier) => damageMultiplier = multiplier;
-    
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

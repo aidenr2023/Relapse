@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -30,7 +31,7 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
     protected IPower _power;
 
     protected Rigidbody _rigidbody;
-    protected Collider _collider;
+    protected Collider[] _colliders;
 
     protected bool _isAttached;
     protected bool _isFuseLit;
@@ -47,7 +48,7 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
         _rigidbody = GetComponent<Rigidbody>();
 
         // Get the collider component
-        _collider = GetComponent<Collider>();
+        _colliders = GetComponentsInChildren<Collider>();
 
         // Create the fuse timer
         _fuseTimer = new CountdownTimer(fuseTime);
@@ -198,7 +199,19 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
 
         // Set the hasExploded to true
         _hasExploded = true;
+        
+        // Do the explosion
+        DoExplosion();
 
+        // TODO: Play explosion vfx
+
+        // Destroy the game object
+        if (destroyOnExplode)
+            Destroy(gameObject);
+    }
+
+    protected virtual void DoExplosion()
+    {
         var enemies = new Collider[MAX_ENEMIES];
 
         // Get the game objects in the enemyLayers
@@ -246,12 +259,6 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
             if (Vector3.Distance(transform.position, actor.GameObject.transform.position) <= explosionRadius)
                 ApplyExplosion(actor);
         }
-
-        // TODO: Play explosion vfx
-
-        // Destroy the game object
-        if (destroyOnExplode)
-            Destroy(gameObject);
     }
 
     protected abstract void ApplyExplosion(IActor actor);
@@ -270,11 +277,21 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
         if (layersToIgnoreCollision == (layersToIgnoreCollision | (1 << other.gameObject.layer)))
             return;
 
+        Debug.Log($"Contact Count: {other.contactCount}");
+
+        // Get all the contacts
+        var contacts = new ContactPoint[other.contactCount];
+        for (int i = 0; i < other.contactCount; i++)
+            contacts[i] = other.GetContact(i);
+
+        // Sort the contacts by distance from the projectile
+        var sortedContacts = contacts.OrderByDescending(c => Vector3.Distance(transform.position, c.point)).ToArray();
+        
         // Get the normal of the collision
-        var normal = other.contacts[0].normal;
+        var normal = sortedContacts[0].normal;
 
         // Attach to the surface
-        AttachToSurface(other.contacts[0].point, normal);
+        AttachToSurface(sortedContacts[0].point, normal);
     }
 
     private void AttachToSurface(Vector3 position, Vector3 normal)
@@ -283,10 +300,14 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
         _rigidbody.isKinematic = true;
 
         // Set the collider to trigger
-        _collider.isTrigger = true;
+        foreach (var cCollider in _colliders)        
+            cCollider.isTrigger = true;
 
         // Set the position of the game object to the position parameter
-        transform.position = position;
+        // transform.position = position + normal * 0.25f;
+        // _rigidbody.MovePosition(position + normal * 0.25f);
+        // _rigidbody.MovePosition(position);
+        _rigidbody.position = position+ normal * 0.1f;
 
         // Set the up of the game object to the normal parameter
         transform.up = normal;
@@ -338,7 +359,7 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
         // Return if the explosion particles prefab is null
         if (explosionParticles == null)
             return;
-        
+
         // Instantiate the explosion particles at the projectile's position
         var explosion = Instantiate(explosionParticles, position, Quaternion.identity);
 

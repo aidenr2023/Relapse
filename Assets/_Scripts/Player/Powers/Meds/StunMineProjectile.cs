@@ -4,16 +4,18 @@ using UnityEngine.VFX;
 
 public class StunMineProjectile : AbstractMineProjectile
 {
-    [Header("Unique Stats")] 
-    
-    [SerializeField, Min(0)] protected float stunDuration = 5f;
+    [Header("Unique Stats")] [SerializeField, Min(0)]
+    protected float stunDuration = 5f;
+
     [SerializeField] private VisualEffect stunVfxPrefab;
 
     [SerializeField] private ParticleSystem explosionParticles;
     [SerializeField, Min(0)] private int particleCount = 50;
-    
+
     [SerializeField] private VisualEffect explosionVfxPrefab;
-    
+
+    [SerializeField] private ExplosionHelper explosionHelper;
+
     protected override void CustomAwake()
     {
     }
@@ -42,12 +44,19 @@ public class StunMineProjectile : AbstractMineProjectile
         // Call this from the power logic game object because this projectile is destroyed after the explosion
         ((MonoBehaviour)_power.PowerScriptableObject.PowerLogic)
             .StartCoroutine(ApplyStun(movement, attackBehavior));
-        
+
         // Create the explosion particles
         CreateExplosionParticles(explosionParticles, transform.position, particleCount);
-        
+
         // Create the explosion VFX
         CreateExplosionVfx(explosionVfxPrefab, transform.position);
+    }
+
+    protected override void DoExplosion()
+    {
+        base.DoExplosion();
+
+        explosionHelper.Explode();
     }
 
     private IEnumerator ApplyStun(NewEnemyMovement movement, IEnemyAttackBehavior attackBehavior)
@@ -57,9 +66,9 @@ public class StunMineProjectile : AbstractMineProjectile
         // enemy.AttackBehavior.AddAttackDisableToken(this);
 
         var powerManager = (_shooter as PlayerInfo)!.ParentComponent.PlayerPowerManager;
-        
+
         var enemy = movement.ParentComponent;
-        
+
         // Create event args
         var args = new HealthChangedEventArgs(
             enemy.EnemyInfo, powerManager.Player.PlayerInfo, _power,
@@ -67,7 +76,7 @@ public class StunMineProjectile : AbstractMineProjectile
         );
 
         enemy.EnemyInfo.Stun(args, stunDuration);
-        
+
         // Instantiate the stun VFX
         var stunVfx = Instantiate(stunVfxPrefab, movement.transform);
 
@@ -80,13 +89,14 @@ public class StunMineProjectile : AbstractMineProjectile
         }
 
         enemy.EnemyInfo.StopStun();
-        
+
         // // Re-enable the movement & attack
         // movementBehavior?.RemoveMovementDisableToken(this);
         // attackBehavior?.RemoveAttackDisableToken(this);
-        
+
         // Destroy the stun VFX
-        Destroy(stunVfx.gameObject);
+        if (stunVfx != null && stunVfx.gameObject != null)
+            Destroy(stunVfx.gameObject);
     }
 
     protected override void CustomShoot(IPower power, PlayerPowerManager powerManager, PowerToken pToken,
