@@ -222,7 +222,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             var value = timeStopCurve.Evaluate(timeSinceStart / timeStopDuration);
 
             // Set the time scale
-            _timeStopToken.Value = value; 
+            _timeStopToken.Value = Mathf.Max(value, 0); 
 
             yield return null;
         }

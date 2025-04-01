@@ -813,21 +813,21 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Return if the player is in stamina recovery mode
         if (isStaminaRecovery)
         {
-            IsSprintToggled = false;
+            ForceSetSprinting(false);
             return;
         }
 
         // Return if the player cannot sprint
         if (!BasicPlayerMovement.CanSprint)
         {
-            IsSprintToggled = false;
+            ForceSetSprinting(false);
             return;
         }
 
         // If the sprint toggle flag is already on, return
         if (IsSprintToggled && !IsSprinting)
         {
-            IsSprintToggled = false;
+            ForceSetSprinting(false);
             return;
         }
         
@@ -884,8 +884,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         {
             isStaminaRecovery.value = true;
 
-            ForceStopSprinting();
-            ForceSetSprinting(true);
+            ForceSetSprinting(false);
         }
 
         // If the current stamina is >= the max stamina * the stamina recovery exit percent,
