@@ -407,8 +407,11 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         {
             playerMovement.ForceStopSprinting();
 
-            // Wait until the sprint animation has stopped playing
-            yield return new WaitUntil(() => !playerMovement.IsSprintAnimationPlaying);
+            // // Wait until the sprint animation has stopped playing
+            // yield return new WaitUntil(() => !playerMovement.IsSprintAnimationPlaying);
+
+            yield return new WaitForSeconds(.125f);
+            // yield return new WaitForSeconds(0);
         }
 
         // Fire the IGun

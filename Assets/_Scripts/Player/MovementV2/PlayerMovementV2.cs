@@ -11,6 +11,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     private const int MAX_SPHERECAST_HITS = 128;
 
     private static readonly int IsRunningAnimationID = Animator.StringToHash("IsSprinting");
+    private static readonly int IsGroundedAnimationID = Animator.StringToHash("IsGrounded");
 
     #region Serialized Fields
 
@@ -325,6 +326,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             OnSprintEnd?.Invoke();
             playerAnimator.SetBool(IsRunningAnimationID, false);
         }
+        
+        playerAnimator.SetBool(IsGroundedAnimationID, IsGrounded);
     }
 
     private void LateUpdate()
@@ -918,6 +921,13 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         Debug.Log("Player Controls Enabled");
     }
 
+    public void SetSprintAnimationPlaying(bool isSprinting)
+    {
+        IsSprintAnimationPlaying = isSprinting;
+        
+        Debug.Log($"Sprint Animation Playing: {isSprinting}");
+    }
+    
     public void ApplyMovementTypeSettings(PlayerMovementType movementType)
     {
         Debug.Log($"Applying settings for {movementType}");

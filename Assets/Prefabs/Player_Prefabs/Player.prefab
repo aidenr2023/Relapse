@@ -9178,7 +9178,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 641ce49655a1404aaf1759e9b2105a9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerAnimator: {fileID: 2992382508315380090}
+  lowerPlayerAnimator: {fileID: 2992382508315380090}
+  upperPlayerAnimator: {fileID: 96788328598540561}
   _slideMesh: {fileID: 8371321381148068282}
   isEnabled: 1
   slideStrength: 4
@@ -24614,6 +24615,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 9056393151108034863}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 8085075bc3b5e974d9823716e4a85526,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5866207854067012556}
   m_SourcePrefab: {fileID: 100100000, guid: 8085075bc3b5e974d9823716e4a85526, type: 3}
 --- !u!95 &96788328598540561 stripped
 Animator:
@@ -24717,6 +24722,19 @@ MonoBehaviour:
   ikWeightTransitionSpeed: 5
   maxArmExtension: 0.85
   weaponManager: {fileID: 0}
+--- !u!114 &5866207854067012556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6700265533335966161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4738201bf6ef460da513bcf664479da8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerMovementV2: {fileID: -6734510740079581843}
 --- !u!1001 &5815420052296289327
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -6,12 +6,14 @@ using UnityEngine.Serialization;
 
 public class PlayerSlide : PlayerMovementScript, IUsesInput
 {
-    private static string _isSlidingCheck = "Slide";
-    
+    private static readonly string UpperSlidingAnimationID = "IsSliding";
+    private static readonly string LowerSlidingAnimationID = "Slide";
+
     #region Serialized Fields
 
-    [SerializeField] private Animator _playerAnimator;
-    
+    [SerializeField] private Animator lowerPlayerAnimator;
+    [SerializeField] private Animator upperPlayerAnimator;
+
     [SerializeField] private GameObject _slideMesh;
 
     [SerializeField] private bool isEnabled = true;
@@ -51,7 +53,7 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
     private bool _useLandVelocity;
 
     private bool _slideInputThisFrame;
-    
+
     private bool _wasSprintingBefore;
 
     #endregion
@@ -159,7 +161,7 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
 
         // // Force stop sprinting
         // ForceStopSprintingOnSlide(this);
-        
+
         // Restart the midAir grace timer
         _midAirGraceTimer.SetMaxTimeAndReset(midAirGraceTime);
         _midAirGraceTimer.Start();
@@ -294,14 +296,14 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
     {
         _wasSprintingBefore = ParentComponent.IsSprinting;
     }
-    
-    
+
+
     private void SetSprintingOnSlideEnd(PlayerSlide obj)
     {
         // If the player was sprinting before, force sprinting to be true
         if (_wasSprintingBefore)
             ParentComponent.ForceSetSprinting(true);
-        
+
         // If the player was not sprinting before, but is NOW sprinting, force sprinting to be true
         else if (ParentComponent.IsSprinting)
             ParentComponent.ForceSetSprinting(true);
@@ -493,7 +495,7 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
             force = targetForce;
 
         // TODO: Figure out slope movement
-        
+
         // // Rotate the force based on the movement input (Rotate around the y-axis)
         // const float rotationAngle = 180f;
         // const float rotationSpeedThresholdMin = 3;
@@ -534,22 +536,27 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
 
         // Invoke the slide event
         OnSlideStart?.Invoke(this);
-        
+
         //set the slide mesh to active
         _slideMesh.SetActive(true);
 
         // trigger slide animation
-        if (_playerAnimator != null)
-            _playerAnimator.SetBool(_isSlidingCheck, IsSliding);
+        if (lowerPlayerAnimator != null)
+            lowerPlayerAnimator.SetBool(LowerSlidingAnimationID, IsSliding);
+        if (upperPlayerAnimator != null)
+            upperPlayerAnimator.SetBool(UpperSlidingAnimationID, IsSliding);
     }
 
     private void EndSlide()
     {
         // Invoke the slide end event
         OnSlideEnd?.Invoke(this);
-        
+
         //_slideMesh.SetActive(false);
-        _playerAnimator.SetBool(_isSlidingCheck, IsSliding);
+        if (lowerPlayerAnimator != null)
+            lowerPlayerAnimator.SetBool(LowerSlidingAnimationID, IsSliding);
+        if (upperPlayerAnimator != null)
+            upperPlayerAnimator.SetBool(UpperSlidingAnimationID, IsSliding);
     }
 
     public void ResetSlidePreFire()
