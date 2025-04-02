@@ -187,7 +187,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     private bool CurrentlyUsesStamina => staminaDrains && ParentComponent.AreEnemiesNearby;
 
     public bool IsSprintAnimationPlaying { get; private set; } = false;
-    
+
     #endregion
 
     public event Action OnSprintStart;
@@ -315,6 +315,12 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
            )
             ForceStopSprinting();
 
+        // if (IsSprinting && CurrentMovementScript)
+        // {
+        //     if (CurrentStamina <= 0)
+        //         ForceStopSprinting();
+        // }
+
         // Sprint events
         if (IsSprinting && !_wasPreviouslySprinting)
         {
@@ -326,7 +332,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             OnSprintEnd?.Invoke();
             playerAnimator.SetBool(IsRunningAnimationID, false);
         }
-        
+
         playerAnimator.SetBool(IsGroundedAnimationID, IsGrounded);
     }
 
@@ -788,10 +794,10 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Return if the player cannot sprint
         if (!BasicPlayerMovement.CanSprint)
             return;
-        
+
         // Get the weapon manager
         var weaponManager = ParentComponent.WeaponManager;
-        
+
         // If the equipped gun is firing, don't sprint
         if (weaponManager.EquippedGun != null && weaponManager.EquippedGun.IsFiring)
             return;
@@ -833,16 +839,17 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             ForceSetSprinting(false);
             return;
         }
-        
+
         // Get the weapon manager
         var weaponManager = ParentComponent.WeaponManager;
-        
+
         // If the equipped gun is firing, don't sprint
         if (weaponManager.EquippedGun != null && weaponManager.EquippedGun.IsFiring)
         {
             IsSprintToggled = false;
             return;
         }
+
         // Set the sprinting flag to true
         IsSprintToggled = true;
     }
@@ -924,10 +931,10 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     public void SetSprintAnimationPlaying(bool isSprinting)
     {
         IsSprintAnimationPlaying = isSprinting;
-        
+
         Debug.Log($"Sprint Animation Playing: {isSprinting}");
     }
-    
+
     public void ApplyMovementTypeSettings(PlayerMovementType movementType)
     {
         Debug.Log($"Applying settings for {movementType}");

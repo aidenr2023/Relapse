@@ -9,17 +9,17 @@ public class GunShootRoll : MonoBehaviour
 
     [SerializeField] private float targetAngle = 5f;
     [SerializeField, Min(0)] private float inDuration = 0.125f;
+    [SerializeField, Min(0.0001f)] private float lerpAmount = .1f;
     [SerializeField] private AnimationCurve inCurve;
 
     private GenericGun _attachedGun;
-    private bool _isBound;
 
     private Coroutine _rollCoroutine;
     private float _modifier;
 
     private void Awake()
     {
-        _modifier = 0;
+        SetModifier(0);
 
         // Get the attached gun
         _attachedGun = GetComponent<GenericGun>();
@@ -30,15 +30,11 @@ public class GunShootRoll : MonoBehaviour
 
     private void BindToGun(IGun gun)
     {
-        _isBound = true;
-
         gunEventVariable += StartZoom;
     }
 
     private void RemoveFromGun(IGun gun)
     {
-        _isBound = false;
-
         gunEventVariable -= StartZoom;
     }
 
@@ -57,36 +53,35 @@ public class GunShootRoll : MonoBehaviour
     private IEnumerator RollCoroutine()
     {
         var startTime = Time.time;
-        
+
         var cTarget = UnityEngine.Random.Range(-targetAngle, targetAngle);
 
         // Zoom in based on the curve
         while (Time.time - startTime < inDuration)
         {
-            _modifier = inCurve.Evaluate((Time.time - startTime) / inDuration) * cTarget;
+            var newValue = inCurve.Evaluate((Time.time - startTime) / inDuration) * cTarget;
+            SetModifier(newValue);
+
             yield return null;
         }
 
-        _modifier = cTarget;
+        SetModifier(cTarget);
 
         // Unroll
-        while (!Mathf.Approximately(_modifier, 1))
+        while (!Mathf.Approximately(_modifier, 0))
         {
-            _modifier = Mathf.Lerp(_modifier, 1,
-                CustomFunctions.FrameAmount(.1f, false, false)
-            );
+            var newValue = Mathf.Lerp(_modifier, 0, CustomFunctions.FrameAmount(lerpAmount, false, false));
+            SetModifier(newValue);
 
             yield return null;
         }
 
-        _modifier = 0;
+        SetModifier(0);
     }
 
-    private void Update()
+    private void SetModifier(float value)
     {
-        // if (_isBound)
-        //     gunShootRoll.value = Mathf.Clamp(_modifier, targetAngle, 1);
-        
+        _modifier = value;
         gunShootRoll.value = _modifier;
     }
 }
