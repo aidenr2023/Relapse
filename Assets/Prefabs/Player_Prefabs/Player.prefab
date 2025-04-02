@@ -8572,6 +8572,7 @@ GameObject:
   - component: {fileID: 8186832649319526797}
   - component: {fileID: 7522796460313606878}
   - component: {fileID: 2615253660609893600}
+  - component: {fileID: 6281174626582321564}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -9428,6 +9429,31 @@ MonoBehaviour:
     constantValue: {fileID: 0}
     variable: {fileID: 11400000, guid: be059df3880fbbd4ebb480f96f83335d, type: 2}
   player: {fileID: 3703685084401515452}
+--- !u!114 &6281174626582321564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3703685084401515452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f726db55c294470ebfc9630ab87486f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerOrientation:
+    useConstant: 0
+    constantValue: {fileID: 0}
+    variable: {fileID: 11400000, guid: 80ffaccf1623c85448f0b9100249a8df, type: 2}
+  playerVelocity:
+    useConstant: 0
+    constantValue: {x: 0, y: 0, z: 0}
+    variable: {fileID: 11400000, guid: 3c8fd93338f2e4b438564cf538808009, type: 2}
+  maxSwayAngleLR: 2.5
+  swaySpeedThresholdLR: 18
+  maxSwayAngleFB: 0
+  swaySpeedThresholdFB: 18
+  lerpAmount: 0.25
 --- !u!1 &3710393477995982475
 GameObject:
   m_ObjectHideFlags: 0

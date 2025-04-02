@@ -77,7 +77,7 @@ public class CrawlerEnemy : ComponentScript<EnemyInfo>
         // Change the behavior mode of the brain
         ParentComponent.ParentComponent.Brain.BehaviorMode = (int)attackMode;
 
-        Debug.Log($"Changed attack mode to {attackMode} ({(int)attackMode})", this);
+        // Debug.Log($"Changed attack mode to {attackMode} ({(int)attackMode})", this);
 
         // Set the animator's attack mode integer to the attack mode
         animator.SetInteger(AttackModeAnimationID, (int)attackMode);

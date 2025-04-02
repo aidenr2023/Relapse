@@ -561,17 +561,17 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     {
         // Get the current wall running hit info
         var containsCurrentRay = _wallRunHitInfos.ContainsKey(_currentRay);
-        var currentWallRunHitInfo = containsCurrentRay ? _wallRunHitInfos[_currentRay] : null;
-        var currentRayHit = containsCurrentRay && currentWallRunHitInfo.IsHit;
+        WallRunHitInfo? currentWallRunHitInfo = containsCurrentRay ? _wallRunHitInfos[_currentRay] : null;
+        var currentRayHit = containsCurrentRay && currentWallRunHitInfo.Value.IsHit;
 
         // Determine if the angle is within the tolerance
         var angleWithinTolerance = false;
         if (currentWallRunHitInfo != null)
         {
-            if (currentWallRunHitInfo.LeftRayAngle < currentWallRunHitInfo.RightRayAngle)
-                angleWithinTolerance = Mathf.Abs(currentWallRunHitInfo.LeftRayAngle) <= wallAngleTolerance;
+            if (currentWallRunHitInfo.Value.LeftRayAngle < currentWallRunHitInfo.Value.RightRayAngle)
+                angleWithinTolerance = Mathf.Abs(currentWallRunHitInfo.Value.LeftRayAngle) <= wallAngleTolerance;
             else
-                angleWithinTolerance = Mathf.Abs(currentWallRunHitInfo.RightRayAngle) <= wallAngleTolerance;
+                angleWithinTolerance = Mathf.Abs(currentWallRunHitInfo.Value.RightRayAngle) <= wallAngleTolerance;
         }
 
         // Get the current hit info
@@ -1099,7 +1099,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
     #endregion
 
-    private class WallRunHitInfo
+    private struct WallRunHitInfo
     {
         public RaycastHit HitInfo { get; }
         public bool IsHit { get; }
