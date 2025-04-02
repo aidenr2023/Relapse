@@ -130,7 +130,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
     {
         OnGunEquipped += (manager, gun) => gun.OnShoot += PlayFireAnimationOnShoot;
         OnGunEquipped += (manager, gun) => gun.OnShoot += InvokePlayerShootOnShoot;
-        
+
         OnGunRemoved += (manager, gun) => gun.OnShoot -= PlayFireAnimationOnShoot;
         OnGunRemoved += (manager, gun) => gun.OnShoot -= InvokePlayerShootOnShoot;
 
@@ -403,7 +403,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         var playerMovement = Player.PlayerController as PlayerMovementV2;
 
         // If the player is currently sprinting, force them to stop and return
-        if (playerMovement != null && playerMovement.IsSprinting)
+        if (playerMovement != null && playerMovement.IsSprinting && playerMovement.IsGrounded &&
+            playerMovement.CurrentMovementScript is BasicPlayerMovement
+           )
         {
             playerMovement.ForceStopSprinting();
 
