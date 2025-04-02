@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 
@@ -43,6 +44,10 @@ public class InteractText : MonoBehaviour
 
     private bool _resetPosition;
 
+    private float _currentAlpha;
+
+    private Coroutine _updateCoroutine;
+
     #endregion
 
     private void Awake()
@@ -51,40 +56,112 @@ public class InteractText : MonoBehaviour
         _desiredOpacity = 0;
 
         // Set the canvas group's alpha to 0
-        canvasGroup.alpha = 0;
+        _currentAlpha = 0;
+        canvasGroup.alpha = _currentAlpha;
 
         // Create the position reset timer
         _positionResetTimer = new CountdownTimer(.5f);
         _positionResetTimer.OnTimerEnd += () => _resetPosition = true;
     }
 
-    private void Update()
+    private void OnEnable()
     {
-        // Update the position reset timer
-        _positionResetTimer.SetActive(_currentInteractable == null);
-        _positionResetTimer.Update(Time.deltaTime);
+        // Stop the update coroutine if it exists
+        if (_updateCoroutine != null)
+            StopCoroutine(_updateCoroutine);
 
-        // Update the information of the current interactable
-        UpdateInformation();
-
-        // Update the position of this game object
-        UpdatePosition();
-
-        // Update the current controls text
-        UpdateCurrentControlsText();
-
-        // Update the desired opacity
-        _desiredOpacity = UpdateDesiredOpacity();
-
-        // Lerp the alpha of the canvas group's alpha to the desired opacity
-        canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, _desiredOpacity, CustomFunctions.FrameAmount(opacityLerpAmount, false, true));
-
-        if (Mathf.Abs(canvasGroup.alpha - _desiredOpacity) < LERP_THRESHOLD)
-            canvasGroup.alpha = _desiredOpacity;
-
-        // Set the text of the interact text to the current interactable's interact text
-        UpdateText();
+        _updateCoroutine = StartCoroutine(UpdateCoroutine());
     }
+
+    private void OnDisable()
+    {
+        // Stop the update coroutine if it exists
+        if (_updateCoroutine != null)
+        {
+            StopCoroutine(_updateCoroutine);
+            _updateCoroutine = null;
+        }
+    }
+
+    private IEnumerator UpdateCoroutine()
+    {
+        var frameEndTime = float.MinValue;
+        var targetFrameTime = 1 / 60f;
+
+        while (isActiveAndEnabled)
+        {
+            // Wait until the FPS target time has passed
+            yield return new WaitUntil(() => Time.unscaledTime - frameEndTime >= targetFrameTime);
+
+            Debug.Log($"Update in interact text");
+
+            var deltaTime = Time.unscaledTime - frameEndTime;
+
+            // Update the position reset timer
+            _positionResetTimer.SetActive(_currentInteractable == null);
+            _positionResetTimer.Update(deltaTime);
+
+            // Update the information of the current interactable
+            UpdateInformation();
+
+            // Update the position of this game object
+            UpdatePosition(deltaTime);
+
+            // Update the current controls text
+            UpdateCurrentControlsText();
+
+            // Update the desired opacity
+            _desiredOpacity = UpdateDesiredOpacity();
+
+            // Lerp the alpha of the canvas group's alpha to the desired opacity
+            _currentAlpha = Mathf.Lerp(_currentAlpha, _desiredOpacity,
+                CustomFunctions.FrameAmount(opacityLerpAmount, deltaTime, false)
+            );
+
+            if (Mathf.Abs(_currentAlpha - _desiredOpacity) < LERP_THRESHOLD)
+                _currentAlpha = _desiredOpacity;
+
+            if (canvasGroup.alpha != _currentAlpha)
+                canvasGroup.alpha = _currentAlpha;
+
+            // Set the text of the interact text to the current interactable's interact text
+            UpdateText();
+
+            // Store the time that the frame ended
+            frameEndTime = Time.unscaledTime;
+        }
+
+        yield return null;
+    }
+
+    // private void Update()
+    // {
+    //     // Update the position reset timer
+    //     _positionResetTimer.SetActive(_currentInteractable == null);
+    //     _positionResetTimer.Update(Time.deltaTime);
+    //
+    //     // Update the information of the current interactable
+    //     UpdateInformation();
+    //
+    //     // Update the position of this game object
+    //     UpdatePosition();
+    //
+    //     // Update the current controls text
+    //     UpdateCurrentControlsText();
+    //
+    //     // Update the desired opacity
+    //     _desiredOpacity = UpdateDesiredOpacity();
+    //
+    //     // Lerp the alpha of the canvas group's alpha to the desired opacity
+    //     canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, _desiredOpacity,
+    //         CustomFunctions.FrameAmount(opacityLerpAmount, false, true));
+    //
+    //     if (Mathf.Abs(canvasGroup.alpha - _desiredOpacity) < LERP_THRESHOLD)
+    //         canvasGroup.alpha = _desiredOpacity;
+    //
+    //     // Set the text of the interact text to the current interactable's interact text
+    //     UpdateText();
+    // }
 
     private void LateUpdate()
     {
@@ -122,7 +199,7 @@ public class InteractText : MonoBehaviour
         _positionResetTimer.Reset();
     }
 
-    private void UpdatePosition()
+    private void UpdatePosition(float deltaTime)
     {
         var calculatedOffset = offset;
 
@@ -132,11 +209,12 @@ public class InteractText : MonoBehaviour
             // _previousPosition = _currentInteractable.GameObject.transform.position;
             _previousPosition = _playerInteraction.InteractionHitInfo.point;
 
+            var pivotTransform = _playerInteraction.Player.PlayerController.CameraPivot.transform;
+
             // Calculate the offset
-            var xOffset = _playerInteraction.Player.PlayerController.CameraPivot.transform.right.normalized * offset.x;
-            var yOffset = _playerInteraction.Player.PlayerController.CameraPivot.transform.up.normalized * offset.y;
-            var zOffset = _playerInteraction.Player.PlayerController.CameraPivot.transform.forward.normalized *
-                          offset.z;
+            var xOffset = pivotTransform.right.normalized * offset.x;
+            var yOffset = pivotTransform.up.normalized * offset.y;
+            var zOffset = pivotTransform.forward.normalized * offset.z;
 
             calculatedOffset = xOffset + yOffset + zOffset;
 
@@ -163,7 +241,10 @@ public class InteractText : MonoBehaviour
         var newPosition = _previousPosition + calculatedOffset + new Vector3(0, sinePosition, 0);
 
         // Set the position of this game object to the current interactable's position
-        transform.position = Vector3.Lerp(transform.position, newPosition, CustomFunctions.FrameAmount(positionLerpAmount, false, true));
+        // TODO: Find a way to optimize this
+        transform.position = Vector3.Lerp(transform.position, newPosition,
+            CustomFunctions.FrameAmount(positionLerpAmount, deltaTime, false)
+        );
     }
 
     private float UpdateDesiredOpacity()
@@ -202,14 +283,29 @@ public class InteractText : MonoBehaviour
 
     private void UpdateCurrentControlsText()
     {
-        // Disable all the controls text
-        pcControls?.SetActive(false);
-        gamepadControls?.SetActive(false);
+        // // Disable all the controls text
+        // if (pcControls != null && pcControls.activeSelf)
+        //     pcControls.SetActive(false);
+        //
+        // if (gamepadControls != null && gamepadControls.activeSelf)
+        //     gamepadControls?.SetActive(false);
 
         // Set the current controls text based on the current control scheme
         if (InputManager.Instance.CurrentControlScheme == InputManager.ControlSchemeType.Gamepad)
-            gamepadControls?.SetActive(true);
+        {
+            if (gamepadControls != null && !gamepadControls.activeSelf)
+                gamepadControls?.SetActive(true);
+
+            if (pcControls != null && pcControls.activeSelf)
+                pcControls?.SetActive(false);
+        }
         else
-            pcControls?.SetActive(true);
+        {
+            if (gamepadControls != null && gamepadControls.activeSelf)
+                gamepadControls?.SetActive(false);
+
+            if (pcControls != null && !pcControls.activeSelf)
+                pcControls?.SetActive(true);
+        }
     }
 }

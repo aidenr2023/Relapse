@@ -73,6 +73,13 @@ public static class CustomFunctions
         return deltaTime / frameAmount * lerpAmount;
     }
 
+    public static float FrameAmount(float lerpAmount, float deltaTime, bool isFixed)
+    {
+        var frameAmount = isFixed ? FIXED_FRAME_AMOUNT : DEFAULT_FRAME_AMOUNT;
+
+        return deltaTime / frameAmount * lerpAmount;
+    }
+
     public static void DrawArrow(
         Vector3 position, Vector3 forward,
         float arrowLength = 3, float arrowYOffset = 2, float arrowAngleSize = 30
