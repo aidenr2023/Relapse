@@ -302,24 +302,35 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Update the stamina
         UpdateStamina();
 
-        // Force the player to stop sprinting if they are not allowed to sprint
-        if (IsSprinting &&
-            (
-                CurrentStamina <= 0 ||
-                MovementInput.magnitude < .125f ||
-                !BasicPlayerMovement.CanSprint ||
-                Rigidbody.velocity.magnitude < 1f
-            ) &&
-            CurrentMovementScript == BasicPlayerMovement &&
-            IsGrounded
-           )
-            ForceStopSprinting();
+        // if (IsSprinting &&
+        //     (
+        //         CurrentStamina <= 0 ||
+        //         MovementInput.magnitude < .125f ||
+        //         !BasicPlayerMovement.CanSprint ||
+        //         Rigidbody.velocity.magnitude < 1f
+        //     ) &&
+        //     CurrentMovementScript == BasicPlayerMovement &&
+        //     IsGrounded
+        //    )
+        //     ForceStopSprinting();
 
-        // if (IsSprinting && CurrentMovementScript)
-        // {
-        //     if (CurrentStamina <= 0)
-        //         ForceStopSprinting();
-        // }
+        // Force the player to stop sprinting if they are not allowed to sprint
+        if (IsSprinting && CurrentMovementScript == BasicPlayerMovement)
+        {
+            if (!BasicPlayerMovement.CanSprint)
+                ForceStopSprinting();
+            
+            if (CurrentStamina <= 0)
+                ForceStopSprinting();
+            
+            if (MovementInput.magnitude < .125f)
+                ForceStopSprinting();
+            
+            if (Rigidbody.velocity.magnitude < 1f)
+                ForceStopSprinting();
+        }
+        
+        Debug.Log($"SPRINTING: {_isSprinting} || {IsSprintToggled}");
 
         // Sprint events
         if (IsSprinting && !_wasPreviouslySprinting)
@@ -864,7 +875,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             return;
         }
 
-        _isSprinting = true;
+        // _isSprinting = true;
         IsSprintToggled = true;
     }
 
@@ -975,6 +986,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         var lateralVelocity = new Vector2(_rigidbody.velocity.x, _rigidbody.velocity.z);
 
         sb.AppendLine($"Player:");
+        sb.AppendLine($"\tSprinting: [{IsSprinting}] {_isSprinting} || {IsSprintToggled}");
         sb.AppendLine($"\tPosition: {transform.position}");
         sb.AppendLine($"\tVelocity: {_rigidbody.velocity} ({lateralVelocity.magnitude:0.0000})");
         sb.AppendLine($"\tGrounded: {IsGrounded}");

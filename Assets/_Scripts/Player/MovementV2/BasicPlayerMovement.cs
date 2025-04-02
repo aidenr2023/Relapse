@@ -195,7 +195,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
         // Reset the parent component's isSprintToggled flag if there is no forward input
         if (_movementInput == Vector2.zero)
-            ParentComponent.IsSprintToggled = false;
+            ParentComponent.ForceSetSprinting(false);
     }
 
     private void OnMoveCanceled(InputAction.CallbackContext obj)

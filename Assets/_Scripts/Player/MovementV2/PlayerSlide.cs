@@ -139,7 +139,8 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
             return;
 
         // Force sprinting to be true
-        ParentComponent.IsSprintToggled = true;
+        // ParentComponent.IsSprintToggled = true;
+        ParentComponent.ForceSetSprinting(true);
 
         // Force the slide to end
         EndSlide();
@@ -191,7 +192,8 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
     private void OnJumpPerformed(InputAction.CallbackContext obj)
     {
         // Force the slide to end
-        EndSlide();
+        if (_isSliding)
+            EndSlide();
 
         // Call the on jump performed from the basic player movement script
         ParentComponent.BasicPlayerMovement.OnJumpPerformed(obj);
@@ -549,6 +551,9 @@ public class PlayerSlide : PlayerMovementScript, IUsesInput
 
     private void EndSlide()
     {
+        if (!_isSliding)
+            return;
+        
         // Invoke the slide end event
         OnSlideEnd?.Invoke(this);
 
