@@ -223,7 +223,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0, g: 0.952054, b: 1, a: 1}
+      maxColor: {r: 0.28627455, g: 0.88692766, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -14656,6 +14656,14 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 2632398284421239447}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c0b9d3004ed166c438e55491f6ec83b2,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5380425068080611701}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: c0b9d3004ed166c438e55491f6ec83b2,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 479496211350313021}
   m_SourcePrefab: {fileID: 100100000, guid: c0b9d3004ed166c438e55491f6ec83b2, type: 3}
 --- !u!4 &8634644446537043181 stripped
 Transform:
@@ -14691,3 +14699,66 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 7750864410132020719, guid: c0b9d3004ed166c438e55491f6ec83b2, type: 3}
+--- !u!114 &5380425068080611701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8980102669785077335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 068ce04631044bf9bcc1d7f44c7c5f60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  showOutline: 1
+--- !u!114 &479496211350313021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8980102669785077335}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b3ecd20a3cb39945b889bdb01195a9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  respawnPosition: {fileID: 0}
+  isProximity: 1
+  proximityRange: 15
+  checkpointCollectedSound:
+    clip: {fileID: 0}
+    soundType: 1
+    volume: 1
+    isPersistent: 0
+    isLooping: 0
+    pitch: 1
+    spatialBlend: 1
+  onInteraction:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5579289564406500347}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 6166149893974871345}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
