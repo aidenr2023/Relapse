@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-4401855215323640509
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 7
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: AnimatedGraffiti Variant
+  m_Shader: {fileID: -6465566751694194690, guid: 2b4865e36ec7f5f49a11e33c265c2e9a,
+    type: 3}
+  m_Parent: {fileID: 2100000, guid: 5ca571cafbc28a84a8775a294906811f, type: 2}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _GraffitiTexture:
+        m_Texture: {fileID: 2800000, guid: 91ac0c98cb4726949b8a8b0c3423e6c5, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AnimationSpeed: 2
+    - _CellDensity: 3.07
+    - _EffectOpacity: 0.87
+    - _MaskingFuzziness: 2.97
+    - _MaskingStrength: 1.8
+    - _SineTIme: 30
+    - _VoronoiEdge: 0.73
+    m_Colors:
+    - _BaseColor: {r: 4.7038727, g: 4.7038727, b: 4.7038727, a: 0}
+    - _GraffitiColor: {r: 1, g: 0.07366451, b: 0, a: 0}
+    - _MaskColor: {r: 0.8980393, g: 0.34509805, b: 0.2627451, a: 0}
+    - _OutlineColor: {r: 1.5866958, g: 1.5866958, b: 1.5866958, a: 0}
+  m_BuildTextureStacks: []
