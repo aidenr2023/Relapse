@@ -46,8 +46,6 @@ public class NewEnemyMovement : ComponentScript<Enemy>
     private NavMeshAgent _navMeshAgent;
     private Rigidbody _rigidbody;
 
-    private BehaviorActionMove.MoveAction _currentMoveAction;
-
     private bool _forceUpdateDestination;
     private Vector3 _targetPosition;
     private float _targetVelocity;
@@ -68,10 +66,10 @@ public class NewEnemyMovement : ComponentScript<Enemy>
     public TokenManager<float> MovementSpeedTokens { get; private set; }
 
     private bool IsStrafing =>
-        _currentMoveAction == BehaviorActionMove.MoveAction.StrafeLeft ||
-        _currentMoveAction == BehaviorActionMove.MoveAction.StrafeRight ||
-        _currentMoveAction == BehaviorActionMove.MoveAction.StrafeForward ||
-        _currentMoveAction == BehaviorActionMove.MoveAction.StrafeBackward;
+        CurrentMoveAction == BehaviorActionMove.MoveAction.StrafeLeft ||
+        CurrentMoveAction == BehaviorActionMove.MoveAction.StrafeRight ||
+        CurrentMoveAction == BehaviorActionMove.MoveAction.StrafeForward ||
+        CurrentMoveAction == BehaviorActionMove.MoveAction.StrafeBackward;
 
     public float MovementSpeed
     {
@@ -80,6 +78,8 @@ public class NewEnemyMovement : ComponentScript<Enemy>
     }
 
     public HashSet<object> RotationDisableTokens { get; } = new();
+    
+    public BehaviorActionMove.MoveAction CurrentMoveAction { get; private set; }
 
     #endregion
 
@@ -121,7 +121,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         // Determine the movement speed
         DetermineMovementSpeed(_brain.CurrentMoveAction.moveAction);
 
-        if (IsStrafing)
+        if (IsStrafing || CurrentMoveAction == BehaviorActionMove.MoveAction.Idle)
             RotateWhileStrafing();
 
         // Update the animator
@@ -181,7 +181,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         // Explicitly set directions during strafing
         if (IsStrafing)
         {
-            switch (_currentMoveAction)
+            switch (CurrentMoveAction)
             {
                 case BehaviorActionMove.MoveAction.StrafeLeft:
                     _localVelX = -1;
@@ -340,7 +340,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
     private void UpdateMovement()
     {
         // Determine if the destination needs to be updated
-        var needsToUpdateDestination = _forceUpdateDestination || DetermineNeedsToUpdateDestination(_currentMoveAction);
+        var needsToUpdateDestination = _forceUpdateDestination || DetermineNeedsToUpdateDestination(CurrentMoveAction);
 
         // Determine the update function
         var updateFunction = DetermineUpdateFunction(_brain.CurrentMoveAction.moveAction);
@@ -494,6 +494,9 @@ public class NewEnemyMovement : ComponentScript<Enemy>
     private void UpdateIdle(bool needsToUpdateDestination)
     {
         // Do nothing
+        
+        // Set the destination to the current position
+        _navMeshAgent.SetDestination(transform.position);
     }
 
     #endregion
@@ -515,10 +518,10 @@ public class NewEnemyMovement : ComponentScript<Enemy>
     private void ChangeMovementState(BehaviorActionMove.MoveAction moveAction)
     {
         // Return if the move action is the same as the current move action
-        if (moveAction == _currentMoveAction)
+        if (moveAction == CurrentMoveAction)
             return;
 
-        _currentMoveAction = moveAction;
+        CurrentMoveAction = moveAction;
 
         // Set the force update destination to true
         _forceUpdateDestination = true;

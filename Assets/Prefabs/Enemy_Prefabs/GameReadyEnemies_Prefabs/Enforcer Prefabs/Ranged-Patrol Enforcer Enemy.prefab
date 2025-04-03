@@ -744,7 +744,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   updatesPerSecond: 4
   movementSpeed: 9
-  strafeMultiplier: 0.75
+  strafeMultiplier: 1
   strafeRotationLerpAmount: 0.075
   animator: {fileID: 8452795996763678825}
   walkAnimationThreshold: 1
@@ -769,6 +769,7 @@ MonoBehaviour:
   attackCountBeforeRelocate: 3
   minRelocateTime: 1
   maxRelocateTime: 3
+  cooldownAfterAttackTime: 1
 --- !u!114 &3684278755477651946
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -832,7 +833,7 @@ MonoBehaviour:
   animator: {fileID: 8452795996763678825}
   detectionFireDelay: 0.5
   fireRange: 30
-  projectileSpeed: 36
+  projectileSpeed: 42
   attackCooldown: 0.75
   projectileLifetime: 10
   enemyBulletPrefab: {fileID: 2599755549081965391, guid: 8dfd2038ec9f3244a957428987fd8f79,
