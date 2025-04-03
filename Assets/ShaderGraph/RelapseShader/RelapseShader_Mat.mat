@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: HalftoneLines_Mat
-  m_Shader: {fileID: -6465566751694194690, guid: 1f9272d0e8f2b564ba2439ccced95ec2,
+  m_Name: RelapseShader_Mat
+  m_Shader: {fileID: -6465566751694194690, guid: 4b9260890d7a93a458828fd9a5213f33,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -24,6 +24,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _SampleTexture2D_050f2d69eda44b149eca3878ae1dfbfc_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 68355a6065208d24cbb2e87cf01f871c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -38,11 +42,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BrightnessCompensation: 0.004
-    - _Density: 256
-    - _Opacity: 1
-    - _Rotation: 45
-    - _Threshold: 0.02
+    - _Color: 0
+    - _Fuzziness: 0.3
+    - _LerpAmount: 0.384
+    - _Range: 1.03
     m_Colors:
-    - _Color: {r: 0.11320752, g: 0.11320752, b: 0.11320752, a: 0}
+    - _Color: {r: 0.15826897, g: 0, b: 0.7924528, a: 0}
+    - _MaskColor: {r: 0.9, g: 0.9, b: 0.9, a: 0}
+    - _OverlayColor: {r: 0.3647059, g: 0.31764707, b: 0.9490196, a: 0}
   m_BuildTextureStacks: []

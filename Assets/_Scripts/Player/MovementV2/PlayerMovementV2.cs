@@ -330,7 +330,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
                 ForceStopSprinting();
         }
         
-        Debug.Log($"SPRINTING: {_isSprinting} || {IsSprintToggled}");
+        // Debug.Log($"SPRINTING: {_isSprinting} || {IsSprintToggled}");
 
         // Sprint events
         if (IsSprinting && !_wasPreviouslySprinting)

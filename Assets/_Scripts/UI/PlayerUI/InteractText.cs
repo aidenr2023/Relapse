@@ -93,7 +93,7 @@ public class InteractText : MonoBehaviour
             // Wait until the FPS target time has passed
             yield return new WaitUntil(() => Time.unscaledTime - frameEndTime >= targetFrameTime);
 
-            Debug.Log($"Update in interact text");
+            // Debug.Log($"Update in interact text");
 
             var deltaTime = Time.unscaledTime - frameEndTime;
 

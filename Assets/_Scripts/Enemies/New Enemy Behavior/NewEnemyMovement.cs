@@ -134,7 +134,7 @@ public class NewEnemyMovement : ComponentScript<Enemy>
         // Return if there is no animator
         if (animator == null)
         {
-            Debug.LogError($"{gameObject.name} does not have an animator!", this);
+            // Debug.LogError($"{gameObject.name} does not have an animator!", this);
             return;
         }
 
