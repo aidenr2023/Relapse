@@ -557,6 +557,7 @@ GameObject:
   - component: {fileID: 6522784205110466442}
   - component: {fileID: 2314050373250607455}
   - component: {fileID: 1801652894398229600}
+  - component: {fileID: 35842365285304145}
   - component: {fileID: 3684278755477651946}
   - component: {fileID: 7294235095540251026}
   - component: {fileID: 23606618357390537}
@@ -726,7 +727,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   updatesPerSecond: 4
   behaviorStates:
-  - {fileID: 11400000, guid: 3cf171563c78fe543bbdc4678b389e5e, type: 2}
+  - {fileID: 11400000, guid: c0d428ae5fd4e394a93e417f127de19e, type: 2}
+  - {fileID: 11400000, guid: 27e3304cf9d2e364594e63e45f39815f, type: 2}
   - {fileID: 11400000, guid: 99c028529df07b54aac2cab4884cfb6f, type: 2}
 --- !u!114 &1801652894398229600
 MonoBehaviour:
@@ -741,7 +743,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   updatesPerSecond: 4
-  movementSpeed: 7
+  movementSpeed: 9
   strafeMultiplier: 0.75
   strafeRotationLerpAmount: 0.075
   animator: {fileID: 8452795996763678825}
@@ -751,6 +753,22 @@ MonoBehaviour:
   animationStrafeSpeedCoefficient: 0.25
   animationStrafeBackSpeedCoefficient: 0.25
   animationStrafeForwardSpeedCoefficient: 0.25
+--- !u!114 &35842365285304145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9186631886560993377}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 513f5488a7c349a0bf968273e3afbbef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shootingEnemyAttack: {fileID: 23606618357390537}
+  attackCountBeforeRelocate: 3
+  minRelocateTime: 1
+  maxRelocateTime: 3
 --- !u!114 &3684278755477651946
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -813,9 +831,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 8452795996763678825}
   detectionFireDelay: 0.5
-  fireRange: 20
-  projectileSpeed: 32
-  attackCooldown: 3
+  fireRange: 30
+  projectileSpeed: 36
+  attackCooldown: 0.75
   projectileLifetime: 10
   enemyBulletPrefab: {fileID: 2599755549081965391, guid: 8dfd2038ec9f3244a957428987fd8f79,
     type: 3}

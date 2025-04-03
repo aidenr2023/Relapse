@@ -40,6 +40,8 @@ public class ShootingEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     #endregion
 
+    public Action<ShootingEnemyAttack> onAttack;
+    
     #region Getters
 
     public GameObject GameObject => gameObject;
@@ -152,5 +154,8 @@ public class ShootingEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
     {
         // Shoot at the player
         CreateProjectile(index);
+        
+        // Invoke the on attack event
+        onAttack?.Invoke(this);
     }
 }

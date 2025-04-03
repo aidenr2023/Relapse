@@ -46,6 +46,8 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
     #region Int Variables
 
     public int BehaviorMode { get; set; }
+    
+    public bool ForceMovementUpdate { get; set; }
 
     #endregion
 
@@ -182,6 +184,9 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
 
         // Update the move cooldown
         _moveCooldown.SetMaxTimeAndReset(cooldownTime);
+        
+        if (ForceMovementUpdate)
+            ForceMovementUpdate = false;
     }
 
     // TODO: Account for attacks as well
@@ -246,14 +251,14 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
 
         // Wait between 0 and 1 seconds to prevent too many enemies from updating at the same time
         yield return new WaitForSeconds(UnityEngine.Random.Range(0f, 1f));
-
+        
         while (true)
         {
             // Determine the behavior state
             DetermineBehaviorState();
 
             // Determine the move action
-            if (_moveCooldown.IsComplete)
+            if (_moveCooldown.IsComplete || ForceMovementUpdate)
                 DetermineMoveAction();
 
             // Determine the attack action
@@ -271,7 +276,8 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
             _moveCooldown.Update(updateDelay);
             _attackCooldown.Update(updateDelay);
 
-            yield return new WaitForSeconds(updateDelay);
+            var updateEndTime = Time.time + updateDelay;
+            yield return new WaitWhile(() => Time.time <= updateEndTime && !ForceMovementUpdate);
         }
     }
 
