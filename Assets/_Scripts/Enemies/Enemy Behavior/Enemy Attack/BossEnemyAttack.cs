@@ -293,4 +293,13 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
         // Disable the gun attack
         bossGunBehavior.IsActive = false;
     }
+
+    public void ForceStopUpdateCoroutine()
+    {
+        if (_updateCoroutine == null) 
+            return;
+        
+        StopCoroutine(_updateCoroutine);
+        _updateCoroutine = null;
+    }
 }

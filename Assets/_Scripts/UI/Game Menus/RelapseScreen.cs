@@ -185,8 +185,8 @@ public class RelapseScreen : GameMenu
                 new LevelSectionSceneInfo[] { }
             );
 
-            Debug.Log(
-                $"Respawn at checkpoint: {CheckpointManager.Instance.CurrentCheckpointInfo.levelSectionSceneInfo.SectionScene.SceneName}");
+            // Debug.Log(
+            //     $"Respawn at checkpoint: {CheckpointManager.Instance.CurrentCheckpointInfo.levelSectionSceneInfo.SectionScene.SceneName}");
 
             // Load the scene asynchronously
             AsyncSceneManager.Instance.LoadMultipleScenesAsynchronously(

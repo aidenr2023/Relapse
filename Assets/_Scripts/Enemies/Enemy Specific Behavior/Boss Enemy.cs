@@ -20,6 +20,7 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
     [SerializeField] private BossPhaseInfo[] bossPhases;
 
     [SerializeField] private UnityEvent onGoodEnding;
+    [SerializeField] private UnityEvent onBadEndingDialogueStart;
     [SerializeField] private UnityEvent onBadEnding;
 
     [SerializeField] private MultipleWorldDialogueTrigger dialogueTrigger;
@@ -152,15 +153,18 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
 
         // Unsubscribe from the onRelapseStart event
         onRelapseStart.Value.RemoveListener(PlayRelapseDialogue);
-        
+
         // Add an invincibility token
         MakeInvincible();
 
         // Set the boss behavior mode to the bad ending phase
         bossEnemyAttack.OnBadEndingStarted();
-        
+
         // Make the player invincible
         Player.Instance?.PlayerInfo.AddInvincibilityToken(this);
+        
+        // Invoke the bad ending dialogue start event
+        onBadEndingDialogueStart?.Invoke();
     }
 
     public string GetDebugText()
@@ -174,6 +178,20 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
         sb.AppendLine($"\tIs Invincible: {ParentComponent.IsInvincible}");
 
         return sb.ToString();
+    }
+
+    public void KillAllOtherEnemies()
+    {
+        // Get all other enemies 
+        var otherEnemies= Enemy.Enemies.Where(n => n != ParentComponent.ParentComponent).ToArray();
+        
+        // Kill all other enemies
+        foreach (var enemy in otherEnemies)
+        {
+            Debug.Log($"Killing ALL ENEMIES");
+            
+            enemy.EnemyInfo.ChangeHealth(-enemy.EnemyInfo.CurrentHealth, enemy.EnemyInfo, bossEnemyAttack, transform.position, false);
+        }
     }
 
     [Serializable]
