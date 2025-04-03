@@ -8573,6 +8573,7 @@ GameObject:
   - component: {fileID: 7522796460313606878}
   - component: {fileID: 2615253660609893600}
   - component: {fileID: 6281174626582321564}
+  - component: {fileID: 8055355999978108359}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -9454,6 +9455,70 @@ MonoBehaviour:
   maxSwayAngleFB: 0
   swaySpeedThresholdFB: 18
   lerpAmount: 0.25
+--- !u!114 &8055355999978108359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3703685084401515452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bc2480d8a2147bab089bf369602a10a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerRelapseStart: {fileID: 11400000, guid: 6ab89f78bb864784da5e61504cb99d44, type: 2}
+  playerRelapseEnd: {fileID: 11400000, guid: 1c0303ce4a18a934eb290e538ab34657, type: 2}
+  fullScreenPassRendererFeature: {fileID: 6740940473436459916, guid: c40be3174f62c4acf8c1216858c64956,
+    type: 2}
+  fadeInCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.5
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  fadeOutCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &3710393477995982475
 GameObject:
   m_ObjectHideFlags: 0
