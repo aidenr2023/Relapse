@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 [RequireComponent(typeof(UniqueId), typeof(InteractableMaterialManager))]
-public class VendorInteractable : MonoBehaviour, IInteractable, ILevelLoaderInfo
+public class VendorInteractable : MonoBehaviour, IVendorInteractable, ILevelLoaderInfo
 {
     #region Serialized Fields
 
@@ -60,7 +60,7 @@ public class VendorInteractable : MonoBehaviour, IInteractable, ILevelLoaderInfo
 
         afterTalkingOnce.Invoke();
         HasTalkedOnce = true;
-        
+
         Debug.Log($"INVOKING THE EVENT AFTER TALKING ONCE");
     }
 

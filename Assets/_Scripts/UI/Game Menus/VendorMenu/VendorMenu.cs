@@ -75,7 +75,7 @@ public class VendorMenu : GameMenu
     private bool _playTutorialAfterClose;
     private PowerScriptableObject _purchasedPower;
     
-    private VendorInteractable _vendorInteractable;
+    private IVendorInteractable _vendorInteractable;
 
     #endregion
 
@@ -381,7 +381,7 @@ public class VendorMenu : GameMenu
         }
     }
 
-    public void StartVendor(VendorScriptableObject vendor, VendorInteractable vendorInteractable)
+    public void StartVendor(VendorScriptableObject vendor, IVendorInteractable vendorInteractable)
     {
         // Set the current vendor
         _currentVendor = vendor;
