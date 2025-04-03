@@ -150,7 +150,7 @@ public class DrunkardEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         Explode();
     }
 
-    private void Explode()
+    public void Explode()
     {
         // Stop any active coroutines
         if (_updateCoroutine != null)

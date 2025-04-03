@@ -14,7 +14,8 @@ public class DrunkardEnemy : ComponentScript<EnemyInfo>
     {
         // Subscribe to the OnDamaged event
         ParentComponent.OnDamaged += ActivatePhaseChange;
-
+        ParentComponent.OnDamaged += ExplodeWhenTakingFireball;
+        
         if (drunkardParticles != null)
         {
             // Stop the particles
@@ -34,6 +35,15 @@ public class DrunkardEnemy : ComponentScript<EnemyInfo>
 
         // Force run the activate phase change method to check if the phase change should be activated
         ActivatePhaseChange(null, null);
+    }
+
+    private void ExplodeWhenTakingFireball(object sender, HealthChangedEventArgs args)
+    {
+        if (args.DamagerObject is not Fireball fireball)
+            return;
+        
+        // Explode
+        drunkardEnemyAttack.Explode();
     }
 
     private void ActivatePhaseChange(object sender, HealthChangedEventArgs e)
