@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections;
 using TMPro;
+using Unity.Burst;
+using Unity.Jobs;
 using UnityEngine;
+using UnityEngine.Jobs;
 
 public class InteractText : MonoBehaviour
 {
@@ -46,12 +49,15 @@ public class InteractText : MonoBehaviour
 
     private float _currentAlpha;
 
-    private Coroutine _updateCoroutine;
+    private TransformAccessArray _transformAccess;
+    private JobHandle _jobHandle;
 
     #endregion
 
     private void Awake()
     {
+        _transformAccess = new TransformAccessArray(new[] { transform }, 1);
+
         // Set the initial desired opacity to 0
         _desiredOpacity = 0;
 
@@ -64,109 +70,48 @@ public class InteractText : MonoBehaviour
         _positionResetTimer.OnTimerEnd += () => _resetPosition = true;
     }
 
-    private void OnEnable()
+    private void OnDestroy()
     {
-        // Stop the update coroutine if it exists
-        if (_updateCoroutine != null)
-            StopCoroutine(_updateCoroutine);
-
-        _updateCoroutine = StartCoroutine(UpdateCoroutine());
+        // Clean up the transform access array
+        _transformAccess.Dispose();
     }
 
-    private void OnDisable()
+    private void Update()
     {
-        // Stop the update coroutine if it exists
-        if (_updateCoroutine != null)
-        {
-            StopCoroutine(_updateCoroutine);
-            _updateCoroutine = null;
-        }
+        // Update the position reset timer
+        _positionResetTimer.SetActive(_currentInteractable == null);
+        _positionResetTimer.Update(Time.deltaTime);
+    
+        // Update the information of the current interactable
+        UpdateInformation();
+    
+        // Update the position of this game object
+        UpdatePosition(Time.deltaTime);
+    
+        // Update the current controls text
+        UpdateCurrentControlsText();
+    
+        // Update the desired opacity
+        _desiredOpacity = UpdateDesiredOpacity();
+    
+        // Lerp the alpha of the canvas group's alpha to the desired opacity
+        canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, _desiredOpacity,
+            CustomFunctions.FrameAmount(opacityLerpAmount, false, true));
+    
+        if (Mathf.Abs(canvasGroup.alpha - _desiredOpacity) < LERP_THRESHOLD)
+            canvasGroup.alpha = _desiredOpacity;
+    
+        // Set the text of the interact text to the current interactable's interact text
+        UpdateText();
     }
-
-    private IEnumerator UpdateCoroutine()
-    {
-        var frameEndTime = float.MinValue;
-        var targetFrameTime = 1 / 60f;
-
-        while (isActiveAndEnabled)
-        {
-            // Wait until the FPS target time has passed
-            yield return new WaitUntil(() => Time.unscaledTime - frameEndTime >= targetFrameTime);
-
-            // Debug.Log($"Update in interact text");
-
-            var deltaTime = Time.unscaledTime - frameEndTime;
-
-            // Update the position reset timer
-            _positionResetTimer.SetActive(_currentInteractable == null);
-            _positionResetTimer.Update(deltaTime);
-
-            // Update the information of the current interactable
-            UpdateInformation();
-
-            // Update the position of this game object
-            UpdatePosition(deltaTime);
-
-            // Update the current controls text
-            UpdateCurrentControlsText();
-
-            // Update the desired opacity
-            _desiredOpacity = UpdateDesiredOpacity();
-
-            // Lerp the alpha of the canvas group's alpha to the desired opacity
-            _currentAlpha = Mathf.Lerp(_currentAlpha, _desiredOpacity,
-                CustomFunctions.FrameAmount(opacityLerpAmount, deltaTime, false)
-            );
-
-            if (Mathf.Abs(_currentAlpha - _desiredOpacity) < LERP_THRESHOLD)
-                _currentAlpha = _desiredOpacity;
-
-            if (canvasGroup.alpha != _currentAlpha)
-                canvasGroup.alpha = _currentAlpha;
-
-            // Set the text of the interact text to the current interactable's interact text
-            UpdateText();
-
-            // Store the time that the frame ended
-            frameEndTime = Time.unscaledTime;
-        }
-
-        yield return null;
-    }
-
-    // private void Update()
-    // {
-    //     // Update the position reset timer
-    //     _positionResetTimer.SetActive(_currentInteractable == null);
-    //     _positionResetTimer.Update(Time.deltaTime);
-    //
-    //     // Update the information of the current interactable
-    //     UpdateInformation();
-    //
-    //     // Update the position of this game object
-    //     UpdatePosition();
-    //
-    //     // Update the current controls text
-    //     UpdateCurrentControlsText();
-    //
-    //     // Update the desired opacity
-    //     _desiredOpacity = UpdateDesiredOpacity();
-    //
-    //     // Lerp the alpha of the canvas group's alpha to the desired opacity
-    //     canvasGroup.alpha = Mathf.Lerp(canvasGroup.alpha, _desiredOpacity,
-    //         CustomFunctions.FrameAmount(opacityLerpAmount, false, true));
-    //
-    //     if (Mathf.Abs(canvasGroup.alpha - _desiredOpacity) < LERP_THRESHOLD)
-    //         canvasGroup.alpha = _desiredOpacity;
-    //
-    //     // Set the text of the interact text to the current interactable's interact text
-    //     UpdateText();
-    // }
 
     private void LateUpdate()
     {
         // Set the previous interactable to the current interactable
         _previousInteractable = _currentInteractable;
+        
+        // Finish the job if it is not completed
+        _jobHandle.Complete();
     }
 
     private void UpdateInformation()
@@ -202,22 +147,22 @@ public class InteractText : MonoBehaviour
     private void UpdatePosition(float deltaTime)
     {
         var calculatedOffset = offset;
-
+    
         // If there is a current interactable, set the previous position to the current interactable's position
         if (_currentInteractable != null)
         {
             // _previousPosition = _currentInteractable.GameObject.transform.position;
             _previousPosition = _playerInteraction.InteractionHitInfo.point;
-
+    
             var pivotTransform = _playerInteraction.Player.PlayerController.CameraPivot.transform;
-
+    
             // Calculate the offset
             var xOffset = pivotTransform.right.normalized * offset.x;
             var yOffset = pivotTransform.up.normalized * offset.y;
             var zOffset = pivotTransform.forward.normalized * offset.z;
-
+    
             calculatedOffset = xOffset + yOffset + zOffset;
-
+    
             // If the previous interactable is null, set the previous position to the current interactable's position
             // Force the transform to the current interactable's position
             if (_resetPosition)
@@ -226,25 +171,35 @@ public class InteractText : MonoBehaviour
                 transform.position = _previousPosition;
                 _resetPosition = false;
             }
-
+    
             const float scaleDistance = 2;
             var scaleAmount = _playerInteraction.InteractionHitInfo.distance / scaleDistance;
-
+    
             // If the player is within a certain range, the offset needs to be scaled down
             if (_playerInteraction.InteractionHitInfo.distance < 2)
                 calculatedOffset *= Mathf.Min(scaleAmount, 1);
         }
-
+    
         var sinePosition = Mathf.Sin(Mathf.PI * floatingBobFrequency * Time.unscaledTime) * floatingBobAmount;
-
+    
         // Calculate the new position
         var newPosition = _previousPosition + calculatedOffset + new Vector3(0, sinePosition, 0);
-
-        // Set the position of this game object to the current interactable's position
-        // TODO: Find a way to optimize this
-        transform.position = Vector3.Lerp(transform.position, newPosition,
+    
+        // // Set the position of this game object to the current interactable's position
+        // transform.position = Vector3.Lerp(transform.position, newPosition,
+        //     CustomFunctions.FrameAmount(positionLerpAmount, deltaTime, false)
+        // );
+    
+        var endPosition = Vector3.Lerp(transform.position, newPosition,
             CustomFunctions.FrameAmount(positionLerpAmount, deltaTime, false)
         );
+    
+        var job = new InteractTextPositionJob
+        {
+            newPosition = endPosition
+        };
+        _jobHandle = job.Schedule(_transformAccess);
+        _jobHandle.Complete();
     }
 
     private float UpdateDesiredOpacity()
@@ -307,5 +262,17 @@ public class InteractText : MonoBehaviour
             if (pcControls != null && !pcControls.activeSelf)
                 pcControls?.SetActive(true);
         }
+    }
+}
+
+[BurstCompile]
+public struct InteractTextPositionJob : IJobParallelForTransform
+{
+    public Vector3 newPosition;
+
+    public void Execute(int index, TransformAccess transform)
+    {
+        // Move the transform to the new position
+        transform.position = newPosition;
     }
 }
