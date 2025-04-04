@@ -6,6 +6,7 @@ using UnityEngine;
 public class MultiDissolver : MonoBehaviour
 {
     private static readonly int DissolveStrengthProperty = Shader.PropertyToID("_DissolveStrength");
+    private static readonly int DissolveBoolProperty = Shader.PropertyToID("_Dissolve");
 
     private const float DISSOLVE_IN_TARGET_STRENGTH = 0;
     private const float DISSOLVE_OUT_TARGET_STRENGTH = 1;
@@ -54,6 +55,11 @@ public class MultiDissolver : MonoBehaviour
 
     private static IEnumerator SetDissolveStrengthCoroutine(Renderer[] renderers, float targetStrength, float duration)
     {
+        // Set the dissolve boolean
+        var useDissolve = targetStrength > 0 ? 1 : 0;
+        foreach (var renderer in renderers)
+            renderer.sharedMaterial.SetInt(DissolveBoolProperty, useDissolve);
+        
         // Clamp the strength to the range [0, 1]
         targetStrength = Mathf.Clamp01(targetStrength);
 
