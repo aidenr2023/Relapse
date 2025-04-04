@@ -7,9 +7,24 @@ using UnityEngine;
 public class HordeModeSpawner : EnemySpawner
 {
     #region Serialized Fields
-    
-    
-    
+
+    [SerializeField] private IntReference currentRoundNumber;
+
+    [SerializeField] private Enemy[] enemyPrefabs;
+
+    [SerializeField] private AnimationCurve roundEnemyCountsCurve;
+
+    [SerializeField] private Transform[] spawnPoints;
+
+    #endregion
+
+    #region Private Fields
+
+    private int _totalEnemiesLeft;
+    private int _remainingWaveEnemies;
+
+    private int _currentWaveIndex;
+
     #endregion
     
     private Action onWaveComplete;
