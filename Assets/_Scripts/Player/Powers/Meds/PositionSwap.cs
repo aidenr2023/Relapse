@@ -11,6 +11,9 @@ public class PositionSwap : MonoBehaviour, IPower
     [SerializeField] private AnimationCurve startTimeScaleCurve;
     [SerializeField] private AnimationCurve endTimeScaleCurve;
 
+    [SerializeField] private ParticleSystem oldPositionParticleSystemPrefab;
+    [SerializeField] [Range(0, 500)] private int particlesCount = 200;
+
     public GameObject GameObject => gameObject;
     public PowerScriptableObject PowerScriptableObject { get; set; }
 
@@ -95,12 +98,14 @@ public class PositionSwap : MonoBehaviour, IPower
         var actorPosition = enemy.GameObject.transform.position;
         
         // Get the forward direction of the enemy
-        var enemyForward = enemy.GameObject.transform.forward;
+        var enemyForward = shooterPosition - actorPosition;
+        enemyForward = new Vector3(enemyForward.x, 0, enemyForward.z).normalized;
         
         // Set the position of the enemy to the shooter's position
         enemy.NewMovement.SetPosition(shooterPosition);
 
-        var curve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+        // Instantiate the old position particle system prefab
+        CreateParticles(shooterPosition);
         
         // Set the position of the actor to the shooter's position
         powerManager.Player.Rigidbody.MovePosition(actorPosition);
@@ -122,6 +127,25 @@ public class PositionSwap : MonoBehaviour, IPower
         
         yield return null;
     }
+    
+    private void CreateParticles(Vector3 position)
+    {
+        // Instantiate the explosion particles at the projectile's position
+        var explosion = Instantiate(oldPositionParticleSystemPrefab, position, Quaternion.identity);
+
+        // Create emit parameters for the explosion particles
+        var emitParams = new ParticleSystem.EmitParams
+        {
+            applyShapeToPosition = true,
+            position = position
+        };
+
+        // Emit the explosion particles
+        explosion.Emit(emitParams, particlesCount);
+
+        // Destroy the explosion particles after the duration of the particles
+        Destroy(explosion.gameObject, explosion.main.duration);
+    } 
 
     #region Active Effects
 
