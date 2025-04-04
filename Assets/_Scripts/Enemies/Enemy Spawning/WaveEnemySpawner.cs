@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -72,7 +71,7 @@ public class WaveEnemySpawner : EnemySpawner
     private void DecrementEnemiesRemaining(object sender, HealthChangedEventArgs e)
     {
         _remainingWaveEnemies--;
-        
+
         _totalEnemiesLeft--;
     }
 
@@ -103,7 +102,25 @@ public class WaveEnemySpawner : EnemySpawner
         // Get the current wave spawn info
         var currentSpawnInfo = waves[waveIndex];
 
-        // Loop through each enemy in the wave
+        StartCoroutine(StaggerSpawn(currentSpawnInfo));
+    }
+
+    private IEnumerator StaggerSpawn(WaveSpawnInfo currentSpawnInfo)
+    {
+        // Clone the spawn info to a new array
+        var randomizedSpawns = new List<WaveEnemyInfo>(currentSpawnInfo.waveEnemyInfos);
+
+        // Shuffle the spawn info array
+        for (var i = 0; i < randomizedSpawns.Count * 2; i++)
+        {
+            var randomIndexA = UnityEngine.Random.Range(0, randomizedSpawns.Count);
+            var randomIndexB = UnityEngine.Random.Range(0, randomizedSpawns.Count);
+
+            // Swap the two random indexes
+            (randomizedSpawns[randomIndexA], randomizedSpawns[randomIndexB]) =
+                (randomizedSpawns[randomIndexB], randomizedSpawns[randomIndexA]);
+        }
+
         foreach (var enemySpawnInfo in currentSpawnInfo.waveEnemyInfos)
         {
             // Spawn the enemy
@@ -115,23 +132,8 @@ public class WaveEnemySpawner : EnemySpawner
 
             // Increment the remaining wave enemies
             _remainingWaveEnemies++;
+
+            yield return new WaitForSeconds(0.125f);
         }
     }
-
-    #region Subclasses
-
-    [Serializable]
-    private struct WaveEnemyInfo
-    {
-        [SerializeField] public Enemy enemyPrefab;
-        [SerializeField] public Transform spawnPoint;
-    }
-
-    [Serializable]
-    private struct WaveSpawnInfo
-    {
-        [SerializeField] public WaveEnemyInfo[] waveEnemyInfos;
-    }
-
-    #endregion
 }
