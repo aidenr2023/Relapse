@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
@@ -202,7 +203,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         // Return if there is no current wall, return
         if (_currentWall == null)
             return;
-        
+
         // Get the current rigidbody velocity
         var velocity = ParentComponent.Rigidbody.velocity;
 
@@ -276,14 +277,15 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         // Create an array of rays that go around the player
         _rays = new List<Ray>(rayCount);
 
+        var camPivotForward = ParentComponent.CameraPivot.transform.forward;
+        var forwardVector = new Vector3(camPivotForward.x, 0, camPivotForward.z).normalized;
+        var rayInterval = 360f / rayCount;
+        
         // Populate the array of rays
         for (var i = 0; i < rayCount; i++)
         {
             // Calculate the angle of the ray
-            var angle = i * (360f / rayCount);
-
-            var camPivotForward = ParentComponent.CameraPivot.transform.forward;
-            var forwardVector = new Vector3(camPivotForward.x, 0, camPivotForward.z).normalized;
+            var angle = i * rayInterval;
 
             // Rotate the forward vector by the angle to get the direction of the ray
             var direction = Quaternion.Euler(0, angle, 0) * forwardVector;
@@ -291,15 +293,38 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             _rays.Add(new Ray(transform.position, direction));
         }
 
+        var camPivotLeft = -ParentComponent.CameraPivot.transform.right;
+        var camPivotRight = ParentComponent.CameraPivot.transform.right;
+        
         // Get the left ray from the array of rays
-        _leftRay = _rays
-            .OrderByDescending(ray => Vector3.Dot(ray.direction, -ParentComponent.CameraPivot.transform.right))
-            .First();
+        // _leftRay = _rays
+        //     .OrderByDescending(ray => Vector3.Dot(ray.direction, camPivotLeft))
+        //     .First();
+
+        var leftMostRay = _rays[0];
+        foreach (var ray in _rays)
+        {
+            var leftDot = Vector3.Dot(ray.direction, camPivotLeft);
+            
+            if (leftDot > Vector3.Dot(leftMostRay.direction, camPivotLeft))
+                leftMostRay = ray;
+        }
+        _leftRay = leftMostRay;
 
         // Get the right ray from the array of rays
-        _rightRay = _rays
-            .OrderByDescending(ray => Vector3.Dot(ray.direction, ParentComponent.CameraPivot.transform.right))
-            .First();
+        // _rightRay = _rays
+        //     .OrderByDescending(ray => Vector3.Dot(ray.direction, camPivotRight))
+        //     .First();
+        
+        var rightMostRay = _rays[0];
+        foreach (var ray in _rays)
+        {
+            var rightDot = Vector3.Dot(ray.direction, camPivotRight);
+            
+            if (rightDot > Vector3.Dot(rightMostRay.direction, camPivotRight))
+                rightMostRay = ray;
+        }
+        _rightRay = rightMostRay;
     }
 
     public override void FixedMovementUpdate()
@@ -309,7 +334,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             ParentComponent.ForceSetSprinting(true);
             Debug.Log($"FORCE SPRINT");
         }
-        
+
         // Update the movement if the player is wall running
         UpdateMovement();
     }
@@ -319,21 +344,39 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         // Clear the dictionary of wall run hit infos
         _wallRunHitInfos.Clear();
 
-        foreach (var cRay in _rays)
+        var jobHits = new NativeArray<RaycastHit>(_rays.Count, Allocator.TempJob);
+
+        // Populate the commands
+        var jobCommands = new NativeArray<RaycastCommand>(_rays.Count, Allocator.TempJob);
+
+        var queryParameters = new QueryParameters
         {
-            // Get the hit information for the current ray
-            var hit = Physics.Raycast(
-                cRay,
-                out var hitInfo, wallRunningDetectionDistance,
-                wallLayer
+            layerMask = wallLayer, hitBackfaces = false, hitMultipleFaces = false,
+            hitTriggers = QueryTriggerInteraction.Ignore
+        };
+
+        for (var i = 0; i < _rays.Count; i++)
+        {
+            jobCommands[i] = new RaycastCommand(
+                _rays[i].origin, _rays[i].direction, queryParameters, wallRunningDetectionDistance
             );
+        }
+
+        // Schedule the batch of raycast commands
+        var jobHandle = RaycastCommand.ScheduleBatch(jobCommands, jobHits, 1, 1, default);
+
+        // Wait for the job to complete
+        jobHandle.Complete();
+
+        for (var i = 0; i < _rays.Count; i++)
+        {
+            var hitInfo = jobHits[i];
+            var cRay = _rays[i];
 
             // If the ray did not hit anything, continue
-            if (!hit)
+            if (hitInfo.collider == false)
             {
-                // Add the ray to the dictionary
                 _wallRunHitInfos.Add(cRay, new WallRunHitInfo(hitInfo, false, default, default));
-
                 continue;
             }
 
@@ -343,12 +386,49 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             // Get the angle between the current ray and the right ray
             var rightRayAngle = Vector3.Angle(_rightRay.direction, cRay.direction);
 
-            // Get the forward vector
-            var wallForwardVector = Vector3.Cross(hitInfo.normal, Vector3.up).normalized;
+            // // Get the forward vector
+            // var wallForwardVector = Vector3.Cross(hitInfo.normal, Vector3.up).normalized;
 
             // Add the hit info to the dictionary
             _wallRunHitInfos.Add(cRay, new WallRunHitInfo(hitInfo, true, leftRayAngle, rightRayAngle));
         }
+
+        // Dispose of the job hits
+        jobCommands.Dispose();
+
+        // Dispose of the results
+        jobHits.Dispose();
+        
+        // foreach (var cRay in _rays)
+        // {
+        //     // Get the hit information for the current ray
+        //     var hit = Physics.Raycast(
+        //         cRay,
+        //         out var hitInfo, wallRunningDetectionDistance,
+        //         wallLayer
+        //     );
+        //     
+        //     // If the ray did not hit anything, continue
+        //     if (!hit)
+        //     {
+        //         // Add the ray to the dictionary
+        //         _wallRunHitInfos.Add(cRay, new WallRunHitInfo(hitInfo, false, default, default));
+        //
+        //         continue;
+        //     }
+        //
+        //     // Get the angle between the current ray and the left ray
+        //     var leftRayAngle = Vector3.Angle(_leftRay.direction, cRay.direction);
+        //
+        //     // Get the angle between the current ray and the right ray
+        //     var rightRayAngle = Vector3.Angle(_rightRay.direction, cRay.direction);
+        //
+        //     // Get the forward vector
+        //     var wallForwardVector = Vector3.Cross(hitInfo.normal, Vector3.up).normalized;
+        //
+        //     // Add the hit info to the dictionary
+        //     _wallRunHitInfos.Add(cRay, new WallRunHitInfo(hitInfo, true, leftRayAngle, rightRayAngle));
+        // }
     }
 
     private void UpdateDetectWallSliding()
@@ -464,7 +544,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             {
                 if (rayAngle > wallClimbAngle)
                     continue;
-                
+
                 var isOnWallClimbLayer = Physics.Raycast(
                     cRay,
                     out _,
@@ -986,10 +1066,11 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         // Set the y velocity to 0
         ParentComponent.Rigidbody.velocity =
             new Vector3(ParentComponent.Rigidbody.velocity.x, 0, ParentComponent.Rigidbody.velocity.z);
-        
+
         // Close the distance between the player and the wall
         const float stickDistance = .25f;
-        ParentComponent.Rigidbody.MovePosition(ParentComponent.transform.position + _currentRay.direction * stickDistance);
+        ParentComponent.Rigidbody.MovePosition(ParentComponent.transform.position +
+                                               _currentRay.direction * stickDistance);
     }
 
     private void TransferVelocityOnWallClimbStart(PlayerWallRunning obj)
