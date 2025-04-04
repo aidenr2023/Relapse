@@ -220,7 +220,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gunEventVariable: {fileID: 11400000, guid: 24e7a2f5ee6bb0f4885023b53f7c715f, type: 2}
   gunFovZoomAmount: {fileID: 11400000, guid: f409c4915cc91364d9bbf9d9637cb029, type: 2}
-  targetZoom: 0.95
+  targetZoom: 0.9
   inDuration: 0.03125
   inCurve:
     serializedVersion: 2
@@ -260,8 +260,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gunEventVariable: {fileID: 11400000, guid: 24e7a2f5ee6bb0f4885023b53f7c715f, type: 2}
   gunShootRoll: {fileID: 11400000, guid: 4227de34b843aa1429e3cae03d422d26, type: 2}
-  targetAngle: 15
+  targetAngle: 30
   inDuration: 0.03125
+  lerpAmount: 0.1
   inCurve:
     serializedVersion: 2
     m_Curve:
