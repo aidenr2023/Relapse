@@ -121,7 +121,7 @@ AnimatorState:
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
-  m_TimeParameter: PowerMotionTime
+  m_TimeParameter: WeaponSway
 --- !u!1101 &-8037112042576591549
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -565,7 +565,7 @@ AnimatorStateMachine:
   m_StateMachineTransitions: {}
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: -1620, y: 1000, z: 0}
-  m_EntryPosition: {x: 920, y: -210, z: 0}
+  m_EntryPosition: {x: 890, y: -210, z: 0}
   m_ExitPosition: {x: 940, y: -370, z: 0}
   m_ParentStateMachinePosition: {x: 870, y: 60, z: 0}
   m_DefaultState: {fileID: 7722334089644963061}
@@ -620,7 +620,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -8182746074055543129, guid: 8085075bc3b5e974d9823716e4a85526,
+  m_Motion: {fileID: 5090950121005025586, guid: 017c992a9d41262429173ddd57b2200c,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 
@@ -1651,9 +1651,9 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
-  - m_Name: PowerMotionTime
+  - m_Name: WeaponSway
     m_Type: 1
-    m_DefaultFloat: 0.5
+    m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
@@ -2172,6 +2172,39 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!206 &2059741341377606776
+BlendTree:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Blend Tree
+  m_Childs:
+  - serializedVersion: 2
+    m_Motion: {fileID: -14344748418681356, guid: c4c8fa260f45fae409570b3ea89f9a58,
+      type: 3}
+    m_Threshold: 0
+    m_Position: {x: 0, y: 0}
+    m_TimeScale: 1
+    m_CycleOffset: 0
+    m_DirectBlendParameter: JumpHeight
+    m_Mirror: 0
+  - serializedVersion: 2
+    m_Motion: {fileID: 4327139685823407309, guid: 07fd4717a5cd7634a8a5654d3626a515,
+      type: 3}
+    m_Threshold: 1
+    m_Position: {x: 0, y: 0}
+    m_TimeScale: 1
+    m_CycleOffset: 0
+    m_DirectBlendParameter: JumpHeight
+    m_Mirror: 0
+  m_BlendParameter: WeaponSway
+  m_BlendParameterY: JumpHeight
+  m_MinThreshold: 0
+  m_MaxThreshold: 1
+  m_UseAutomaticThresholds: 1
+  m_NormalizedBlendValues: 0
+  m_BlendType: 0
 --- !u!1109 &2099252332197569608
 AnimatorTransition:
   m_ObjectHideFlags: 1
@@ -2364,9 +2397,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.25
+  m_TransitionDuration: 0.054404736
   m_TransitionOffset: 0
-  m_ExitTime: 0.75
+  m_ExitTime: 0.75000006
   m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
@@ -3472,8 +3505,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 1236987107528459640, guid: f1dffac109edadc4d84e6d0691fb86ee,
-    type: 3}
+  m_Motion: {fileID: 2059741341377606776}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -3694,7 +3726,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -8182746074055543129, guid: 8085075bc3b5e974d9823716e4a85526,
+  m_Motion: {fileID: -8020230036182722184, guid: 4048d88a3e9f4d34bb3e0b8295678139,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 
@@ -3806,7 +3838,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Reload Player Body
-  m_Speed: 1
+  m_Speed: 0.75
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 5851813142980390210}
@@ -3819,7 +3851,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 6417915174898231180, guid: 319b59a363de899498e36e471e63f959,
+  m_Motion: {fileID: 1645040832946894135, guid: e0efd70ffccaaca408b99528cfd479e5,
     type: 3}
   m_Tag: 
   m_SpeedParameter: 
