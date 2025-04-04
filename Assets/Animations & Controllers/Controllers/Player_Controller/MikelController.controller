@@ -558,7 +558,7 @@ AnimatorStateMachine:
     m_Position: {x: 150, y: 1370, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -74727928160426755}
-    m_Position: {x: 1140, y: 850, z: 0}
+    m_Position: {x: 840, y: 660, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -1492,7 +1492,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Kin_Sliding
-  m_Speed: 1
+  m_Speed: 1.5
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 5041797069031897989}
@@ -1934,6 +1934,39 @@ AnimatorState:
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
+--- !u!206 &1050812217879909068
+BlendTree:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Blend Tree
+  m_Childs:
+  - serializedVersion: 2
+    m_Motion: {fileID: -8020230036182722184, guid: 4048d88a3e9f4d34bb3e0b8295678139,
+      type: 3}
+    m_Threshold: 0
+    m_Position: {x: 0, y: 0}
+    m_TimeScale: 1
+    m_CycleOffset: 0
+    m_DirectBlendParameter: JumpHeight
+    m_Mirror: 0
+  - serializedVersion: 2
+    m_Motion: {fileID: 566423323502806305, guid: 6fe9fa0b3fe9cd241847fd792d037fd6,
+      type: 3}
+    m_Threshold: 1
+    m_Position: {x: 0, y: 0}
+    m_TimeScale: 1
+    m_CycleOffset: 0
+    m_DirectBlendParameter: JumpHeight
+    m_Mirror: 0
+  m_BlendParameter: WeaponSway
+  m_BlendParameterY: JumpHeight
+  m_MinThreshold: 0
+  m_MaxThreshold: 1
+  m_UseAutomaticThresholds: 1
+  m_NormalizedBlendValues: 0
+  m_BlendType: 0
 --- !u!1102 &1117915261305766364
 AnimatorState:
   serializedVersion: 6
@@ -3253,7 +3286,7 @@ AnimatorStateTransition:
   m_ExitTime: 0
   m_HasExitTime: 0
   m_HasFixedDuration: 1
-  m_InterruptionSource: 0
+  m_InterruptionSource: 1
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
 --- !u!1101 &5851813142980390210
@@ -3726,8 +3759,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -8020230036182722184, guid: 4048d88a3e9f4d34bb3e0b8295678139,
-    type: 3}
+  m_Motion: {fileID: 1050812217879909068}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -3838,7 +3870,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Reload Player Body
-  m_Speed: 0.75
+  m_Speed: 0.5
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 5851813142980390210}
