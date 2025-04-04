@@ -105,6 +105,7 @@ public class PositionSwap : MonoBehaviour, IPower
         enemy.NewMovement.SetPosition(shooterPosition);
 
         // Instantiate the old position particle system prefab
+        CreateParticles(actorPosition);
         CreateParticles(shooterPosition);
         
         // Set the position of the actor to the shooter's position
