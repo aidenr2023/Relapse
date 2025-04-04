@@ -56,4 +56,10 @@ public class CustomTrigger : MonoBehaviour
         // Invoke the event
         unityEvent.Invoke();
     }
+    
+    public void ResetActivateOnceFlags()
+    {
+        _hasEntered = false;
+        _hasExited = false;
+    }
 }

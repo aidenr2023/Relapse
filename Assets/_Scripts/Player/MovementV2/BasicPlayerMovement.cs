@@ -506,8 +506,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         if (!_jumpGraceTimer.IsActive || _jumpGraceTimer.IsComplete)
             return;
 
-        if (!ParentComponent.IsGrounded && _coyoteJumpTimer.IsNotComplete)
-            Debug.Log($"COYOTE JUMP: {_coyoteJumpTimer.Percentage:0.00}");
+        // if (!ParentComponent.IsGrounded && _coyoteJumpTimer.IsNotComplete)
+        //     Debug.Log($"COYOTE JUMP: {_coyoteJumpTimer.Percentage:0.00}");
 
         // Jump in the direction of the movement input
         PlayerAnimator?.SetBool(HasJumped, false);

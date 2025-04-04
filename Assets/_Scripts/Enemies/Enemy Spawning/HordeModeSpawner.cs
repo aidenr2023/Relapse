@@ -47,8 +47,8 @@ public class HordeModeSpawner : EnemySpawner
     protected override void CustomSpawnEnemy(Enemy actualEnemy, Vector3 spawnPosition, Quaternion spawnRotation)
     {
         actualEnemy.EnemyInfo.OnDeath += DecrementEnemiesRemaining;
-        actualEnemy.EnemyInfo.OnDeath += IncrementWave;
         actualEnemy.EnemyInfo.OnDeath += CheckForSpawnerComplete;
+        actualEnemy.EnemyInfo.OnDeath += IncrementWave;
     }
 
     private void DecrementEnemiesRemaining(object sender, HealthChangedEventArgs e)
@@ -70,7 +70,7 @@ public class HordeModeSpawner : EnemySpawner
 
         // Keep spawning if the current round number is greater than 0
         // and the current round number is not a multiple of the wave count
-        if (currentRoundNumber.Value > 0 && currentRoundNumber.Value % waveCount > 0)
+        if ((currentRoundNumber.Value - 1) % waveCount > 0)
             StartCoroutine(SpawnNextWave(currentRoundNumber.Value, waveDelayInterval));
     }
 
@@ -110,8 +110,15 @@ public class HordeModeSpawner : EnemySpawner
 
     private int DetermineRoundEnemyCount(int waveNumber)
     {
+        var roundCycleCount = Mathf.Max((int)roundEnemyModifierCurve.keys[^1].time, 1);
+
         var standardAmount = Mathf.Max(roundEnemyCountsCurve.Evaluate(waveNumber), 1);
-        var modifier = Mathf.Max(roundEnemyModifierCurve.Evaluate(waveNumber), 0);
+
+        var valueToUse = waveNumber % roundCycleCount == 0 && waveNumber > 0
+            ? roundCycleCount
+            : waveNumber % roundCycleCount;
+
+        var modifier = Mathf.Max(roundEnemyModifierCurve.Evaluate(valueToUse), 0);
 
         return (int)(standardAmount + modifier);
     }
@@ -213,5 +220,11 @@ public class HordeModeSpawner : EnemySpawner
 
         // Set the is still spawning flag to false
         _isStillSpawning = false;
+    }
+
+    public void ResetSpawner()
+    {
+        hasStartedSpawning = false;
+        isComplete = false;
     }
 }
