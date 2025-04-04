@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class WeightedContinuousEnemySpawner : ContinuousEnemySpawnerBase
 {
@@ -24,22 +23,22 @@ public class WeightedContinuousEnemySpawner : ContinuousEnemySpawnerBase
 
         foreach (var weightedEnemyInformation in enemyPrefabs)
             totalWeight += weightedEnemyInformation.weight;
-        
+
         // Get a random number between 0 and the total weight
         var randomWeight = UnityEngine.Random.Range(0, totalWeight);
-        
+
         // Get the enemy with the random weight
         while (randomWeight > 0)
         {
             foreach (var weightedEnemyInformation in enemyPrefabs)
             {
                 randomWeight -= weightedEnemyInformation.weight;
-         
+
                 if (randomWeight <= 0)
                     return weightedEnemyInformation.enemy;
             }
         }
-        
+
         // If something goes wrong, return the first enemy
         return enemyPrefabs[0].enemy;
     }
@@ -52,16 +51,9 @@ public class WeightedContinuousEnemySpawner : ContinuousEnemySpawnerBase
                 enemyPrefabs[i].weight = 1f;
         }
     }
-    
+
     protected override string GetTooltipText()
     {
         return $"Remaining Enemies: {spawnerCompleteAmount - _enemyKilledCount}";
-    }
-
-    [Serializable]
-    private struct WeightedEnemyInformation
-    {
-        public Enemy enemy;
-        [SerializeField, Min(0)] public float weight;
     }
 }
