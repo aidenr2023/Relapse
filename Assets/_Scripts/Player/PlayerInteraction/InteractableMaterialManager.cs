@@ -16,6 +16,9 @@ public class InteractableMaterialManager : MonoBehaviour
 
     #region Private Fields
 
+    private SelectedState _selectedState = SelectedState.Uninitialized;
+    private OutlineState _outlineState = OutlineState.Uninitialized;
+
     private readonly Dictionary<Renderer, Material> _interactableMaterials = new();
 
     #endregion
@@ -54,7 +57,7 @@ public class InteractableMaterialManager : MonoBehaviour
     {
         // Wait until the interactable manager's instance is not null
         yield return new WaitUntil(() => InteractableManager.Instance != null);
-        
+
         SetUpInteractableMaterials();
     }
 
@@ -76,7 +79,7 @@ public class InteractableMaterialManager : MonoBehaviour
 
         // Set the outlined property of the interactable
         SetOutlined(showOutline);
-        
+
         // Reset the force selected property
         IsForceSelected = false;
     }
@@ -126,6 +129,23 @@ public class InteractableMaterialManager : MonoBehaviour
 
     private void SetOutlined(bool isOutlined)
     {
+        if (isOutlined)
+        {
+            if (_outlineState == OutlineState.Outlined)
+                return;
+        
+            _outlineState = OutlineState.Outlined;
+        }
+        
+        // This causes a bug with spawning a gun in the player's hands
+        // else
+        // {
+        //     if (_outlineState == OutlineState.NotOutlined)
+        //         return;
+        //
+        //     _outlineState = OutlineState.NotOutlined;
+        // }
+
         foreach (var interactableMaterial in _interactableMaterials)
         {
             var material = interactableMaterial.Value;
@@ -135,10 +155,40 @@ public class InteractableMaterialManager : MonoBehaviour
 
     private void SetSelected(bool isSelected)
     {
+        if (isSelected)
+        {
+            if (_selectedState == SelectedState.Selected)
+                return;
+
+            _selectedState = SelectedState.Selected;
+        }
+
+        else
+        {
+            if (_selectedState == SelectedState.NotSelected)
+                return;
+
+            _selectedState = SelectedState.NotSelected;
+        }
+
         foreach (var interactableMaterial in _interactableMaterials)
         {
             var material = interactableMaterial.Value;
             material.SetFloat(CachedIsSelectedProperty, isSelected ? 1 : 0);
         }
+    }
+
+    private enum SelectedState
+    {
+        Uninitialized,
+        Selected,
+        NotSelected
+    }
+
+    private enum OutlineState
+    {
+        Uninitialized,
+        Outlined,
+        NotOutlined
     }
 }
