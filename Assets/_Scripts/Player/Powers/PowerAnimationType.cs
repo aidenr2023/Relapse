@@ -1,7 +1,8 @@
 ﻿public enum PowerAnimationType
 {
-    Flick,
-    TwoFingerFlick,
-    Grasp,
+    Default,
+    Instant,
+    PullForward,
+    Slam,
     Point
 }
