@@ -9,11 +9,6 @@ public class StunMineProjectile : AbstractMineProjectile
 
     [SerializeField] private VisualEffect stunVfxPrefab;
 
-    [SerializeField] private ParticleSystem explosionParticles;
-    [SerializeField, Min(0)] private int particleCount = 50;
-
-    [SerializeField] private VisualEffect explosionVfxPrefab;
-
     [SerializeField] private ExplosionHelper explosionHelper;
 
     protected override void CustomAwake()
@@ -42,14 +37,13 @@ public class StunMineProjectile : AbstractMineProjectile
 
         // Apply the stun effect
         // Call this from the power logic game object because this projectile is destroyed after the explosion
-        ((MonoBehaviour)_power.PowerScriptableObject.PowerLogic)
-            .StartCoroutine(ApplyStun(movement, attackBehavior));
+        ((MonoBehaviour)_power.PowerScriptableObject.PowerLogic).StartCoroutine(ApplyStun(movement, attackBehavior));
 
-        // Create the explosion particles
-        CreateExplosionParticles(explosionParticles, transform.position, particleCount);
-
-        // Create the explosion VFX
-        CreateExplosionVfx(explosionVfxPrefab, transform.position);
+        // // Create the explosion particles
+        // CreateExplosionParticles(explosionParticles, transform.position, particleCount);
+        //
+        // // Create the explosion VFX
+        // CreateExplosionVfx(explosionVfxPrefab, transform.position);
     }
 
     protected override void DoExplosion()

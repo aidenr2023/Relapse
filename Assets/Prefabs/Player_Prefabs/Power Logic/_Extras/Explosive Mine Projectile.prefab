@@ -208,7 +208,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionRadius: 10
-  explosionDamage: 50
+  explosionDamage: 100
   damageMultiplier: 1
   cameraShakeHelper: {fileID: 790891061262720206}
   explosionParticlePrefab: {fileID: 5786114173115362945, guid: 7d0c02cf52550474d8267e516617de8c,
@@ -237,10 +237,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   noiseToken:
     pivotOffset: {x: 0, y: 0, z: 0}
-    amplitudeGain: 1
+    amplitudeGain: 0.5
     frequencyGain: 0.5
-  shakeDuration: 0.5
-  shakeFadeDuration: 0.5
+  shakeDuration: 0.25
+  shakeFadeDuration: 0.125
 --- !u!1001 &7331021653386935683
 PrefabInstance:
   m_ObjectHideFlags: 0

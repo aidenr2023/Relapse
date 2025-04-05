@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.VFX;
 
-public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
+public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile, IActor
 {
     protected const int MAX_ENEMIES = 64;
 
@@ -59,6 +59,9 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
 
         // Custom awake function
         CustomAwake();
+        
+        // Set the current health to the max health
+        CurrentHealth = MaxHealth;
     }
 
     protected abstract void CustomAwake();
@@ -199,12 +202,10 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
 
         // Set the hasExploded to true
         _hasExploded = true;
-        
+
         // Do the explosion
         DoExplosion();
-
-        // TODO: Play explosion vfx
-
+        
         // Destroy the game object
         if (destroyOnExplode)
             Destroy(gameObject);
@@ -286,7 +287,7 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
 
         // Sort the contacts by distance from the projectile
         var sortedContacts = contacts.OrderByDescending(c => Vector3.Distance(transform.position, c.point)).ToArray();
-        
+
         // Get the normal of the collision
         var normal = sortedContacts[0].normal;
 
@@ -300,14 +301,14 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
         _rigidbody.isKinematic = true;
 
         // Set the collider to trigger
-        foreach (var cCollider in _colliders)        
+        foreach (var cCollider in _colliders)
             cCollider.isTrigger = true;
 
         // Set the position of the game object to the position parameter
         // transform.position = position + normal * 0.25f;
         // _rigidbody.MovePosition(position + normal * 0.25f);
         // _rigidbody.MovePosition(position);
-        _rigidbody.position = position+ normal * 0.1f;
+        _rigidbody.position = position + normal * 0.1f;
 
         // Set the up of the game object to the normal parameter
         transform.up = normal;
@@ -391,4 +392,42 @@ public abstract class AbstractMineProjectile : MonoBehaviour, IPowerProjectile
         // Destroy the explosion VFX after 10 seconds
         Destroy(explosion.gameObject, 10);
     }
+
+    #region IActor
+
+    public GameObject GameObject => gameObject;
+    public float MaxHealth => 1f;
+    public float CurrentHealth { get; private set; }
+
+    public HealthChangedEventReference OnDamaged { get; set; }
+    public HealthChangedEventReference OnHealed { get; set; }
+    public HealthChangedEventReference OnDeath { get; set; }
+
+    public void ChangeHealth(float amount, IActor changer, IDamager damager, Vector3 position,
+        bool isCriticalHit = false)
+    {
+        // Return if not attached
+        if (!_isAttached)
+            return;
+        
+        // Return if the amount is greater than or equal to 0
+        if (amount >= 0)
+            return;
+        
+        // Return if the damager is not an IGun
+        if (damager is not IGun gun)
+            return;
+        
+        // // Force the amount to be equal to the max health
+        // amount = -MaxHealth;
+        
+        // Do the explosion
+        DoExplosion();
+        
+        // Destroy the game object
+        if (destroyOnExplode)
+            Destroy(gameObject);
+    }
+
+    #endregion
 }

@@ -11,12 +11,6 @@ public class ExplosiveMineProjectile : AbstractMineProjectile
     [Header("Unique Stats")] [SerializeField]
     private ExplosionHelper explosionHelper;
 
-    // [SerializeField, Min(0)] protected float damage = 50f;
-    //
-    // [SerializeField] private ParticleSystem explosionParticles;
-    // [SerializeField, Min(0)] private int particleCount = 50;
-    //
-    // [SerializeField] private VisualEffect explosionVfxPrefab;
     protected override void CustomAwake()
     {
     }
