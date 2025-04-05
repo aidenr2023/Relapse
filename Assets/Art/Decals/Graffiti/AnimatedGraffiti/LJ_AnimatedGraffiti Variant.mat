@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Relapse_AnimatedGraffiti Variant
+  m_Name: LJ_AnimatedGraffiti Variant
   m_Shader: {fileID: -6465566751694194690, guid: 2b4865e36ec7f5f49a11e33c265c2e9a,
     type: 3}
   m_Parent: {fileID: 2100000, guid: 5ca571cafbc28a84a8775a294906811f, type: 2}
@@ -24,17 +24,24 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _GraffitiTexture:
-        m_Texture: {fileID: 2800000, guid: 91ac0c98cb4726949b8a8b0c3423e6c5, type: 3}
+    - _SampleTexture2D_3b2431b62ca64b9285c518f272d0af2a_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 4b8f4fe41f6b8d54aaaff89299353a85, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_be8ea416eaf4435e901f6e6b1ee2157b_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 4b8f4fe41f6b8d54aaaff89299353a85, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _MaskingFuzziness: -0.58
-    - _MaskingStrength: 0.15
+    - _MaskingFuzziness: 0.3
+    - _MaskingStrength: 0.72
     - _MoreDither: 0
+    - _Power: 2.56
+    - _SineTIme: 5
     m_Colors:
-    - _MaskColor: {r: 0.3264286, g: 0.45700002, b: 0.4178286, a: 1}
+    - _Offset: {r: 0.01, g: -0.74, b: 0, a: 0}
+    - _OutlineColor: {r: 5.9245663, g: 5.9245663, b: 5.9245663, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &4559346074763966802
 MonoBehaviour:
