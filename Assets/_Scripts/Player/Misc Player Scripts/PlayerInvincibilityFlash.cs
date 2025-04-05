@@ -9,6 +9,8 @@ public class PlayerInvincibilityFlash : ComponentScript<Player>
 
     [SerializeField, Min(0)] private float flashCycleDuration = 0.1f;
 
+    [SerializeField] private List<Renderer> renderersToIgnore = new();
+    
     #endregion
 
     #region Serialized Fields
@@ -41,6 +43,10 @@ public class PlayerInvincibilityFlash : ComponentScript<Player>
         {
             // If the renderer is not enabled, skip it
             if (!cRenderer.enabled)
+                continue;
+            
+            // If the renderers to ignore contains the renderer, skip it
+            if (renderersToIgnore.Contains(cRenderer))
                 continue;
 
             // Add the renderer to the hash set
