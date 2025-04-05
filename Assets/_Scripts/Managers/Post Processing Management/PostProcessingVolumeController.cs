@@ -76,7 +76,8 @@ public class PostProcessingVolumeController : MonoBehaviour
             PostProcessingType.Apartment => apartmentPair,
             PostProcessingType.City => cityPair,
             PostProcessingType.Mindbreak => mindbreakPair,
-            PostProcessingType.CityCombat => cityCombatPair,
+            // PostProcessingType.CityCombat => cityCombatPair,
+            PostProcessingType.CityCombat => cityPair,
             _ => throw new ArgumentOutOfRangeException()
         };
 
