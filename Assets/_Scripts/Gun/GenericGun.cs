@@ -43,11 +43,12 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     [SerializeField] protected TrailRenderer bulletTrailRenderer;
     [SerializeField] protected DecalProjector[] bulletHoleDecals;
 
-    [Header("Time Stop On Hit")]
-    [SerializeField] private bool slowTimeOnHit;
+    [Header("Time Stop On Hit")] [SerializeField]
+    private bool slowTimeOnHit;
+
     [SerializeField] private float timeStopDuration = 0.125f;
     [SerializeField] private AnimationCurve timeStopCurve;
-    
+
     [SerializeField] private UnityEvent onInteract;
 
     #endregion
@@ -89,7 +90,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     private WeaponManager _weaponManager;
 
     private Animator _playerAnimator;
-    
+
     private TokenManager<float>.ManagedToken _timeStopToken;
 
     #endregion
@@ -197,10 +198,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     {
         if (!slowTimeOnHit)
             return;
-        
+
         if (_timeStopToken != null)
             TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(_timeStopToken);
-        
+
         // Start the coroutine
         StartCoroutine(SlowTimeOnHitCoroutine());
     }
@@ -212,7 +213,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Get the start time
         var startTime = Time.unscaledTime;
-        
+
         while (Time.unscaledTime - startTime < timeStopDuration)
         {
             // Get the time since the start
@@ -222,17 +223,17 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
             var value = timeStopCurve.Evaluate(timeSinceStart / timeStopDuration);
 
             // Set the time scale
-            _timeStopToken.Value = Mathf.Max(value, 0); 
+            _timeStopToken.Value = Mathf.Max(value, 0);
 
             yield return null;
         }
-        
+
         _timeStopToken.Value = 1;
 
         // Remove the token
         TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(_timeStopToken);
     }
-    
+
     private void OnDestroy()
     {
         // Remove from debug manager
@@ -717,6 +718,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
     public void Interact(PlayerInteraction playerInteraction)
     {
+        // If the player is currently reloading their gun, return
+        if (playerInteraction.Player.WeaponManager.EquippedGun is { IsReloading: true })
+            return;
+
         // Equip the gun
         playerInteraction.Player.WeaponManager.EquipGun(this);
 

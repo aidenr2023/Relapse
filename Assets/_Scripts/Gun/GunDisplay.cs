@@ -200,6 +200,10 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
         // If there is no gun equipped, return
         if (EquippedGun == null)
             return;
+        
+        // If the player is currently reloading their gun, return
+        if (playerInteraction.Player.WeaponManager.EquippedGun is { IsReloading: true })
+            return;
 
         var gun = EquippedGun;
 

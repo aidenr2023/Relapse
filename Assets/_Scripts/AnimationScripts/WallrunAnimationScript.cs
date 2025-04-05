@@ -60,14 +60,9 @@ public class WallrunAnimationScript : MonoBehaviour
 
     private void ChargingAnimation()
     {
-        var chargingBlend = 0f;
-
-        // var enumLength = Enum.GetValues(typeof(PowerChargeAnimationType)).Length;
-        // if (enumLength > 1)
-        //     chargingBlend = ((float)playerPowerManager.CurrentPower.ChargeAnimationType / (enumLength - 1));
-        //
-        // playerAnimator.SetFloat(PowerChargeAnimationTypeAnimationID, chargingBlend);
-        playerAnimator.SetFloat(PowerChargeAnimationTypeAnimationID, (int) playerPowerManager.CurrentPower.ChargeAnimationType);
+        if (playerPowerManager.CurrentPower != null)
+            playerAnimator.SetFloat(PowerChargeAnimationTypeAnimationID,
+                (int)playerPowerManager.CurrentPower.ChargeAnimationType);
     }
 
     //based on the flag in sync mag7 fire, play the trigger

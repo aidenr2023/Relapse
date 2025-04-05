@@ -133,8 +133,6 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
 
         OnGunRemoved += (manager, gun) => gun.OnShoot -= PlayFireAnimationOnShoot;
         OnGunRemoved += (manager, gun) => gun.OnShoot -= InvokePlayerShootOnShoot;
-
-        _shootingAnimator.SetTrigger(ShootAnimationID);
     }
 
     private void InvokePlayerShootOnShoot(IGun obj)
@@ -274,9 +272,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
 
     public void EquipGun(IGun gun)
     {
-        // If the current gun's reload animation is playing, return
-        if (_equippedGun != null && _equippedGun.IsReloadAnimationPlaying)
-            return;
+        // // If the current gun's reload animation is playing, return
+        // if (_equippedGun != null && _equippedGun.IsReloadAnimationPlaying)
+        //     return;
 
         // Remove the current gun
         RemoveGun();
