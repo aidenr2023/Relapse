@@ -1,6 +1,9 @@
 ﻿using UnityEditor;
-using UnityEditor.Callbacks;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using UnityEditor.Callbacks;
+#endif
 
 public static class EnemyRelapseOutlineManager
 {
