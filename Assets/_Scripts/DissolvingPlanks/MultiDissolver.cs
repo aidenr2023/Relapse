@@ -55,10 +55,10 @@ public class MultiDissolver : MonoBehaviour
 
     private static IEnumerator SetDissolveStrengthCoroutine(Renderer[] renderers, float targetStrength, float duration)
     {
-        // Set the dissolve boolean
-        var useDissolve = targetStrength > 0 ? 1 : 0;
-        foreach (var renderer in renderers)
-            renderer.sharedMaterial.SetInt(DissolveBoolProperty, useDissolve);
+        // // Set the dissolve boolean
+        // var useDissolve = targetStrength > 0 ? 1 : 0;
+        // foreach (var renderer in renderers)
+        //     renderer.sharedMaterial.SetInt(DissolveBoolProperty, useDissolve);
         
         // Clamp the strength to the range [0, 1]
         targetStrength = Mathf.Clamp01(targetStrength);
