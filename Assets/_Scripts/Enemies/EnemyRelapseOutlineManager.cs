@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using UnityEditor;
+using UnityEditor.Callbacks;
+using UnityEngine;
 
 public static class EnemyRelapseOutlineManager
 {
@@ -14,11 +16,16 @@ public static class EnemyRelapseOutlineManager
         Shader.SetGlobalFloat(EnemyAlternateLerpID, amount);
     }
 
+#if UNITY_EDITOR
+    [InitializeOnLoadMethod]
+    [DidReloadScripts]
+#endif
+
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     public static void ResetLerpAmount()
     {
         Debug.Log("Resetting enemy outline lerp amount to 0");
-        
+
         // Reset the lerp amount to 0
         SetOutlineLerpAmount(0f);
     }
