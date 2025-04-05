@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: EnemyJitterHighlight
-  m_Shader: {fileID: -6465566751694194690, guid: 0b75ff6742179634383782eb5ae8beee,
+  m_Shader: {fileID: -6465566751694194690, guid: 3094638281a18a84ca8f4a301bd27c0f,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -38,6 +38,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AlternateLerp: 0
+    - _EnemyAlternateLerp: 0
     - _FPS: 12
     - _Frequency: 1
     - _IsOutlined: 1
@@ -55,6 +57,7 @@ Material:
     - _SelectedScaleMult: 1.25
     - _Width: 0.25
     m_Colors:
+    - _AlternateColor: {r: 0.99999994, g: 0.99999994, b: 0.99999994, a: 0.050980393}
     - _Color: {r: 0.00040606974, g: 0, b: 0.01, a: 1}
     - _SelectedColor: {r: 1, g: 0.57758063, b: 0.035601325, a: 1}
   m_BuildTextureStacks: []

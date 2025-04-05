@@ -11,8 +11,14 @@ public class PlayerRelapseFullscreen : MonoBehaviour
 
     [SerializeField] private AnimationCurve fadeInCurve;
     [SerializeField] private AnimationCurve fadeOutCurve;
-    
+
     private Coroutine _currentCoroutine;
+
+    private void Awake()
+    {
+        // Initialize the material property
+        SetValue(0, 0);
+    }
 
     private void OnEnable()
     {
@@ -51,31 +57,42 @@ public class PlayerRelapseFullscreen : MonoBehaviour
     private IEnumerator Fade(float targetValue, bool inOut)
     {
         Debug.Log($"Fading to {targetValue} ({(inOut ? "In" : "Out")})");
-        
+
         var currentCurve = inOut ? fadeInCurve : fadeOutCurve;
         var fadeDuration = currentCurve.keys[currentCurve.length - 1].time;
-        
+
         var startTime = Time.time;
-        
+
+        var finalPercent = inOut ? 1 : 0;
+
         while (Time.time < startTime + fadeDuration)
         {
             // Calculate the percentage of the fade
             var currentTime = Time.time - startTime;
             var currentValue = currentCurve.Evaluate(currentTime);
-            
+
+            var currentPercent = Mathf.InverseLerp(startTime, startTime + fadeDuration, currentTime + startTime);
+
+            if (!inOut)
+                currentPercent = 1 - currentPercent;
+
             // Set the material property
-            SetValue(currentValue);
-            
+            SetValue(currentValue, currentPercent);
+
             yield return null;
         }
-        
+
         // Set the final value to ensure it reaches the target
-        SetValue(targetValue);
+        SetValue(targetValue, finalPercent);
     }
 
-    private void SetValue(float value)
+    private void SetValue(float value, float percent)
     {
         // Set the material property
         fullScreenPassRendererFeature.passMaterial.SetFloat(PercentMaterialID, value);
+
+        // Clamp the percent between 0 and 1
+        percent = Mathf.Clamp01(percent);
+        EnemyRelapseOutlineManager.SetOutlineLerpAmount(percent);
     }
 }

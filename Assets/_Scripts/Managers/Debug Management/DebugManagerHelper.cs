@@ -218,6 +218,10 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         if (Input.GetKeyDown(KeyCode.K))
             Player.PlayerInfo.ChangeHealth(-10, Player.PlayerInfo, Player.PlayerInfo, Player.transform.position);
 
+        if (Input.GetKeyDown(KeyCode.Y))
+            Shader.SetGlobalFloat("_EnemyAlternateLerp", 0);
+        if (Input.GetKeyDown(KeyCode.U))
+            Shader.SetGlobalFloat("_EnemyAlternateLerp", 1);
     }
 
     private void DebugLoadScene(LevelSectionSceneInfo[] levelInfo)
