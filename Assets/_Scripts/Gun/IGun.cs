@@ -32,7 +32,7 @@ public interface IGun : IInteractable, IDamager
     public void OnFireReleased();
 
     public void Fire(WeaponManager weaponManager, Vector3 startingPosition, Vector3 direction);
-    public void Reload();
+    public bool Reload();
 
     public void OnEquipToPlayer(WeaponManager weaponManager);
     public void OnRemovalFromPlayer(WeaponManager weaponManager);

@@ -9251,8 +9251,8 @@ MonoBehaviour:
     sprintLerpAmount: 0.2
     dashFOVMultiplier: 1.25
     dashRunLerpAmount: 0.25
-    aimInFovMultiplier: 0.75
-    aimOutFovMultiplier: 1.25
+    aimInFovMultiplier: 0.9
+    aimOutFovMultiplier: 1.1
     aimLerpAmount: 0.1
   dynamicRotationModule:
     gunShootRoll:
@@ -24416,14 +24416,7 @@ PrefabInstance:
     - target: {fileID: 5866666021909216657, guid: 8085075bc3b5e974d9823716e4a85526,
         type: 3}
       propertyPath: m_WarningMessage
-      value: "\nBinding warning: Some generic clip(s) animate transforms that are
-        already bound by a Humanoid avatar. These transforms can only be changed
-        by Humanoid clips.\n\tTransform 'CC_Base_R_ToeBase'\n\tTransform 'CC_Base_R_Upperarm'\n\tTransform
-        'CC_Base_R_Index1'\n\tTransform 'CC_Base_Pelvis'\n\tTransform 'CC_Base_L_Mid1'\n\tTransform
-        'CC_Base_L_Foot'\n\tTransform 'CC_Base_L_Calf'\n\tTransform 'CC_Base_L_Pinky1'\n\tTransform
-        'CC_Base_Spine01'\n\tTransform 'CC_Base_R_Mid1'\n\tand more ...\n\tFrom animation
-        clip 'Take 001_NoInter'\n\tFrom animation clip 'Take 001_Optimal'\n\tFrom
-        animation clip 'Take 001_NoResample'"
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 8085075bc3b5e974d9823716e4a85526,
         type: 3}

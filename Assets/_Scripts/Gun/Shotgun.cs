@@ -40,10 +40,10 @@ public class Shotgun : GenericGun
         currentMagazineSize = gunInformation.MagazineSize;
     }
 
-    public override void Reload()
+    public override bool Reload()
     {
-        return;
+        return false;
 
-        base.Reload();
+        return base.Reload();
     }
 }

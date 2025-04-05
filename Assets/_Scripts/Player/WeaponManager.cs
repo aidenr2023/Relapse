@@ -98,6 +98,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
     public Action<WeaponManager, IGun> OnGunEquipped { get; set; }
     public Action<WeaponManager, IGun> OnGunRemoved { get; set; }
 
+    public Action<WeaponManager, IGun> OnGunReloadStart { get; set; }
+
     #region Initialization Functions
 
     private void Awake()
@@ -435,7 +437,11 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         //     playerMovement.ForceStopSprinting();
 
         // Reload the gun
-        EquippedGun.Reload();
+        var successfullyReload = EquippedGun.Reload();
+
+        // Invoke the OnGunReloadStart event
+        if (successfullyReload)
+            OnGunReloadStart?.Invoke(this, _equippedGun);
     }
 
     private void ThrowRigidBody(Rigidbody rb)

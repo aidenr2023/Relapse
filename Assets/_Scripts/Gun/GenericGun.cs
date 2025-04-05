@@ -549,15 +549,15 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
         }
     }
 
-    public virtual void Reload()
+    public virtual bool Reload()
     {
         // Return if the player is reloading
         if (IsReloading)
-            return;
+            return false;
 
         // Return if the gun's magazine is full
         if (currentMagazineSize == gunInformation.MagazineSize)
-            return;
+            return false;
 
         // Force the firing flag to false
         isFiring = false;
@@ -583,6 +583,8 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
         // Start the reload event
         OnReloadStart?.Invoke(this);
+
+        return true;
     }
 
     #region Animation Events

@@ -146,7 +146,7 @@ public class EnforcerEnemy : ComponentScript<EnemyInfo>
         // In the brain, change the behavior mode
         ParentComponent.ParentComponent.Brain.BehaviorMode = (int)behaviorMode;
 
-        Debug.Log($"Enforcer Behavior Mode: {behaviorMode} {ParentComponent.ParentComponent.Brain.BehaviorMode}", this);
+        // Debug.Log($"Enforcer Behavior Mode: {behaviorMode} {ParentComponent.ParentComponent.Brain.BehaviorMode}", this);
     }
 
     #region Extra Types

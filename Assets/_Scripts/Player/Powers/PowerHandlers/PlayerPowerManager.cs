@@ -204,6 +204,14 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         OnPowerUsed += PlaySoundOnUse;
         OnPowerUsed += OnPowerJustUsedOnUse;
         OnPowerUsed += ChromaticAberrationOnPowerUsed;
+        
+        // Stop charging the power when the player reloads
+        _player.WeaponManager.OnGunReloadStart += StopChargeOnReloadStart;
+    }
+
+    private void StopChargeOnReloadStart(WeaponManager arg1, IGun arg2)
+    {
+        StopCharge();
     }
 
     private void ChromaticAberrationOnPowerUsed(PlayerPowerManager arg1, PowerToken arg2)
