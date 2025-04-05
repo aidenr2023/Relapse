@@ -22,6 +22,9 @@ public class DynamicPostProcessVolume : MonoBehaviour
 
     private readonly HashSet<DynamicPostProcessingModule> _modules = new();
 
+    private readonly Dictionary<Type, VolumeComponent> _actualComponents = new();
+    private readonly Dictionary<Type, VolumeComponent> _settingsComponents = new();
+    
     #endregion
 
     #region Getters
@@ -79,12 +82,44 @@ public class DynamicPostProcessVolume : MonoBehaviour
 
     public bool GetActualComponent<T>(out T component) where T : VolumeComponent
     {
-        return volume.profile.TryGet(out component);
+        if (_actualComponents.TryGetValue(typeof(T), out var volumeComponent))
+        {
+            component = volumeComponent as T;
+            return true;
+        }
+        
+        var hasComponent = volume.profile.TryGet(out component);
+        
+        // Add the component to the actual components dictionary
+        if (hasComponent)
+            _actualComponents[typeof(T)] = component;
+
+        // If the component is not found, set it to null
+        else
+            component = null;
+        
+        return hasComponent;
     }
 
     public bool GetSettingsComponent<T>(out T component) where T : VolumeComponent
     {
-        return profile.TryGet(out component);
+        if (_settingsComponents.TryGetValue(typeof(T), out var volumeComponent))
+        {
+            component = volumeComponent as T;
+            return true;
+        }
+        
+        var hasComponent = profile.TryGet(out component);
+        
+        // Add the component to the settings components dictionary
+        if (hasComponent)
+            _settingsComponents[typeof(T)] = component;
+        
+        // If the component is not found, set it to null
+        else
+            component = null;
+        
+        return hasComponent;
     }
     
     public void TransferTokens(DynamicPostProcessVolume otherVolume)

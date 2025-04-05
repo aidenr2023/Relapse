@@ -133,7 +133,8 @@ public class TutorialScreen : GameMenu, IUsesInput
             return;
 
         // Set the button image to the current tutorial page
-        SetButtonImage(CurrentTutorial.TutorialPages[_currentTutorialPage].Button);
+        if (IsActive)
+            SetButtonImage(CurrentTutorial.TutorialPages[_currentTutorialPage].Button);
 
         // If the exit button is active & the current selected element is null,
         // set the exit button as the selected game object

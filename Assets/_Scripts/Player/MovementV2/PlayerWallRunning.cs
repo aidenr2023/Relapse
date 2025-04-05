@@ -280,7 +280,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         var camPivotForward = ParentComponent.CameraPivot.transform.forward;
         var forwardVector = new Vector3(camPivotForward.x, 0, camPivotForward.z).normalized;
         var rayInterval = 360f / rayCount;
-        
+
         // Populate the array of rays
         for (var i = 0; i < rayCount; i++)
         {
@@ -295,7 +295,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
         var camPivotLeft = -ParentComponent.CameraPivot.transform.right;
         var camPivotRight = ParentComponent.CameraPivot.transform.right;
-        
+
         // Get the left ray from the array of rays
         // _leftRay = _rays
         //     .OrderByDescending(ray => Vector3.Dot(ray.direction, camPivotLeft))
@@ -305,25 +305,27 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         foreach (var ray in _rays)
         {
             var leftDot = Vector3.Dot(ray.direction, camPivotLeft);
-            
+
             if (leftDot > Vector3.Dot(leftMostRay.direction, camPivotLeft))
                 leftMostRay = ray;
         }
+
         _leftRay = leftMostRay;
 
         // Get the right ray from the array of rays
         // _rightRay = _rays
         //     .OrderByDescending(ray => Vector3.Dot(ray.direction, camPivotRight))
         //     .First();
-        
+
         var rightMostRay = _rays[0];
         foreach (var ray in _rays)
         {
             var rightDot = Vector3.Dot(ray.direction, camPivotRight);
-            
+
             if (rightDot > Vector3.Dot(rightMostRay.direction, camPivotRight))
                 rightMostRay = ray;
         }
+
         _rightRay = rightMostRay;
     }
 
@@ -386,9 +388,6 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             // Get the angle between the current ray and the right ray
             var rightRayAngle = Vector3.Angle(_rightRay.direction, cRay.direction);
 
-            // // Get the forward vector
-            // var wallForwardVector = Vector3.Cross(hitInfo.normal, Vector3.up).normalized;
-
             // Add the hit info to the dictionary
             _wallRunHitInfos.Add(cRay, new WallRunHitInfo(hitInfo, true, leftRayAngle, rightRayAngle));
         }
@@ -398,37 +397,6 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
 
         // Dispose of the results
         jobHits.Dispose();
-        
-        // foreach (var cRay in _rays)
-        // {
-        //     // Get the hit information for the current ray
-        //     var hit = Physics.Raycast(
-        //         cRay,
-        //         out var hitInfo, wallRunningDetectionDistance,
-        //         wallLayer
-        //     );
-        //     
-        //     // If the ray did not hit anything, continue
-        //     if (!hit)
-        //     {
-        //         // Add the ray to the dictionary
-        //         _wallRunHitInfos.Add(cRay, new WallRunHitInfo(hitInfo, false, default, default));
-        //
-        //         continue;
-        //     }
-        //
-        //     // Get the angle between the current ray and the left ray
-        //     var leftRayAngle = Vector3.Angle(_leftRay.direction, cRay.direction);
-        //
-        //     // Get the angle between the current ray and the right ray
-        //     var rightRayAngle = Vector3.Angle(_rightRay.direction, cRay.direction);
-        //
-        //     // Get the forward vector
-        //     var wallForwardVector = Vector3.Cross(hitInfo.normal, Vector3.up).normalized;
-        //
-        //     // Add the hit info to the dictionary
-        //     _wallRunHitInfos.Add(cRay, new WallRunHitInfo(hitInfo, true, leftRayAngle, rightRayAngle));
-        // }
     }
 
     private void UpdateDetectWallSliding()
@@ -457,6 +425,10 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
         var isInBasicMovement = ParentComponent.CurrentMovementScript is BasicPlayerMovement;
         var isInWallRunningMovement = ParentComponent.CurrentMovementScript is PlayerWallRunning;
 
+        var parentForward = ParentComponent.Orientation.forward;
+        var parentRight = ParentComponent.Orientation.right;
+        var parentVelocity = ParentComponent.Rigidbody.velocity;
+
         // Check each ray in the dictionary
         foreach (var keyPair in _wallRunHitInfos)
         {
@@ -464,7 +436,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             var hitInfo = keyPair.Value;
 
             // Get the ray's angle in relation to the player's orientation forward
-            var rayAngle = Vector3.Angle(cRay.direction, ParentComponent.Orientation.forward);
+            var rayAngle = Vector3.Angle(cRay.direction, parentForward);
 
             // Skip the ray if it did not hit anything
             if (!hitInfo.IsHit)
@@ -482,7 +454,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             var wallNormal = hitInfo.HitInfo.normal;
 
             // Get the angle between the wall normal and the player's forward vector
-            var wallAngle = Vector3.Angle(wallNormal, ParentComponent.Orientation.forward);
+            var wallAngle = Vector3.Angle(wallNormal, parentForward);
 
             // // TODO: Replace with actual angle checks
             // const float tmpAngle = 180;
@@ -493,15 +465,12 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             // check if they are moving fast enough and have been in the air long enough
             if (isInBasicMovement)
             {
-                // Get the player's velocity vector
-                var velocityVector = ParentComponent.Rigidbody.velocity;
-
                 // Get the player's input vector in relation to their camera pivot's orientation
-                var inputVector = ParentComponent.MovementInput.y * ParentComponent.CameraPivot.transform.forward +
-                                  ParentComponent.MovementInput.x * ParentComponent.CameraPivot.transform.right;
+                var inputVector = ParentComponent.MovementInput.y * parentForward +
+                                  ParentComponent.MovementInput.x * parentRight;
                 inputVector *= ParentComponent.MovementSpeed;
 
-                var totalVector = velocityVector + inputVector;
+                var totalVector = parentVelocity + inputVector;
 
                 // Get the dot product of the player's velocity and the wall normal
                 var dotProduct = Vector3.Dot(-totalVector, wallNormal);
@@ -516,8 +485,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
                     continue;
 
                 // Get the lateral velocity of the player
-                var lateralVelocity = new Vector3(ParentComponent.Rigidbody.velocity.x, 0,
-                    ParentComponent.Rigidbody.velocity.z);
+                var lateralVelocity = new Vector3(parentVelocity.x, 0, parentVelocity.z);
 
                 // Get the dot product between the lateral velocity and the wall normal
                 var lateralDotProduct = Vector3.Dot(lateralVelocity, -wallNormal);
@@ -528,7 +496,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             }
 
             // If the player is grounded AND they are in wall running movement, continue
-            if (ParentComponent.IsGrounded && isInWallRunningMovement && ParentComponent.Rigidbody.velocity.y <= 0)
+            if (ParentComponent.IsGrounded && isInWallRunningMovement && parentVelocity.y <= 0)
                 continue;
 
             // If the ray is OUTSIDE the wall climb angle, but normal of the wall is 
@@ -536,10 +504,10 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             var wallForwardVector = Vector3.Cross(wallNormal, Vector3.up).normalized;
 
             // Orient the wall forward vector to the correct direction
-            if (Vector3.Dot(wallForwardVector, ParentComponent.Orientation.forward) < 0)
+            if (Vector3.Dot(wallForwardVector, parentForward) < 0)
                 wallForwardVector *= -1;
 
-            var normalOrientationAngle = Vector3.Angle(wallForwardVector, ParentComponent.Orientation.forward);
+            var normalOrientationAngle = Vector3.Angle(wallForwardVector, parentForward);
             if (normalOrientationAngle >= impossibleWallAngle)
             {
                 if (rayAngle > wallClimbAngle)
