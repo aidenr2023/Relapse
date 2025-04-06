@@ -151,7 +151,7 @@ public class EnforcerEnemy : ComponentScript<EnemyInfo>
 
     #region Extra Types
 
-    public enum EnforcerBehaviorMode
+    private enum EnforcerBehaviorMode
     {
         Relocate,
         Attack

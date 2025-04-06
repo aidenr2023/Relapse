@@ -56,6 +56,8 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     #endregion
 
+    public Action<MeleeEnemyAttack> OnAttack { get; set; }
+    
     #region Initializiation Functions
 
     private void Awake()
@@ -162,6 +164,10 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
 
     private void Attack()
     {
+        // Return if the attack is disabled
+        if (!IsAttackEnabled)
+            return;
+        
         // Set the can attack flag to false
         _canAttack = false;
 
@@ -169,6 +175,8 @@ public class MeleeEnemyAttack : MonoBehaviour, IEnemyAttackBehavior
         _attackCooldownTimer.SetMaxTimeAndReset(attackCooldown);
         _attackCooldownTimer.Start();
 
+        OnAttack?.Invoke(this);
+        
         if (animator == null)
             return;
 

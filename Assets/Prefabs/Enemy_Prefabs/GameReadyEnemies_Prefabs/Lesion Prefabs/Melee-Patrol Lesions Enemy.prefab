@@ -762,6 +762,7 @@ GameObject:
   - component: {fileID: 5830201516360384326}
   - component: {fileID: 743209099562729217}
   - component: {fileID: 8607638295246163511}
+  - component: {fileID: 3558133837710370106}
   - component: {fileID: 1321240230866553819}
   - component: {fileID: 1562862804367130674}
   - component: {fileID: 8865007077112191545}
@@ -904,7 +905,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   updatesPerSecond: 4
   behaviorStates:
-  - {fileID: 11400000, guid: 181b3fbcf07a09447987e8ff1c7eb299, type: 2}
+  - {fileID: 11400000, guid: f918223d2dae9e1409c0c9a1f71206d0, type: 2}
+  - {fileID: 11400000, guid: 774bbd86205505c439449aa56cf63cd9, type: 2}
+  - {fileID: 11400000, guid: a4fc9781de9f9344caf86b02be33d0b1, type: 2}
   - {fileID: 11400000, guid: 99c028529df07b54aac2cab4884cfb6f, type: 2}
 --- !u!114 &8607638295246163511
 MonoBehaviour:
@@ -919,8 +922,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   updatesPerSecond: 4
-  movementSpeed: 10
-  strafeMultiplier: 0.2
+  movementSpeed: 11
+  strafeMultiplier: 0.5
   strafeRotationLerpAmount: 0.075
   animator: {fileID: 5835691382165057910}
   walkAnimationThreshold: 0.25
@@ -929,6 +932,27 @@ MonoBehaviour:
   animationStrafeSpeedCoefficient: 0.125
   animationStrafeBackSpeedCoefficient: 0.125
   animationStrafeForwardSpeedCoefficient: 0.125
+--- !u!114 &3558133837710370106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8754773797763522373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afe0ea5e11954a58b03e2a03c5c2739b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  meleeEnemyAttack: {fileID: 8865007077112191545}
+  minRelocateTime: 2
+  maxRelocateTime: 3
+  minAttackTime: 5
+  maxAttackTime: 8
+  attackCountBeforeRetreat: 3
+  attackModeRange: 8
+  minRetreatTime: 1
+  maxRetreatTime: 3
 --- !u!114 &1321240230866553819
 MonoBehaviour:
   m_ObjectHideFlags: 0
