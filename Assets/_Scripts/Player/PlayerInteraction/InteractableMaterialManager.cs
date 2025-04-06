@@ -138,13 +138,13 @@ public class InteractableMaterialManager : MonoBehaviour
         }
         
         // This causes a bug with spawning a gun in the player's hands
-        // else
-        // {
-        //     if (_outlineState == OutlineState.NotOutlined)
-        //         return;
-        //
-        //     _outlineState = OutlineState.NotOutlined;
-        // }
+        else
+        {
+            if (_outlineState == OutlineState.NotOutlined)
+                return;
+        
+            _outlineState = OutlineState.NotOutlined;
+        }
 
         foreach (var interactableMaterial in _interactableMaterials)
         {

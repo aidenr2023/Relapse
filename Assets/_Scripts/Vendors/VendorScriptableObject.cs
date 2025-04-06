@@ -13,6 +13,7 @@ public class VendorScriptableObject : ScriptableObject
     [SerializeField] private VendorType vendorType;
     [SerializeField, Min(0)] private int upgradeCost = 250;
     [SerializeField, Min(0)] private int upgradeAmount = 50;
+    [SerializeField, Min(0)] private int maxUpgrades = 3;
 
     [SerializeField] private PowerScriptableObject[] medicinePowers;
     [SerializeField] private PowerScriptableObject[] drugPowers;
@@ -26,6 +27,9 @@ public class VendorScriptableObject : ScriptableObject
     [NonSerialized] private bool _canBuyFromVendor = true;
     [NonSerialized] private bool _hasIntroduced = false;
     [NonSerialized] private bool _hasGossipped = false;
+    [NonSerialized] private int _upgradesRemaining;
+
+    [NonSerialized] private bool _hasInitializedUpgradesRemaining = false;
 
     #region Getters
 
@@ -65,6 +69,20 @@ public class VendorScriptableObject : ScriptableObject
         set => _hasGossipped = value;
     }
 
+    public int UpgradesRemaining
+    {
+        get
+        {
+            if (_hasInitializedUpgradesRemaining)
+                return _upgradesRemaining;
+
+            _upgradesRemaining = maxUpgrades;
+            _hasInitializedUpgradesRemaining = true;
+            return _upgradesRemaining;
+        }
+        set => _upgradesRemaining = value;
+    }
+
     #endregion
 
     public void ResetVendorInformation()
@@ -73,6 +91,7 @@ public class VendorScriptableObject : ScriptableObject
         _canBuyFromVendor = true;
         _hasIntroduced = false;
         _hasGossipped = false;
+        _upgradesRemaining = maxUpgrades;
     }
 
     public void ForceInitialize(VendorType type, IEnumerable<PowerScriptableObject> powers)
@@ -106,7 +125,7 @@ public class VendorScriptableObject : ScriptableObject
                     throw new ArgumentOutOfRangeException();
             }
         }
-        
+
         // Convert the hash sets to arrays
         medicinePowers = medicinePowersHashSet.ToArray();
         drugPowers = drugPowersHashSet.ToArray();

@@ -48,11 +48,10 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     public HashSet<InputData> InputActions { get; } = new();
 
     private Player Player => Player.Instance;
-    
-    
+
+
     public Sound NormalHitSfx => null;
     public Sound CriticalHitSfx => null;
-
 
     #endregion
 
@@ -205,15 +204,22 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
                 ChangePower(2);
             if (Input.GetKeyDown(KeyCode.Keypad3))
                 ChangePower(3);
-                    
+
             // Breakpoint
             if (Input.GetKeyDown(KeyCode.B))
                 Debug.Break();
-            
+
             if (Input.GetKeyDown(KeyCode.Z))
                 FindBadInteractableMaterials();
+
+            // Set money to 999999
+            if (Input.GetKeyDown(KeyCode.Keypad9))
+            {
+                var inventoryVar = Player.PlayerInventory.InventoryVariable;
+                inventoryVar.AddItem(inventoryVar.MoneyObject, 999999 - inventoryVar.MoneyCount);
+            }
         }
-        
+
         // Decrease the health
         if (Input.GetKeyDown(KeyCode.K))
             Player.PlayerInfo.ChangeHealth(-10, Player.PlayerInfo, Player.PlayerInfo, Player.transform.position);

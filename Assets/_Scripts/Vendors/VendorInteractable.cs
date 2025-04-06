@@ -81,6 +81,7 @@ public class VendorInteractable : MonoBehaviour, IVendorInteractable, ILevelLoad
 
     private const string CAN_BUY_FROM_VENDOR = "_canBuyFromVendor";
     private const string HAS_INTRODUCED = "_hasIntroduced";
+    private const string UPGRADES_REMAINING = "_upgradesRemaining";
 
     public void LoadData(LevelLoader levelLoader)
     {
@@ -94,6 +95,10 @@ public class VendorInteractable : MonoBehaviour, IVendorInteractable, ILevelLoad
         // Load whether the player has introduced to the vendor
         if (levelLoader.TryGetDataFromMemory(UniqueId, HAS_INTRODUCED, out bool hasIntroduced))
             vendorInformation.HasIntroduced = hasIntroduced;
+        
+        // Load the number of upgrades remaining
+        if (levelLoader.TryGetDataFromMemory(UniqueId, UPGRADES_REMAINING, out int upgradesRemaining))
+            vendorInformation.UpgradesRemaining = upgradesRemaining;
     }
 
     public void SaveData(LevelLoader levelLoader)
@@ -107,6 +112,11 @@ public class VendorInteractable : MonoBehaviour, IVendorInteractable, ILevelLoad
         // Save the data
         var hasIntroducedData = vendorInformation.HasIntroduced;
         levelLoader.AddDataToMemory(UniqueId, new DataInfo(HAS_INTRODUCED, hasIntroducedData));
+        
+        // Create an integer to save the number of upgrades remaining
+        // Save the data
+        var upgradesRemainingData = vendorInformation.UpgradesRemaining;
+        levelLoader.AddDataToMemory(UniqueId, new DataInfo(UPGRADES_REMAINING, upgradesRemainingData));
     }
 
     #endregion

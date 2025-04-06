@@ -41,6 +41,8 @@ public class VendorMenu : GameMenu
 
     [Header("Upgrades"), SerializeField] private TMP_Text upgradeInfoText;
     [SerializeField] private TMP_Text upgradeMoneyText;
+    [SerializeField] private GameObject mainUpgradePanel;
+    [SerializeField] private GameObject upgradeConfirmationPanel;
 
     [Header("Gossip Dialogue")] [SerializeField]
     private DialogueUI dialogueUI;
@@ -74,8 +76,9 @@ public class VendorMenu : GameMenu
     private GameObject _isolatedMenu;
     private bool _playTutorialAfterClose;
     private PowerScriptableObject _purchasedPower;
-    
+
     private IVendorInteractable _vendorInteractable;
+    private VendorType _currentUpgradeType;
 
     #endregion
 
@@ -170,7 +173,8 @@ public class VendorMenu : GameMenu
         gossipNotification.enabled = !_currentVendor.HasGossipped;
 
         // If the player can upgrade with the vendor, show the upgrade notification
-        upgradeNotification.enabled = playerInventory.MoneyCount >= _currentVendor.UpgradeCost;
+        upgradeNotification.enabled = playerInventory.MoneyCount >= _currentVendor.UpgradeCost &&
+                                      _currentVendor.UpgradesRemaining > 0;
 
         // var scaleAdd = Mathf.Sin(Time.time * Mathf.PI * 2) * 0.1f;
         // var newScale = Vector3.one + new Vector3(scaleAdd, scaleAdd, 0);
@@ -224,16 +228,21 @@ public class VendorMenu : GameMenu
         }
         else if (menu == upgradeMenu)
         {
-            SetUpUpgradeMenu();
+            // Disable the upgrade confirmation panel
+            upgradeConfirmationPanel.SetActive(false);
+
+            // Enable the main upgrade panel
+            mainUpgradePanel.SetActive(true);
+
             SetSelectedGameObject(upgradeSelectedButton);
         }
         else
             SetSelectedGameObject(firstSelectedButton);
     }
 
-    private void SetUpUpgradeMenu()
+    private void SetUpConfirmationPanel()
     {
-        var statToUpgrade = CurrentVendor.VendorType switch
+        var statToUpgrade = _currentUpgradeType switch
         {
             VendorType.Doctor => "Health",
             VendorType.Dealer => "Toxicity",
@@ -314,7 +323,7 @@ public class VendorMenu : GameMenu
 
         // Set the power name text
         powerNameText.text = power.PowerName;
-        
+
         // Set the power type
         powerTypeText.text = power.PowerType switch
         {
@@ -339,7 +348,7 @@ public class VendorMenu : GameMenu
         try
         {
             videoPlayer.clip = power.Tutorial.TutorialPages[0].VideoClip;
-            
+
             // Restart the video player
             videoPlayer.Stop();
             videoPlayer.time = 0;
@@ -349,7 +358,7 @@ public class VendorMenu : GameMenu
         {
             // Log the exception
             Debug.LogError(e);
-            
+
             // Stop the video player
             videoPlayer.Stop();
 
@@ -429,19 +438,44 @@ public class VendorMenu : GameMenu
         Deactivate();
     }
 
-    public void BuyUpgrade()
+    public void BuyUpgrade() => BuyUpgrade(_currentUpgradeType);
+
+    public void SetUpgradeTypeHealth()
+    {
+        _currentUpgradeType = VendorType.Doctor;
+        SetUpConfirmationPanel();
+    }
+
+    public void SetUpgradeTypeToxicity()
+    {
+        _currentUpgradeType = VendorType.Dealer;
+        SetUpConfirmationPanel();
+    }
+
+    private void BuyUpgrade(VendorType vendorType)
     {
         // If the player does not have enough money, return
         if (playerInventory.MoneyCount < CurrentVendor.UpgradeCost)
         {
-            JournalTooltipManager.Instance.AddTooltip("You do not have enough money to buy this upgrade.");
+            JournalTooltipManager.Instance.AddTooltip("You do not have enough money to buy this upgrade!");
+            return;
+        }
+
+        // If the vendor has no upgrades remaining, return
+        if (CurrentVendor.UpgradesRemaining <= 0)
+        {
+            JournalTooltipManager.Instance.AddTooltip("You have no upgrades remaining!");
             return;
         }
 
         // Deduct the cost of the upgrade from the player's money
         playerInventory.RemoveItem(playerInventory.MoneyObject, CurrentVendor.UpgradeCost);
 
-        switch (CurrentVendor.VendorType)
+        // Decrement the upgrades remaining
+        CurrentVendor.UpgradesRemaining--;
+
+        // Apply the upgrade based on the vendor type
+        switch (vendorType)
         {
             // If this vendor is a doctor, increase the player's max health
             case VendorType.Doctor:
@@ -457,6 +491,24 @@ public class VendorMenu : GameMenu
                     $"You have bought a toxicity upgrade. Your max toxicity is now {playerMaxToxicity.Value}.");
                 break;
         }
+    }
+
+    public void ShowUpgradeConfirmationPanel()
+    {
+        // Disable the main upgrade panel
+        mainUpgradePanel.SetActive(false);
+
+        // Enable the upgrade confirmation panel
+        upgradeConfirmationPanel.SetActive(true);
+    }
+
+    public void HideUpgradeConfirmationPanel()
+    {
+        // Disable the upgrade confirmation panel
+        upgradeConfirmationPanel.SetActive(false);
+
+        // Enable the main upgrade panel
+        mainUpgradePanel.SetActive(true);
     }
 
     private void ChangeMaxValue(FloatReference current, FloatReference max, int amount)

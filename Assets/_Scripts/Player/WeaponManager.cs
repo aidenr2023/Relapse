@@ -158,16 +158,20 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         DebugManager.Instance.AddDebuggedObject(this);
 
         // Spawn the initial gun
-        if (initialGunPrefab != null && !_spawnedInitialGun)
-        {
-            var gun = Instantiate(initialGunPrefab).GetComponent<IGun>();
+        StartCoroutine(SpawnGunCoroutine());
+    }
 
-            // // Get the interactable materials of the gun
-            // gun.GetOutlineMaterials(Player.PlayerInteraction.OutlineMaterial.shader);
+    private IEnumerator SpawnGunCoroutine()
+    {
+        if (initialGunPrefab == null || _spawnedInitialGun)
+            yield break;
 
-            EquipGun(gun);
-            _spawnedInitialGun = true;
-        }
+        var gun = Instantiate(initialGunPrefab).GetComponent<IGun>();
+
+        yield return null;
+        
+        EquipGun(gun);
+        _spawnedInitialGun = true;
     }
 
     private void OnEnable()
@@ -315,20 +319,6 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         // Play the equip sound
         SoundManager.Instance.PlaySfx(gun.GunInformation.PickupSound);
 
-        // // TODO: DELETE THIS EVENTUALLY
-        // // Get all the renderers in the gun
-        // var renderers = gun.GameObject.GetComponentsInChildren<Renderer>();
-        //
-        // // Deactivate the renderers
-        // foreach (var cRenderer in renderers)
-        // {
-        //     // Skip the cRenderer if the object has a particle system
-        //     if (cRenderer.TryGetComponent(out ParticleSystem ps))
-        //         continue;
-        //
-        //     cRenderer.enabled = false;
-        // }
-
         // Get the gun's game object and child objects
         var gunTransforms = gun.GameObject.GetComponentsInChildren<Transform>().ToList();
 
@@ -409,7 +399,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         {
             playerMovement.ForceStopSprinting();
 
-            // // Wait until the sprint animation has stopped playing
+            // TODO: Wait until the sprint animation has stopped playing
             // yield return new WaitUntil(() => !playerMovement.IsSprintAnimationPlaying);
 
             yield return new WaitForSeconds(.125f);
