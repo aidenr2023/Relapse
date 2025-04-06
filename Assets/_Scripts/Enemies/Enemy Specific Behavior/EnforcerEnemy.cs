@@ -12,16 +12,18 @@ public class EnforcerEnemy : ComponentScript<EnemyInfo>
     [SerializeField, Min(0)] private float minRelocateTime = 2f;
     [SerializeField, Min(0)] private float maxRelocateTime = 5f;
     [SerializeField, Min(0)] private float cooldownAfterAttackTime = 1f;
+    [SerializeField, Min(0)] private float attackTimeout = 3f;
 
     #endregion
 
     #region Private Fields
 
     private EnforcerBehaviorMode _currentBehaviorMode;
+    private int _currentAttackCount;
 
     private Coroutine _updateCoroutine;
 
-    private int _attackCount;
+    private float _currentAttackTimeoutTime;
 
     #endregion
 
@@ -31,11 +33,17 @@ public class EnforcerEnemy : ComponentScript<EnemyInfo>
 
         // Subscribe to the attack event of the shooting script
         shootingEnemyAttack.onAttack += IncrementAttackCountOnAttack;
+        shootingEnemyAttack.onAttack += ResetAttackTimeout;
+    }
+
+    private void ResetAttackTimeout(ShootingEnemyAttack obj)
+    {
+        _currentAttackTimeoutTime = 0;
     }
 
     private void IncrementAttackCountOnAttack(ShootingEnemyAttack obj)
     {
-        _attackCount++;
+        _currentAttackCount++;
     }
 
     private void Start()
@@ -92,10 +100,15 @@ public class EnforcerEnemy : ComponentScript<EnemyInfo>
 
                 case EnforcerBehaviorMode.Attack:
 
-                    // Wait until the attack count reaches the attack count before relocate
-                    yield return new WaitWhile(() => _attackCount < attackCountBeforeRelocate);
-                    _attackCount = 0;
-
+                    // Stay in attack mode until the attack times out OR
+                    // The attack count reaches the attack count before relocate
+                    while (_currentAttackTimeoutTime < attackTimeout && _currentAttackCount < attackCountBeforeRelocate)
+                    {
+                        // Wait until the attack timeout is over
+                        _currentAttackTimeoutTime += Time.deltaTime;
+                        yield return null;
+                    }
+                    
                     // Disable the shooting attack
                     shootingEnemyAttack.SetAttackEnabled(false);
                     
@@ -130,6 +143,12 @@ public class EnforcerEnemy : ComponentScript<EnemyInfo>
             case EnforcerBehaviorMode.Attack:
                 // Activate the shooting enemy attack
                 shootingEnemyAttack.SetAttackEnabled(true);
+
+                // Reset the attack count
+                _currentAttackCount = 0;
+                
+                // Reset the attack timeout
+                _currentAttackTimeoutTime = 0;
 
                 // Force the movement update
                 ParentComponent.ParentComponent.Brain.ForceMovementUpdate = true;
