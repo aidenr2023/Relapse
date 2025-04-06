@@ -4,5 +4,6 @@
     Lightning,
     Explosion,
     Dash,
-    Instant,
+    InstantCharge,
+    TimeSlowCharge,
 }

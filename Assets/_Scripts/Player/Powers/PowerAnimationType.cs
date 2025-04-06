@@ -4,5 +4,6 @@
     Instant,
     PullForward,
     Slam,
-    Point
+    Point,
+    ThreeFingers,
 }

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 3ca5638b60852ad47ad0d273f8cf5d03
+guid: d75379c336693544285c5e932cfa44e7
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -19,7 +19,10 @@ ModelImporter:
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
-    animationImportWarnings: 
+    animationImportWarnings: "\nClip 'Kin_DashPower' has import animation warnings
+      that might lower retargeting quality:\nNote: Activate translation DOF on avatar
+      to improve retargeting quality.\n\t'CC_Base_L_Forearm' has translation animation
+      that will be discarded.\n"
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -33,11 +36,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Kin_PositionSwapWIP
-      takeName: Kin_PositionSwapWIP
-      internalID: -8861761166185921283
-      firstFrame: 290
-      lastFrame: 301
+      name: Kin_DashPower
+      takeName: Kin_DashPower
+      internalID: 7601530921455385980
+      firstFrame: 238
+      lastFrame: 255
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -60,21 +63,21 @@ ModelImporter:
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 267
+      additiveReferencePoseFrame: 234
     - serializedVersion: 16
-      name: Kin_PositionSwapWIP (Charging)
-      takeName: Kin_PositionSwapWIP
-      internalID: -2676464911895358960
-      firstFrame: 267
-      lastFrame: 301
+      name: Kin_DashPower (charging)
+      takeName: Kin_DashPower
+      internalID: -2960966841615177852
+      firstFrame: 234
+      lastFrame: 240
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
-      hasAdditiveReferencePose: 0
+      hasAdditiveReferencePose: 1
       loopTime: 1
-      loopBlend: 0
+      loopBlend: 1
       loopBlendOrientation: 0
       loopBlendPositionY: 0
       loopBlendPositionXZ: 0
@@ -89,7 +92,7 @@ ModelImporter:
       transformMask: []
       maskType: 3
       maskSource: {instanceID: 0}
-      additiveReferencePoseFrame: 267
+      additiveReferencePoseFrame: 234
     isReadable: 0
   meshes:
     lODScreenPercentages: []
