@@ -35,7 +35,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
     [SerializeField, Range(0, 1)] private float chargedVignetteLerpAmount = .25f;
     [SerializeField, Min(0)] private float chargedVignetteFlashesPerSecond = 1f;
 
-    [Header("Visual Effects")] [SerializeField] private VisualEffect fireballChargeVfx;
+    [Header("Visual Effects")] [SerializeField]
+    private VisualEffect fireballChargeVfx;
 
     [SerializeField] private VisualEffect purpleFireballChargeVfx;
     [SerializeField] private VisualEffect greenFireballChargeVfx;
@@ -204,7 +205,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         OnPowerUsed += PlaySoundOnUse;
         OnPowerUsed += OnPowerJustUsedOnUse;
         OnPowerUsed += ChromaticAberrationOnPowerUsed;
-        
+
         // Stop charging the power when the player reloads
         _player.WeaponManager.OnGunReloadStart += StopChargeOnReloadStart;
     }
@@ -363,6 +364,10 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Skip if the player is currently relapsing
         if (_player.PlayerInfo.IsRelapsing)
+            return;
+
+        // Return if the player is currently reloading
+        if (_player.WeaponManager.EquippedGun is { IsReloading: true })
             return;
 
         // Set the is charging power flag to true

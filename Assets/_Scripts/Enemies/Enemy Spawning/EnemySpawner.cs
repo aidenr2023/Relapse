@@ -172,6 +172,9 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
         // Set the instantiated at runtime flag to true (if it has one)
         if (spawnedItem.TryGetComponent(out UniqueId uniqueId))
             uniqueId.InstantiatedAtRuntime = true;
+        
+        // Create an object display spinner
+        ObjectDisplaySpinner.DisplayObject(spawnedItem.transform);
     }
 
     public void KillAllCurrentEnemies()
