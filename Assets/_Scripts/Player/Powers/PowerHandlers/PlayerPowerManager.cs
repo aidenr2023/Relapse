@@ -14,16 +14,20 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 {
     private const float MAX_FADE_TIME = .25f;
 
+    private static readonly int PowerChargeAnimationTypeAnimationID = Animator.StringToHash("PowerTypeChargingBlend");
+    private static readonly int AnimationTypeAnimationID = Animator.StringToHash("PowerAnimationType");
+    private static readonly int WasPowerJustUsedAnimationID = Animator.StringToHash("wasPowerJustUsed");
+    private static readonly int ChargingAnimationID = Animator.StringToHash("Charging");
+
     public static PlayerPowerManager Instance { get; private set; }
 
     #region Serialized Fields
 
-    [SerializeField] private PowerTokenListVariable powerTokensSo;
-
     [SerializeField] private Transform powerFirePoint;
-
     [SerializeField] private LayerMask powerAimIgnoreLayers;
+    [SerializeField] private Animator animator;
 
+    [SerializeField] private PowerTokenListVariable powerTokensSo;
     [SerializeField] private PowerListReference startingPowers;
     [SerializeField] private PowerListReference allPowers;
     [SerializeField] private PowerListReference powers;
@@ -48,7 +52,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     #endregion
 
-    public event Action<PlayerPowerManager, PowerToken> OnChargeStart;
     public event Action<PlayerPowerManager, PowerToken> OnPowerUsed;
 
     #region Private Fields
@@ -205,10 +208,16 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         // Add the event for the power used
         OnPowerUsed += PlaySoundOnUse;
         OnPowerUsed += OnPowerJustUsedOnUse;
+        OnPowerUsed += JustUsedAnimationOnUse;
         OnPowerUsed += ChromaticAberrationOnPowerUsed;
 
         // Stop charging the power when the player reloads
         _player.WeaponManager.OnGunReloadStart += StopChargeOnReloadStart;
+    }
+
+    private void JustUsedAnimationOnUse(PlayerPowerManager arg1, PowerToken arg2)
+    {
+        animator.SetTrigger(WasPowerJustUsedAnimationID);
     }
 
     private void StopChargeOnReloadStart(WeaponManager arg1, IGun arg2)
@@ -374,6 +383,10 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         // Set the is charging power flag to true
         _isChargingPower = true;
 
+        // Set the current charge animation type
+        animator.SetFloat(PowerChargeAnimationTypeAnimationID, (int)CurrentPower.ChargeAnimationType);
+        animator.SetInteger(AnimationTypeAnimationID, (int)CurrentPower.AnimationType);
+
         // Call the current power's start charge method
         var startedChargingThisFrame = CurrentPowerToken.ChargePercentage == 0;
         CurrentPower.PowerLogic.StartCharge(this, CurrentPowerToken, startedChargingThisFrame);
@@ -425,6 +438,8 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
         // Update the gauntlet charge VFX
         UpdateGauntletChargeVFX();
+
+        animator.SetBool(ChargingAnimationID, IsChargingPower);
     }
 
     private void UpdateCharge()
