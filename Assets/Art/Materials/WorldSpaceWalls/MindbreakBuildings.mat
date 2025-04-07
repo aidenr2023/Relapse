@@ -7,14 +7,14 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: CeilingMaterial_Mat
+  m_Name: MindbreakBuildings
   m_Shader: {fileID: -6465566751694194690, guid: ea91e1bb8f5b19e4f9dfb65145e07ec7,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
-  m_LightmapFlags: 4
+  m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -25,19 +25,19 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _TexBaseColor:
-        m_Texture: {fileID: 2800000, guid: 443eaac725a995c41b06634db70b13d8, type: 3}
+        m_Texture: {fileID: 2800000, guid: cd8396c5d56c85a458e6fda702e5fe44, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TexMetallic:
-        m_Texture: {fileID: 2800000, guid: 0953c6f000a6ea04686e3aff5c85a54d, type: 3}
+        m_Texture: {fileID: 2800000, guid: 8727a68921c6a4a489dec1a65d09ea0c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TexNormal:
-        m_Texture: {fileID: 2800000, guid: 88f798ca1815b394684ced3bb7d2e678, type: 3}
+        m_Texture: {fileID: 2800000, guid: 6453d5c883886c249aebd259c1e3a8b7, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TexRoughness:
-        m_Texture: {fileID: 2800000, guid: 0953c6f000a6ea04686e3aff5c85a54d, type: 3}
+        m_Texture: {fileID: 2800000, guid: 0a3333a31f236b94c9d101d145d4c2bd, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -56,11 +56,12 @@ Material:
     m_Floats:
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Tiling: 0.0005
+    - _Tiling: 0.1
     - _tmp: 1
-    m_Colors: []
+    m_Colors:
+    - _ColorModifier: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []
---- !u!114 &132136674706892356
+--- !u!114 &5935135447044634279
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
