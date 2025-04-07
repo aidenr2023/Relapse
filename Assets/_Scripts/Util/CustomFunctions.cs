@@ -104,11 +104,16 @@ public static class CustomFunctions
 
     public static bool IsNotNull(this UnityEngine.Object obj) => obj != null;
 
-    public static Result<T> NullCheckToResult<T>(this T obj) where T : UnityEngine.Object
+    public static Result<T> NullCheckToResult<T>(this T obj, string valueName = "Value") where T : UnityEngine.Object
     {
         if (obj == null)
-            return Result<T>.Error($"Value is null!");
+            return Result<T>.Error($"{valueName} is null!");
 
         return Result<T>.Ok(obj);
+    }
+
+    public static Result<T> BoolToResult<T>(this bool condition, T value)
+    {
+        return Result<T>.BoolToResult(value, v => condition);
     }
 }

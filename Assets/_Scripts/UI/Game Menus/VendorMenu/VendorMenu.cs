@@ -38,6 +38,7 @@ public class VendorMenu : GameMenu
     [SerializeField] private Image biggerPowerImage;
     [SerializeField] private VideoPlayer videoPlayer;
     [SerializeField] private TMP_Text powerNameText;
+    [SerializeField] private Tutorial relapseTutorial;
 
     [Header("Upgrades"), SerializeField] private TMP_Text upgradeInfoText;
     [SerializeField] private TMP_Text upgradeMoneyText;
@@ -113,7 +114,10 @@ public class VendorMenu : GameMenu
     {
         // If the tutorial should be played after the menu is closed, play the tutorial
         if (_playTutorialAfterClose && _purchasedPower != null && _purchasedPower.Tutorial != null)
-            TutorialScreen.Play(this, _purchasedPower.Tutorial, false);
+        {
+            // TutorialScreen.Play(this, _purchasedPower.Tutorial, false);
+            TutorialScreen.Play(this, relapseTutorial, false);
+        }
 
         // Reset the flags
         _playTutorialAfterClose = false;
@@ -207,7 +211,7 @@ public class VendorMenu : GameMenu
 
         menu.SetActive(true);
         _isolatedMenu = menu;
-        
+
         // Disable the video player
         videoPlayer.enabled = false;
 
@@ -223,7 +227,7 @@ public class VendorMenu : GameMenu
             // Otherwise, select the shop selected button
             else
                 SetSelectedGameObject(shopSelectedButton);
-            
+
             // Enable the video player
             videoPlayer.enabled = true;
         }
@@ -539,8 +543,23 @@ public class VendorMenu : GameMenu
 
     public void SetPurchasedPower(PowerScriptableObject power)
     {
-        _purchasedPower = power;
-        _playTutorialAfterClose = true;
+        var powerResult = power.NullCheckToResult("Power Scriptable Object");
+
+        // Set the purchased power if the power is not null
+        powerResult.Match(n => _purchasedPower = n);
+
+        // Set the tutorial to play if the power is a drug
+        powerResult
+            .Check(n => n.PowerType == PowerType.Drug, "Power is not a drug!")
+            .Match(_ => _playTutorialAfterClose = true);
+
+        // Write a tooltip telling the player to check the tutorials menu for more info
+        powerResult.Match(p =>
+            {
+                JournalTooltipManager.Instance.AddTooltip(
+                    $"Check the tutorials menu for more info about {p.PowerName}!");
+            }
+        );
     }
 
     public void SetSelectedGameObject(GameObject element)
