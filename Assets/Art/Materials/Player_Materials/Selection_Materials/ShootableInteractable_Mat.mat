@@ -51,23 +51,25 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AlternateLerp: 0
     - _FPS: 12
     - _Frequency: 4
     - _IsOutlined: 1
     - _IsSelected: 0
     - _MaxAmplitude: 2
-    - _MaxDistance: 75
+    - _MaxDistance: 60
     - _MinAmplitude: 1
-    - _MinDistance: 30
+    - _MinDistance: 20
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _RandMax: 0.3
-    - _RandMin: 0
+    - _RandMax: 0.25
+    - _RandMin: -0.05
     - _Scale: 1
     - _SelectedFrequencyMult: 2
-    - _SelectedScaleMult: 1
+    - _SelectedScaleMult: 1.25
     - _Width: 0.25
     m_Colors:
-    - _Color: {r: 5.992157, g: 0, b: 0, a: 0.11372549}
-    - _SelectedColor: {r: 1, g: 0.5764706, b: 0.03529412, a: 1}
+    - _AlternateColor: {r: 1, g: 1, b: 1, a: 0}
+    - _Color: {r: 1, g: 0, b: 0, a: 1}
+    - _SelectedColor: {r: 0.2482524, g: 0, b: 1, a: 1}
   m_BuildTextureStacks: []
