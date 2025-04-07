@@ -1119,7 +1119,7 @@ AnimatorStateTransition:
   m_ExitTime: 0.75
   m_HasExitTime: 0
   m_HasFixedDuration: 1
-  m_InterruptionSource: 0
+  m_InterruptionSource: 1
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
 --- !u!1101 &-2906508074801125455
@@ -2504,6 +2504,10 @@ AnimatorStateMachine:
     - {fileID: -1048167137918451384}
     - {fileID: -1039599225844296947}
     - {fileID: -2776811080177183203}
+  - first: {fileID: 3891439913624981035}
+    second:
+    - {fileID: -4079526114417302079}
+    - {fileID: -6704030379945731416}
   - first: {fileID: 5863568447948577645}
     second:
     - {fileID: 2099252332197569608}
@@ -2513,10 +2517,6 @@ AnimatorStateMachine:
     second:
     - {fileID: 8259273959964815641}
     - {fileID: -7272490511328842762}
-  - first: {fileID: 3891439913624981035}
-    second:
-    - {fileID: -4079526114417302079}
-    - {fileID: -6704030379945731416}
   m_StateMachineBehaviours: []
   m_AnyStatePosition: {x: -240, y: 320, z: 0}
   m_EntryPosition: {x: 320, y: -600, z: 0}
@@ -2668,6 +2668,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 6
     m_ConditionEvent: modelType
     m_EventTreshold: 2
+  - m_ConditionMode: 2
+    m_ConditionEvent: isReloading
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -2778354815550839643}
   m_Solo: 0
