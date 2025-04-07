@@ -81,6 +81,9 @@ public class TutorialScreen : GameMenu, IUsesInput
 
         // Initialize the input
         InitializeInput();
+        
+        // Disable the video player
+        videoPlayer.enabled = false;
     }
 
     protected override void CustomStart()
@@ -94,12 +97,18 @@ public class TutorialScreen : GameMenu, IUsesInput
 
         // Set the selected game object to the exit button
         eventSystem.SetSelectedGameObject(null);
+        
+        // Disable the video
+        videoPlayer.enabled = true;
     }
 
     protected override void CustomDeactivate()
     {
         // Stop the video
         videoPlayer.Stop();
+        
+        // Disable the video
+        videoPlayer.enabled = false;
 
         // Unregister the input
         InputManager.Instance.Unregister(this);

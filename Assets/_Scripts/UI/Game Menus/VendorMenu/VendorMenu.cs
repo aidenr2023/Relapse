@@ -207,6 +207,9 @@ public class VendorMenu : GameMenu
 
         menu.SetActive(true);
         _isolatedMenu = menu;
+        
+        // Disable the video player
+        videoPlayer.enabled = false;
 
         // Set the selected button
         if (menu == powerMenu)
@@ -220,6 +223,9 @@ public class VendorMenu : GameMenu
             // Otherwise, select the shop selected button
             else
                 SetSelectedGameObject(shopSelectedButton);
+            
+            // Enable the video player
+            videoPlayer.enabled = true;
         }
         else if (menu == gossipMenu)
         {
