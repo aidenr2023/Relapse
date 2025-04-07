@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
+[ExecuteAlways]
 [RequireComponent(typeof(InteractableMaterialManager))]
 public class CheckpointInteractable : MonoBehaviour, IInteractable
 {
@@ -17,7 +18,7 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
     [SerializeField, Min(0)] private float proximityRange = 15;
 
     [SerializeField] private Sound checkpointCollectedSound;
-    
+
     [SerializeField] private UnityEvent onInteraction;
 
     #endregion
@@ -46,13 +47,40 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
 
     #endregion
 
+#if UNITY_EDITOR
+
+    private static HashSet<GameObject> duplicateHolder = new HashSet<GameObject>();
+
+#endif
+
+    private void Awake()
+    {
+#if UNITY_EDITOR
+
+        if (duplicateHolder.Add(gameObject))
+        {
+            // Get the number of Checkpoint interactable scripts on the object
+            var checkpointInteractableCount = GetComponents<CheckpointInteractable>().Length;
+
+            // Assert that the respawn position is not null
+            Debug.Assert(respawnPosition != null, "DESIGNER ISSUE: Respawn position is null!", this);
+            Debug.Assert(
+                checkpointInteractableCount == 1,
+                "DESIGNER ISSUE: Multiple CheckpointInteractable scripts on this object! Remove the one that ISN'T part of the prefab",
+                gameObject
+            );
+        }
+
+#endif
+    }
+
     private void OnEnable()
     {
         return;
-        
+
         // TODO: If I uncomment this,
         // the invisible checkpoints will be added to the pickup icon manager
-        
+
         if (!isProximity)
             PickupIconManager.Add(this);
     }
@@ -67,20 +95,20 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
     private void Update()
     {
         // Check if the player is nearby 
-        if (isProximity)
-        {
-            // Check if the player is nearby
-            if (Player.Instance == null)
-                return;
+        if (!isProximity)
+            return;
 
-            // Get the distance between the player and the checkpoint
-            var distance = Vector3.Distance(Player.Instance.transform.position, transform.position);
+        // Check if the player is nearby
+        if (Player.Instance == null)
+            return;
 
-            // Check if the player is within the proximity range
-            // Force an interaction
-            if (distance <= proximityRange && !HasBeenCollected)
-                Interact(Player.Instance.PlayerInteraction);
-        }
+        // Get the distance between the player and the checkpoint
+        var distance = Vector3.Distance(Player.Instance.transform.position, transform.position);
+
+        // Check if the player is within the proximity range
+        // Force an interaction
+        if (distance <= proximityRange && !HasBeenCollected)
+            Interact(Player.Instance.PlayerInteraction);
     }
 
     public void Interact(PlayerInteraction _)
@@ -107,10 +135,10 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
         // Play the sound
         if (checkpointCollectedSound != null)
             SoundManager.Instance.PlaySfx(checkpointCollectedSound);
-        
+
         // Set the has been collected flag to true
         HasBeenCollected = true;
-        
+
         // Save the information
         SaveInformation();
 

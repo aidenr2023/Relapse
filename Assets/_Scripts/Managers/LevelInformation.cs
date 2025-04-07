@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
 public class LevelInformation : MonoBehaviour
 {
     private static readonly Dictionary<string, LevelInformation> Instances = new();
@@ -179,7 +178,7 @@ public class LevelInformation : MonoBehaviour
         // Play the intro text
 
         // Return if the cutscene listener instance is null
-        if (CutsceneListener.Instance == null)
+        if (CutsceneListener.Instance == null && Application.isPlaying)
         {
             Debug.LogError("CutsceneListener instance not found!");
             return;

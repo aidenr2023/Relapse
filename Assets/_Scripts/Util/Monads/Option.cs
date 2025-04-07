@@ -94,7 +94,7 @@ public class Option<TSomeType>
         return Switch(some => some, () => default);
     }
 
-    public static implicit operator Option<TSomeType>(TSomeType value)
+    public static explicit operator Option<TSomeType>(TSomeType value)
     {
         // If the value is null, return an Option with no value.
         if (value == null)

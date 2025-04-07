@@ -122,7 +122,7 @@ public class PlayerEnemySelect : ComponentScript<Player>
         }
 
         // Set the selected enemy to the current enemy
-        SelectedEnemy = cEnemy != null ? cEnemy : Option<Enemy>.None;
+        SelectedEnemy = cEnemy != null ? Option<Enemy>.Some(cEnemy) : Option<Enemy>.None;
         _enemyPosition = selectedCenter;
     }
 
