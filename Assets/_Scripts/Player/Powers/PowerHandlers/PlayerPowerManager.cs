@@ -48,6 +48,7 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
 
     #endregion
 
+    public event Action<PlayerPowerManager, PowerToken> OnChargeStart;
     public event Action<PlayerPowerManager, PowerToken> OnPowerUsed;
 
     #region Private Fields

@@ -130,7 +130,7 @@ public class MultiDissolver : MonoBehaviour
             dissolveInDuration)
         );
 
-        Debug.Log("DissolveIn");
+        // Debug.Log("DissolveIn");
     }
 
     public void DissolveOut()
@@ -145,6 +145,6 @@ public class MultiDissolver : MonoBehaviour
             dissolveOutDuration)
         );
 
-        Debug.Log("DissolveOut");
+        // Debug.Log("DissolveOut");
     }
 }
