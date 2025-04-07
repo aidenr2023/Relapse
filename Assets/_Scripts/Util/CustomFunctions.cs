@@ -101,4 +101,14 @@ public static class CustomFunctions
             arrowEnd + Quaternion.Euler(0, -arrowAngleSize, 0) * -forward * arrowLength / 4
         );
     }
+
+    public static bool IsNotNull(this UnityEngine.Object obj) => obj != null;
+
+    public static Result<T> NullCheckToResult<T>(this T obj) where T : UnityEngine.Object
+    {
+        if (obj == null)
+            return Result<T>.Error($"Value is null!");
+
+        return Result<T>.Ok(obj);
+    }
 }

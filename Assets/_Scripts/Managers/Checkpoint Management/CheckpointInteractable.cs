@@ -48,7 +48,6 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
     #endregion
 
 #if UNITY_EDITOR
-
     private static HashSet<GameObject> duplicateHolder = new HashSet<GameObject>();
 
 #endif
@@ -56,7 +55,6 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
     private void Awake()
     {
 #if UNITY_EDITOR
-
         if (duplicateHolder.Add(gameObject))
         {
             // Get the number of Checkpoint interactable scripts on the object
@@ -113,7 +111,12 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
 
     public void Interact(PlayerInteraction _)
     {
-        CheckpointManager.Instance?.SaveCheckpoint(this);
+        var result = CheckpointManager.Instance?.SaveCheckpoint(this)
+                     ?? Result<int>.Error("Checkpoint manager instance is null!").ReadError(Debug.LogError);
+
+        // If the result was a failure, return
+        if (result.IsFailure)
+            return;
 
         if (HasBeenCollected)
         {

@@ -33,19 +33,32 @@ public class CheckpointManager : MonoBehaviour
     }
 
     // When player interacts with a burner phone, save the current checkpoint as the transform of the burner phone
-    public void SaveCheckpoint(CheckpointInteractable interactedObject)
+    public IResult SaveCheckpoint(CheckpointInteractable interactedObject)
     {
-        var positionOption = interactedObject.RespawnPosition != null
-            ? Option<Vector3>.Some(interactedObject.RespawnPosition.position)
-            : Option<Vector3>.None;
-        
-        if (!positionOption.HasValue)
-        {
-            Debug.LogError("CheckpointInteractable does not have a respawn position! Not saving!", interactedObject);
-            return;
-        }
-        
-        SaveCheckpoint(positionOption.Value);
+        // var positionOption = interactedObject.RespawnPosition != null
+        //     ? Option<Vector3>.Some(interactedObject.RespawnPosition.position)
+        //     : Option<Vector3>.None;
+        //
+        // if (!positionOption.HasValue)
+        // {
+        //     Debug.LogError("CheckpointInteractable does not have a respawn position! Not saving!", interactedObject);
+        //     return;
+        // }
+        //
+        // SaveCheckpoint(positionOption.Value);
+
+        // Save the checkpoint if possible 
+        var result = interactedObject
+            .NullCheckToResult()
+            .Map(n => n.RespawnPosition)
+            .Check(CustomFunctions.IsNotNull, "interactedObject.RespawnPosition is null!")
+            .Map(n => n.position)
+            .Chain(SaveCheckpoint);
+
+        if (result.IsFailure)
+            Debug.LogError($"Could not save checkpoint!: {result.ErrorMessage}");
+
+        return result;
     }
 
     public void SaveCheckpoint(Vector3 position)

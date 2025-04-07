@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class PlayerHandTilt : MonoBehaviour
 {
+    private static readonly int WeaponSwayAnimationID = Animator.StringToHash("WeaponSway");
+    
     [SerializeField] private TransformReference playerOrientation;
     [SerializeField] private Vector3Reference playerVelocity;
     [SerializeField] private Animator animator;
@@ -33,7 +35,7 @@ public class PlayerHandTilt : MonoBehaviour
         
         // TODO: Set the variable of the animator using the _currentSwayAngleLR variable
         if (animator != null)
-            animator.SetFloat("WeaponSway", _currentSwayAngleLR);
+            animator.SetFloat(WeaponSwayAnimationID, _currentSwayAngleLR);
 
     }
 }

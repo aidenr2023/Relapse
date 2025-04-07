@@ -4,7 +4,7 @@ public class Option<TSomeType>
 {
     private readonly TSomeType _value;
     public bool HasValue { get; }
-    
+
     public TSomeType Value
     {
         get
@@ -54,53 +54,66 @@ public class Option<TSomeType>
         // If this has a value, apply the function to it and return the result.
         if (HasValue)
             return func(_value);
-        
+
         // If this has no value, return an Option with no value.
         return Option<TOtherType>.None;
     }
-    
+
     /// <summary>
     /// Match: Execute one of two actions based on whether this Option has a value.
     /// </summary>
     /// <param name="someAction"></param>
     /// <param name="noneAction"></param>
-    public void Match(Action<TSomeType> someAction, Action noneAction)
+    public Option<TSomeType> Match(Action<TSomeType> someAction, Action noneAction)
     {
         // If this has a value, execute the someAction with the value.
         if (HasValue)
             someAction(_value);
         else
             noneAction();
+
+        return this;
     }
-    public void Match(Action<TSomeType> someAction)
+
+    public Option<TSomeType> Match(Action<TSomeType> someAction)
     {
         // If this has a value, execute the someAction with the value.
         if (HasValue)
             someAction(_value);
+
+        return this;
     }
-    
+
     public TOtherType Switch<TOtherType>(Func<TSomeType, TOtherType> someFunc, Func<TOtherType> noneFunc)
     {
         // If this has a value, execute the someFunc with the value and return the result.
         if (HasValue)
             return someFunc(_value);
-        
+
         // If this has no value, execute the noneFunc and return the result.
         return noneFunc();
     }
-    
+
     public TSomeType Switch()
     {
         return Switch(some => some, () => default);
+    }
+
+    public Result<TSomeType> ToResult()
+    {
+        return Switch(
+            Result<TSomeType>.Ok,
+            () => Result<TSomeType>.Error($"Could not convert empty option to Result<{typeof(TSomeType)}>")
+        );
     }
 
     public static explicit operator Option<TSomeType>(TSomeType value)
     {
         // If the value is null, return an Option with no value.
         if (value == null)
-            return Option<TSomeType>.None;
+            return None;
 
         // Otherwise, return an Option with the value.
-        return Option<TSomeType>.Some(value);
+        return Some(value);
     }
 }
