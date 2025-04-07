@@ -81,6 +81,8 @@ public class VendorMenu : GameMenu
     private IVendorInteractable _vendorInteractable;
     private VendorType _currentUpgradeType;
 
+    private Coroutine _changeClipCoroutine;
+
     #endregion
 
     #region Getters
@@ -354,30 +356,47 @@ public class VendorMenu : GameMenu
         // Set the description
         descriptionText.text = power.Description;
 
+        VideoClip clip = null;
+        
         // Set the video to the first video
         try
         {
-            videoPlayer.clip = power.Tutorial.TutorialPages[0].VideoClip;
-
-            // Restart the video player
-            videoPlayer.Stop();
-            videoPlayer.time = 0;
-            videoPlayer.Play();
+            clip = power.Tutorial.TutorialPages[0].VideoClip;
         }
         catch (Exception e)
         {
             // Log the exception
             Debug.LogError(e);
-
-            // Stop the video player
-            videoPlayer.Stop();
-
-            videoPlayer.clip = null;
         }
+
+        // Change the video clip
+        if (_changeClipCoroutine != null)
+            StopCoroutine(_changeClipCoroutine);
+        _changeClipCoroutine = StartCoroutine(ChangeVideoClip(clip));
 
         // Set the bigger icon image
         SetBiggerIconImage(power);
     }
+
+    private IEnumerator ChangeVideoClip(VideoClip clip)
+    {
+        // Stop the video player
+        videoPlayer.Stop();
+
+        // Wait a frame
+        yield return null;
+
+        videoPlayer.time = 0;
+        videoPlayer.clip = clip;
+
+        // Wait another frame
+        yield return null;
+
+        // Start the video player if the clip is not null
+        if (clip != null)
+            videoPlayer.Play();
+    }
+
 
     private void SetBiggerIconImage(PowerScriptableObject power)
     {

@@ -127,9 +127,6 @@ public class PlayerPowerManager : MonoBehaviour, IDebugged, IUsesInput, IPlayerL
         }
     }
 
-    // TODO: UPDATE THIS TOO
-    private VisualEffect[] AllChargeVfx => new[] { fireballChargeVfx, electricChargeVfx, healthHaloChargeVfx };
-
     #endregion
 
     #region Initialization Functions

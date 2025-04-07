@@ -225,9 +225,25 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
             Player.PlayerInfo.ChangeHealth(-10, Player.PlayerInfo, Player.PlayerInfo, Player.transform.position);
 
         if (Input.GetKeyDown(KeyCode.Y))
-            Shader.SetGlobalFloat("_EnemyAlternateLerp", 0);
-        if (Input.GetKeyDown(KeyCode.U))
-            Shader.SetGlobalFloat("_EnemyAlternateLerp", 1);
+        {
+            // Create a coroutine builder
+            var builder = CoroutineBuilder.Create()
+                .Enqueue(TestCoroutine("Test 1", 1))
+                .Enqueue(TestCoroutine("Test 2", 1))
+                .Enqueue(() => Debug.Log("Simultaneous w/ 2"))
+                .Enqueue(TestCoroutine("Test 3", 1))
+                .Enqueue(() => Debug.Log("Simultaneous w/ 3.1"))
+                .Enqueue(() => Debug.Log("Simultaneous w/ 3.2"))
+                .Enqueue(() => Debug.Log("Simultaneous w/ 3.3"))
+                .Enqueue(TestCoroutine("DONE", 0))
+                .Start(this);
+        }
+
+        IEnumerator TestCoroutine(string text, float waitTime)
+        {
+            Debug.Log($"{text} - [{waitTime:0.00}]");
+            yield return new WaitForSeconds(waitTime);
+        }
     }
 
     private void DebugLoadScene(LevelSectionSceneInfo[] levelInfo)

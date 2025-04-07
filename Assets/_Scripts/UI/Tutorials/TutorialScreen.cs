@@ -81,7 +81,7 @@ public class TutorialScreen : GameMenu, IUsesInput
 
         // Initialize the input
         InitializeInput();
-        
+
         // Disable the video player
         videoPlayer.enabled = false;
     }
@@ -97,25 +97,43 @@ public class TutorialScreen : GameMenu, IUsesInput
 
         // Set the selected game object to the exit button
         eventSystem.SetSelectedGameObject(null);
-        
-        // Disable the video
-        videoPlayer.enabled = true;
+
+        // enabled the video
+        CoroutineBuilder
+            .Create()
+            .WaitSecondsRealtime(.125f)
+            .Enqueue(() => videoPlayer.enabled = true)
+            .Start(this);
     }
 
     protected override void CustomDeactivate()
     {
         // Stop the video
         videoPlayer.Stop();
-        
-        // Disable the video
-        videoPlayer.enabled = false;
 
-        // Unregister the input
-        InputManager.Instance.Unregister(this);
+        // // Disable the video
+        // videoPlayer.enabled = false;
+        //
+        // // Unregister the input
+        // InputManager.Instance.Unregister(this);
+        //
+        // // Run the resume game coroutine
+        // if (IsActive)
+        //     StartCoroutine(ResumeGame(_currentSlowTime));
 
-        // Run the resume game coroutine
+        var routine = CoroutineBuilder
+            .Create()
+            .Enqueue(() => videoPlayer.enabled = false)
+            .Enqueue(() => InputManager.Instance.Unregister(this));
+
         if (IsActive)
-            StartCoroutine(ResumeGame(_currentSlowTime));
+        {
+            routine
+                .WaitSecondsRealtime(.125f)
+                .Enqueue(ResumeGame(_currentSlowTime));
+        }
+
+        routine.Start(this);
     }
 
     private IEnumerator ResumeGame(float slowTime)
@@ -361,6 +379,15 @@ public class TutorialScreen : GameMenu, IUsesInput
 
         // Start the coroutine
         StartCoroutine(TutorialCoroutine(tutorial, replay, isTutorialCompleted, slowTime));
+    }
+
+    private IEnumerator SetVideoPlayerEnabled(bool isEnabled)
+    {
+        // Set the video player to enabled
+        videoPlayer.enabled = isEnabled;
+
+        // Wait a frame
+        yield return null;
     }
 
     private IEnumerator TutorialCoroutine(Tutorial tutorial, bool replay, bool isTutorialCompleted, float slowTime)
