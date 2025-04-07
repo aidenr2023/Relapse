@@ -177,7 +177,7 @@ public class PlayerLook : MonoBehaviour, IUsesInput
         // If the player's selected enemy is not null, 
         // Apply the aim assist
         if (InputManager.Instance.CurrentControlScheme == InputManager.ControlSchemeType.Gamepad &&
-            _player.PlayerEnemySelect.SelectedEnemy != null)
+            _player.PlayerEnemySelect.SelectedEnemy.HasValue)
         {
             var screenSize = new Vector2(Screen.width, Screen.height);
 

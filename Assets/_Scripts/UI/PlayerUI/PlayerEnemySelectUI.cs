@@ -54,11 +54,11 @@ public class PlayerEnemySelectUI : MonoBehaviour
     private void Update()
     {
         var isVisible = Player.Instance != null &&
-                        Player.Instance.PlayerEnemySelect.SelectedEnemy != null &&
+                        Player.Instance.PlayerEnemySelect.SelectedEnemy.HasValue &&
                         Player.Instance.PlayerPowerManager.CurrentPower != null &&
                         Player.Instance.PlayerPowerManager.CurrentPower.UsesReticle;
 
-        var hasEnemy = Player.Instance != null && Player.Instance.PlayerEnemySelect.SelectedEnemy != null;
+        var hasEnemy = Player.Instance?.PlayerEnemySelect.SelectedEnemy.HasValue ?? false;
 
         // Update the opacity
         UpdateOpacity(isVisible, hasEnemy);
@@ -79,7 +79,8 @@ public class PlayerEnemySelectUI : MonoBehaviour
         // UpdateMaterialManager(isVisible, hasEnemy);
 
         // Update the previous enemy
-        _previousEnemy = Player.Instance?.PlayerEnemySelect?.SelectedEnemy;
+        // _previousEnemy = Player.Instance?.PlayerEnemySelect?.SelectedEnemy;
+        _previousEnemy = Player.Instance?.PlayerEnemySelect.SelectedEnemy!.Switch();
     }
 
     private void UpdateMaterialManager(bool isVisible, bool hasEnemy)
@@ -90,7 +91,7 @@ public class PlayerEnemySelectUI : MonoBehaviour
             return;
         }
 
-        var currentEnemy = Player.Instance.PlayerEnemySelect.SelectedEnemy;
+        var currentEnemy = Player.Instance.PlayerEnemySelect.SelectedEnemy.Switch();
 
         var needsToChangeRenderers = isVisible && _previousEnemy != currentEnemy;
 

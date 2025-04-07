@@ -54,9 +54,11 @@ public class ChainLightning : MonoBehaviour, IPower
     {
         var currentEnemy = powerManager.Player.PlayerEnemySelect.SelectedEnemy;
 
-        if (currentEnemy == null)
+        if (!currentEnemy.HasValue)
             yield break;
 
+        var unwrappedEnemy = currentEnemy.Value;
+        
         // Instantiate the trail prefab
         var trail = Instantiate(trailPrefab, powerManager.PowerFirePoint.position, Quaternion.identity);
 
@@ -77,14 +79,14 @@ public class ChainLightning : MonoBehaviour, IPower
         while (remainingChainCount > 0)
         {
             // Remove the current enemy from the remaining enemies
-            remainingEnemies.Remove(currentEnemy);
+            remainingEnemies.Remove(unwrappedEnemy);
 
             // If the current enemy is null, break
-            if (currentEnemy == null)
+            if (unwrappedEnemy == null)
                 break;
 
             // Get the position of the current enemy
-            var enemyPosition = currentEnemy.transform.position;
+            var enemyPosition = unwrappedEnemy.transform.position;
 
             // TODO: Do more stuff here. Spawn a VFX, play a sound, etc.
 
@@ -107,13 +109,13 @@ public class ChainLightning : MonoBehaviour, IPower
                 yield return new WaitForSeconds(chainDelayTime / chainStepCount);
             }
 
-            if (currentEnemy != null)
+            if (unwrappedEnemy != null)
             {
                 // Damage the current enemy
-                currentEnemy.EnemyInfo.ChangeHealth(-damage, powerManager.Player.PlayerInfo, this, enemyPosition);
+                unwrappedEnemy.EnemyInfo.ChangeHealth(-damage, powerManager.Player.PlayerInfo, this, enemyPosition);
 
                 // Start the coroutine to stun the enemy
-                StartCoroutine(StunEnemy(powerManager, currentEnemy, enemyStunTime));
+                StartCoroutine(StunEnemy(powerManager, unwrappedEnemy, enemyStunTime));
             }
 
             // Decrement the remaining chain count
@@ -125,14 +127,14 @@ public class ChainLightning : MonoBehaviour, IPower
             while (Time.time - chainStopTimeStart < chainStopTime)
             {
                 // If the current enemy is null, break
-                if (currentEnemy == null)
+                if (unwrappedEnemy == null)
                 {
                     yield return null;
                     continue;
                 }
 
                 // Update the position of the trail
-                trail.transform.position = currentEnemy.transform.position;
+                trail.transform.position = unwrappedEnemy.transform.position;
 
                 // Wait for 1 frame
                 yield return null;
@@ -140,7 +142,7 @@ public class ChainLightning : MonoBehaviour, IPower
 
             // Find the closest enemy to the current enemy
             if (remainingChainCount > 0)
-                currentEnemy = GetClosestEnemy(enemyPosition, remainingEnemies);
+                unwrappedEnemy = GetClosestEnemy(enemyPosition, remainingEnemies);
 
             // Set the previous position to the current enemy position
             previousPosition = enemyPosition;

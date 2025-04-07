@@ -32,7 +32,7 @@ public class PlayerEnemySelect : ComponentScript<Player>
 
     private float ActualAimSquareSize => aimSquareSize * (Screen.width / originalScreenSize.x);
 
-    public Enemy SelectedEnemy { get; private set; }
+    public Option<Enemy> SelectedEnemy { get; private set; } = Option<Enemy>.None;
 
     public Vector3 EnemyPosition => _enemyPosition;
 
@@ -44,7 +44,7 @@ public class PlayerEnemySelect : ComponentScript<Player>
     {
         // Get the main camera
         var mainCam = cameraManager.Value?.MainCamera;
-        
+
         // Return if the main camera is null
         if (mainCam == null)
             return;
@@ -56,7 +56,7 @@ public class PlayerEnemySelect : ComponentScript<Player>
         float cDistance = 0;
         var selectedCenter = Vector3.zero;
 
-        
+
         // Get all the enemies in the scene
         foreach (var enemy in Enemy.Enemies)
         {
@@ -122,7 +122,7 @@ public class PlayerEnemySelect : ComponentScript<Player>
         }
 
         // Set the selected enemy to the current enemy
-        SelectedEnemy = cEnemy;
+        SelectedEnemy = cEnemy != null ? cEnemy : Option<Enemy>.None;
         _enemyPosition = selectedCenter;
     }
 
@@ -145,7 +145,7 @@ public class PlayerEnemySelect : ComponentScript<Player>
         const int squareSize = 64;
 
         // Draw a red box at the selected enemy's position
-        if (SelectedEnemy == null)
+        if (!SelectedEnemy.HasValue)
             return;
 
         // Return if the camera manager's value is null

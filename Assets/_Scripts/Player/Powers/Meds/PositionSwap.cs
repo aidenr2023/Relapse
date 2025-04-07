@@ -42,11 +42,11 @@ public class PositionSwap : MonoBehaviour, IPower
         var playerEnemySelect = powerManager.Player.PlayerEnemySelect;
 
         // If there is no enemy selected, return
-        if (playerEnemySelect.SelectedEnemy == null)
+        if (!playerEnemySelect.SelectedEnemy.HasValue)
             return;
 
         // Get the enemy info
-        var enemy = playerEnemySelect.SelectedEnemy;
+        var enemy = playerEnemySelect.SelectedEnemy.Value;
 
         // Get the enemy controller
 

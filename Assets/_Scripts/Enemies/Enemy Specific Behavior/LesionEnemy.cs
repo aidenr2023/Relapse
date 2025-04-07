@@ -121,7 +121,7 @@ public class LesionEnemy : ComponentScript<EnemyInfo>
                     // If the attack count is NOT satisfied, go back into relocate mode
                     if (!attackCountSatisfied)
                         ChangeBehaviorMode(LesionBehaviorMode.Relocate);
-                    
+
                     // Otherwise, go into retreat mode
                     else
                         ChangeBehaviorMode(LesionBehaviorMode.Retreat);
@@ -130,23 +130,23 @@ public class LesionEnemy : ComponentScript<EnemyInfo>
                     break;
 
                 case LesionBehaviorMode.Retreat:
-                    
+
                     var retreatTime = UnityEngine.Random.Range(minRetreatTime, maxRetreatTime);
                     var retreatEndTime = Time.time + retreatTime;
 
                     yield return new WaitForSeconds(retreatTime);
-                    
+
                     isWithinAttackRange =
                         ParentComponent.ParentComponent.Brain.DistanceFromTarget <= attackModeRange;
-                    
+
                     // If the player is no longer within attack range, go back into relocate mode
                     if (!isWithinAttackRange)
                         ChangeBehaviorMode(LesionBehaviorMode.Relocate);
-                    
+
                     // Otherwise, go back into attack mode
                     else
                         ChangeBehaviorMode(LesionBehaviorMode.Attack);
-                    
+
                     break;
 
                 default:
@@ -162,21 +162,21 @@ public class LesionEnemy : ComponentScript<EnemyInfo>
     {
         _currentBehaviorMode = behaviorMode;
 
-        
+
         switch (_currentBehaviorMode)
         {
             case LesionBehaviorMode.Relocate:
                 meleeEnemyAttack.SetAttackEnabled(true);
                 break;
-            
+
             case LesionBehaviorMode.Attack:
                 meleeEnemyAttack.SetAttackEnabled(true);
-                
+
                 // Reset the attack count
                 _currentAttackCount = 0;
-                
+
                 break;
-            
+
             case LesionBehaviorMode.Retreat:
                 meleeEnemyAttack.SetAttackEnabled(false);
                 break;
@@ -184,7 +184,7 @@ public class LesionEnemy : ComponentScript<EnemyInfo>
             default:
                 throw new ArgumentOutOfRangeException();
         }
-        
+
         // Force the movement update
         ParentComponent.ParentComponent.Brain.ForceMovementUpdate = true;
 
