@@ -59,6 +59,7 @@ public class VendorMenu : GameMenu
     [SerializeField] private GameObject shopSelectedButton;
     [SerializeField] private GameObject gossipSelectedButton;
     [SerializeField] private GameObject upgradeSelectedButton;
+    [SerializeField] private GameObject upgradeConfirmationSelectedButton;
 
     [Header("Notifications")] [SerializeField]
     private Image shopNotification;
