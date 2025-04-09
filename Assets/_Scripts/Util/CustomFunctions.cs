@@ -114,7 +114,7 @@ public static class CustomFunctions
         return Result<T>.Ok(obj);
     }
 
-    public static Result<T> BasicNullCheck<T>(this T obj, string valueName = "Value") 
+    public static Result<T> BasicNullCheck<T>(this T obj, string valueName = "Value")
     {
         if (obj is null)
             return Result<T>.Error($"{valueName} is null!");
@@ -126,7 +126,7 @@ public static class CustomFunctions
     {
         return Result<T>.BoolToResult(value, v => condition);
     }
-    
+
     public static Option<T> ToSome<T>(this T obj)
     {
         return Option<T>.Some(obj);
@@ -207,8 +207,8 @@ public static class CustomFunctions
             FixNegativeBoxCollider(box, false);
     }
 
-    [MenuItem("Custom Tools/Lights/Select All Realtime Lights")]
-    private static void SelectAllRealtimeLights()
+    [MenuItem("Custom Tools/Lights/Find All Realtime Lights")]
+    private static void FindAllRealtimeLights()
     {
         // Get all the lights in the scene
         var lights = Object.FindObjectsOfType<Light>(true);
@@ -225,23 +225,30 @@ public static class CustomFunctions
             .Where(n => n.lightmapBakeType == LightmapBakeType.Realtime)
             .ToArray();
         
-        // Select all the lights with context
+        Debug.Log($"Found {realtimeLights.Length} Realtime Lights in the scene");
+        
+        // Log all the lights
         foreach (var light in realtimeLights)
-        {
-            // Select the light
-            Selection.activeGameObject = light.gameObject;
-        
-            // Select the light
-            EditorGUIUtility.PingObject(light);
-        }
-        
-        // Then, select all the lights
-        Selection.objects = realtimeLights
-            .Select(n => n.gameObject)
+            Debug.Log($"Realtime Light: {light.name} - [{light.type}] - [{light.lightmapBakeType}]", light);
+    }
+
+    [MenuItem("Custom Tools/Collider/Find All Triggers Non-Non-Physical")]
+    private static void FindAllTriggersNonNonPhysical()
+    {
+        var nonPhysicalLayer = LayerMask.NameToLayer("NonPhysical");
+
+        // Get all the triggers in the scene
+        var triggers = Object
+            .FindObjectsOfType<Collider>(true)
+            .Where(n => n.isTrigger && n.gameObject.layer != nonPhysicalLayer)
             .ToArray();
         
-        Debug.Log($"Selected {Selection.objects.Length} Directional Lights");
+        Debug.Log($"Found {triggers.Length} Non-non-physical triggers in the scene");
+
+        // Log all the triggers
+        foreach (var trigger in triggers)
+            Debug.Log($"Trigger: {trigger.name} - Layer: {LayerMask.LayerToName(trigger.gameObject.layer)}", trigger);
     }
-    
+
 #endif
 }
