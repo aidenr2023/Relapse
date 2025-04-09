@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -144,6 +145,41 @@ public class WaveEnemySpawner : EnemySpawner
             _remainingWaveEnemies++;
 
             yield return new WaitForSeconds(0.125f);
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        // Create a hash set to store the spawn points
+        var spawnPoints = new HashSet<Transform>();
+        
+        // Go through all waves and their spawn points
+        foreach (var wave in waves)
+        {
+            foreach (var enemyInfo in wave.waveEnemyInfos)
+            {
+                if (enemyInfo.spawnPoint == null)
+                    continue;
+                
+                spawnPoints.Add(enemyInfo.spawnPoint);
+            }
+        }
+        
+        const float arrowLength = 0.5f;
+        // Draw the spawn points
+
+        foreach (var point in spawnPoints)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawSphere(point.position, 0.1f);
+            
+            // Draw the arrow
+            Gizmos.color = Color.red;
+            CustomFunctions.DrawArrow(
+                point.position,
+                point.forward,
+                arrowLength, 0.5f, 30
+            );
         }
     }
 }

@@ -11,7 +11,7 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
     [SerializeField] protected bool isActiveOnStart = false;
 
     [SerializeField] protected bool showPersistentTooltip = true;
-    
+
     [SerializeField] protected GameObject itemToDropWhenComplete;
 
     [SerializeField] protected UnityEvent onEnemyKilled;
@@ -25,16 +25,16 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
     protected readonly HashSet<EnemyInfo> spawnedEnemies = new();
 
     protected bool hasStartedSpawning;
-    
+
     protected bool isComplete;
-    
+
     #endregion
 
     protected void Start()
     {
         onSpawnerComplete.AddListener(ChangeFlagOnSpawnerComplete);
         onSpawnerStart.AddListener(ShowTooltipOnStart);
-        
+
         CustomStart();
     }
 
@@ -42,7 +42,6 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
     {
         // Add this to the debug manager
         DebugManager.Instance.AddDebuggedObject(this);
-
     }
 
     private void OnDisable()
@@ -59,12 +58,12 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
     {
         if (!showPersistentTooltip)
             return;
-        
+
         JournalTooltipManager.Instance.AddTooltip(
             GetTooltipText, 3, true, TooltipEndCondition
         );
     }
-    
+
     protected abstract string GetTooltipText();
 
     protected virtual bool TooltipEndCondition()
@@ -78,7 +77,7 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
     {
         // Set the is complete flag to true
         isComplete = true;
-        
+
         // Call the custom destroy method
         CustomDestroy();
     }
@@ -171,7 +170,7 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
         // Set the instantiated at runtime flag to true (if it has one)
         if (spawnedItem.TryGetComponent(out UniqueId uniqueId))
             uniqueId.InstantiatedAtRuntime = true;
-        
+
         // Create an object display spinner
         ObjectDisplaySpinner.DisplayObject(spawnedItem.transform);
     }

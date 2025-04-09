@@ -227,4 +227,24 @@ public class HordeModeSpawner : EnemySpawner
         hasStartedSpawning = false;
         isComplete = false;
     }
+
+    private void OnDrawGizmos()
+    {
+        const float arrowLength = 0.5f;
+
+        // Draw the spawn points
+        foreach (var point in spawnPoints)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawSphere(point.position, 0.1f);
+
+            // Draw the arrow
+            Gizmos.color = Color.red;
+            CustomFunctions.DrawArrow(
+                point.position,
+                point.forward,
+                arrowLength, 0.5f, 30
+            );
+        }
+    }
 }
