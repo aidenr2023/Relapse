@@ -115,7 +115,7 @@ public class Result<TSomeType> : IResult
         
         return this;
     }
-
+    
     public static Result<TSomeType> BoolToResult(TSomeType value, Func<TSomeType, bool> func)
     {
         // If the function is not successful, return an error

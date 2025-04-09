@@ -118,6 +118,11 @@ public static class CustomFunctions
     {
         return Result<T>.BoolToResult(value, v => condition);
     }
+    
+    public static Option<T> ToSome<T>(this T obj)
+    {
+        return Option<T>.Some(obj);
+    }
 
 #if UNITY_EDITOR
     // Create a button for this in the top toolbar

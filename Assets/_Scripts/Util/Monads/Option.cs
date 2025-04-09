@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class Option<TSomeType>
+public readonly struct Option<TSomeType>
 {
     private readonly TSomeType _value;
     public bool HasValue { get; }
