@@ -114,6 +114,14 @@ public static class CustomFunctions
         return Result<T>.Ok(obj);
     }
 
+    public static Result<T> BasicNullCheck<T>(this T obj, string valueName = "Value") 
+    {
+        if (obj is null)
+            return Result<T>.Error($"{valueName} is null!");
+
+        return Result<T>.Ok(obj);
+    }
+
     public static Result<T> BoolToResult<T>(this bool condition, T value)
     {
         return Result<T>.BoolToResult(value, v => condition);

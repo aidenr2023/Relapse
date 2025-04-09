@@ -11,6 +11,7 @@ public class HordeModeVendorInteractable : MonoBehaviour, IVendorInteractable
     [SerializeField] private VendorScriptableObject originalVendorInformation;
 
     [SerializeField] private PowerListVariable allPowers;
+    [SerializeField] private PowerListVariable playerEquippedPowers;
     [SerializeField, Min(1)] private int powerCount = 4;
 
     [SerializeField] private UnityEvent onInteraction;
@@ -56,6 +57,10 @@ public class HordeModeVendorInteractable : MonoBehaviour, IVendorInteractable
 
         var selection = new List<PowerScriptableObject>();
 
+        // If the player's current power count is >= 4, set the numPowers to 0
+        if (playerEquippedPowers.value.Count >= 4)
+            numPowers = 0;
+        
         for (var i = 0; i < numPowers; i++)
         {
             // Get a random power from the hash set

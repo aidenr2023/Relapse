@@ -333,6 +333,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         OnGunEquipped?.Invoke(this, gun);
     }
 
+    [ContextMenu("Remove Gun")]
     public void RemoveGun()
     {
         // Set the current gun to null
