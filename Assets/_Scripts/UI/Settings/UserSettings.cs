@@ -59,6 +59,8 @@ public struct UserSettings
     [field: SerializeField, Header("Display Settings")]
     public float Gamma { get; private set; }
 
+    [field: SerializeField] public float MotionBlur { get; private set; }
+
     #endregion
 
     #region Accessibility Settings
@@ -158,6 +160,7 @@ public struct UserSettings
 
         // Display Settings
         Gamma = other.Gamma;
+        MotionBlur = other.MotionBlur;
 
         // Accessibility Settings
         ShootFovMultiplier = other.ShootFovMultiplier;
@@ -183,6 +186,11 @@ public struct UserSettings
         );
 
         // Apply the settings to the volume mixer
+        ApplyVolumeMixerSettings();
+    }
+
+    private void ApplyVolumeMixerSettings()
+    {
         AudioMixer.SetFloat("MasterVolume", MasterVolume);
         AudioMixer.SetFloat("MusicVolume", MusicVolume);
         AudioMixer.SetFloat("GameSFXVolume", GameSfxVolume);
