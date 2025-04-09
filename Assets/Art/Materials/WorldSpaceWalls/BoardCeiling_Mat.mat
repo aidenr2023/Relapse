@@ -29,7 +29,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TexMetallic:
-        m_Texture: {fileID: 2800000, guid: 0953c6f000a6ea04686e3aff5c85a54d, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TexNormal:
@@ -54,9 +54,13 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _MetallicMap: 0
+    - _MetallicValue: 0
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Tiling: 0.35
+    - _RoughnessMap: 0
+    - _RoughnessValue: 0.777
+    - _Tiling: 0.2
     - _tmp: 1
     m_Colors:
     - _TheColorModifier: {r: 1, g: 1, b: 1, a: 0}

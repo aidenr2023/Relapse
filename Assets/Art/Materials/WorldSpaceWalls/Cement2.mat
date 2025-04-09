@@ -29,7 +29,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TexMetallic:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 8727a68921c6a4a489dec1a65d09ea0c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TexNormal:
@@ -56,9 +56,10 @@ Material:
     m_Floats:
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Tiling: 0.04
+    - _Tiling: 0.25
     - _tmp: 1
-    m_Colors: []
+    m_Colors:
+    - _TheColorModifier: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &3043589885215977040
 MonoBehaviour:
