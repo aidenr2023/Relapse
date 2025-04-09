@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -116,4 +118,117 @@ public static class CustomFunctions
     {
         return Result<T>.BoolToResult(value, v => condition);
     }
+
+#if UNITY_EDITOR
+    // Create a button for this in the top toolbar
+    public static void FixNegativeBoxCollider(BoxCollider box, bool logHistory)
+    {
+        // If the box is null, return
+        if (box == null)
+            return;
+
+        var lossy = box.transform.lossyScale;
+
+        var flip = new Vector3(
+            Mathf.Sign(lossy.x),
+            Mathf.Sign(lossy.y),
+            Mathf.Sign(lossy.z));
+
+        var sign = new Vector3(
+            Mathf.Sign(box.size.x),
+            Mathf.Sign(box.size.y),
+            Mathf.Sign(box.size.z));
+
+        if (flip == sign)
+            return;
+
+        if (logHistory)
+            Undo.RecordObject(box, "Fix Negative Box Collider");
+
+        box.size = Vector3.Scale(box.size, flip);
+
+        Debug.Log($"Fixed Box Collider: {box.name}", box);
+    }
+
+    // [MenuItem("Custom Tools/Collider/Fix Selected Negative Box Collider")]
+    private static void FixSelectedNegativeBoxColliders()
+    {
+        var boxes = Selection
+            .GetTransforms(SelectionMode.Editable)
+            .Select(n => n.GetComponent<BoxCollider>())
+            .Where(n => n != null)
+            .ToArray();
+
+        // If there are no boxes, return
+        if (boxes.Length == 0)
+        {
+            Debug.LogWarning("No Box Colliders selected!");
+            return;
+        }
+
+        // Record the undo action
+        Undo.RecordObjects(boxes, "Fix Selected Negative Box Colliders");
+
+        // Fix the boxes
+        foreach (var box in boxes)
+            FixNegativeBoxCollider(box, false);
+    }
+
+    [MenuItem("Custom Tools/Collider/Fix All Negative Box Collider")]
+    private static void FixAllNegativeBoxColliders()
+    {
+        var boxes = Object.FindObjectsOfType<BoxCollider>(true);
+
+        // If there are no boxes, return
+        if (boxes.Length == 0)
+        {
+            Debug.LogWarning("No Box Colliders selected!");
+            return;
+        }
+
+        // Record the undo action
+        Undo.RecordObjects(boxes, "Fix ALL Negative Box Colliders");
+
+        // Fix the boxes
+        foreach (var box in boxes)
+            FixNegativeBoxCollider(box, false);
+    }
+
+    [MenuItem("Custom Tools/Lights/Select All Realtime Lights")]
+    private static void SelectAllRealtimeLights()
+    {
+        // Get all the lights in the scene
+        var lights = Object.FindObjectsOfType<Light>(true);
+
+        // If there are no lights, return
+        if (lights.Length == 0)
+        {
+            Debug.LogWarning("No Lights in the scene!");
+            return;
+        }
+
+        // get all the lights
+        var realtimeLights = lights
+            .Where(n => n.lightmapBakeType == LightmapBakeType.Realtime)
+            .ToArray();
+        
+        // Select all the lights with context
+        foreach (var light in realtimeLights)
+        {
+            // Select the light
+            Selection.activeGameObject = light.gameObject;
+        
+            // Select the light
+            EditorGUIUtility.PingObject(light);
+        }
+        
+        // Then, select all the lights
+        Selection.objects = realtimeLights
+            .Select(n => n.gameObject)
+            .ToArray();
+        
+        Debug.Log($"Selected {Selection.objects.Length} Directional Lights");
+    }
+    
+#endif
 }
