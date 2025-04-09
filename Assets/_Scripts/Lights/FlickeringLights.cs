@@ -4,52 +4,58 @@ using UnityEngine;
 
 public class FlickeringLights : MonoBehaviour
 {
-    private Light light01;
-    public float minTime;
-    public float maxTime;
-    public float timer;
-    public float maxIntensity = 1;
-    public float minIntensity = 0;
-    private bool enabled;
+    [SerializeField, Min(0)] private float minTime;
+    [SerializeField, Min(0)] private float maxTime;
+    [SerializeField, Min(0)] private float maxIntensity = 1;
+    [SerializeField, Min(0)] private float minIntensity = 0;
 
-    void Awake()
+    private Light _light;
+    private bool _isEnabled;
+    private float _timer;
+
+    private void Awake()
     {
-        light01 = GetComponent<Light>();
+        _light = GetComponent<Light>();
     }
 
-    
-    void Start()
+
+    private void Start()
     {
-        timer = Random.Range(minTime, maxTime);
+        SetRandomTimerTime();
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         LightsFlickering();
     }
 
-    void LightsFlickering()
+    private void LightsFlickering()
     {
-        if (timer > 0)
-        timer -= Time.deltaTime;
-
-        if(timer <= 0)
+        // If the timer is still active,
+        // tick the timer and return
+        if (_timer > 0)
         {
-            enabled = !enabled;
-        if (enabled)
-        {
-            light01.intensity = maxIntensity;
-        }
-        else
-        {
-            light01.intensity = minIntensity;
+            _timer -= Time.deltaTime;
+            return;
         }
 
+        // If the timer is done,
 
+        // flip the active state
+        _isEnabled = !_isEnabled;
 
-            timer = Random.Range(minTime, maxTime);
-        }
+        // If the light is enabled,
+        // Set the intensity to the max intensity
+        // Otherwise, set it to the min intensity
+        _light.intensity = _isEnabled ? maxIntensity : minIntensity;
+
+        SetRandomTimerTime();
     }
 
+    private void SetRandomTimerTime()
+    {
+        // Set a new time for the timer
+        _timer = Random.Range(minTime, maxTime);
+    }
 }

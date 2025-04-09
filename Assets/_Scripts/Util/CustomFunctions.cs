@@ -224,9 +224,9 @@ public static class CustomFunctions
         var realtimeLights = lights
             .Where(n => n.lightmapBakeType == LightmapBakeType.Realtime)
             .ToArray();
-        
+
         Debug.Log($"Found {realtimeLights.Length} Realtime Lights in the scene");
-        
+
         // Log all the lights
         foreach (var light in realtimeLights)
             Debug.Log($"Realtime Light: {light.name} - [{light.type}] - [{light.lightmapBakeType}]", light);
@@ -235,14 +235,19 @@ public static class CustomFunctions
     [MenuItem("Custom Tools/Collider/Find All Triggers Non-Non-Physical")]
     private static void FindAllTriggersNonNonPhysical()
     {
-        var nonPhysicalLayer = LayerMask.NameToLayer("NonPhysical");
+        var ignoreLayers =
+            LayerMask.GetMask("NonPhysical", "Player", "Actor");
 
         // Get all the triggers in the scene
         var triggers = Object
             .FindObjectsOfType<Collider>(true)
-            .Where(n => n.isTrigger && n.gameObject.layer != nonPhysicalLayer)
+            // Skip objects that are in any of the ignore layers
+            .Where(n =>
+                n.isTrigger &&
+                ignoreLayers != (ignoreLayers | (1 << n.gameObject.layer))
+            )
             .ToArray();
-        
+
         Debug.Log($"Found {triggers.Length} Non-non-physical triggers in the scene");
 
         // Log all the triggers
