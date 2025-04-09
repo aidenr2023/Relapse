@@ -66,6 +66,6 @@ public class Shotgun : GenericGun
             weaponModelObject.SetActive(true);
         }
         
-        Debug.Log($"Set display model object to {displayOrWeapon}", this);
+        // Debug.Log($"Set display model object to {displayOrWeapon}", this);
     }
 }

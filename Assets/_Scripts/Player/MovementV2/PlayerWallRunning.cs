@@ -332,10 +332,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     public override void FixedMovementUpdate()
     {
         if (_isWallRunning)
-        {
             ParentComponent.ForceSetSprinting(true);
-            Debug.Log($"FORCE SPRINT");
-        }
 
         // Update the movement if the player is wall running
         UpdateMovement();

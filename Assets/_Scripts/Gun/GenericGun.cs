@@ -456,7 +456,7 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
                 if (damageMultiplier > 1)
                 {
                     isCriticalHit = true;
-                    Debug.Log($"CRITICAL HIT");
+                    // Debug.Log($"CRITICAL HIT");
                 }
             }
 
