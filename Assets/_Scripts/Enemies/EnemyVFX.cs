@@ -48,7 +48,7 @@ public class EnemyVFX : ComponentScript<EnemyInfo>
             return;
 
         // Instantiate the spawn VFX at the enemy's position
-        var spawnVfx = Instantiate(spawnVfxPrefab, transform.position, Quaternion.identity);
+        var spawnVfx = Instantiate(spawnVfxPrefab, ParentComponent.ParentComponent.CenterTransform.position, Quaternion.identity);
 
         // Play the spawn VFX
         spawnVfx.Play();

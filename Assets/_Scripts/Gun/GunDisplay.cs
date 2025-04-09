@@ -53,6 +53,30 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
 
     public Action<WeaponManager, IGun> OnGunRemoved { get; set; }
 
+    private void Awake()
+    {
+        OnGunEquipped += SwitchShotgunModelToDisplay;
+        OnGunRemoved += SwitchShotgunModelToWeapon;
+    }
+
+    private static void SwitchShotgunModelToDisplay(WeaponManager manager, IGun gun)
+    {
+        // Return if the gun is not a shotgun
+        if (gun is not Shotgun shotgun)
+            return;
+        
+        shotgun.SetDisplayModelObject(true);
+    }
+
+    private static void SwitchShotgunModelToWeapon(WeaponManager manager, IGun gun)
+    {
+        // Return if the gun is not a shotgun
+        if (gun is not Shotgun shotgun)
+            return;
+        
+        shotgun.SetDisplayModelObject(false);
+    }
+
     private void Start()
     {
         if (initialGunPrefab != null && _hasOriginalGun)

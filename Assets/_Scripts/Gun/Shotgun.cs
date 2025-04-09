@@ -10,6 +10,9 @@ public class Shotgun : GenericGun
 
     #region Serialized Fields
 
+    [SerializeField] private GameObject displayModelObject;
+    [SerializeField] private GameObject weaponModelObject;
+
     [SerializeField] private ParticleSystem muzzleParticles;
     [SerializeField] [Range(0, 500)] private int muzzleParticlesCount = 200;
 
@@ -45,5 +48,24 @@ public class Shotgun : GenericGun
         return false;
 
         return base.Reload();
+    }
+
+    public void SetDisplayModelObject(bool displayOrWeapon)
+    {
+        if (displayModelObject == null || weaponModelObject == null)
+            return;
+        
+        if (displayOrWeapon)
+        {
+            displayModelObject.SetActive(true);
+            weaponModelObject.SetActive(false);
+        }
+        else
+        {
+            displayModelObject.SetActive(false);
+            weaponModelObject.SetActive(true);
+        }
+        
+        Debug.Log($"Set display model object to {displayOrWeapon}", this);
     }
 }

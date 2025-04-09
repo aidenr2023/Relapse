@@ -149,7 +149,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gunInformation: {fileID: 11400000, guid: d0439bcafb503804c8d86771a3be5290, type: 2}
   gunModelType: 3
-  animator: {fileID: 891329805443514385}
+  animator: {fileID: 7238304941564337620}
   muzzleLocation: {fileID: 9081700793990647355}
   muzzleFlash: {fileID: 3124696455069095509}
   muzzleFlashParticles: {fileID: 0}
@@ -203,6 +203,8 @@ MonoBehaviour:
   onInteract:
     m_PersistentCalls:
       m_Calls: []
+  displayModelObject: {fileID: 9095855977557802727}
+  weaponModelObject: {fileID: 8159557486520349034}
   muzzleParticles: {fileID: 6388012898772878341}
   muzzleParticlesCount: 70
   pelletsPerShot: 8
@@ -1119,8 +1121,55 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 61d64c90dba32f14c96e42cc54e7814c,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7238304941564337620}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 61d64c90dba32f14c96e42cc54e7814c,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1741051897560576005}
   m_SourcePrefab: {fileID: 100100000, guid: 61d64c90dba32f14c96e42cc54e7814c, type: 3}
+--- !u!1 &8159557486520349034 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 61d64c90dba32f14c96e42cc54e7814c,
+    type: 3}
+  m_PrefabInstance: {fileID: 9078689072899263547}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &7238304941564337620
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8159557486520349034}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: cd292defeccf5b041a1acf684c833b0c, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1741051897560576005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8159557486520349034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91737b058d9579848b3cbe342ef7745d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &8824595529508645840 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 61d64c90dba32f14c96e42cc54e7814c,
