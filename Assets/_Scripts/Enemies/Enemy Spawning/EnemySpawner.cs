@@ -32,7 +32,6 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
 
     protected void Start()
     {
-
         onSpawnerComplete.AddListener(ChangeFlagOnSpawnerComplete);
         onSpawnerStart.AddListener(ShowTooltipOnStart);
         

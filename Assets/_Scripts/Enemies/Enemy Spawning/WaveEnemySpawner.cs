@@ -37,6 +37,7 @@ public class WaveEnemySpawner : EnemySpawner
         actualEnemy.EnemyInfo.OnDeath += DecrementEnemiesRemaining;
         actualEnemy.EnemyInfo.OnDeath += IncrementWave;
         actualEnemy.EnemyInfo.OnDeath += CheckForSpawnerComplete;
+        actualEnemy.EnemyInfo.OnDeath += SpawnItemOnEnemyDeath;
     }
 
     private void CheckForSpawnerComplete(object sender, HealthChangedEventArgs e)
@@ -50,6 +51,15 @@ public class WaveEnemySpawner : EnemySpawner
 
         // Invoke the spawner complete event
         onSpawnerComplete.Invoke();
+    }
+    
+    private void SpawnItemOnEnemyDeath(object sender, HealthChangedEventArgs e)
+    {
+        // Return if the enemy killed count is not equal to the spawner complete amount
+        if (_totalEnemiesLeft > 0)
+            return;
+
+        SpawnItem(e);
     }
 
     protected override void CustomStartSpawning()
