@@ -169,7 +169,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         var gun = Instantiate(initialGunPrefab).GetComponent<IGun>();
 
         yield return null;
-        
+
         EquipGun(gun);
         _spawnedInitialGun = true;
     }

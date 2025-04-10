@@ -8,6 +8,8 @@ public class HordeModeManager : MonoBehaviour
 {
     public static Option<HordeModeManager> Instance { get; private set; } = Option<HordeModeManager>.None;
 
+    [SerializeField] private PlayerInfoEventReference onPlayerRespawn;
+    
     [SerializeField] private SceneField[] hordeCombatScenes;
 
     [SerializeField] private Transform spawnPosition;
@@ -21,6 +23,14 @@ public class HordeModeManager : MonoBehaviour
     {
         // Set the instance
         Instance = this.ToSome();
+
+        // onPlayerRespawn.Value += UnloadCurrentCombatSceneOnRespawn;
+    }
+    
+    private void UnloadCurrentCombatSceneOnRespawn(PlayerInfo playerInfo)
+    {
+        // Unload the current combat scene
+        UnloadCurrentCombatScene();
     }
 
     private void OnDisable()

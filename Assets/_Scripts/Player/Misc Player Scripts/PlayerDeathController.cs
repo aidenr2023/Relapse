@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class PlayerDeathController : ComponentScript<Player>
 {
+    public PlayerInfoEventVariable OnRespawn;
+    
     #region Private Fields
 
     private object _deathSender;
@@ -20,5 +22,8 @@ public class PlayerDeathController : ComponentScript<Player>
 
         // Reset the player's information when they respawn
         ParentComponent.PlayerInfo.ResetPlayer();
+        
+        // Invoke the respawn event
+        OnRespawn.Value.Invoke(ParentComponent.PlayerInfo);
     }
 }
