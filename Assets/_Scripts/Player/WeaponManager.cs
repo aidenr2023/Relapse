@@ -346,7 +346,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
             return;
 
         // If the current gun's reload animation is playing, return
-        if (_equippedGun.IsReloadAnimationPlaying && _playerInfo.CurrentHealth > 0)
+        if (_equippedGun.IsReloadAnimationPlaying)
             return;
 
         // Release the fire button on the gun

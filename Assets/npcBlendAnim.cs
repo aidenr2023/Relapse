@@ -48,7 +48,7 @@ public class NPCBlendAnim : StateMachineBehaviour
         if (boredTimer >= timeUntilBored)
         {
             animator.SetTrigger("Bored");
-            Debug.Log("NPC is bored.");
+            // Debug.Log("NPC is bored.");
 
             // Reset bored timer
             boredTimer = 0f;

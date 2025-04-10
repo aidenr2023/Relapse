@@ -38,7 +38,18 @@ public class LevelInformation : MonoBehaviour
 
     public LevelCheckpointCheckpoint StartingCheckpoint => startingCheckpoint;
 
-    private Vector3 StartingPosition => startingCheckpoint?.RespawnPoint?.position ?? transform.position;
+    private Vector3 StartingPosition
+    {
+        get
+        {
+            // Return the respawn point of the starting checkpoint
+            if (startingCheckpoint != null && startingCheckpoint.RespawnPoint != null)
+                return startingCheckpoint.RespawnPoint.position;
+
+            // Otherwise, return the transform position
+            return transform.position;
+        }
+    }
 
     #endregion
 

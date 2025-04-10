@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
@@ -8,8 +9,9 @@ public class HordeModeManager : MonoBehaviour
 {
     public static Option<HordeModeManager> Instance { get; private set; } = Option<HordeModeManager>.None;
 
-    [SerializeField] private PlayerInfoEventReference onPlayerRespawn;
-    
+    [SerializeField] private PlayerInfoEventReference onPlayerRespawnSo;
+    [SerializeField] private UnityEvent<PlayerInfo> onPlayerRespawned;
+
     [SerializeField] private SceneField[] hordeCombatScenes;
 
     [SerializeField] private Transform spawnPosition;
@@ -25,13 +27,12 @@ public class HordeModeManager : MonoBehaviour
         Instance = this.ToSome();
 
         // Subscribe to the player respawn event
-        onPlayerRespawn += UnloadCurrentCombatSceneOnRespawn;
+        onPlayerRespawnSo += UnloadCurrentCombatSceneOnRespawn;
+        onPlayerRespawnSo += onPlayerRespawned.Invoke;
     }
-    
+
     private void UnloadCurrentCombatSceneOnRespawn(PlayerInfo playerInfo)
     {
-        Debug.Log($"Bruh");
-        
         // Unload the current combat scene
         UnloadCurrentCombatScene();
     }
@@ -40,9 +41,9 @@ public class HordeModeManager : MonoBehaviour
     {
         // If the instance is not none, set it to none
         Instance.Match(_ => Instance = Option<HordeModeManager>.None);
-        
+
         // Unubscribe to the player respawn event
-        onPlayerRespawn -= UnloadCurrentCombatSceneOnRespawn;
+        onPlayerRespawnSo -= UnloadCurrentCombatSceneOnRespawn;
     }
 
     /// <summary>
@@ -105,11 +106,7 @@ public class HordeModeManager : MonoBehaviour
     {
         // If the scene is loaded, unload it    
         _currentCombatScene
-            .Match(scene =>
-            {
-                SceneManager.UnloadSceneAsync(scene);
-                Debug.Log($"Unloaded scene {scene.name}");
-            })
+            .Match(scene => SceneManager.UnloadSceneAsync(scene))
             .Match(_ => _currentCombatScene = Result<Scene>.Error("Current combat scene is null"));
     }
 

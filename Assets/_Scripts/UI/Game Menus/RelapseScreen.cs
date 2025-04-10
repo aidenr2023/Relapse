@@ -34,6 +34,7 @@ public class RelapseScreen : GameMenu
     #region Private Fields
 
     private bool _respawnButtonClicked;
+    private CheckpointManager.CheckpointInformation _currentCheckpoint;
 
     #endregion
 
@@ -85,7 +86,7 @@ public class RelapseScreen : GameMenu
     {
         // Set the loading bar's visibility based on whether the scene is loading
         loadingBar.gameObject.SetActive(_respawnButtonClicked);
-        
+
         // If there is no currently selected game object,
         // set it to the first selected button
         if (eventSystem.currentSelectedGameObject == null)
@@ -179,14 +180,13 @@ public class RelapseScreen : GameMenu
 
         void RespawnSubFunction()
         {
+            _currentCheckpoint = CheckpointManager.Instance.CurrentCheckpointInfo;
+
             // Create scene loader information for just the one scene
             var localLoaderInfo = SceneLoaderInformation.Create(
-                new[] { CheckpointManager.Instance.CurrentCheckpointInfo.levelSectionSceneInfo },
+                new[] { _currentCheckpoint.levelSectionSceneInfo },
                 new LevelSectionSceneInfo[] { }
             );
-
-            // Debug.Log(
-            //     $"Respawn at checkpoint: {CheckpointManager.Instance.CurrentCheckpointInfo.levelSectionSceneInfo.SectionScene.SceneName}");
 
             // Load the scene asynchronously
             AsyncSceneManager.Instance.LoadMultipleScenesAsynchronously(
@@ -203,7 +203,7 @@ public class RelapseScreen : GameMenu
     private void RespawnOnCompletion()
     {
         // Respawn at the latest checkpoint
-        Player.Instance.PlayerDeathController.Respawn();
+        Player.Instance.PlayerDeathController.Respawn(_currentCheckpoint.position);
 
         // Also, if there is a Player Loader Instance, load the data from disk
         if (PlayerLoader.Instance != null)

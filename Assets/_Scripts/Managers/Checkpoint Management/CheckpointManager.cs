@@ -26,7 +26,7 @@ public class CheckpointManager : MonoBehaviour
         Instance = this;
     }
 
-    private void RespawnAt(Rigidbody rb, Vector3 position)
+    public void RespawnAt(Rigidbody rb, Vector3 position)
     {
         // Set the position of the player to the position of the checkpoint
         rb.position = position;
@@ -71,18 +71,15 @@ public class CheckpointManager : MonoBehaviour
             levelSectionSceneInfo = currentSceneInfo,
             position = position
         };
-
-        // Debug.Assert(currentSceneInfo.SectionScene != null, "currentSceneInfo.SectionScene == null");
-        // Debug.Log($"Saved Checkpoint: {currentSceneInfo.SectionScene.SceneName} - {CurrentCheckpointInfo.position}");
     }
 
     // public void RespawnAtCurrentCheckpoint(Rigidbody rb) =>
     //     RespawnAt(rb, CurrentRespawnPoint);
 
-    public void RespawnAtCurrentCheckpoint(Rigidbody rb)
-    {
-        RespawnAt(rb, CurrentCheckpointInfo.position);
-    }
+    // private void RespawnAtCurrentCheckpoint(Rigidbody rb)
+    // {
+    //     RespawnAt(rb, CurrentCheckpointInfo.position);
+    // }
 
     public struct CheckpointInformation
     {
