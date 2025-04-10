@@ -1,45 +1,58 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerShotgunIK : MonoBehaviour
+public class PlayerShotgunIk : MonoBehaviour
 {
-    [Header("IK Targets")]
-    public Transform sliderTransform;
-    
-    [Header("Model Configuration")]
-    [SerializeField] private GunModelType modelType = GunModelType.Mag7;
-    
-    [Header("Animation Weights")]
-    [SerializeField][Range(0,1)] private float leftHandIKWeight; // Controlled via animation curve
-    
+    [Header("Hand Targets")]
+    [SerializeField] private Transform leftHandTarget;
+    //[SerializeField] private Transform rightHandTarget;
+
+    [Header("Animator Parameters")]
+    [SerializeField] private string gunTypeParam = "GunModelType";
+    [SerializeField] private int mag7ID = 1;
+
+    [Header("IK Settings")]
+    [SerializeField] private float ikActivationSpeed = 5f; // Smooth transition
+
     private Animator _animator;
+    private float _currentLeftWeight;
+    //private float _currentRightWeight;
 
     void Start()
     {
         _animator = GetComponent<Animator>();
-        
-        // Optional: Auto-get reference if not set
-        if (!sliderTransform)
-            Debug.LogWarning("Slider Transform not assigned in Inspector!", this);
+    }
+
+    void Update()
+    {
+        // Get target weights
+        int currentGunType = _animator.GetInteger(gunTypeParam);
+        float targetWeight = (currentGunType == mag7ID) ? 1f : 0f;
+
+        // Smoothly transition weights
+        _currentLeftWeight = Mathf.Lerp(_currentLeftWeight, targetWeight, 
+            Time.deltaTime * ikActivationSpeed);
+        // _currentRightWeight = Mathf.Lerp(_currentRightWeight, targetWeight, 
+        //     Time.deltaTime * ikActivationSpeed);
     }
 
     void OnAnimatorIK(int layerIndex)
     {
         if (!_animator) return;
 
-        // Only enable IK for Mag7 model type
-        bool useIK = modelType == GunModelType.Mag7;
-        float effectiveWeight = useIK ? leftHandIKWeight : 1f;
+        // Apply weights directly
+        SetHandIK(AvatarIKGoal.LeftHand, leftHandTarget, _currentLeftWeight);
+      //  SetHandIK(AvatarIKGoal.RightHand, rightHandTarget, _currentRightWeight);
+    }
 
-        _animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, effectiveWeight);
-        _animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, effectiveWeight);
-
-        if (useIK && sliderTransform)
+    void SetHandIK(AvatarIKGoal hand, Transform target, float weight)
+    {
+        _animator.SetIKPositionWeight(hand, weight);
+        _animator.SetIKRotationWeight(hand, weight);
+        
+        if (weight > 0.01f && target != null)
         {
-            _animator.SetIKPosition(AvatarIKGoal.LeftHand, sliderTransform.position);
-            _animator.SetIKRotation(AvatarIKGoal.LeftHand, sliderTransform.rotation);
+            _animator.SetIKPosition(hand, target.position);
+            _animator.SetIKRotation(hand, target.rotation);
         }
     }
 }
-
