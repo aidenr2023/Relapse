@@ -24,11 +24,14 @@ public class HordeModeManager : MonoBehaviour
         // Set the instance
         Instance = this.ToSome();
 
-        // onPlayerRespawn.Value += UnloadCurrentCombatSceneOnRespawn;
+        // Subscribe to the player respawn event
+        onPlayerRespawn += UnloadCurrentCombatSceneOnRespawn;
     }
     
     private void UnloadCurrentCombatSceneOnRespawn(PlayerInfo playerInfo)
     {
+        Debug.Log($"Bruh");
+        
         // Unload the current combat scene
         UnloadCurrentCombatScene();
     }
@@ -37,6 +40,9 @@ public class HordeModeManager : MonoBehaviour
     {
         // If the instance is not none, set it to none
         Instance.Match(_ => Instance = Option<HordeModeManager>.None);
+        
+        // Unubscribe to the player respawn event
+        onPlayerRespawn -= UnloadCurrentCombatSceneOnRespawn;
     }
 
     /// <summary>
