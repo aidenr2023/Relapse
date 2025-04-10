@@ -101,6 +101,11 @@ public struct UserSettings
         Gamma = Mathf.Clamp(value, MIN_GAMMA, MAX_GAMMA);
     }
 
+    public void SetMotionBlur(float value)
+    {
+        MotionBlur = Mathf.Clamp(value, 0, 1);
+    }
+    
     // Volume settings individual
     public void SetSoundMasterVolume(float value)
     {

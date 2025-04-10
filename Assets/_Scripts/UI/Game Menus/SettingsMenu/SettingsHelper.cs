@@ -81,6 +81,10 @@ public class SettingsHelper : MonoBehaviour
             case SliderSettingType.Brightness:
                 ChangeBrightness(value);
                 break;
+            
+            case SliderSettingType.MotionBlur:
+                ChangeMotionBlur(value);
+                break;
 
             default:
                 throw new ArgumentOutOfRangeException(nameof(settingType), settingType, null);
@@ -114,6 +118,7 @@ public class SettingsHelper : MonoBehaviour
 
             // Display
             SliderSettingType.Brightness => settingsMenuSettings.value.Gamma,
+            SliderSettingType.MotionBlur => settingsMenuSettings.value.MotionBlur,
 
             _ => throw new ArgumentOutOfRangeException(nameof(settingType), settingType, null)
         };
@@ -236,6 +241,13 @@ public class SettingsHelper : MonoBehaviour
         settingsMenuSettings.value.SetGamma(value);
 
         OnSettingChanged?.Invoke(SliderSettingType.Brightness, value);
+    }
+
+    private void ChangeMotionBlur(float value)
+    {
+        settingsMenuSettings.value.SetMotionBlur(value);
+        
+        OnSettingChanged?.Invoke(SliderSettingType.MotionBlur, value);
     }
 
     #endregion

@@ -25,7 +25,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _TexBaseColor:
-        m_Texture: {fileID: 2800000, guid: cfb35849bf722cd48b12fd45c9a0aaa2, type: 3}
+        m_Texture: {fileID: 2800000, guid: 05d77000e9b617545a6b595bd7831b73, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TexMetallic:
@@ -33,7 +33,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TexNormal:
-        m_Texture: {fileID: 2800000, guid: 4f941677c90e13e48b0a3732d2b2970a, type: 3}
+        m_Texture: {fileID: 2800000, guid: 4f212a9b7a423a34ebc6df46a9088ce4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TexRoughness:
@@ -54,11 +54,16 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _MetallicMap: 1
+    - _MetallicValue: 0
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Tiling: 0.41
+    - _RoughnessMap: 1
+    - _RoughnessValue: 0
+    - _Tiling: 1
     - _tmp: 1
-    m_Colors: []
+    m_Colors:
+    - _TheColorModifier: {r: 0.8627451, g: 0.84313726, b: 1, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &132136674706892356
 MonoBehaviour:

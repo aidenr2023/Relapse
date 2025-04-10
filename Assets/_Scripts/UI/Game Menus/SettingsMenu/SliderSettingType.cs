@@ -23,4 +23,5 @@
 
     // Display
     Brightness = 200,
+    MotionBlur = 201,
 }

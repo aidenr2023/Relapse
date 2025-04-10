@@ -10,12 +10,14 @@ public class DynamicPostProcessVolume : MonoBehaviour
 
     [SerializeField] private Volume volume;
     [SerializeField] private VolumeProfile profile;
+    [SerializeField] private UserSettingsVariable userSettings;
 
     [Header("Modules"), SerializeField] private DynamicVignetteModule vignetteModule;
     [SerializeField] private DynamicChromaticAberrationModule chromaticAberrationModule;
     [SerializeField] private DynamicLiftGammaGainModule liftGammaGainModule;
     [SerializeField] private DynamicLensDistortionModule lensDistortionModule;
-
+    [SerializeField] private DynamicMotionBlurModule motionBlurModule;
+    
     #endregion
 
     #region Private Fields
@@ -33,6 +35,8 @@ public class DynamicPostProcessVolume : MonoBehaviour
 
     public VolumeProfile Profile => profile;
 
+    public UserSettingsVariable UserSettings => userSettings;
+    
     public DynamicVignetteModule VignetteModule => vignetteModule;
 
     public DynamicChromaticAberrationModule ChromaticAberrationModule => chromaticAberrationModule;
@@ -58,6 +62,9 @@ public class DynamicPostProcessVolume : MonoBehaviour
 
         // Initialize the dynamic lens distortion module
         lensDistortionModule.Initialize(this);
+        
+        // Initialize the dynamic motion blur module
+        motionBlurModule.Initialize(this);
     }
 
     private void Start()
