@@ -169,8 +169,7 @@ AnimatorState:
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 2096592719751915448}
-  m_StateMachineBehaviours:
-  - {fileID: -260437398837444284}
+  m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 1
   m_WriteDefaultValues: 1
@@ -261,7 +260,7 @@ BlendTree:
     m_DirectBlendParameter: Speed
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: 1827226128182048838, guid: 8768cbb8f0679394c89e70ce24c5c5a5,
+    m_Motion: {fileID: 1827226128182048838, guid: 55796ee7d858a0140bb78e3a04c554da,
       type: 3}
     m_Threshold: 3
     m_Position: {x: 0, y: 0}
@@ -317,19 +316,6 @@ AnimatorStateMachine:
   m_ExitPosition: {x: 800, y: 120, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
   m_DefaultState: {fileID: -5876587043262072606}
---- !u!114 &-260437398837444284
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc4de422d60a6d8498a1d7f73681c002, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  numberOfAttackAnimations: 2
 --- !u!91 &9100000
 AnimatorController:
   m_ObjectHideFlags: 0
@@ -503,8 +489,16 @@ BlendTree:
   m_Name: Blend Tree
   m_Childs:
   - serializedVersion: 2
-    m_Motion: {fileID: 7400000, guid: d6ba5c98101d17d499db60989bf61f18, type: 2}
+    m_Motion: {fileID: 7400000, guid: a5b59a78668ac3142934b2163d09da33, type: 2}
     m_Threshold: 0
+    m_Position: {x: 0, y: 0}
+    m_TimeScale: 1
+    m_CycleOffset: 0
+    m_DirectBlendParameter: Speed
+    m_Mirror: 0
+  - serializedVersion: 2
+    m_Motion: {fileID: 7400000, guid: d6ba5c98101d17d499db60989bf61f18, type: 2}
+    m_Threshold: 1
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
@@ -513,7 +507,7 @@ BlendTree:
   m_BlendParameter: AttackBlend
   m_BlendParameterY: Speed
   m_MinThreshold: 0
-  m_MaxThreshold: 0
+  m_MaxThreshold: 1
   m_UseAutomaticThresholds: 0
   m_NormalizedBlendValues: 0
   m_BlendType: 0
