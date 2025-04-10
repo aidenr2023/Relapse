@@ -595,7 +595,7 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
             _currentRay = default;
 
             // If the previous wall is not null, invoke the on wall run end event
-            if (_previousWall != null)
+            if (_previousWall != null || (_previousWall is not null && _previousWall == null))
                 OnWallRunEnd?.Invoke(this);
 
             // If the previous wall is not the current wall, invoke the on wall changed event
@@ -1077,9 +1077,10 @@ public class PlayerWallRunning : PlayerMovementScript, IDebugged, IUsesInput
     {
         var sb = new StringBuilder();
 
-        sb.AppendLine($"Wall Running: {_isWallRunning}");
+        sb.AppendLine($"Wall Running: {_isWallRunning} - [{_isWallRunningLeft}] [{_isWallRunningRight}]");
         sb.AppendLine($"Wall Climbing: {_isWallClimbing}");
-
+        sb.AppendLine($"Wall Sliding: {_isWallSliding}");
+        
         if (!_isWallRunning)
             return sb.ToString();
 

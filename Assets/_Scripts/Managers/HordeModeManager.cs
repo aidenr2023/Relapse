@@ -105,7 +105,11 @@ public class HordeModeManager : MonoBehaviour
     {
         // If the scene is loaded, unload it    
         _currentCombatScene
-            .Match(scene => SceneManager.UnloadSceneAsync(scene))
+            .Match(scene =>
+            {
+                SceneManager.UnloadSceneAsync(scene);
+                Debug.Log($"Unloaded scene {scene.name}");
+            })
             .Match(_ => _currentCombatScene = Result<Scene>.Error("Current combat scene is null"));
     }
 

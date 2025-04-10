@@ -44,6 +44,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd0b7fda9caf4b2bbdc7293ced6f83d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onPlayerRespawn:
+    useConstant: 0
+    constantValue:
+      m_PersistentCalls:
+        m_Calls: []
+    variable: {fileID: 11400000, guid: 724d22da069020242aa73d209dd84873, type: 2}
   hordeCombatScenes:
   - sceneAsset: {fileID: 102900000, guid: a4acbfb9b7971db4ca3f22ffc4770043, type: 3}
     sceneName: CombatModeOne
+  spawnPosition: {fileID: 0}
+  vendor: {fileID: 0}
+  moveBackToVendorDelay: 3
