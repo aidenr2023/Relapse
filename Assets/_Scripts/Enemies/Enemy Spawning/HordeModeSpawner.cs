@@ -26,7 +26,7 @@ public class HordeModeSpawner : EnemySpawner
 
     #endregion
 
-    private Action onRoundComplete;
+    private Action _onRoundComplete;
 
     #region EnemySpawner Implementation
 

@@ -68,7 +68,7 @@ public abstract class EnemySpawner : MonoBehaviour, IDebugged
 
     protected virtual bool TooltipEndCondition()
     {
-        return isComplete || !showPersistentTooltip;
+        return isComplete || !showPersistentTooltip || this == null;
     }
 
     protected abstract void CustomStart();
