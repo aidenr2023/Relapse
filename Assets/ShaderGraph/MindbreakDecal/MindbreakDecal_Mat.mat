@@ -28,6 +28,42 @@ Material:
         m_Texture: {fileID: 2800000, guid: 7fb375e64ebab6340b1bf0772b949078, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_0f8ba7f74ab443d3849d7f11b8f62d19_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 2ea2006ceb2e7f140930da0b7f68189e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_1b3a3791a88b48ebbca2d0c735d555ce_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: c2431cc17e9b13b44bb033fbf646f531, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_21440c3172cd4190b65ca10fb1cdfb6d_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: b776052138b70c847bef21c523382c13, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_229d7b57e5b449ed91322bf1332f7e1f_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: c2431cc17e9b13b44bb033fbf646f531, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_47922767272145d3a0ba317934c28630_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 37f0116cf93c56947b429cadaddcac7e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_511fb248e06a4eb4bab4b13aa16786c8_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: bf1de8582c58fdb4f8a620a05db61aab, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_7715557036e14fe2927e80b6d4e0ee50_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: a6b38e18fa5a3414293dc4e79a733cb3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_d322333f73514b23a37088294ae66809_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 5acd24f84e4ad3a4b95f4d98fde1ab6c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_e02d490912c34237a44a7e46cbcd32e7_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 37f0116cf93c56947b429cadaddcac7e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -42,6 +78,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AnimationSpeed: 2
+    - _CellDensity: 2
+    - _Dark: 0
+    - _DarkDensity: 5
+    - _DarkFloatSpeed: 2
+    - _DarkPower: 1
     - _DecalMeshBiasType: 0
     - _DecalMeshDepthBias: 0
     - _DecalMeshViewBias: 0
@@ -52,10 +94,14 @@ Material:
     - _MaxFlashOpacity: 1
     - _MinFlashOpacity: 0
     - _OpacityMultiplier: 1
+    - _Power: 1.16
     - _Res: 1
     - _SpeedMultiplier: 3
+    - _Worldspace: 1
     m_Colors:
     - _Color: {r: 0, g: 0, b: 0, a: 0}
+    - _OutlineColor: {r: 4.594794, g: 4.594794, b: 4.594794, a: 0}
+    - _RipplesColor: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &2169866986974593010
 MonoBehaviour:
