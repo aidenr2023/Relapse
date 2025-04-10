@@ -107,8 +107,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 4324443671615485623, guid: 1ac9807d1f89c3c4783a20a43467f3f9,
-    type: 3}
+  m_Motion: {fileID: 7400000, guid: e77e9daebbc68094785d637aa9700de7, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -188,8 +187,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -8861761166185921283, guid: 3ca5638b60852ad47ad0d273f8cf5d03,
-    type: 3}
+  m_Motion: {fileID: 7400000, guid: a14a0c6fb05a97743a2e81878969d955, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -934,7 +932,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: DashPower
-  m_Speed: 2
+  m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -4659283283027465270}
@@ -947,8 +945,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7601530921455385980, guid: d75379c336693544285c5e932cfa44e7,
-    type: 3}
+  m_Motion: {fileID: 7400000, guid: 6c3e7e1469e25e446ad5e8d843d58953, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -961,7 +958,7 @@ AnimatorStateMachine:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: IkLayer
+  m_Name: WallRunIk
   m_ChildStates: []
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
@@ -1092,7 +1089,7 @@ AnimatorStateMachine:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ShotgunPlacementLayer
+  m_Name: ShotgunIk
   m_ChildStates: []
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
@@ -1847,19 +1844,19 @@ AnimatorController:
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
   - serializedVersion: 5
-    m_Name: FirePower
-    m_StateMachine: {fileID: 2224504514401876251}
-    m_Mask: {fileID: 31900000, guid: 642f970126d50394da764a22e1905138, type: 2}
+    m_Name: ShotgunIk
+    m_StateMachine: {fileID: -4101986790366592040}
+    m_Mask: {fileID: 31900000, guid: b8b60733ac4a61f47abf8bc146f38667, type: 2}
     m_Motions: []
     m_Behaviours: []
-    m_BlendingMode: 0
+    m_BlendingMode: 1
     m_SyncedLayerIndex: -1
-    m_DefaultWeight: 1
-    m_IKPass: 0
+    m_DefaultWeight: 0
+    m_IKPass: 1
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
   - serializedVersion: 5
-    m_Name: IkLayer
+    m_Name: WallRunIk
     m_StateMachine: {fileID: -4452121626566206881}
     m_Mask: {fileID: 31900000, guid: b8b60733ac4a61f47abf8bc146f38667, type: 2}
     m_Motions: []
@@ -1871,15 +1868,15 @@ AnimatorController:
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
   - serializedVersion: 5
-    m_Name: ShotgunPlacementLayer
-    m_StateMachine: {fileID: -4101986790366592040}
-    m_Mask: {fileID: 31900000, guid: b8b60733ac4a61f47abf8bc146f38667, type: 2}
+    m_Name: FirePower
+    m_StateMachine: {fileID: 2224504514401876251}
+    m_Mask: {fileID: 31900000, guid: 642f970126d50394da764a22e1905138, type: 2}
     m_Motions: []
     m_Behaviours: []
-    m_BlendingMode: 1
+    m_BlendingMode: 0
     m_SyncedLayerIndex: -1
-    m_DefaultWeight: 0
-    m_IKPass: 1
+    m_DefaultWeight: 1
+    m_IKPass: 0
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
 --- !u!1101 &70907780325704984
@@ -2145,8 +2142,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -126434483540685378, guid: 55df745013ea92a40a99141db66673c0,
-    type: 3}
+  m_Motion: {fileID: 7400000, guid: 5c1d235fca3cded4ab652efd44e93c40, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -2688,8 +2684,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 5442841516224726352, guid: 2527c69aaf8f7e24ab1bf30a46379b4f,
-    type: 3}
+  m_Motion: {fileID: 7400000, guid: febd6a1ea7a9a944895004679d33718a, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -3263,8 +3258,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -4102909927095124952, guid: 596eaee2e1aaba14eb8aa02101efade0,
-    type: 3}
+  m_Motion: {fileID: 7400000, guid: 2812d5e6ab0c7af42bdd2615a89a45ac, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -3388,7 +3382,7 @@ BlendTree:
     m_DirectBlendParameter: JumpHeight
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: -2960966841615177852, guid: d75379c336693544285c5e932cfa44e7,
+    m_Motion: {fileID: 3637390881907700943, guid: 40b97f86bbc232a45883f6bd18621101,
       type: 3}
     m_Threshold: 3
     m_Position: {x: 0, y: 0}
@@ -3444,6 +3438,12 @@ AnimatorStateTransition:
   - m_ConditionMode: 2
     m_ConditionEvent: isWallrunLeft
     m_EventTreshold: 0
+  - m_ConditionMode: 1
+    m_ConditionEvent: IsGrounded
+    m_EventTreshold: 0
+  - m_ConditionMode: 2
+    m_ConditionEvent: Charging
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: 4158058063803224997}
   m_Solo: 0
@@ -3455,7 +3455,7 @@ AnimatorStateTransition:
   m_ExitTime: 0.75
   m_HasExitTime: 0
   m_HasFixedDuration: 1
-  m_InterruptionSource: 0
+  m_InterruptionSource: 2
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 0
 --- !u!1102 &5461820572728859301
@@ -3700,6 +3700,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: isWallrunRight
     m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: modelType
+    m_EventTreshold: 3
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -6770438307283911211}
   m_Solo: 0

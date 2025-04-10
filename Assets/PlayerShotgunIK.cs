@@ -7,12 +7,27 @@ public class PlayerShotgunIk : MonoBehaviour
     //[SerializeField] private Transform rightHandTarget;
 
     [Header("Animator Parameters")]
-    [SerializeField] private string gunTypeParam = "GunModelType";
+    [SerializeField] private string gunTypeParam = "modelType";
+    [SerializeField] private string powerChargeParam = "Charging";
     [SerializeField] private int mag7ID = 1;
 
     [Header("IK Settings")]
     [SerializeField] private float ikActivationSpeed = 5f; // Smooth transition
 
+
+    public bool isFiringPower = false;
+
+    public void OnPowerFireStart()
+    {
+        isFiringPower = true;
+    }
+
+    public void OnPowerFireEnd()
+    {
+        isFiringPower = false;
+    }
+    
+    
     private Animator _animator;
     private float _currentLeftWeight;
     //private float _currentRightWeight;
@@ -37,7 +52,14 @@ public class PlayerShotgunIk : MonoBehaviour
 
     void OnAnimatorIK(int layerIndex)
     {
+        // Ensure we are on the correct layer
+        if (layerIndex != _animator.GetLayerIndex("ShotgunIk")) return;
+        
+        // Check if animator is assigned
         if (!_animator) return;
+        
+        //checks to see if ik can be allowed
+        if(_animator.GetBool(powerChargeParam) || isFiringPower) return;
 
         // Apply weights directly
         SetHandIK(AvatarIKGoal.LeftHand, leftHandTarget, _currentLeftWeight);

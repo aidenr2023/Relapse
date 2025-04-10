@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerWallRunningIK : MonoBehaviour
@@ -22,7 +23,7 @@ public class PlayerWallRunningIK : MonoBehaviour
     [SerializeField] private float ikWeightTransitionSpeed = 8f;
     [SerializeField] [Range(0, 1)] private float maxArmExtension = 0.85f;
     
-    [SerializeField] WeaponManager weaponManager;
+   // [SerializeField] WeaponManager weaponManager;
     
     private float _currentIkWeight;
     private Vector3 _targetHandPosition;
@@ -30,16 +31,42 @@ public class PlayerWallRunningIK : MonoBehaviour
     private Quaternion _smoothedRotation;
     private bool _isReloading;
     private Vector3 _velocity;
+    
+        
+    [SerializeField] private string gunTypeParam = "modelType";
+    [SerializeField] private string powerChargeParam = "Charging";
+    [SerializeField] private string powerTypeParam = "powerType";
+    [SerializeField] private int mag7ID = 3;
+
+    PlayerShotgunIk playerShotgunIk;
+    
+    private void Start()
+    {
+        playerShotgunIk = GetComponent<PlayerShotgunIk>();
+    }
+
 
     private void OnAnimatorIK(int layerIndex)
     {
-        if (!wallRunning.IsWallRunning || wallRunning.IsWallRunningRight || _isReloading)
+        // Ensure we are on the correct layer
+        if (layerIndex != animator.GetLayerIndex("WallRunIk")) return;
+        
+        //check animator parmaeters
+
+        int isGunParamOn = animator.GetInteger(gunTypeParam);
+        bool isPowerOn = animator.GetBool(powerChargeParam);
+        int powerType = animator.GetInteger(powerTypeParam);
+        bool playerUsingPower = playerShotgunIk.isFiringPower; 
+        
+        
+        //layerIndex = 2; // Ensure we are on the base layer
+        if (!wallRunning.IsWallRunning || wallRunning.IsWallRunningRight || _isReloading || isGunParamOn == mag7ID || isPowerOn || playerUsingPower)
         {
+            // Reset IK weight if not wall running
             _currentIkWeight = Mathf.Lerp(_currentIkWeight, 0, ikWeightTransitionSpeed * Time.deltaTime);
             ApplyHandIK(AvatarIKGoal.LeftHand, _currentIkWeight);
             return;
         }
-
         if (wallRunning.IsWallRunningLeft)
         {
             UpdateHandPosition();
@@ -114,7 +141,7 @@ public class PlayerWallRunningIK : MonoBehaviour
     
     
 
-    private void Update() => _velocity = wallRunning.GetComponent<Rigidbody>().velocity;
+    private void Update() => _velocity = wallRunning.GetComponent<Rigidbody>().velocity; 
 
     // Add these to make tweaking easier in the editor
     #if UNITY_EDITOR

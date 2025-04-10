@@ -21854,7 +21854,10 @@ MonoBehaviour:
   rotationSmoothing: 0.2
   ikWeightTransitionSpeed: 5
   maxArmExtension: 0.85
-  weaponManager: {fileID: 0}
+  gunTypeParam: modelType
+  powerChargeParam: Charging
+  powerTypeParam: powerType
+  mag7ID: 1
 --- !u!1 &8818440328132041162
 GameObject:
   m_ObjectHideFlags: 0
@@ -24904,7 +24907,10 @@ MonoBehaviour:
   rotationSmoothing: 0.2
   ikWeightTransitionSpeed: 5
   maxArmExtension: 0.85
-  weaponManager: {fileID: 0}
+  gunTypeParam: modelType
+  powerChargeParam: Charging
+  powerTypeParam: PowerAnimationType
+  mag7ID: 3
 --- !u!114 &5866207854067012556
 MonoBehaviour:
   m_ObjectHideFlags: 0
