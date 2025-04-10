@@ -34,7 +34,7 @@ AnimatorStateTransition:
   m_TransitionDuration: 0.12799871
   m_TransitionOffset: 0
   m_ExitTime: 0.9076923
-  m_HasExitTime: 0
+  m_HasExitTime: 1
   m_HasFixedDuration: 1
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
@@ -1698,8 +1698,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -6345447453204112376, guid: dbbb72f61b9ef48499b1d443bd61108c,
-    type: 3}
+  m_Motion: {fileID: 7400000, guid: 850d6db2be9beab49bf86df69f89a0c0, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -3088,6 +3087,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: Shoot
     m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: modelType
+    m_EventTreshold: 3
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -41912047580755260}
   m_Solo: 0
