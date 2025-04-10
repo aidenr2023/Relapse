@@ -10,6 +10,7 @@ using UnityEngine.InputSystem;
 public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, IPlayerLoaderInfo
 {
     private static readonly int ShootAnimationID = Animator.StringToHash("Shoot");
+    private static readonly int ModelTypeAnimationID = Animator.StringToHash("modelType");
 
     #region Serialized Fields
 
@@ -331,6 +332,10 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
 
         // Invoke the OnGunEquipped event
         OnGunEquipped?.Invoke(this, gun);
+
+        // Set the model type to the gun's model type
+        _shootingAnimator.SetInteger(ModelTypeAnimationID, (int)gun.GunModelType);
+        Debug.Log($"Setting model type to {gun.GunModelType} ({(int)gun.GunModelType})");
     }
 
     [ContextMenu("Remove Gun")]
@@ -341,7 +346,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
             return;
 
         // If the current gun's reload animation is playing, return
-        if (_equippedGun.IsReloadAnimationPlaying)
+        if (_equippedGun.IsReloadAnimationPlaying && _playerInfo.CurrentHealth > 0)
             return;
 
         // Release the fire button on the gun
@@ -382,6 +387,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         OnGunRemoved?.Invoke(this, _equippedGun);
 
         _equippedGun = null;
+
+        // Set the model type to idle
+        _shootingAnimator.SetInteger(ModelTypeAnimationID, (int)GunModelType.Idle);
     }
 
     private IEnumerator Shoot()
@@ -479,32 +487,46 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         // Remove the current gun (completely erase it, don't even drop it)
         if (_equippedGun != null)
         {
-            // Set the equipped gun's parent to null
-            _equippedGun.GameObject.transform.SetParent(null, true);
+            // store the current gun
+            var currentGun = _equippedGun;
 
-            // Destroy the equipped gun
-            Destroy(_equippedGun.GameObject);
+            // Remove the gun
+            RemoveGun();
 
-            // Set the equipped gun to null
-            _equippedGun = null;
+            // Destroy the gun
+            Destroy(currentGun.GameObject);
+
+            // // Set the equipped gun's parent to null
+            // _equippedGun.GameObject.transform.SetParent(null, true);
+            //
+            // // Destroy the equipped gun
+            // Destroy(_equippedGun.GameObject);
+
+            // // Set the equipped gun to null
+            // _equippedGun = null;
         }
 
         if (newGunPrefab == null)
             return;
 
         // Instantiate the new gun
-        var gun = Instantiate(newGunPrefab).GetComponent<IGun>();
+        IGun gun = null;
 
-        // Equip the gun
-        EquipGun(gun);
+        // Create a coroutine to spawn the gun & equip it
+        // Do this to avoid the outline bug, which happens when the gun is created and equipped in the same frame
+        CoroutineBuilder
+            .Create()
+            .EnqueueActionAndYield(() => { gun = Instantiate(newGunPrefab).GetComponent<IGun>(); })
+            .Enqueue(() =>
+            {
+                EquipGun(gun);
+                gun = _equippedGun;
 
-        gun = _equippedGun;
-
-        if (gun == null)
-            return;
-
-        // Set the ammo count
-        gun.CurrentAmmo = currentAmmo;
+                // Set the ammo count
+                if (gun != null)
+                    gun.CurrentAmmo = currentAmmo;
+            })
+            .Start(this);
     }
 
     #region Debugging
@@ -544,8 +566,10 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         // Find the first gun with the unique id
         var gun = allGuns.value.FirstOrDefault(n => n.UniqueId == gunId);
 
-        // If there is no gun, set the gun to null
-        if (gun == null)
+        // If there is no gun,
+        // or the gun is not valid
+        // set the gun to null
+        if (!hasGun || gun == null)
         {
             SetUpWeapon(null, 0);
             return;

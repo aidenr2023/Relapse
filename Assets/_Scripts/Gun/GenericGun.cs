@@ -14,7 +14,6 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
     private static readonly int ShootingAnimationID = Animator.StringToHash("Shooting");
     private static readonly int ReloadAnimationID = Animator.StringToHash("Reload");
     private static readonly int IsReloadingAnimationID = Animator.StringToHash("isReloading");
-    private static readonly int ModelTypeAnimationID = Animator.StringToHash("modelType");
     private static readonly int IsEmptyAnimationID = Animator.StringToHash("isEmpty");
     private static readonly int jumpTriggerID = Animator.StringToHash("Jump");
 
@@ -253,16 +252,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
             // Update the PLAYER's animator based on the gun model type
             var movementV2 = _weaponManager.Player.PlayerController as PlayerMovementV2;
-
-            if (movementV2 != null)
-                movementV2.PlayerAnimator.SetInteger(ModelTypeAnimationID, (int)gunModelType);
         }
 
         if (animator != null)
-        {
-            animator.SetInteger(ModelTypeAnimationID, (int)gunModelType);
             animator.SetBool(IsEmptyAnimationID, IsMagazineEmpty);
-        }
 
         // Reset the fired this frame flag
         hasFiredThisFrame = false;
