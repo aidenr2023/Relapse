@@ -28,7 +28,7 @@
             "m_Id": "068a119c86b6431db7f0f3d437af84e5"
         },
         {
-            "m_Id": "ee3f4366986d4c16824b390bac2fb7c4"
+            "m_Id": "91fc8d6c24214a4c9602f5eecb28ce33"
         }
     ],
     "m_Keywords": [],
@@ -115,7 +115,7 @@
             "m_Id": "d42a8c2232ea4d9892dd1f698baace17"
         },
         {
-            "m_Id": "be408a0236d94a47a29340e00f395509"
+            "m_Id": "5badc604fcc74ee1b8e61f01a3dfa33a"
         }
     ],
     "m_GroupDatas": [],
@@ -203,6 +203,20 @@
                     "m_Id": "22292a16c79844e7b7651af29080c5e1"
                 },
                 "m_SlotId": 1
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "5badc604fcc74ee1b8e61f01a3dfa33a"
+                },
+                "m_SlotId": 0
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "b0c1e89764e84b8a82c53464cf997cf1"
+                },
+                "m_SlotId": 0
             }
         },
         {
@@ -355,20 +369,6 @@
             "m_InputSlot": {
                 "m_Node": {
                     "m_Id": "1c363301825c463f9f2282f6b1ab28e4"
-                },
-                "m_SlotId": 0
-            }
-        },
-        {
-            "m_OutputSlot": {
-                "m_Node": {
-                    "m_Id": "be408a0236d94a47a29340e00f395509"
-                },
-                "m_SlotId": 0
-            },
-            "m_InputSlot": {
-                "m_Node": {
-                    "m_Id": "b0c1e89764e84b8a82c53464cf997cf1"
                 },
                 "m_SlotId": 0
             }
@@ -832,6 +832,31 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.Vector4MaterialSlot",
+    "m_ObjectId": "184c72d7e269469ca7389d01049766cd",
+    "m_Id": 0,
+    "m_DisplayName": "RipplesColor",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Out",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    },
+    "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.DynamicVectorMaterialSlot",
     "m_ObjectId": "1b3f9550ecf94427b349372a432b704c",
     "m_Id": 3,
@@ -966,8 +991,8 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": -1684.5,
-            "y": -111.50006103515625,
+            "x": -1512.0,
+            "y": -17.0,
             "width": 242.0,
             "height": 399.0
         }
@@ -1715,6 +1740,42 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
+    "m_ObjectId": "5badc604fcc74ee1b8e61f01a3dfa33a",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "Property",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": -546.39599609375,
+            "y": 278.1293640136719,
+            "width": 0.0,
+            "height": 0.0
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "184c72d7e269469ca7389d01049766cd"
+        }
+    ],
+    "synonyms": [],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_DismissedVersion": 0,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    },
+    "m_Property": {
+        "m_Id": "91fc8d6c24214a4c9602f5eecb28ce33"
+    }
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector2MaterialSlot",
     "m_ObjectId": "6193b090fe3d4e75a2b0fcf348046e43",
     "m_Id": 0,
@@ -1796,31 +1857,6 @@
         "x": 0.0,
         "y": 1.0
     }
-}
-
-{
-    "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.Vector4MaterialSlot",
-    "m_ObjectId": "67c842587de14c8c99b8926d6eeb9c0c",
-    "m_Id": 0,
-    "m_DisplayName": "RipplesColor",
-    "m_SlotType": 1,
-    "m_Hidden": false,
-    "m_ShaderOutputName": "Out",
-    "m_StageCapability": 3,
-    "m_Value": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 0.0
-    },
-    "m_DefaultValue": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 0.0
-    },
-    "m_Labels": []
 }
 
 {
@@ -2294,6 +2330,36 @@
 }
 
 {
+    "m_SGVersion": 3,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.ColorShaderProperty",
+    "m_ObjectId": "91fc8d6c24214a4c9602f5eecb28ce33",
+    "m_Guid": {
+        "m_GuidSerialized": "a6959c60-0b88-4f57-a949-dc7e368ce504"
+    },
+    "m_Name": "RipplesColor",
+    "m_DefaultRefNameVersion": 1,
+    "m_RefNameGeneratedByDisplayName": "RipplesColor",
+    "m_DefaultReferenceName": "_RipplesColor",
+    "m_OverrideReferenceName": "",
+    "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
+    "m_DismissedVersion": 0,
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": {
+        "r": 0.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 0.0
+    },
+    "isMainColor": false,
+    "m_ColorMode": 0
+}
+
+{
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
     "m_ObjectId": "9a47a1da25ec428e803a3c74d3488722",
@@ -2734,7 +2800,7 @@
             "m_Id": "068a119c86b6431db7f0f3d437af84e5"
         },
         {
-            "m_Id": "ee3f4366986d4c16824b390bac2fb7c4"
+            "m_Id": "91fc8d6c24214a4c9602f5eecb28ce33"
         }
     ]
 }
@@ -2820,42 +2886,6 @@
     },
     "m_Property": {
         "m_Id": "da820b9083274222a031957c32762f7d"
-    }
-}
-
-{
-    "m_SGVersion": 0,
-    "m_Type": "UnityEditor.ShaderGraph.PropertyNode",
-    "m_ObjectId": "be408a0236d94a47a29340e00f395509",
-    "m_Group": {
-        "m_Id": ""
-    },
-    "m_Name": "Property",
-    "m_DrawState": {
-        "m_Expanded": true,
-        "m_Position": {
-            "serializedVersion": "2",
-            "x": -458.4999694824219,
-            "y": 494.5,
-            "width": 0.0,
-            "height": 0.0
-        }
-    },
-    "m_Slots": [
-        {
-            "m_Id": "67c842587de14c8c99b8926d6eeb9c0c"
-        }
-    ],
-    "synonyms": [],
-    "m_Precision": 0,
-    "m_PreviewExpanded": true,
-    "m_DismissedVersion": 0,
-    "m_PreviewMode": 0,
-    "m_CustomColors": {
-        "m_SerializableColors": []
-    },
-    "m_Property": {
-        "m_Id": "ee3f4366986d4c16824b390bac2fb7c4"
     }
 }
 
@@ -3315,34 +3345,6 @@
         "w": 0.0
     },
     "m_DefaultValue": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0,
-        "w": 0.0
-    }
-}
-
-{
-    "m_SGVersion": 1,
-    "m_Type": "UnityEditor.ShaderGraph.Internal.Vector4ShaderProperty",
-    "m_ObjectId": "ee3f4366986d4c16824b390bac2fb7c4",
-    "m_Guid": {
-        "m_GuidSerialized": "2261acc6-6ef2-41b1-97a6-e373846bc909"
-    },
-    "m_Name": "RipplesColor",
-    "m_DefaultRefNameVersion": 1,
-    "m_RefNameGeneratedByDisplayName": "RipplesColor",
-    "m_DefaultReferenceName": "_RipplesColor",
-    "m_OverrideReferenceName": "",
-    "m_GeneratePropertyBlock": true,
-    "m_UseCustomSlotLabel": false,
-    "m_CustomSlotLabel": "",
-    "m_DismissedVersion": 0,
-    "m_Precision": 0,
-    "overrideHLSLDeclaration": false,
-    "hlslDeclarationOverride": 0,
-    "m_Hidden": false,
-    "m_Value": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0,
