@@ -122,13 +122,14 @@ public class VendorMenu : GameMenu
             TutorialScreen.Play(this, relapseTutorial, false);
         }
 
+        // Invoke the event to run after talking once
+        if (_vendorInteractable != null && _purchasedPower != null)
+            _vendorInteractable.InvokeAfterTalkingOnce();
+        
         // Reset the flags
         _playTutorialAfterClose = false;
         _purchasedPower = null;
 
-        // Invoke the event to run after talking once
-        if (_vendorInteractable != null)
-            _vendorInteractable.InvokeAfterTalkingOnce();
     }
 
     protected override void CustomDestroy()

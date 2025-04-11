@@ -17,8 +17,6 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
 
     protected override void CustomOnTriggerEnter(Collider other, Player player)
     {
-        Debug.Log($"Entered the level transition checkpoint with player {player.name}");
-
         // Run the transition to the next scene coroutine
         DebugManagerHelper.Instance.StartCoroutine(TransitionToNextScene(scenesToLoad));
     }
@@ -94,7 +92,7 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
 
         yield return null;
 
-        Debug.Log($"After Yield - {useLevelInformation}");
+        // Debug.Log($"After Yield - {useLevelInformation}");
 
         // Wait for the hold time
         yield return new WaitUntil(() => Time.unscaledTime - loadStartTime >= HOLD_TIME);

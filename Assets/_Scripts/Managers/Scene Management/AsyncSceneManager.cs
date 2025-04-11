@@ -118,8 +118,6 @@ public class AsyncSceneManager : IDebugged
 
             // Rotate the player to the level information's rotation
             Player.Instance.PlayerLook.ApplyRotation(levelInfo.transform.rotation);
-
-            Debug.Log($"Moving player to {levelInfo.name} ({levelInfo.transform.position})");
         }
     }
 

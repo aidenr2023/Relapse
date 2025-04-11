@@ -15,7 +15,7 @@ public class VendorInteractable : MonoBehaviour, IVendorInteractable, ILevelLoad
 
     #endregion
 
-    public bool HasTalkedOnce { get; private set; }
+    private bool HasTalkedOnce { get; set; }
 
     #region Getters
 
