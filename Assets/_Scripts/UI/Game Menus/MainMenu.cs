@@ -10,6 +10,8 @@ public class MainMenu : GameMenu
 {
     #region Serialized Fields
 
+    [SerializeField] private EventVariable gameOnStart;
+    
     [SerializeField] private ResetableSOArrayVariable variablesToReset;
     
     [SerializeField] private Slider loadingBar;
@@ -136,6 +138,9 @@ public class MainMenu : GameMenu
         );
 
         yield return null;
+        
+        // Invoke the game on start event
+        gameOnStart.Invoke();
     }
 
     public void ExitButton()

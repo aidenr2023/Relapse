@@ -27,7 +27,7 @@ public static class EnemyRelapseOutlineManager
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     public static void ResetLerpAmount()
     {
-        Debug.Log("Resetting enemy outline lerp amount to 0");
+        // Debug.Log("Resetting enemy outline lerp amount to 0");
 
         // Reset the lerp amount to 0
         SetOutlineLerpAmount(0f);

@@ -19,7 +19,7 @@ public class NPCBlendAnim : StateMachineBehaviour
         // Initialize IdleBlend parameter
        animator.SetFloat(IdleBlendHash, 0f);
 
-       Debug.Log("Entered Idle State.");
+       // Debug.Log("Entered Idle State.");
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks

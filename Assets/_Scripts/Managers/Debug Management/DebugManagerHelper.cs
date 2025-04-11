@@ -226,18 +226,14 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
         if (Input.GetKeyDown(KeyCode.Y))
         {
-            // Create a coroutine builder
-            var builder = CoroutineBuilder.Create()
-                .Enqueue(TestCoroutine("Test 1", 1))
-                .Enqueue(TestCoroutine("Test 2", 1))
-                .Enqueue(() => Debug.Log("Simultaneous w/ 2"))
-                .Enqueue(TestCoroutine("Test 3", 1))
-                .Enqueue(() => Debug.Log("Simultaneous w/ 3.1"))
-                .Enqueue(() => Debug.Log("Simultaneous w/ 3.2"))
-                .Enqueue(() => Debug.Log("Simultaneous w/ 3.3"))
-                .Enqueue(TestCoroutine("DONE", 0))
-                .Start(this);
+            Player.PlayerInfo.ChangeHealth(
+                -Player.PlayerInfo.MaxHealth,
+                Player.PlayerInfo, this,
+                Player.transform.position
+            );
         }
+
+        return;
 
         IEnumerator TestCoroutine(string text, float waitTime)
         {

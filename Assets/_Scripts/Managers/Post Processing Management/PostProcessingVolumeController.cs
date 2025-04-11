@@ -61,7 +61,7 @@ public class PostProcessingVolumeController : MonoBehaviour
 
     public void ChangePostProcessing(PostProcessingType type, float duration = .5f)
     {
-        Debug.Log($"Changing Post Processing to {type}");
+        // Debug.Log($"Changing Post Processing to {type}");
 
         // Set the current type to the new type
         currentType = type;

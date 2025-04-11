@@ -335,7 +335,7 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
 
         // Set the model type to the gun's model type
         _shootingAnimator.SetInteger(ModelTypeAnimationID, (int)gun.GunModelType);
-        Debug.Log($"Setting model type to {gun.GunModelType} ({(int)gun.GunModelType})");
+        // Debug.Log($"Setting model type to {gun.GunModelType} ({(int)gun.GunModelType})");
     }
 
     [ContextMenu("Remove Gun")]

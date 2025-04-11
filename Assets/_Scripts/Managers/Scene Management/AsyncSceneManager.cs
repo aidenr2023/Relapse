@@ -539,7 +539,7 @@ public class AsyncSceneManager : IDebugged
         // Add the record to the dictionary
         _asyncSceneRecords.Add(sceneField.SceneName, sceneRecord);
 
-        Debug.Log($"Forced management of scene {sceneField.SceneName}");
+        // Debug.Log($"Forced management of scene {sceneField.SceneName}");
     }
 
     public void ForceManageScene(LevelSectionSceneInfo sceneLoaderInformation)

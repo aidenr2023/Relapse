@@ -270,7 +270,8 @@ public class PlayerInfo : ComponentScript<Player>, IActor, IDamager
         if (currentHealthSo <= 0)
         {
             // Invoke the OnDeath event
-            OnDeath?.Value.Invoke(this, args);
+            OnDeath.Value.Invoke(this, args);
+            Debug.Log($"Invoke player death event: {OnDeath}");
         }
 
         // Start the invincibility timer

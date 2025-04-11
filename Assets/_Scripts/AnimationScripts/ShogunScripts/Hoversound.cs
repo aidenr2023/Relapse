@@ -11,8 +11,7 @@ public class Hoversound : MonoBehaviour, IPointerEnterHandler
     {
         // Play the hover sound
         source.PlayOneShot(hoverSound);
-        Debug.Log("Mouse entered");
-        
+        // Debug.Log("Mouse entered");
     }
 }
 

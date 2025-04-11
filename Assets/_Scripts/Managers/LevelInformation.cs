@@ -92,7 +92,8 @@ public class LevelInformation : MonoBehaviour
         // Wait for the checkpoint manager to be initialized
         yield return new WaitUntil(() => CheckpointManager.Instance != null);
 
-        yield return new WaitForSeconds(1f);
+        // yield return new WaitForSeconds(1f);
+        yield return null;
 
         var checkpointManager = CheckpointManager.Instance;
 

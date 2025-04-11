@@ -11,11 +11,12 @@ public class RelapseScreen : GameMenu
 {
     private const string DEATH_SCENE_NAME = "DeathUIScene";
 
-    public static RelapseScreen Instance { get; private set; }
+    private static RelapseScreen Instance { get; set; }
 
     #region Serialized Fields
 
-    [SerializeField] private HealthChangedEventReference playerOnDeathEvent;
+    [SerializeField] private EventVariable gameOnStart;
+    [SerializeField] private HealthChangedEventVariable playerOnDeathEvent;
 
     [SerializeField] private SceneField mainMenuScene;
     [SerializeField] private SceneField playerDataScene;
@@ -41,8 +42,25 @@ public class RelapseScreen : GameMenu
     protected override void CustomAwake()
     {
         // Set the instance to this
-        Instance = this;
+        if (Instance != null)
+        {
+            Debug.LogError("There is more than one instance of RelapseScreen in the scene.");
+            Destroy(gameObject);
+            return;
+        }
+        
+        // Subscribe to the player's death event
+        playerOnDeathEvent += ShowScreenOnDeath;
+        
+        // Subscribe to the game on start event
+        gameOnStart += ForceEventSubscription;
+    }
 
+    private void ForceEventSubscription()
+    {
+        // Remove the event subscription (just in case)
+        playerOnDeathEvent -= ShowScreenOnDeath;
+        
         // Subscribe to the player's death event
         playerOnDeathEvent += ShowScreenOnDeath;
     }
@@ -80,6 +98,10 @@ public class RelapseScreen : GameMenu
     {
         // Unsubscribe from the player's death event
         playerOnDeathEvent -= ShowScreenOnDeath;
+        
+        // If the instance is this, set it to null
+        if (Instance == this)
+            Instance = null;
     }
 
     protected override void CustomUpdate()
