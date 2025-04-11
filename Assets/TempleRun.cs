@@ -44,7 +44,7 @@ public class TempleRun : MonoBehaviour
 
     IEnumerator End ()
     {
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(10f);
         particle.SetActive(false);
     }
 }
