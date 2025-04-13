@@ -24,7 +24,6 @@ public class BossEnemy : ComponentScript<EnemyInfo>, IDebugged
     [SerializeField] private UnityEvent onBadEnding;
 
     [SerializeField] private MultipleWorldDialogueTrigger dialogueTrigger;
-
     [SerializeField] private RandomWorldDialogueTrigger relapseDialogueTrigger;
 
     #endregion

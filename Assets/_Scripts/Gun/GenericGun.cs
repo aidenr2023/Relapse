@@ -447,10 +447,10 @@ public class GenericGun : MonoBehaviour, IGun, IDebugged
 
                 // This is a critical hit
                 if (damageMultiplier > 1)
-                {
                     isCriticalHit = true;
-                    // Debug.Log($"CRITICAL HIT");
-                }
+                
+                // Invoke the on hit event for the special hurt box
+                specialHurtBox.OnHit.Invoke(specialHurtBox);
             }
 
             // continue if the actor is the player

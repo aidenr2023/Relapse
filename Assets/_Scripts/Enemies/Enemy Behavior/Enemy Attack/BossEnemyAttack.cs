@@ -19,6 +19,7 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
     [SerializeField] private Sound bossYellSfx;
     [SerializeField] private Transform bossYellUiParent;
     [SerializeField] private GameObject[] bossPowerYellUi;
+    [SerializeField] private BossShield bossShield;
 
     #endregion
 
@@ -32,6 +33,8 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
 
     public Sound NormalHitSfx => null;
     public Sound CriticalHitSfx => null;
+
+    public BossShield BossShield => bossShield;
 
     #endregion
 
@@ -185,7 +188,7 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
 
                 // Start the coroutine to do the boss yell, but don't wait for it to finish
                 StartCoroutine(BossYell(GetRandomBossPowerYellUi()));
-                
+
                 // Play the boss yell sfx
                 SoundManager.Instance.PlaySfxAtPoint(bossYellSfx, transform.position);
             }
@@ -196,8 +199,15 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
     {
         Debug.Log($"Started using power: {cBehavior.BossPower?.name ?? "GUN"}");
 
+        // Activate the boss shield if the behavior is not a gun attack
+        if (cBehavior is not BossGunBehavior)
+            bossShield.ActivateShield(this);
+
         // Start the power
         yield return StartCoroutine(cBehavior.UsePower());
+
+        // Deactivate the boss shield
+        bossShield.DeactivateShield(this);
 
         Debug.Log($"Finished using power: {cBehavior.BossPower?.name ?? "GUN"}");
     }
@@ -296,9 +306,9 @@ public class BossEnemyAttack : ComponentScript<BossEnemy>, IEnemyAttackBehavior
 
     public void ForceStopUpdateCoroutine()
     {
-        if (_updateCoroutine == null) 
+        if (_updateCoroutine == null)
             return;
-        
+
         StopCoroutine(_updateCoroutine);
         _updateCoroutine = null;
     }
