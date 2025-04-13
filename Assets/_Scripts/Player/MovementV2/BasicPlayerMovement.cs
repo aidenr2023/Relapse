@@ -50,6 +50,8 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
     private CountdownTimer _coyoteJumpTimer;
 
+    private readonly HashSet<object> _jumpDisablers = new();
+
     #endregion
 
     #region Getters
@@ -216,6 +218,10 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
 
         // Return if this is not the active movement script
         if (ParentComponent.CurrentMovementScript != this)
+            return;
+        
+        // If there are any jump disablers, return
+        if (_jumpDisablers.Count > 0)
             return;
 
         // Restart the jump grace timer
@@ -567,6 +573,18 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         _jumpGraceTimer.Stop();
     }
 
+    public void AddJumpDisabler(object disabler)
+    {
+        // Add the jump disabler to the set
+        _jumpDisablers.Add(disabler);
+    }
+    
+    public void RemoveJumpDisabler(object disabler)
+    {
+        // Remove the jump disabler from the set
+        _jumpDisablers.Remove(disabler);
+    }
+    
     #region Debug
 
     public override string GetDebugText()

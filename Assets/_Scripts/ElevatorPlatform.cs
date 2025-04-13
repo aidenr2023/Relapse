@@ -5,6 +5,8 @@ using UnityEngine;
 public class ElevatorPlatform : MonoBehaviour
 {
     private static int _elevatorPlatformCount;
+
+    [SerializeField] private bool disableJumping;
     
     private readonly HashSet<Player> _playersOnThisPlatform = new();
 
@@ -32,6 +34,10 @@ public class ElevatorPlatform : MonoBehaviour
 
         // Make this game object the parent of the player
         player.transform.SetParent(transform);
+        
+        // If this elevator disables jumping, disable the player's jumping
+        if (disableJumping)
+            (player.PlayerController as PlayerMovementV2)?.BasicPlayerMovement.AddJumpDisabler(this);
     }
 
     private void OnTriggerExit(Collider other)
@@ -54,5 +60,8 @@ public class ElevatorPlatform : MonoBehaviour
         // If the platform count is less than or equal to 0, reset the player to their original scene.
         player.gameObject.transform.parent = player.OriginalSceneObject.transform;
         player.gameObject.transform.parent = null;
+
+        // Re-enable the player's jumping
+        (player.PlayerController as PlayerMovementV2)?.BasicPlayerMovement.RemoveJumpDisabler(this);
     }
 }
