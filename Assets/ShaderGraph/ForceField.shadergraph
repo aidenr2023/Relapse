@@ -134,6 +134,9 @@
         },
         {
             "m_Id": "4cbc10ab7e2b480e81464dbbc427519e"
+        },
+        {
+            "m_Id": "66e3bc7a046d4249b474264b4e913a46"
         }
     ],
     "m_GroupDatas": [],
@@ -148,9 +151,9 @@
             },
             "m_InputSlot": {
                 "m_Node": {
-                    "m_Id": "c4bdcac87db44c2e8ed7f9fab1d19649"
+                    "m_Id": "e713f771a9c2492bb953f0f8e71f1358"
                 },
-                "m_SlotId": 1
+                "m_SlotId": 0
             }
         },
         {
@@ -526,6 +529,20 @@
             },
             "m_InputSlot": {
                 "m_Node": {
+                    "m_Id": "66e3bc7a046d4249b474264b4e913a46"
+                },
+                "m_SlotId": 0
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "ed77b667ef18470983f706b444858b8e"
+                },
+                "m_SlotId": 2
+            },
+            "m_InputSlot": {
+                "m_Node": {
                     "m_Id": "f7142d53706b472986dacad30ef1d2f7"
                 },
                 "m_SlotId": 1
@@ -543,6 +560,20 @@
                     "m_Id": "0b8c42955d96406f9b3bd0cc7c78e940"
                 },
                 "m_SlotId": 0
+            }
+        },
+        {
+            "m_OutputSlot": {
+                "m_Node": {
+                    "m_Id": "f7142d53706b472986dacad30ef1d2f7"
+                },
+                "m_SlotId": 2
+            },
+            "m_InputSlot": {
+                "m_Node": {
+                    "m_Id": "c4bdcac87db44c2e8ed7f9fab1d19649"
+                },
+                "m_SlotId": 1
             }
         }
     ],
@@ -717,10 +748,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 476.0,
-            "y": 475.9999694824219,
+            "x": 901.0,
+            "y": 661.0,
             "width": 208.0,
-            "height": 301.9999694824219
+            "height": 301.99993896484377
         }
     },
     "m_Slots": [
@@ -1306,6 +1337,30 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.DynamicVectorMaterialSlot",
+    "m_ObjectId": "39b2c63bfb3b4ab795f673013072126e",
+    "m_Id": 2,
+    "m_DisplayName": "Out",
+    "m_SlotType": 1,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "Out",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    }
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.UVMaterialSlot",
     "m_ObjectId": "3a65042016e64897ae94360008577406",
     "m_Id": 0,
@@ -1798,6 +1853,48 @@
         "y": 0.0
     },
     "m_Labels": []
+}
+
+{
+    "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.DitherNode",
+    "m_ObjectId": "66e3bc7a046d4249b474264b4e913a46",
+    "m_Group": {
+        "m_Id": ""
+    },
+    "m_Name": "Dither",
+    "m_DrawState": {
+        "m_Expanded": true,
+        "m_Position": {
+            "serializedVersion": "2",
+            "x": 185.00001525878907,
+            "y": 725.0,
+            "width": 208.00001525878907,
+            "height": 302.0
+        }
+    },
+    "m_Slots": [
+        {
+            "m_Id": "cf9392b48cc24804bf63c476dbfaf64b"
+        },
+        {
+            "m_Id": "a9617b2f439746deaf544552f3534e91"
+        },
+        {
+            "m_Id": "39b2c63bfb3b4ab795f673013072126e"
+        }
+    ],
+    "synonyms": [
+        "blue noise",
+        "half tone"
+    ],
+    "m_Precision": 0,
+    "m_PreviewExpanded": true,
+    "m_DismissedVersion": 0,
+    "m_PreviewMode": 0,
+    "m_CustomColors": {
+        "m_SerializableColors": []
+    }
 }
 
 {
@@ -2695,6 +2792,32 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.ScreenPositionMaterialSlot",
+    "m_ObjectId": "a9617b2f439746deaf544552f3534e91",
+    "m_Id": 1,
+    "m_DisplayName": "Screen Position",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "ScreenPosition",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    },
+    "m_Labels": [],
+    "m_ScreenSpaceType": 1
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.DynamicValueMaterialSlot",
     "m_ObjectId": "ad95442a65aa44308d63fa1513c14812",
     "m_Id": 0,
@@ -3265,6 +3388,30 @@
 
 {
     "m_SGVersion": 0,
+    "m_Type": "UnityEditor.ShaderGraph.DynamicVectorMaterialSlot",
+    "m_ObjectId": "cf9392b48cc24804bf63c476dbfaf64b",
+    "m_Id": 0,
+    "m_DisplayName": "In",
+    "m_SlotType": 0,
+    "m_Hidden": false,
+    "m_ShaderOutputName": "In",
+    "m_StageCapability": 3,
+    "m_Value": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    },
+    "m_DefaultValue": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "w": 0.0
+    }
+}
+
+{
+    "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.TilingAndOffsetNode",
     "m_ObjectId": "cfcd20cdf4254a5cb16ce0c46fb8dbdf",
     "m_Group": {
@@ -3485,10 +3632,10 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 564.0000610351563,
-            "y": 108.99996948242188,
-            "width": 104.9998779296875,
-            "height": 34.00001525878906
+            "x": 1512.0001220703125,
+            "y": 106.00000762939453,
+            "width": 105.0,
+            "height": 34.000038146972659
         }
     },
     "m_Slots": [
@@ -4014,7 +4161,7 @@
         "value noise"
     ],
     "m_Precision": 0,
-    "m_PreviewExpanded": false,
+    "m_PreviewExpanded": true,
     "m_DismissedVersion": 0,
     "m_PreviewMode": 0,
     "m_CustomColors": {
@@ -4214,7 +4361,7 @@
         "m_Expanded": true,
         "m_Position": {
             "serializedVersion": "2",
-            "x": 150.0,
+            "x": 447.0,
             "y": 476.0,
             "width": 208.0,
             "height": 302.0
