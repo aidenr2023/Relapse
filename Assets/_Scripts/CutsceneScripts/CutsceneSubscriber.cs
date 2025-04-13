@@ -6,34 +6,35 @@ using Cinemachine;
 public class CutsceneSubscriber : MonoBehaviour
 {
     #region References
-    
+
     [SerializeField] private GameObject _player;
     private CutsceneHandler _cutsceneHandler;
     private PlayerMovementV2 _playerMovementV2;
     private PlayerLook _playerCameraMovement;
     private Animator _playerCutsceneAnimator;
     private WeaponManager _weaponManager;
-    
-    [Header("References")]
-    
-    [Header("Player Reference")]
-    [SerializeField] private Transform _playerTransform;
+
+    [Header("References")] [Header("Player Reference")] [SerializeField]
+    private Transform _playerTransform;
+
     [SerializeField] private Animator _playerAnimator;
 
-    [Header("Rotation Settings")]
-    [SerializeField] private float _rotationResetDelay = 0.1f;
+    [Header("Rotation Settings")] [SerializeField]
+    private float _rotationResetDelay = 0.1f;
+
     [SerializeField] private float _maxRotationCheckTime = 2f;
     private Quaternion _initialRotation;
 
-    [Header("Rotation Validation")] 
-    [SerializeField] private float _checkInterval = 0.3f;
+    [Header("Rotation Validation")] [SerializeField]
+    private float _checkInterval = 0.3f;
+
     [SerializeField] private float _maxCheckDuration = 3f;
     [SerializeField] private float _angleThreshold = 1f;
 
     #endregion
 
-    [Tooltip("Reset player rotation to (0,0,0) instead of stored rotation?")] 
-    [SerializeField] private bool resetRotationToZero = true;
+    [Tooltip("Reset player rotation to (0,0,0) instead of stored rotation?")] [SerializeField]
+    private bool resetRotationToZero = true;
 
     private Coroutine _rotationCheckCoroutine;
     private Quaternion _storedRotation;
@@ -70,8 +71,8 @@ public class CutsceneSubscriber : MonoBehaviour
         _cutsceneHandler.OnCutsceneStart.AddListener(OnCutsceneStart);
         _cutsceneHandler.OnCutsceneEnd.AddListener(OnCutsceneEnd);
     }
-    
-    
+
+
     /// <summary>
     /// Invoked when a cutscene starts. checks if the player needs to be moved or not
     /// and if the cutscene is first person or not
@@ -79,9 +80,9 @@ public class CutsceneSubscriber : MonoBehaviour
     private void OnCutsceneStart()
     {
         _initialRotation = _playerTransform.rotation;
-    
-        bool needsMovement = _cutsceneHandler.IsPlayerMovementNeeded;
-        bool isFirstPerson = _cutsceneHandler.IsCutsceneFirstPerson;
+
+        var needsMovement = _cutsceneHandler.IsPlayerMovementNeeded;
+        var isFirstPerson = _cutsceneHandler.IsCutsceneFirstPerson;
 
         // Early exit for first-person cutscenes with active movement
         if (needsMovement && isFirstPerson)
@@ -91,41 +92,35 @@ public class CutsceneSubscriber : MonoBehaviour
         if (!needsMovement)
         {
             if (isFirstPerson)
-            {
                 DisablePlayerSystemsFirstPerson();
-            }
+            
             else
-            {
                 DisablePlayerSystems();
-            }
         }
     }
-    
-    
+
+
     /// <summary>
     /// Invoked when a cutscene ends. checks if the player had movement or not
     /// and if the cutscene is first person or not to enable the player systems
     /// </summary>
     private void OnCutsceneEnd()
     {
-        bool isFirstPerson = _cutsceneHandler.IsCutsceneFirstPerson;
-        bool needsMovement = _cutsceneHandler.IsPlayerMovementNeeded;
+        var isFirstPerson = _cutsceneHandler.IsCutsceneFirstPerson;
+        var needsMovement = _cutsceneHandler.IsPlayerMovementNeeded;
 
         // Handle camera and core systems first
+        // Third-person cutscene (both movement needed and not needed cases)
         if (!isFirstPerson)
-        {
-            // Third-person cutscene (both movement needed and not needed cases)
             EnablePlayerSystems();
-        }
+        
+        // First-person cutscene without movement needed
         else if (!needsMovement)
-        {
-            // First-person cutscene without movement needed
             EnablePlayerSystemsFirstPerson();
-        }
 
         // Handle common post-cutscene cleanup
         HandleRotationValidation();
-    
+
         // Uncomment if needed
         // StopScriptedEvents();
     }
@@ -134,7 +129,7 @@ public class CutsceneSubscriber : MonoBehaviour
     {
         if (_rotationCheckCoroutine != null)
             StopCoroutine(_rotationCheckCoroutine);
-    
+
         _rotationCheckCoroutine = StartCoroutine(ValidatePlayerRotation());
     }
 
@@ -145,14 +140,14 @@ public class CutsceneSubscriber : MonoBehaviour
     {
         //on cutscene start set the player inactive
         _player.SetActive(false);
-        
+
         // _storedRotation = _playerTransform.rotation;
         // _playerCameraMovement.enabled = false;
         // _playerMovementV2.DisablePlayerControls();
         // _weaponManager.enabled = false;
         Debug.Log("Player character disabled");
     }
-    
+
     /// <summary>
     /// function to enable player systems for third person cutscenes
     /// </summary>
@@ -166,7 +161,7 @@ public class CutsceneSubscriber : MonoBehaviour
         // _weaponManager.enabled = true;
         Debug.Log("Player character enabled");
     }
-    
+
     /// <summary>
     /// Function to enable player systems for first person cutscenes
     /// </summary>
@@ -174,11 +169,12 @@ public class CutsceneSubscriber : MonoBehaviour
     {
         _playerTransform.rotation = resetRotationToZero ? Quaternion.identity : _storedRotation;
         _playerCameraMovement.enabled = true;
-        _playerMovementV2.EnablePlayerControls();
+        _playerMovementV2.EnablePlayerControls(this);
         _weaponManager.enabled = true;
+
         Debug.Log("Player systems enabled");
     }
-    
+
     /// <summary>
     /// function to disable player systems for first person cutscenes
     /// </summary>
@@ -186,40 +182,36 @@ public class CutsceneSubscriber : MonoBehaviour
     {
         _storedRotation = _playerTransform.rotation;
         _playerCameraMovement.enabled = false;
-        _playerMovementV2.DisablePlayerControls();
+        _playerMovementV2.DisablePlayerControls(this);
         _weaponManager.enabled = false;
+
         Debug.Log("Player systems disabled");
     }
-    
+
     private IEnumerator ValidatePlayerRotation()
     {
-    
         // Wait for final animation frame
         yield return new WaitForEndOfFrame();
-        
+
         // Disable animator to stop animation overrides
         if (_playerAnimator != null)
-        {
             _playerAnimator.enabled = false;
-        }
-        
-        float elapsedTime = 0f;
-        bool needsReset = true;
-    
-        float elapsed = 0f;
+
+        var elapsedTime = 0f;
+        var needsReset = true;
+        var elapsed = 0f;
+
         while (elapsed < _maxRotationCheckTime)
         {
             // Directly set rotation and ignore animations
             _playerTransform.rotation = _initialRotation;
-            
+
             // Force immediate physics update
             Physics.SyncTransforms();
-            
+
             // Check if rotation stuck
             if (Quaternion.Angle(_playerTransform.rotation, _initialRotation) < 0.001f)
-            {
                 break;
-            }
 
             elapsed += _rotationResetDelay;
             yield return new WaitForSeconds(_rotationResetDelay);
@@ -227,12 +219,10 @@ public class CutsceneSubscriber : MonoBehaviour
 
         // Final guarantee
         _playerTransform.rotation = _initialRotation;
-        
+
         // Re-enable components if needed
         if (_playerAnimator != null)
-        {
             _playerAnimator.enabled = true;
-        }
     }
 
     private bool IsRotationValid(Vector3 currentRotation)
@@ -252,8 +242,9 @@ public class CutsceneSubscriber : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (_cutsceneHandler == null) return;
-        
+        if (_cutsceneHandler == null)
+            return;
+
         _cutsceneHandler.OnCutsceneStart.RemoveListener(OnCutsceneStart);
         _cutsceneHandler.OnCutsceneEnd.RemoveListener(OnCutsceneEnd);
     }

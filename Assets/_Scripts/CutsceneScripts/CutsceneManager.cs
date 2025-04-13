@@ -20,21 +20,23 @@ public class CutsceneManager : MonoBehaviour
 
     #endregion
 
-    [System.Serializable]
-    public class CutsceneMapping
-    {
-        public string cutsceneName;
-        public PlayableAsset timelineAsset;
-    }
+    #region Serialized Fields
 
-    [Header("Configuration")] [SerializeField]
-    private List<CutsceneMapping> cutsceneMappings = new List<CutsceneMapping>();
+    [Header("Configuration"), SerializeField]
+    private List<CutsceneMapping> cutsceneMappings = new();
 
     [SerializeField] private CutsceneHandler cutsceneHandler;
-    public CutsceneHandler CutsceneHandler => cutsceneHandler;
 
-    private Dictionary<string, PlayableAsset> cutsceneDictionary;
-    private PlayableDirector activeDirector;
+    #endregion
+
+    #region Private Fields
+
+    private Dictionary<string, PlayableAsset> _cutsceneDictionary;
+    private PlayableDirector _activeDirector;
+
+    #endregion
+
+    public CutsceneHandler CutsceneHandler => cutsceneHandler;
 
     #region Lifecycle
 
@@ -67,26 +69,26 @@ public class CutsceneManager : MonoBehaviour
 
     private void InitializeDictionary()
     {
-        cutsceneDictionary = new Dictionary<string, PlayableAsset>();
+        _cutsceneDictionary = new Dictionary<string, PlayableAsset>();
         foreach (var mapping in cutsceneMappings)
         {
-            if (!cutsceneDictionary.ContainsKey(mapping.cutsceneName))
-            {
-                cutsceneDictionary.Add(mapping.cutsceneName, mapping.timelineAsset);
-            }
+            if (!_cutsceneDictionary.ContainsKey(mapping.cutsceneName))
+                _cutsceneDictionary.Add(mapping.cutsceneName, mapping.timelineAsset);
             else
-            {
                 Debug.LogWarning($"Duplicate cutscene name: {mapping.cutsceneName}");
-            }
         }
     }
 
     private void CacheActiveDirector()
     {
         if (cutsceneHandler != null)
-        {
-            activeDirector = cutsceneHandler.GetComponent<PlayableDirector>();
-        }
+            _activeDirector = cutsceneHandler.GetComponent<PlayableDirector>();
+    }
+
+    private void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null;
     }
 
     #endregion
@@ -96,7 +98,7 @@ public class CutsceneManager : MonoBehaviour
     public void PlayCutsceneByName(string cutsceneName, bool isPlayerMovementNeeded,
         CutsceneHandler.CutsceneType perspective)
     {
-        if (!cutsceneDictionary.TryGetValue(cutsceneName, out PlayableAsset asset))
+        if (!_cutsceneDictionary.TryGetValue(cutsceneName, out PlayableAsset asset))
         {
             Debug.LogError($"Cutscene not found: {cutsceneName}");
             return;
@@ -105,7 +107,7 @@ public class CutsceneManager : MonoBehaviour
         cutsceneHandler.PlayCutscene(asset, !isPlayerMovementNeeded, perspective);
 
 
-        if (activeDirector == null)
+        if (_activeDirector == null)
         {
             Debug.LogError("No active PlayableDirector found!");
             return;
@@ -140,15 +142,10 @@ public class CutsceneManager : MonoBehaviour
 
     #endregion
 
-    #region Cleanup
-
-    private void OnDestroy()
+    [Serializable]
+    public class CutsceneMapping
     {
-        if (Instance == this)
-        {
-            Instance = null;
-        }
+        public string cutsceneName;
+        public PlayableAsset timelineAsset;
     }
-
-    #endregion
 }

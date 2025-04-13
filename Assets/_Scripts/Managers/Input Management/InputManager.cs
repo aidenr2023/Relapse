@@ -32,6 +32,8 @@ public class InputManager
 
     private ControlSchemeType _currentControlScheme;
 
+    private readonly HashSet<object> _playerInputDisablers = new();
+
     #endregion
 
     #region Getters
@@ -48,7 +50,7 @@ public class InputManager
 
     public ControlSchemeType CurrentControlScheme => _currentControlScheme;
 
-    public bool IsExternallyDisabled { get; set; }
+    public bool IsExternallyDisabled => _playerInputDisablers.Count > 0;
 
     #endregion
 
@@ -162,6 +164,20 @@ public class InputManager
     public void SetCurrentControlScheme(ControlSchemeType controlScheme)
     {
         _currentControlScheme = controlScheme;
+    }
+
+    public void AddInputDisabler(object disabler)
+    {
+        // If the disabler is already in the set, return
+        if (!_playerInputDisablers.Add(disabler))
+            return;
+    }
+
+    public void RemoveInputDisabler(object disabler)
+    {
+        // If the disabler is not in the set, return
+        if (!_playerInputDisablers.Remove(disabler))
+            return;
     }
 
     #endregion

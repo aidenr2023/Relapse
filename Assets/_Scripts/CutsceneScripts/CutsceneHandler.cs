@@ -169,7 +169,10 @@ public class CutsceneHandler : MonoBehaviour
         _director.Play();
         
         // Hide the UI elements
-        GameUIHelper.Instance.AddUIHider(this);
+        GameUIHelper.Instance?.AddUIHider(this);
+        
+        // Remove control from the player
+        (Player.Instance.PlayerController as PlayerMovementV2)!.DisablePlayerControls(this);
     }
 
     private void OnCutsceneFinished(PlayableDirector director)
@@ -184,7 +187,10 @@ public class CutsceneHandler : MonoBehaviour
         Debug.Log("Cutscene finished Event invoked");
         
         // Remove this as a UI hider
-        GameUIHelper.Instance.RemoveUIHider(this);
+        GameUIHelper.Instance?.RemoveUIHider(this);
+        
+        // Give control back to the player
+        (Player.Instance.PlayerController as PlayerMovementV2)!.EnablePlayerControls(this);
     }
 
     public void EmergencyStop()

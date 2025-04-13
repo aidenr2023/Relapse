@@ -927,15 +927,16 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         IsSprintToggled = false;
     }
 
-    public void DisablePlayerControls()
+    public void DisablePlayerControls(object disabler)
     {
-        InputManager.Instance.IsExternallyDisabled = true;
+        InputManager.Instance.AddInputDisabler(disabler);
         Debug.Log("Player Controls Disabled");
     }
 
-    public void EnablePlayerControls()
+    public void EnablePlayerControls(object disabler)
     {
-        InputManager.Instance.IsExternallyDisabled = false;
+        // InputManager.Instance.IsExternallyDisabled = false;
+        InputManager.Instance.RemoveInputDisabler(disabler);
         Debug.Log("Player Controls Enabled");
     }
 

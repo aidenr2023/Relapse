@@ -7,6 +7,8 @@ using Random = UnityEngine.Random;
 
 public class LevelTransitionCheckpoint : LevelCheckpointReset
 {
+    private static object MovementDisableObject = new object();
+    
     private const float TRANSITION_TIME = .5f;
     private const float TRANSITION_TIME2 = .5f;
     private const float HOLD_TIME = 1f;
@@ -229,9 +231,9 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
             return;
 
         if (isOn)
-            playerMovementV2.EnablePlayerControls();
+            playerMovementV2.EnablePlayerControls(MovementDisableObject);
         else
-            playerMovementV2.DisablePlayerControls();
+            playerMovementV2.DisablePlayerControls(MovementDisableObject);
 
         player.WeaponManager.enabled = isOn;
     }
