@@ -135,9 +135,6 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     {
         // Toggle the debug mode
         DebugManager.Instance.IsDebugMode = !DebugManager.Instance.IsDebugMode;
-
-        // Set the debug text visibility
-        SetDebugVisibility(DebugManager.Instance.IsDebugMode);
     }
 
 
@@ -168,6 +165,9 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     // Update is called once per frame
     private void Update()
     {
+        // Set the debug text visibility
+        SetDebugVisibility(DebugManager.Instance.IsDebugMode);
+        
         // Update the tolerance and health
         UpdateToleranceAndHealth();
 

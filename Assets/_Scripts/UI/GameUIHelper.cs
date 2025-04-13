@@ -158,16 +158,16 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
     private IEnumerator FadeUIOpacityCoroutine(float target, float time)
     {
         // Get the start time
-        var startTime = Time.time;
+        var startTime = Time.unscaledTime;
 
         // Get the start opacity
         var startOpacity = uiOpacity.Value;
 
         // While the time is less than the target time
-        while (Time.time - startTime < time)
+        while (Time.unscaledTime - startTime < time)
         {
             // Get the time
-            var timePercent = (Time.time - startTime) / time;
+            var timePercent = (Time.unscaledTime - startTime) / time;
 
             // Set the opacity
             uiOpacity.Value = Mathf.Lerp(startOpacity, target, timePercent);

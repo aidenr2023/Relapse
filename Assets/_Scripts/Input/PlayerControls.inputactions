@@ -88,6 +88,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "PhotoMode",
+                    "type": "Button",
+                    "id": "ddb874fe-6417-4be5-89f9-89eae0a01dc3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -176,6 +185,17 @@
                     "processors": "",
                     "groups": "KB n M",
                     "action": "Flashlight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "18001a46-382a-4b64-917c-4d5c727b85b8",
+                    "path": "<Keyboard>/f3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "KB n M",
+                    "action": "PhotoMode",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
