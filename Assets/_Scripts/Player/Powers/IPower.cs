@@ -3,11 +3,6 @@ using UnityEngine;
 public interface IPower : IDamager
 {
     /// <summary>
-    /// The game object that contains this power.
-    /// </summary>
-    public GameObject GameObject { get; }
-
-    /// <summary>
     /// The scriptable object that contains this power.
     /// </summary>
     public PowerScriptableObject PowerScriptableObject { get; set; }

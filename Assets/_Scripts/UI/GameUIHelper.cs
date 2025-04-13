@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 
 public class GameUIHelper : MonoBehaviour, IUsesInput
 {
+    private const float DEFAULT_TRANSITION_TIME = 1f;
+    
     public static GameUIHelper Instance { get; private set; }
 
     #region Serialized Fields
@@ -20,6 +22,10 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
     #region Private Fields
 
     private bool _isInputRegistered;
+    
+    private Coroutine _fadeCoroutine;
+    
+    private readonly HashSet<object> _uiHiders = new();
 
     #endregion
 
@@ -143,29 +149,82 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
             uiElement.alpha = opacity;
     }
 
-    public void ShowUI()
-    {
-        // Return if the UI is already shown
-        if (showUI)
-            return;
-
-        showUI = true;
-        SetUIEnabled(showUI);
-    }
-
-    public void HideUI()
-    {
-        // Return if the UI is already hidden
-        if (!showUI)
-            return;
-
-        showUI = false;
-        SetUIEnabled(showUI);
-    }
-
     private void SetUIEnabled(bool isEnabled)
     {
         foreach (var uiElement in uiElements.value)
             uiElement.gameObject.SetActive(isEnabled);
+    }
+
+    private IEnumerator FadeUIOpacityCoroutine(float target, float time)
+    {
+        // Get the start time
+        var startTime = Time.time;
+
+        // Get the start opacity
+        var startOpacity = uiOpacity.Value;
+
+        // While the time is less than the target time
+        while (Time.time - startTime < time)
+        {
+            // Get the time
+            var timePercent = (Time.time - startTime) / time;
+
+            // Set the opacity
+            uiOpacity.Value = Mathf.Lerp(startOpacity, target, timePercent);
+
+            yield return null;
+        }
+
+        // Set the opacity to the target
+        uiOpacity.Value = target;
+        
+        // Set the fade coroutine to null
+        _fadeCoroutine = null;
+    }
+
+    private void FadeUIOpacity(float target, float time = DEFAULT_TRANSITION_TIME)
+    {
+        // If the fade coroutine is not null, stop it
+        if (_fadeCoroutine != null)
+            StopCoroutine(_fadeCoroutine);
+        
+        // Start the fade coroutine
+        _fadeCoroutine = StartCoroutine(FadeUIOpacityCoroutine(target, time));
+    }
+
+    [ContextMenu("Fade UI Opacity In")]
+    private void FadeUIOpacityIn() => FadeUIOpacity(1);
+    
+    [ContextMenu("Fade UI Opacity Out")]
+    private void FadeUIOpacityOut() => FadeUIOpacity(0);
+    
+    public void AddUIHider(object obj)
+    {
+        // Store the number of hiders before adding
+        var previousHiderCount = _uiHiders.Count;
+
+        // If the object is already in the set, return
+        if (!_uiHiders.Add(obj))
+            return;
+        
+        // If the previous hider count is 0, fade the UI out
+        if (previousHiderCount <= 0 && _fadeCoroutine == null)
+            FadeUIOpacityOut();
+    }
+
+    public void RemoveUIHider(object obj)
+    {
+        // Store the number of hiders before adding
+        var previousHiderCount = _uiHiders.Count;
+        
+        // If the object is not in the set, return
+        if (!_uiHiders.Remove(obj))
+            return;
+        
+        // If the previous hider count greater than 0,
+        // And the current hider count is 0
+        // fade the UI out
+        if (previousHiderCount > 0 && _uiHiders.Count <= 0 && _fadeCoroutine == null)
+            FadeUIOpacityIn();
     }
 }

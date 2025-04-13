@@ -14,15 +14,15 @@ public class CutsceneHandler : MonoBehaviour
     private PlayableDirector _director;
     private Animator _playerCutsceneAnimator;
     private bool _isCutsceneActive;
-    public bool IsPlayerMovementNeeded { get;  set; }
-    public bool IsCutsceneFirstPerson { get;  set; }
-    
+    public bool IsPlayerMovementNeeded { get; set; }
+    public bool IsCutsceneFirstPerson { get; set; }
+
     public enum CutsceneType
     {
         FirstPerson,
         ThirdPerson
     }
-        
+
     private void Start()
     {
         _director = GetComponent<PlayableDirector>();
@@ -37,16 +37,15 @@ public class CutsceneHandler : MonoBehaviour
         if (CutsceneManager.Instance != null)
         {
             Debug.Log($"[HANDLER] CutsceneManager exists: {CutsceneManager.Instance != null}");
-            Debug.Log($"[HANDLER] PlayerAnimator registered: {CutsceneManager.Instance.PlayerCutsceneAnimator != null}");
+            Debug.Log(
+                $"[HANDLER] PlayerAnimator registered: {CutsceneManager.Instance.PlayerCutsceneAnimator != null}");
             _playerCutsceneAnimator = CutsceneManager.Instance.PlayerCutsceneAnimator;
         }
 
         if (_playerCutsceneAnimator == null)
-        {
             Debug.LogError("[HANDLER] Player Animator not found!");
-        }
     }
-    
+
     /// <summary>
     /// Plays a cutscene using the provided timeline asset and conditions
     /// </summary>
@@ -54,20 +53,23 @@ public class CutsceneHandler : MonoBehaviour
     /// <param name="isMovementNeeded"></param>
     public void PlayCutscene(PlayableAsset timelineAsset, bool isMovementNeeded, CutsceneType perspective)
     {
-        if (_isCutsceneActive) return;
+        if (_isCutsceneActive)
+            return;
 
-        if (!ValidateDependencies(timelineAsset)) return;
+        if (!ValidateDependencies(timelineAsset))
+            return;
+
         IsCutsceneFirstPerson = (perspective == CutsceneType.FirstPerson);
         IsPlayerMovementNeeded = isMovementNeeded;
-        
+
         StartCoroutine(PlayCutsceneDelayed(timelineAsset));
     }
 
     private IEnumerator PlayCutsceneDelayed(PlayableAsset timelineAsset)
     {
-        yield return new WaitUntil((() => CutsceneManager.Instance.PlayerCutsceneAnimator 
-        != null && _playerCutsceneAnimator));
-        
+        yield return new WaitUntil(() =>
+            CutsceneManager.Instance.PlayerCutsceneAnimator != null && _playerCutsceneAnimator);
+
         ConfigureTimeline(timelineAsset);
         StartCutscene();
     }
@@ -101,7 +103,7 @@ public class CutsceneHandler : MonoBehaviour
 
     private Animator FindPlayerAnimator()
     {
-        if (CutsceneManager.Instance != null && 
+        if (CutsceneManager.Instance != null &&
             CutsceneManager.Instance.PlayerCutsceneAnimator != null)
         {
             return CutsceneManager.Instance.PlayerCutsceneAnimator;
@@ -115,8 +117,9 @@ public class CutsceneHandler : MonoBehaviour
         }
         else
         {
-            Debug.Log($"Player object found by tag {playerObj.name}"); 
+            Debug.Log($"Player object found by tag {playerObj.name}");
         }
+
         return playerObj.GetComponent<Animator>();
     }
 
@@ -127,7 +130,7 @@ public class CutsceneHandler : MonoBehaviour
         Debug.Log($"[Cutscene] Animator: {_playerCutsceneAnimator != null}");
 
         _director.playableAsset = timelineAsset;
-        
+
         if (!IsCutsceneFirstPerson)
         {
             Debug.Log("Using prebinded third person animator tracks...");
@@ -137,6 +140,7 @@ public class CutsceneHandler : MonoBehaviour
             BindFirstPersonAnimatorTracks();
         }
     }
+
     private void BindFirstPersonAnimatorTracks()
     {
         foreach (var output in _director.playableAsset.outputs)
@@ -154,14 +158,18 @@ public class CutsceneHandler : MonoBehaviour
         _isCutsceneActive = true;
         _director.stopped += OnCutsceneFinished;
 
-        #if !UNITY_EDITOR
+#if !UNITY_EDITOR
         _director.timeUpdateMode = DirectorUpdateMode.GameTime;
-        #endif
-        
+#endif
+
         OnCutsceneStart?.Invoke();
-        //log the start of the cutscene
+        
+        // log the start of the cutscene
         Debug.Log("Cutscene started Event invoked");
         _director.Play();
+        
+        // Hide the UI elements
+        GameUIHelper.Instance.AddUIHider(this);
     }
 
     private void OnCutsceneFinished(PlayableDirector director)
@@ -169,9 +177,14 @@ public class CutsceneHandler : MonoBehaviour
         _isCutsceneActive = false;
         _director.stopped -= OnCutsceneFinished;
         OnCutsceneEnd?.Invoke();
-        
+
         // Optional: Reset timeline bindings
         _director.playableAsset = null;
+        
+        Debug.Log("Cutscene finished Event invoked");
+        
+        // Remove this as a UI hider
+        GameUIHelper.Instance.RemoveUIHider(this);
     }
 
     public void EmergencyStop()

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class CutsceneListener : MonoBehaviour
 {
@@ -78,13 +77,6 @@ public class CutsceneListener : MonoBehaviour
         // cutsceneHandler.OnCutsceneEnd.AddListener(StopAnimation);
     }
 
-    // on Scene load play animation
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        // _cinematicAnimator.SetTrigger("SceneLoadLayer");
-        _cinematicAnimator.SetTrigger(ShowBarsAnimationID);
-    }
-
     private IEnumerator HideBarsAfterDelay(float delay, bool showTitle)
     {
         yield return new WaitForSeconds(delay);
@@ -100,6 +92,9 @@ public class CutsceneListener : MonoBehaviour
             _cinematicAnimator.SetTrigger(ShowTitleAnimationID);
 
         StartCoroutine(HideBarsAfterDelay(3f, showTitle));
+        
+        // Add this as a UI hider
+        GameUIHelper.Instance.AddUIHider(this);
     }
 
     // stop the animation
@@ -109,6 +104,9 @@ public class CutsceneListener : MonoBehaviour
 
         if (showTitle)
             _cinematicAnimator.SetTrigger(HideTitleAnimationID);
+        
+        // Remove this as a UI hider
+        GameUIHelper.Instance.RemoveUIHider(this);
     }
 
     public void PauseAnimation()
