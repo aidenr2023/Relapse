@@ -100,6 +100,7 @@ Material:
     - _Surface: 0
     - _Tiling: 0
     - _Transparency: 1
+    - _Worldspace: 1
     - _ZTest: 4
     - _ZWrite: 1
     - _ZWriteControl: 0
@@ -113,6 +114,9 @@ Material:
     - _RadialStrength: {r: 0.000001, g: 0.000001, b: 0, a: 0}
     - _RipplesColor: {r: 0.7490196, g: 0.7490196, b: 0.7490196, a: 0}
     - _Tiling: {r: 5, g: 5, b: 0, a: 0}
+    - _x_Offset: {r: -0.5, g: -0.5, b: 0, a: 0}
+    - _y_Offset: {r: 0.5, g: 0.5, b: 0, a: 0}
+    - _z_Offset: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &7229746274556451154
 MonoBehaviour:
