@@ -105,7 +105,7 @@ public struct UserSettings
     {
         MotionBlur = Mathf.Clamp(value, 0, 1);
     }
-    
+
     // Volume settings individual
     public void SetSoundMasterVolume(float value)
     {
@@ -196,12 +196,17 @@ public struct UserSettings
 
     private void ApplyVolumeMixerSettings()
     {
-        AudioMixer.SetFloat("MasterVolume", MasterVolume);
-        AudioMixer.SetFloat("MusicVolume", MusicVolume);
-        AudioMixer.SetFloat("GameSFXVolume", GameSfxVolume);
-        AudioMixer.SetFloat("PlayerVolume", PlayerVolume);
-        AudioMixer.SetFloat("EnemiesVolume", EnemiesVolume);
-        AudioMixer.SetFloat("OtherVolume", OtherVolume);
-        AudioMixer.SetFloat("UISFXVolume", UISfxVolume);
+        SetVolumeSetting("MasterVolume", MasterVolume);
+        SetVolumeSetting("MusicVolume", MusicVolume);
+        SetVolumeSetting("GameSFXVolume", GameSfxVolume);
+        SetVolumeSetting("PlayerVolume", PlayerVolume);
+        SetVolumeSetting("EnemiesVolume", EnemiesVolume);
+        SetVolumeSetting("OtherVolume", OtherVolume);
+        SetVolumeSetting("UISFXVolume", UISfxVolume);
+    }
+
+    private void SetVolumeSetting(string settingName, float value)
+    {
+        AudioMixer.SetFloat(settingName, Mathf.Log10(value) * 20);
     }
 }
