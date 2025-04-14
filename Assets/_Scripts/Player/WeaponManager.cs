@@ -31,6 +31,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
     /// </summary>
     [SerializeField] private GameObject initialGunPrefab;
 
+    [SerializeField] private bool stopWhileShooting = true;
+
     #endregion
 
     #region Private Fields
@@ -306,10 +308,6 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         {
             rb.isKinematic = true;
 
-            // // Also disable the collider
-            // if (gun.Collider != null)
-            //     gun.Collider.enabled = false;
-
             // Disable collision on the gun
             rb.detectCollisions = false;
         }
@@ -335,7 +333,6 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
 
         // Set the model type to the gun's model type
         _shootingAnimator.SetInteger(ModelTypeAnimationID, (int)gun.GunModelType);
-        // Debug.Log($"Setting model type to {gun.GunModelType} ({(int)gun.GunModelType})");
     }
 
     [ContextMenu("Remove Gun")]
@@ -403,7 +400,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
 
         // If the player is currently sprinting, force them to stop and return
         if (playerMovement != null && playerMovement.IsSprinting && playerMovement.IsGrounded &&
-            playerMovement.CurrentMovementScript is BasicPlayerMovement
+            playerMovement.CurrentMovementScript is BasicPlayerMovement &&
+            stopWhileShooting
            )
         {
             playerMovement.ForceStopSprinting();
@@ -495,15 +493,6 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
 
             // Destroy the gun
             Destroy(currentGun.GameObject);
-
-            // // Set the equipped gun's parent to null
-            // _equippedGun.GameObject.transform.SetParent(null, true);
-            //
-            // // Destroy the equipped gun
-            // Destroy(_equippedGun.GameObject);
-
-            // // Set the equipped gun to null
-            // _equippedGun = null;
         }
 
         if (newGunPrefab == null)
