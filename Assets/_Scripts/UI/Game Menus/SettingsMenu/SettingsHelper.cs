@@ -8,10 +8,10 @@ public class SettingsHelper : MonoBehaviour
 
     public event Action<SliderSettingType, float> OnSettingChanged;
 
-    private void Awake()
-    {
-        OnSettingChanged += (settingType, value) => Debug.Log($"Setting {settingType} changed to {value}");
-    }
+    // private void Awake()
+    // {
+    //     OnSettingChanged += (settingType, value) => Debug.Log($"Setting {settingType} changed to {value}");
+    // }
 
     #region General Functions
 
@@ -266,5 +266,8 @@ public class SettingsHelper : MonoBehaviour
         
         // Then, apply the userSettings
         userSettings.value.ApplySettings();
+        
+        // Then, save the settings to disk
+        SettingsLoader.Instance.SaveSettingsToDisk();
     }
 }

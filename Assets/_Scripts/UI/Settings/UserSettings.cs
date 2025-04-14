@@ -209,4 +209,9 @@ public struct UserSettings
     {
         AudioMixer.SetFloat(settingName, Mathf.Log10(value) * 20);
     }
+
+    public string ToJson()
+    {
+        return JsonUtility.ToJson(this);
+    }
 }

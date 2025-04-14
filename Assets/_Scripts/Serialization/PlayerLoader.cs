@@ -47,19 +47,19 @@ public class PlayerLoader : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F7))
-            SaveDataSceneToMemory();
-
-        // Save the data to the disk
-        if (Input.GetKeyDown(KeyCode.F10))
-            SaveDataMemoryToDisk();
-
-        // Load the data from the disk
-        if (Input.GetKeyDown(KeyCode.F11))
-        {
-            LoadDataDiskToMemory();
-            LoadDataMemoryToScene();
-        }
+        // if (Input.GetKeyDown(KeyCode.F7))
+        //     SaveDataSceneToMemory();
+        //
+        // // Save the data to the disk
+        // if (Input.GetKeyDown(KeyCode.F10))
+        //     SaveDataMemoryToDisk();
+        //
+        // // Load the data from the disk
+        // if (Input.GetKeyDown(KeyCode.F11))
+        // {
+        //     LoadDataDiskToMemory();
+        //     LoadDataMemoryToScene();
+        // }
     }
 
     #region Loading

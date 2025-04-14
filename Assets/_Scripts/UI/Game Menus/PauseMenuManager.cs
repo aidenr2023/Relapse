@@ -170,6 +170,8 @@ public class PauseMenuManager : GameMenu
 
         if (eventSystem.currentSelectedGameObject == null)
             SetSelectedButton(firstSelectedButton);
+
+        Debug.Log($"Current event system: {EventSystem.currentSelectedGameObject.gameObject.name}");
     }
 
     /// <summary>

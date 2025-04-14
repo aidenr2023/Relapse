@@ -32,6 +32,8 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
     [SerializeField, Min(0)] private float textUpdateRate = 1 / 10f;
 
+    [SerializeField] private UserSettingsVariable userSettings;
+    
     #endregion
 
     #region Private Fields
@@ -234,6 +236,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         if (Input.GetKeyDown(KeyCode.K))
             Player.PlayerInfo.ChangeHealth(-10, Player.PlayerInfo, Player.PlayerInfo, Player.transform.position);
 
+        // Instant-kill player
         if (Input.GetKeyDown(KeyCode.Y))
         {
             Player.PlayerInfo.ChangeHealth(
@@ -242,6 +245,9 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
                 Player.transform.position
             );
         }
+
+        if (Input.GetKeyDown(KeyCode.F9))
+            SettingsLoader.Instance.SaveSettingsToDisk();
 
         return;
 
