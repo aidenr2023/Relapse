@@ -38,6 +38,8 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
     private float _healthChange;
     private float _toleranceChange;
+    private bool _isUIVisible = true;
+    private bool _isGodMode;
 
     #endregion
 
@@ -162,8 +164,6 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
     #endregion
 
-    private bool _isUIVisible = true;
-
     // Update is called once per frame
     private void Update()
     {
@@ -225,6 +225,10 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         // Toggle the UI
         if (Input.GetKeyDown(KeyCode.X))
             ToggleUI();
+        
+        // Toggle the god mode
+        if (Input.GetKeyDown(KeyCode.F4))
+            ToggleGodMode();
 
         // Decrease the health
         if (Input.GetKeyDown(KeyCode.K))
@@ -251,7 +255,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     private void ToggleUI()
     {
         const float transitionTime = 0.0625f;
-        
+
         if (_isUIVisible && DebugManager.Instance.IsDebugMode)
         {
             GameUIHelper.Instance.AddUIHider(this, transitionTime);
@@ -262,6 +266,26 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
             GameUIHelper.Instance.RemoveUIHider(this, transitionTime);
             _isUIVisible = true;
         }
+    }
+
+    private void ToggleGodMode()
+    {
+        // If the player is null, return
+        if (Player == null)
+            return;
+        
+        // If god mode is off and debug mode is not on, return
+        if (!_isGodMode && !DebugManager.Instance.IsDebugMode)
+            return;
+
+        // Toggle the god mode
+        _isGodMode = !_isGodMode;
+
+        // Add or remove the invincibility token
+        if (_isGodMode)
+            Player.PlayerInfo.AddInvincibilityToken(DebugManager.Instance);
+        else
+            Player.PlayerInfo.RemoveInvincibilityToken(DebugManager.Instance);
     }
 
     private void DebugLoadScene(LevelSectionSceneInfo[] levelInfo)
