@@ -11,6 +11,7 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
     [SerializeField] private float damage = 100f;
     [SerializeField, Min(0)] private float lifetime = 10;
     [SerializeField] private AnimationCurve damageOverTimeCurve;
+    [SerializeField] private AnimationCurve sizeOverTimeCurve;
 
     [Space, SerializeField] private ParticleSystem explosionParticles;
     [SerializeField, Range(0, 500)] private int explosionParticlesCount = 200;
@@ -33,7 +34,8 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
     private bool _isExploded;
     private bool _isFired;
     private float _remainingLifeTime;
-        
+    private Vector3 _initialScale;
+
     #endregion
 
     private void Awake()
@@ -66,22 +68,34 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
 
         // Set the isFired flag to true
         _isFired = true;
-        
+
         // Set the starting lifetime
         _remainingLifeTime = lifetime;
-        
+
         // // Instantiate the fireball VFX prefab
         // var fireballVFX = Instantiate(fireballVFXPrefab, transform.position, Quaternion.identity);
         //
         // // Set the parent of the fireball VFX to the game object
         // fireballVFX.transform.parent = transform;
         // fireballVFX.transform.localPosition = Vector3.zero;
+
+        // Set the initial scale of the fireball VFX
+        _initialScale = transform.localScale;
     }
 
     private void Update()
     {
         if (_isFired)
             _remainingLifeTime -= Time.deltaTime;
+
+        // Update the scale of the fireball VFX
+        var elapsedTime = lifetime - _remainingLifeTime;
+        var evaluatedSize = sizeOverTimeCurve.Evaluate(elapsedTime);
+        transform.localScale = new Vector3(
+            _initialScale.x + evaluatedSize,
+            _initialScale.y + evaluatedSize,
+            _initialScale.z + evaluatedSize
+        );
     }
 
     private void FixedUpdate()
@@ -106,15 +120,16 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
 
         // Get the elapsed time that the projectile has been in the air
         var elapsedTime = lifetime - _remainingLifeTime;
-        
+
         // Get the damage based on the elapsed time
         var elapsedTimeDamage = damageOverTimeCurve.Evaluate(elapsedTime);
-        
+
         Debug.Log($"Added {elapsedTimeDamage} damage due to elapsed time", this);
-        
+
         // If the projectile hits something with an IActor component, deal damage
         if (other.TryGetComponentInParent(out IActor actor))
-            actor.ChangeHealth(-(damage + elapsedTimeDamage), _powerManager.Player.PlayerInfo, _fireball, transform.position);
+            actor.ChangeHealth(-(damage + elapsedTimeDamage), _powerManager.Player.PlayerInfo, _fireball,
+                transform.position);
 
         // Destroy the projectile when it hits something
         // Debug.Log($"BOOM! {gameObject.name} hit {other.name}");
