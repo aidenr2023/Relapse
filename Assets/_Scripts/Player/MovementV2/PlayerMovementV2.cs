@@ -891,11 +891,9 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         if (amount < 0 && !CurrentlyUsesStamina)
             amount = 0;
 
+        // Reset the stamina regen delay timer
         if (amount < 0)
-        {
-            // Reset the stamina regen delay timer
             _staminaRegenDelayTimer.SetMaxTimeAndReset(staminaRegenDelay);
-        }
 
         currentStaminaSo.Value = Mathf.Clamp(currentStaminaSo + amount, 0, maxStaminaSo);
 
@@ -962,6 +960,14 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Apply the settings
         desiredCapsuleHeightOffset = cSettings.desiredCapsuleHeightOffset;
         sphereCastRadius = cSettings.sphereCastRadius;
+        
+        // Set the can sprint flag
+        BasicPlayerMovement.CanSprint = cSettings.sprintSetting switch
+        {
+            RunMovementSetting.CanRun => true,
+            RunMovementSetting.CanNotRun => false,
+            _ => throw new ArgumentOutOfRangeException(nameof(cSettings.sprintSetting), cSettings.sprintSetting, null)
+        };
     }
 
     public void ResetPlayer()
@@ -1043,5 +1049,12 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     {
         public float desiredCapsuleHeightOffset;
         [Range(0, 1)] public float sphereCastRadius;
+        public RunMovementSetting sprintSetting;
+    }
+
+    private enum RunMovementSetting
+    {
+        CanRun,
+        CanNotRun
     }
 }
