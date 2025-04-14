@@ -20,6 +20,8 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
     [SerializeField] private NoiseTokenValue powerChargeNoise;
     [SerializeField, Range(0, 1)] private float powerChargeLerpAmount = 0.2f;
 
+    [SerializeField, Min(0)] private float maxNoiseAmplitude = 5;
+    
     #endregion
 
     #region Private Fields
@@ -91,7 +93,6 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
                 return;
         }
 
-
         _groundShakeTimer.SetMaxTimeAndReset(groundShakeTime);
         _groundShakeTimer.Start();
 
@@ -119,7 +120,7 @@ public sealed class DynamicNoiseModule : DynamicVCamModule
         var newNoise = defaultNoise + CurrentTokenValue();
 
         // Set the new noise information
-        _noise.m_AmplitudeGain = newNoise.AmplitudeGain;
+        _noise.m_AmplitudeGain = Mathf.Min(newNoise.AmplitudeGain, maxNoiseAmplitude);
         _noise.m_FrequencyGain = newNoise.FrequencyGain;
         _noise.m_PivotOffset = newNoise.PivotOffset;
 

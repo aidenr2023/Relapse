@@ -8,6 +8,7 @@ public class PhotoModeController : MonoBehaviour
 {
     private const int MAX_PRIORITY = 10000;
     private const int MIN_PRIORITY = -1000;
+    private const float TRANSITION_TIME = 0.0625f;
 
     public static Option<PhotoModeController> Instance { get; private set; } = Option<PhotoModeController>.None;
 
@@ -202,7 +203,7 @@ public class PhotoModeController : MonoBehaviour
         (Player.Instance.PlayerController as PlayerMovementV2)?.DisablePlayerControls(this);
 
         // Hide the UI
-        GameUIHelper.Instance.AddUIHider(this);
+        GameUIHelper.Instance.AddUIHider(this, TRANSITION_TIME);
         
         // Set the priority of the camera
         photoModeVCam.Priority = MAX_PRIORITY;
@@ -237,7 +238,7 @@ public class PhotoModeController : MonoBehaviour
         photoModeVCam.Priority = MIN_PRIORITY;
         
         // Show the UI
-        GameUIHelper.Instance.RemoveUIHider(this);
+        GameUIHelper.Instance.RemoveUIHider(this, TRANSITION_TIME);
         
         // Add the layers to hide back to the hands camera
         handsCamera.cullingMask |= layersToHide;
