@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Best Time: -1.00'
+  m_text: 'Best Time: 00:00.00'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8c730a216dad4884c8a999fd127a5adc, type: 2}
   m_sharedMaterial: {fileID: 9049510402089984442, guid: 8c730a216dad4884c8a999fd127a5adc,
@@ -147,7 +147,9 @@ GameObject:
   - component: {fileID: 3446663640655534777}
   - component: {fileID: 2761230268792879354}
   - component: {fileID: 5022900545761277362}
+  - component: {fileID: 6704684754179170017}
   - component: {fileID: 4372002123013465283}
+  - component: {fileID: 5067515720126742542}
   m_Layer: 5
   m_Name: Speedrun Timer Canvas
   m_TagString: Untagged
@@ -239,6 +241,18 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!225 &6704684754179170017
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4239403882370580747}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &4372002123013465283
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -259,6 +273,20 @@ MonoBehaviour:
     type: 2}
   speedRunModeCurrentTime: {fileID: 11400000, guid: 3019e451290a9294094255e601008ca1,
     type: 2}
+--- !u!114 &5067515720126742542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4239403882370580747}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57f88320436f40b3996bb80d90d59852, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 6704684754179170017}
+  inGameUi: {fileID: 11400000, guid: 664e6875c4aa309449bd2c99df2ceff8, type: 2}
 --- !u!1 &7825050594356598467
 GameObject:
   m_ObjectHideFlags: 0
@@ -324,7 +352,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Current Time: -1.00'
+  m_text: 'Current Time: 00:00.00'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8c730a216dad4884c8a999fd127a5adc, type: 2}
   m_sharedMaterial: {fileID: 9049510402089984442, guid: 8c730a216dad4884c8a999fd127a5adc,

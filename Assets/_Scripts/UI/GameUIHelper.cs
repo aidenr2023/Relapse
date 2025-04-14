@@ -182,7 +182,7 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
         _fadeCoroutine = null;
     }
 
-    private void FadeUIOpacity(float target, float time = DEFAULT_TRANSITION_TIME)
+    private void FadeUIOpacity(float target, float time)
     {
         // If the fade coroutine is not null, stop it
         if (_fadeCoroutine != null)
@@ -193,12 +193,12 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
     }
 
     [ContextMenu("Fade UI Opacity In")]
-    private void FadeUIOpacityIn() => FadeUIOpacity(1);
+    private void FadeUIOpacityIn(float time = DEFAULT_TRANSITION_TIME) => FadeUIOpacity(1, time);
     
     [ContextMenu("Fade UI Opacity Out")]
-    private void FadeUIOpacityOut() => FadeUIOpacity(0);
+    private void FadeUIOpacityOut(float time = DEFAULT_TRANSITION_TIME) => FadeUIOpacity(0, time);
     
-    public void AddUIHider(object obj)
+    public void AddUIHider(object obj, float time = DEFAULT_TRANSITION_TIME)
     {
         // Store the number of hiders before adding
         var previousHiderCount = _uiHiders.Count;
@@ -209,10 +209,10 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
         
         // If the previous hider count is 0, fade the UI out
         if (previousHiderCount <= 0 && _fadeCoroutine == null)
-            FadeUIOpacityOut();
+            FadeUIOpacityOut(time);
     }
 
-    public void RemoveUIHider(object obj)
+    public void RemoveUIHider(object obj, float time = DEFAULT_TRANSITION_TIME)
     {
         // Store the number of hiders before adding
         var previousHiderCount = _uiHiders.Count;
@@ -225,6 +225,6 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
         // And the current hider count is 0
         // fade the UI out
         if (previousHiderCount > 0 && _uiHiders.Count <= 0 && _fadeCoroutine == null)
-            FadeUIOpacityIn();
+            FadeUIOpacityIn(time);
     }
 }

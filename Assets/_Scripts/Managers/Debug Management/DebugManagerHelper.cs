@@ -162,12 +162,14 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
     #endregion
 
+    private bool _isUIVisible = true;
+
     // Update is called once per frame
     private void Update()
     {
         // Set the debug text visibility
         SetDebugVisibility(DebugManager.Instance.IsDebugMode);
-        
+
         // Update the tolerance and health
         UpdateToleranceAndHealth();
 
@@ -220,6 +222,10 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
             }
         }
 
+        // Toggle the UI
+        if (Input.GetKeyDown(KeyCode.X))
+            ToggleUI();
+
         // Decrease the health
         if (Input.GetKeyDown(KeyCode.K))
             Player.PlayerInfo.ChangeHealth(-10, Player.PlayerInfo, Player.PlayerInfo, Player.transform.position);
@@ -239,6 +245,22 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         {
             Debug.Log($"{text} - [{waitTime:0.00}]");
             yield return new WaitForSeconds(waitTime);
+        }
+    }
+
+    private void ToggleUI()
+    {
+        const float transitionTime = 0.0625f;
+        
+        if (_isUIVisible && DebugManager.Instance.IsDebugMode)
+        {
+            GameUIHelper.Instance.AddUIHider(this, transitionTime);
+            _isUIVisible = false;
+        }
+        else
+        {
+            GameUIHelper.Instance.RemoveUIHider(this, transitionTime);
+            _isUIVisible = true;
         }
     }
 
