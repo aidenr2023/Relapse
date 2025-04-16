@@ -146,6 +146,9 @@ public struct UserSettings
 
     public void CopySettingsFrom(UserSettings other)
     {
+        // // Copy the audio mixer reference
+        // AudioMixer = other.AudioMixer;
+        
         // Sensitivity settings
         MouseSens = other.MouseSens;
         ControllerSens = other.ControllerSens;
