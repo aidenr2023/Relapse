@@ -19,7 +19,7 @@ public struct UserSettings
 
     #endregion
 
-    // [field: SerializeField] public AudioMixer AudioMixer { get; set; }
+    [field: SerializeField] public AudioMixer AudioMixer { get; set; }
 
     #region Getters for Settings
 
@@ -148,7 +148,7 @@ public struct UserSettings
     {
         // // Copy the audio mixer reference
         // AudioMixer = other.AudioMixer;
-
+        
         // Sensitivity settings
         MouseSens = other.MouseSens;
         ControllerSens = other.ControllerSens;
@@ -210,7 +210,7 @@ public struct UserSettings
 
     private void SetVolumeSetting(string settingName, float value)
     {
-        SettingsLoader.Instance.AudioMixer.SetFloat(settingName, Mathf.Log10(value) * 20);
+        AudioMixer.SetFloat(settingName, Mathf.Log10(value) * 20);
     }
 
     public string ToJson()

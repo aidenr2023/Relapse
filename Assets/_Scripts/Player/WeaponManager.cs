@@ -169,15 +169,8 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         if (initialGunPrefab == null || _spawnedInitialGun)
             yield break;
 
-        // Instantiate the gun, get the IGun component and set it up
-        var gunObject = Instantiate(initialGunPrefab);
-        
-        if (!gunObject.TryGetComponent(out IGun gun))
-        {
-            Debug.LogError("Gun prefab does not have an IGun component.");
-            yield break;
-        }
-        
+        var gun = Instantiate(initialGunPrefab).GetComponent<IGun>();
+
         yield return null;
 
         EquipGun(gun);
