@@ -19,7 +19,7 @@ public struct UserSettings
 
     #endregion
 
-    [field: SerializeField] public AudioMixer AudioMixer { get; private set; }
+    [field: SerializeField] public AudioMixer AudioMixer { get; set; }
 
     #region Getters for Settings
 
