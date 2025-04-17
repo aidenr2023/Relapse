@@ -32,6 +32,10 @@ Material:
         m_Texture: {fileID: 8400000, guid: ff2b0a96c95cba7438077ecf2f643d95, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _EnvProbe:
+        m_Texture: {fileID: 8900000, guid: 8724951c5dc4849469239efa7b89df9d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _Mask:
         m_Texture: {fileID: 2800000, guid: 7fb375e64ebab6340b1bf0772b949078, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -62,6 +66,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_26ec14fb58b64ecaa0b540552bdeba3a_Texture_1_Texture2D:
         m_Texture: {fileID: 2800000, guid: b776052138b70c847bef21c523382c13, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_31f6f0cc24ef4b67819248d53f0f0fad_Texture_1_Texture2D:
+        m_Texture: {fileID: 8400000, guid: ff2b0a96c95cba7438077ecf2f643d95, type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SampleTexture2D_348af634d6774101af6c129a10779563_Texture_1_Texture2D:
@@ -135,12 +143,13 @@ Material:
     - _MinFlashOpacity: 0
     - _MinZoom: 0.5
     - _OpacityMultiplier: 1
-    - _ParallaxStrength: 0.1
+    - _ParallaxStrength: -0.05
     - _Power: 3.61
     - _Res: 1
     - _Rotate: 0
     - _SpeedMultiplier: 3
     - _Worldspace: 1
+    - _ZoomFactor: 1
     m_Colors:
     - _Color: {r: 0, g: 0, b: 0, a: 0}
     - _OutlineColor: {r: 4.594794, g: 4.594794, b: 4.594794, a: 0}
