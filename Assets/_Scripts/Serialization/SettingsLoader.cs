@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class SettingsLoader : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class SettingsLoader : MonoBehaviour
     public static SettingsLoader Instance { get; private set; }
     
     [SerializeField] private UserSettingsVariable userSettings;
+    [field: SerializeField] public AudioMixer AudioMixer { get; private set; }
 
     public string SettingsFilePath => $"{SaveDirectory}/{FILE_NAME}";
     
@@ -45,9 +47,6 @@ public class SettingsLoader : MonoBehaviour
 
     public void LoadSettingsFromDisk()
     {
-        // Bug Fix: This is to prevent NULL values from being assigned to the settings
-        var previousSettings = userSettings.value;
-        
         // Check if the settings file path is valid
         if (!System.IO.File.Exists(SettingsFilePath))
         {
@@ -55,14 +54,13 @@ public class SettingsLoader : MonoBehaviour
             return;
         }
         
+        // Bug Fix: This is to prevent NULL values from being assigned to the settings
+        var previousSettings = userSettings.value;
+        
         var jsonString = System.IO.File.ReadAllText(SettingsFilePath);
         var loadedSettings = JsonUtility.FromJson<UserSettings>(jsonString);
         
         userSettings.value = loadedSettings;
-        
-        // Bug Fix: Prevent NULL values from being assigned to the settings
-        if (userSettings.value.AudioMixer == null)
-            userSettings.value.AudioMixer = previousSettings.AudioMixer;
         
         Debug.Log($"Loaded the data from {SettingsFilePath}");
     }
