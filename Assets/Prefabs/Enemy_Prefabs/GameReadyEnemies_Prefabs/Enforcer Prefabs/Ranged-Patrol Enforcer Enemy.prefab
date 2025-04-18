@@ -770,6 +770,7 @@ MonoBehaviour:
   minRelocateTime: 1
   maxRelocateTime: 3
   cooldownAfterAttackTime: 1
+  attackTimeout: 3
 --- !u!114 &3684278755477651946
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -834,7 +835,7 @@ MonoBehaviour:
   detectionFireDelay: 0.5
   fireRange: 30
   projectileSpeed: 42
-  attackCooldown: 0.75
+  attackCooldown: 1
   projectileLifetime: 10
   enemyBulletPrefab: {fileID: 2599755549081965391, guid: 8dfd2038ec9f3244a957428987fd8f79,
     type: 3}
@@ -2060,6 +2061,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageMultiplier: 1.5
+  <OnHit>k__BackingField:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &2419974482611994822 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 410304191692068158, guid: 8768cbb8f0679394c89e70ce24c5c5a5,

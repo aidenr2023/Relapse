@@ -1014,9 +1014,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationLerpAmount: 0.45
-  damage: 25
+  damage: 20
   meleeAttackRange: 4
-  attackCooldown: 1
+  attackCooldown: 1.25
   animator: {fileID: 5835691382165057910}
   meleeAttackHitboxes:
   - {fileID: 6364708773960495632}
@@ -4339,6 +4339,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageMultiplier: 1.5
+  <OnHit>k__BackingField:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &3160258410454954703 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2567795178724217293, guid: d5ec369d78f59024f80f42e0d141d0f8,
