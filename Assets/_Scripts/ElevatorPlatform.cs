@@ -35,9 +35,9 @@ public class ElevatorPlatform : MonoBehaviour
         // Make this game object the parent of the player
         player.transform.SetParent(transform);
         
-        // If this elevator disables jumping, disable the player's jumping
-        if (disableJumping)
-            (player.PlayerController as PlayerMovementV2)?.BasicPlayerMovement.AddJumpDisabler(this);
+        // // If this elevator disables jumping, disable the player's jumping
+        // if (disableJumping)
+        //     (player.PlayerController as PlayerMovementV2)?.BasicPlayerMovement.AddJumpDisabler(this);
     }
 
     private void OnTriggerExit(Collider other)
