@@ -66,26 +66,6 @@ public class LevelLoader : MonoBehaviour
         LoadDataMemoryToScene(scene);
     }
 
-    private void Update()
-    {
-        // TODO: Remove these debug key presses
-        
-        // if (Input.GetKeyDown(KeyCode.F7))
-        //     SaveDataSceneToMemory(null);
-
-        // Reload the current scene to test the saving and loading
-        if (Input.GetKeyDown(KeyCode.F8))
-            StartCoroutine(ReloadScenes());
-
-        // // Save the data to the disk
-        // if (Input.GetKeyDown(KeyCode.F10))
-        //     SaveDataMemoryToDisk();
-        //
-        // // Load the data from the disk
-        // if (Input.GetKeyDown(KeyCode.F11))
-        //     LoadDataDiskToMemory(null);
-    }
-
     private IEnumerator ReloadScenes()
     {
         // Get the build index of the active scene
