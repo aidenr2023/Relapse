@@ -23,6 +23,8 @@ public class WhispersManager : MonoBehaviour
 
     private void Update()
     {
+        return;
+        
         if (Input.GetKeyDown(KeyCode.L))
             AddWhisper("This is a whisper! Whisper Whisper Whisper!", 5);
     }

@@ -33,7 +33,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     [SerializeField, Min(0)] private float textUpdateRate = 1 / 10f;
 
     [SerializeField] private UserSettingsVariable userSettings;
-    
+
     #endregion
 
     #region Private Fields
@@ -144,6 +144,10 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
     private void OnDebugHealthPerformed(InputAction.CallbackContext context)
     {
+        // Only do this if in debug mode
+        if (!DebugManager.Instance.IsDebugMode)
+            return;
+        
         _healthChange = context.ReadValue<float>();
     }
 
@@ -209,9 +213,9 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
             if (Input.GetKeyDown(KeyCode.Keypad3))
                 ChangePower(3);
 
-            // Breakpoint
-            if (Input.GetKeyDown(KeyCode.B))
-                Debug.Break();
+            // // Breakpoint
+            // if (Input.GetKeyDown(KeyCode.B))
+            //     Debug.Break();
 
             if (Input.GetKeyDown(KeyCode.Z))
                 FindBadInteractableMaterials();
@@ -222,32 +226,29 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
                 var inventoryVar = Player.PlayerInventory.InventoryVariable;
                 inventoryVar.AddItem(inventoryVar.MoneyObject, 999999 - inventoryVar.MoneyCount);
             }
+
+            // Decrease the health
+            if (Input.GetKeyDown(KeyCode.K))
+                Player.PlayerInfo.ChangeHealth(-10, Player.PlayerInfo, Player.PlayerInfo, Player.transform.position);
+
+            // Instant-kill player
+            if (Input.GetKeyDown(KeyCode.Y))
+            {
+                Player.PlayerInfo.ChangeHealth(
+                    -Player.PlayerInfo.MaxHealth,
+                    Player.PlayerInfo, this,
+                    Player.transform.position
+                );
+            }
         }
 
         // Toggle the UI
         if (Input.GetKeyDown(KeyCode.X))
             ToggleUI();
-        
+
         // Toggle the god mode
         if (Input.GetKeyDown(KeyCode.F4))
             ToggleGodMode();
-
-        // Decrease the health
-        if (Input.GetKeyDown(KeyCode.K))
-            Player.PlayerInfo.ChangeHealth(-10, Player.PlayerInfo, Player.PlayerInfo, Player.transform.position);
-
-        // Instant-kill player
-        if (Input.GetKeyDown(KeyCode.Y))
-        {
-            Player.PlayerInfo.ChangeHealth(
-                -Player.PlayerInfo.MaxHealth,
-                Player.PlayerInfo, this,
-                Player.transform.position
-            );
-        }
-
-        if (Input.GetKeyDown(KeyCode.F9))
-            SettingsLoader.Instance.SaveSettingsToDisk();
 
         return;
 
@@ -279,7 +280,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         // If the player is null, return
         if (Player == null)
             return;
-        
+
         // If god mode is off and debug mode is not on, return
         if (!_isGodMode && !DebugManager.Instance.IsDebugMode)
             return;

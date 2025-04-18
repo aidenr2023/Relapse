@@ -265,7 +265,7 @@ public class BasicPlayerMovement : PlayerMovementScript, IUsesInput, IDebugged
         PlayerAnimator?.SetFloat("JumpHeight", heightAboveGround);
 
         // TODO: REMOVE LATER - FLIGHT DEBUG
-        if (Input.GetKey(KeyCode.F))
+        if (DebugManager.Instance.IsDebugMode && Input.GetKey(KeyCode.F))
             Flight();
     }
 
