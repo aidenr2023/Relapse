@@ -44,7 +44,11 @@ public class VendorMenu : GameMenu
     [SerializeField] private TMP_Text upgradeMoneyText;
     [SerializeField] private GameObject mainUpgradePanel;
     [SerializeField] private GameObject upgradeConfirmationPanel;
-
+    
+    [SerializeField] private TMP_Text upgradesRemainingText;
+    [SerializeField] private TMP_Text upgradeMoneyText2;
+    
+    
     [Header("Gossip Dialogue")] [SerializeField]
     private DialogueUI dialogueUI;
 
@@ -242,6 +246,9 @@ public class VendorMenu : GameMenu
         }
         else if (menu == upgradeMenu)
         {
+            // Update the upgrade text
+            UpdateUpgradeText();
+            
             // Disable the upgrade confirmation panel
             upgradeConfirmationPanel.SetActive(false);
 
@@ -468,18 +475,29 @@ public class VendorMenu : GameMenu
         // Set this menu to inactive
         Deactivate();
     }
+    
+    private void UpdateUpgradeText()
+    {
+        // Update the upgrades remaining text
+        upgradesRemainingText.text = $"Upgrades Remaining: {CurrentVendor.UpgradesRemaining}";
+
+        // Update the money text
+        upgradeMoneyText2.text = $"You Have: ${playerInventory.MoneyCount}";
+    }
 
     public void BuyUpgrade() => BuyUpgrade(_currentUpgradeType);
 
     public void SetUpgradeTypeHealth()
     {
         _currentUpgradeType = VendorType.Doctor;
+        UpdateUpgradeText();
         SetUpConfirmationPanel();
     }
 
     public void SetUpgradeTypeToxicity()
     {
         _currentUpgradeType = VendorType.Dealer;
+        UpdateUpgradeText();
         SetUpConfirmationPanel();
     }
 
@@ -522,6 +540,9 @@ public class VendorMenu : GameMenu
                     $"You have bought a toxicity upgrade. Your max toxicity is now {playerMaxToxicity.Value}.");
                 break;
         }
+        
+        // Update the upgrade text
+        UpdateUpgradeText();
     }
 
     public void ShowUpgradeConfirmationPanel()
@@ -531,6 +552,9 @@ public class VendorMenu : GameMenu
 
         // Enable the upgrade confirmation panel
         upgradeConfirmationPanel.SetActive(true);
+        
+        // Update the upgrade text
+        UpdateUpgradeText();
     }
 
     public void HideUpgradeConfirmationPanel()
@@ -540,6 +564,9 @@ public class VendorMenu : GameMenu
 
         // Enable the main upgrade panel
         mainUpgradePanel.SetActive(true);
+        
+        // Update the upgrade text
+        UpdateUpgradeText();
     }
 
     private void ChangeMaxValue(FloatReference current, FloatReference max, int amount)
