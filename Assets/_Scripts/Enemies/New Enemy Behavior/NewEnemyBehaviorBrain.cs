@@ -189,53 +189,53 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
             ForceMovementUpdate = false;
     }
 
-    // TODO: Account for attacks as well
-    private void DetermineAttackAction()
-    {
-        // If there are no attack actions, return
-        if (_currentBehaviorState.attackActions.Length == 0)
-        {
-            _isAttacking = false;
-            return;
-        }
-
-        var totalWeight = _currentBehaviorState.attackActions.Sum(n => n.Weight);
-
-        // Generate a random number between 0 and the total weight
-        var randomWeight = UnityEngine.Random.Range(0, totalWeight);
-
-        int index;
-
-        // Keep subtracting the weight of the current action from the random weight until it's less than or equal to 0
-        for (index = 0; index < _currentBehaviorState.attackActions.Length; index++)
-        {
-            randomWeight -= _currentBehaviorState.attackActions[index].Weight;
-
-            if (randomWeight <= 0)
-                break;
-        }
-
-        // Update the current move action   
-        _currentAttackAction = _currentBehaviorState.attackActions[index];
-
-        // Start the current action
-        _currentAttackAction.Start(this, _currentBehaviorState);
-
-        // Generate a random cooldown time between the min and max cooldown times
-        var cooldownTime = UnityEngine.Random.Range(_currentAttackAction.minCooldown, _currentAttackAction.maxCooldown);
-
-        // Update the move cooldown
-        _attackCooldown.SetMaxTimeAndReset(cooldownTime);
-
-        // Set the attacking flag
-        _isAttacking = true;
-
-        // Add an action to reset the attacking flag
-        _currentAttackAction.OnEnd += (_, _, _) => _isAttacking = false;
-
-        // TODO: Remove this
-        Invoke(nameof(StopAttack_DEBUG), 1);
-    }
+    // // TODO: Account for attacks as well
+    // private void DetermineAttackAction()
+    // {
+    //     // If there are no attack actions, return
+    //     if (_currentBehaviorState.attackActions.Length == 0)
+    //     {
+    //         _isAttacking = false;
+    //         return;
+    //     }
+    //
+    //     var totalWeight = _currentBehaviorState.attackActions.Sum(n => n.Weight);
+    //
+    //     // Generate a random number between 0 and the total weight
+    //     var randomWeight = UnityEngine.Random.Range(0, totalWeight);
+    //
+    //     int index;
+    //
+    //     // Keep subtracting the weight of the current action from the random weight until it's less than or equal to 0
+    //     for (index = 0; index < _currentBehaviorState.attackActions.Length; index++)
+    //     {
+    //         randomWeight -= _currentBehaviorState.attackActions[index].Weight;
+    //
+    //         if (randomWeight <= 0)
+    //             break;
+    //     }
+    //
+    //     // Update the current move action   
+    //     _currentAttackAction = _currentBehaviorState.attackActions[index];
+    //
+    //     // Start the current action
+    //     _currentAttackAction.Start(this, _currentBehaviorState);
+    //
+    //     // Generate a random cooldown time between the min and max cooldown times
+    //     var cooldownTime = UnityEngine.Random.Range(_currentAttackAction.minCooldown, _currentAttackAction.maxCooldown);
+    //
+    //     // Update the move cooldown
+    //     _attackCooldown.SetMaxTimeAndReset(cooldownTime);
+    //
+    //     // Set the attacking flag
+    //     _isAttacking = true;
+    //
+    //     // Add an action to reset the attacking flag
+    //     _currentAttackAction.OnEnd += (_, _, _) => _isAttacking = false;
+    //
+    //     // TODO: Remove this
+    //     Invoke(nameof(StopAttack_DEBUG), 1);
+    // }
 
     private void StopAttack_DEBUG()
     {
@@ -261,9 +261,9 @@ public class NewEnemyBehaviorBrain : MonoBehaviour, IDebugged
             if (_moveCooldown.IsComplete || ForceMovementUpdate)
                 DetermineMoveAction();
 
-            // Determine the attack action
-            if (_attackCooldown.IsComplete && !_isAttacking)
-                DetermineAttackAction();
+            // // Determine the attack action
+            // if (_attackCooldown.IsComplete && !_isAttacking)
+            //     DetermineAttackAction();
 
             // // Log the current behavior state
             // Debug.Log($"{gameObject.name} Behavior State: {_currentBehaviorState.stateName}");

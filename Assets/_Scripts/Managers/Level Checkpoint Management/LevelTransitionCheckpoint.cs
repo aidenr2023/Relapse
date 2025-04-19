@@ -121,6 +121,9 @@ public class LevelTransitionCheckpoint : LevelCheckpointReset
                     playerInstance.Rigidbody.Move(levelInfo.transform.position, playerInstance.Rigidbody.rotation);
                     playerInstance.PlayerLook.ApplyRotation(levelInfo.transform.rotation);
                 }
+                
+                // TODO: Do this!!!
+                Debug.Log($"Has level info: {levelInfo.name}", levelInfo);
             }
 
             // If the level information does not exist, set the player's position and rotation to the starting checkpoint
