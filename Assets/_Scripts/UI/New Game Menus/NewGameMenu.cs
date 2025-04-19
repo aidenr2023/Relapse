@@ -11,7 +11,7 @@ public class NewGameMenu : MonoBehaviour
 
     [SerializeField] protected Canvas canvas;
     [SerializeField] protected CanvasGroup canvasGroup;
-    [SerializeField] protected EventSystem eventSystem;
+    [field: SerializeField] public EventSystem EventSystem { get; private set; }
     [SerializeField] protected NewGameMenuPage initialPage;
 
     [field: Header("Menu Settings"), SerializeField]
@@ -127,7 +127,7 @@ public class NewGameMenu : MonoBehaviour
         canvasGroup.blocksRaycasts = isActive;
 
         // Set the event system's active state
-        eventSystem.gameObject.SetActive(isActive);
+        EventSystem.gameObject.SetActive(isActive);
     }
 
     #endregion
@@ -155,7 +155,7 @@ public class NewGameMenu : MonoBehaviour
         menuPage.Activate();
     }
 
-    private void PopMenuPage()
+    private void PopMenuPage(bool reinitializeSelectedElement = true)
     {
         // If the stack is currently has 1 or fewer pages, return
         if (_pageStack.Count <= 1)
@@ -168,13 +168,13 @@ public class NewGameMenu : MonoBehaviour
         prevMenu.Deactivate();
         
         // If there is a new menu at the top of the stack, activate it
-        _pageStack.Peek()?.Activate();
+        _pageStack.Peek()?.Activate(reinitializeSelectedElement);
     }
 
     public void PopThenPushMenuPage(NewGameMenuPage menuPage)
     {
         // Pop
-        PopMenuPage();
+        PopMenuPage(true);
         
         // Push
         PushMenuPage(menuPage);
@@ -185,7 +185,7 @@ public class NewGameMenu : MonoBehaviour
         // Pop the page if there is more than one
         if (_pageStack.Count > 1)
         {
-            PopMenuPage();
+            PopMenuPage(false);
             return;
         }
         
