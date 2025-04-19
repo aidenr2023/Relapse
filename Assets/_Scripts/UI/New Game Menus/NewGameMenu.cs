@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-public abstract class NewGameMenu : MonoBehaviour
+public class NewGameMenu : MonoBehaviour
 {
     #region Serialized Fields
 
     [SerializeField] protected Canvas canvas;
     [SerializeField] protected CanvasGroup canvasGroup;
     [SerializeField] protected EventSystem eventSystem;
+    [SerializeField] protected NewGameMenuPage initialPage;
 
     [field: Header("Menu Settings"), SerializeField]
     public bool DisablePlayerControls { get; protected set; } = true;
@@ -20,7 +22,8 @@ public abstract class NewGameMenu : MonoBehaviour
     [SerializeField] private bool isActiveOnStart = false;
     [SerializeField] protected bool usesFade = true;
 
-    [Header("Misc."), SerializeField] private AnimationCurve opacityCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    [field: Header("Misc."), SerializeField]
+    public AnimationCurve OpacityCurve { get; private set; } = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
     [field: Header("Events"), SerializeField]
     public UnityEvent<NewGameMenu> OnActivate { get; private set; }
@@ -31,6 +34,7 @@ public abstract class NewGameMenu : MonoBehaviour
 
     #region Private Fields / Auto Properties
 
+    private readonly Stack<NewGameMenuPage> _pageStack = new();
     private Coroutine _fadeCoroutine;
 
     public bool IsActive { get; private set; }
@@ -43,6 +47,11 @@ public abstract class NewGameMenu : MonoBehaviour
     {
         // Forcibly set the menu to be deactivated
         ForceDeactivate();
+        
+        Debug.Assert(initialPage != null, this);
+        
+        // Activate the initial page
+        PushMenuPage(initialPage);
     }
 
     protected void Start()
@@ -101,7 +110,7 @@ public abstract class NewGameMenu : MonoBehaviour
         DeactivateLogic();
 
         // Set the alpha to the minimum value
-        canvasGroup.alpha = opacityCurve.Evaluate(0);
+        canvasGroup.alpha = OpacityCurve.Evaluate(0);
     }
 
     private void ChangeActivationState(bool isActive)
@@ -116,10 +125,74 @@ public abstract class NewGameMenu : MonoBehaviour
         // Set the canvas group to be interactable or not
         canvasGroup.interactable = isActive;
         canvasGroup.blocksRaycasts = isActive;
-        
-        Debug.Log($"Changed Activation State: {isActive}");
+
+        // Set the event system's active state
+        eventSystem.gameObject.SetActive(isActive);
     }
 
+    #endregion
+
+    #region Menu Stack
+
+    public void PushMenuPage(NewGameMenuPage menuPage)
+    {
+        // Return if the new page is null
+        if (menuPage == null)
+            return;
+
+        // Return if the page is already inside the stack
+        if (_pageStack.Contains(menuPage))
+            return;
+
+        // If there is a menu page at the top of the stack, deactivate it
+        if (_pageStack.Count >= 1)
+            _pageStack.Peek().Deactivate();
+
+        // Push the new menu page
+        _pageStack.Push(menuPage);
+
+        // Activate the new menu page
+        menuPage.Activate();
+    }
+
+    private void PopMenuPage()
+    {
+        // If the stack is currently has 1 or fewer pages, return
+        if (_pageStack.Count <= 1)
+            return;
+        
+        // Pop menu at the top of the stack
+        var prevMenu = _pageStack.Pop();
+        
+        // Deactivate the previous menu
+        prevMenu.Deactivate();
+        
+        // If there is a new menu at the top of the stack, activate it
+        _pageStack.Peek()?.Activate();
+    }
+
+    public void PopThenPushMenuPage(NewGameMenuPage menuPage)
+    {
+        // Pop
+        PopMenuPage();
+        
+        // Push
+        PushMenuPage(menuPage);
+    }
+
+    public void PreviousPage()
+    {
+        // Pop the page if there is more than one
+        if (_pageStack.Count > 1)
+        {
+            PopMenuPage();
+            return;
+        }
+        
+        // Deactivate this menu
+        Deactivate();
+    }
+    
     #endregion
 
     private void StartFadeCoroutine(bool inOut)
@@ -142,7 +215,7 @@ public abstract class NewGameMenu : MonoBehaviour
     /// <returns></returns>
     private IEnumerator FadeCoroutine(bool inOut)
     {
-        var finalKey = opacityCurve.keys[opacityCurve.length - 1];
+        var finalKey = OpacityCurve.keys[OpacityCurve.length - 1];
 
         // Get the maximum duration of the fade
         var maxDuration = finalKey.time;
@@ -160,7 +233,7 @@ public abstract class NewGameMenu : MonoBehaviour
                 elapsedTime = maxDuration - elapsedTime;
 
             // Calculate the current opacity
-            var opacity = opacityCurve.Evaluate(elapsedTime);
+            var opacity = OpacityCurve.Evaluate(elapsedTime);
 
             // Set the canvas group's alpha to the current opacity
             canvasGroup.alpha = opacity;
@@ -171,8 +244,8 @@ public abstract class NewGameMenu : MonoBehaviour
 
         // Set the final opacity
         if (inOut)
-            canvasGroup.alpha = opacityCurve.Evaluate(finalKey.time);
+            canvasGroup.alpha = OpacityCurve.Evaluate(finalKey.time);
         else
-            canvasGroup.alpha = opacityCurve.Evaluate(0);
+            canvasGroup.alpha = OpacityCurve.Evaluate(0);
     }
 }
