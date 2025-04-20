@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BoardCeiling_Mat
+  m_Name: SubwayFloorTiles
   m_Shader: {fileID: -6465566751694194690, guid: ea91e1bb8f5b19e4f9dfb65145e07ec7,
     type: 3}
   m_Parent: {fileID: 0}
@@ -29,7 +29,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TexBaseColor:
-        m_Texture: {fileID: 2800000, guid: 443eaac725a995c41b06634db70b13d8, type: 3}
+        m_Texture: {fileID: 2800000, guid: bb8d60eacad23224eb4c4526d4759e74, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TexMetallic:
@@ -37,7 +37,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TexNormal:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 70e9ced1724394c4b941c876c1157fd5, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TexRoughness:
@@ -61,11 +61,13 @@ Material:
     - _BlendTextures: 0
     - _MetallicMap: 0
     - _MetallicValue: 0
+    - _Normal: 0.058
     - _QueueControl: 0
     - _QueueOffset: 0
     - _RoughnessMap: 0
-    - _RoughnessValue: 0.215
-    - _Tiling: 0.2
+    - _RoughnessValue: 0.037
+    - _Saturation: 0.169
+    - _Tiling: 0.15
     - _tmp: 1
     m_Colors:
     - _TheColorModifier: {r: 1, g: 1, b: 1, a: 0}
