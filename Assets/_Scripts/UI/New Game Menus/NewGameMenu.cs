@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-public class NewGameMenu : MonoBehaviour
+public class NewGameMenu : MonoBehaviour, IGameMenu
 {
     #region Serialized Fields
 
@@ -19,6 +19,8 @@ public class NewGameMenu : MonoBehaviour
 
     [field: SerializeField] public bool PausesGame { get; protected set; } = true;
     [field: SerializeField] public bool PausesGameMusic { get; protected set; } = true;
+
+
     [SerializeField] private bool isActiveOnStart = false;
     [SerializeField] protected bool usesFade = true;
 
@@ -39,6 +41,8 @@ public class NewGameMenu : MonoBehaviour
 
     public bool IsActive { get; private set; }
 
+    public bool IsCursorRequired => true;
+        
     #endregion
 
     #region Unity Methods
@@ -71,6 +75,9 @@ public class NewGameMenu : MonoBehaviour
         // Return if the menu is already active
         if (IsActive)
             return;
+        
+        // Add this menu to the active menus of the menu manager
+        MenuManager.Instance.AddActiveMenu(this);
 
         // Update the isActive state
         ChangeActivationState(true);
@@ -88,6 +95,9 @@ public class NewGameMenu : MonoBehaviour
         // Return if the menu is already inactive
         if (!IsActive)
             return;
+        
+        // Remove this menu from the active menus of the menu manager
+        MenuManager.Instance.RemoveActiveMenu(this);
 
         // Update the isActive state
         ChangeActivationState(false);
@@ -130,6 +140,8 @@ public class NewGameMenu : MonoBehaviour
         EventSystem.gameObject.SetActive(isActive);
     }
 
+    public void OnBackPressed() => PreviousPage();
+    
     #endregion
 
     #region Menu Stack
