@@ -41,7 +41,7 @@ public class InputManager
     public PlayerControls PControls { get; }
     public PlayerControls OtherControls { get; }
 
-    public DefaultInputActions DefaultInputActions { get; }
+    public UIControls UIControls { get; }
 
     public bool IsCursorActive =>
         MenuManager.Instance.IsCursorActiveInMenus && CurrentControlScheme == ControlSchemeType.Keyboard;
@@ -73,8 +73,8 @@ public class InputManager
 
         // Create a new instance of the DefaultInputActions
         // Enable the DefaultInputActions
-        DefaultInputActions = new DefaultInputActions();
-        DefaultInputActions.Enable();
+        UIControls = new UIControls();
+        UIControls.Enable();
 
         // Initialize the registered items
         _registeredItems.Clear();

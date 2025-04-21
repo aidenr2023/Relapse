@@ -396,6 +396,17 @@ public partial class @UIControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""a4977423-2d38-4f7b-9dde-0baa520e4207"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Submit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""3238331f-5745-4d41-9289-ce5dbeaeab49"",
                     ""path"": ""*/{Cancel}"",
                     ""interactions"": """",

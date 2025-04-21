@@ -524,12 +524,12 @@ public class TutorialScreen : GameMenu, IUsesInput
     public void InitializeInput()
     {
         InputActions.Add(
-            new InputData(InputManager.Instance.DefaultInputActions.UI.Navigate, InputType.Performed,
+            new InputData(InputManager.Instance.UIControls.UI.Navigate, InputType.Performed,
                 OnNavigatePerformed)
         );
 
         InputActions.Add(
-            new InputData(InputManager.Instance.DefaultInputActions.UI.Navigate, InputType.Canceled,
+            new InputData(InputManager.Instance.UIControls.UI.Navigate, InputType.Canceled,
                 OnNavigateCanceled)
         );
     }

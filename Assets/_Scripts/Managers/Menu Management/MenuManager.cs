@@ -61,7 +61,7 @@ public class MenuManager : IUsesInput
     public void InitializeInput()
     {
         InputActions.Add(new InputData(
-            InputManager.Instance.DefaultInputActions.UI.Cancel, InputType.Performed, ActiveMenuBack)
+            InputManager.Instance.UIControls.UI.Cancel, InputType.Performed, ActiveMenuBack)
         );
     }
 

@@ -57,7 +57,7 @@ public class NewTutorialMenu : MonoBehaviour
     #region Private Fields
 
     private DefaultInputActions _inputActions;
-    
+
     private Tutorial _currentTutorial;
 
     private int _currentTutorialPage;
@@ -84,7 +84,7 @@ public class NewTutorialMenu : MonoBehaviour
     {
         // Set the instance to this
         Instance = this;
-        
+
         // Initialize the input
         InitializeInput();
 
@@ -96,10 +96,10 @@ public class NewTutorialMenu : MonoBehaviour
     {
         // Create a new input actions instance
         _inputActions = new DefaultInputActions();
-        
+
         _inputActions.UI.Navigate.performed += OnNavigatePerformed;
     }
-    
+
     private void OnNavigatePerformed(InputAction.CallbackContext obj)
     {
         var value = obj.ReadValue<Vector2>();
@@ -157,7 +157,7 @@ public class NewTutorialMenu : MonoBehaviour
 
         // Activate the menu
         _isActive = true;
-        
+
         // Enable the controls
         _inputActions.Enable();
     }
@@ -184,7 +184,7 @@ public class NewTutorialMenu : MonoBehaviour
 
         // Deactivate the menu
         _isActive = false;
-        
+
         // Disable the controls
         _inputActions.Disable();
     }
@@ -360,8 +360,17 @@ public class NewTutorialMenu : MonoBehaviour
         // Set the exit button to active
         exitButton.gameObject.SetActive(true);
 
+        // // Select the exit button
+        // EventSystem.current.SetSelectedGameObject(exitButton.gameObject);
+        StartCoroutine(SetSelectedGameObject(exitButton.gameObject));
+    }
+
+    private IEnumerator SetSelectedGameObject(GameObject obj)
+    {
+        yield return null;
+        
         // Select the exit button
-        EventSystem.current.SetSelectedGameObject(exitButton.gameObject);
+        EventSystem.current?.SetSelectedGameObject(exitButton.gameObject);
     }
 
     #endregion
