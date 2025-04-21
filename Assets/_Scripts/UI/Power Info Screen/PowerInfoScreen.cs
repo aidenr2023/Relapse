@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PowerInfoScreen : MonoBehaviour
@@ -16,17 +18,28 @@ public class PowerInfoScreen : MonoBehaviour
 
     [SerializeField] private Image powerImage;
     [SerializeField] private TMP_Text powerNameText;
-    
+
     [SerializeField] private Button backButton;
 
     public GameObject FirstSelectedButton { get; private set; }
-    
+
     public void SetUpScreen()
     {
         SetInformation(null);
-        
+
         // Populate the power buttons
         PopulatePowerButtons();
+
+        // Set the event system's current selected game object to the first selected button
+        StartCoroutine(SetSelectedGameObject(FirstSelectedButton));
+    }
+
+    private IEnumerator SetSelectedGameObject(GameObject obj)
+    {
+        yield return null;
+
+        // Set the selected game object to the first selected button
+        EventSystem.current.SetSelectedGameObject(obj);
     }
 
     private void PopulatePowerButtons()
@@ -37,12 +50,12 @@ public class PowerInfoScreen : MonoBehaviour
 
         // Reset the first selected button
         FirstSelectedButton = null;
-        
+
         // Create a hash set of all the remaining powers
         var allPowersHashSet = new HashSet<PowerScriptableObject>(allPowers.Value);
 
         var anyNeuros = equippedPowers.Value.Any(n => n.PowerType == PowerType.Drug);
-        
+
         // Go through each of the currently equipped powers and add them to the screen
         foreach (var power in equippedPowers.Value)
         {
@@ -51,7 +64,7 @@ public class PowerInfoScreen : MonoBehaviour
                 continue;
 
             var powerButton = CreatePowerButton(power, true);
-            
+
             switch (power.PowerType)
             {
                 case PowerType.Drug:
@@ -62,17 +75,17 @@ public class PowerInfoScreen : MonoBehaviour
                         FirstSelectedButton = powerButton.Button.gameObject;
                         Debug.Log($"First Selected Power: {FirstSelectedButton.name} - {power.PowerName}");
                     }
-                    
+
                     break;
-                
+
                 case PowerType.Medicine:
                     powerButton.transform.SetParent(vitalButtonParent);
-                    
+
                     if (FirstSelectedButton == null && !anyNeuros)
                         FirstSelectedButton = powerButton.Button.gameObject;
-                    
+
                     break;
-                
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -80,33 +93,31 @@ public class PowerInfoScreen : MonoBehaviour
             // Remove the power from the hash set
             allPowersHashSet.Remove(power);
         }
-        
 
-        
         // Go through each of the remaining powers and add them to the screen
         while (allPowersHashSet.Count > 0)
         {
             var power = allPowersHashSet.First();
             var powerButton = CreatePowerButton(power, false);
-            
+
             switch (power.PowerType)
             {
                 case PowerType.Drug:
                     powerButton.transform.SetParent(neuroButtonParent);
                     break;
-                
+
                 case PowerType.Medicine:
                     powerButton.transform.SetParent(vitalButtonParent);
                     break;
-                
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            
+
             // Remove the power from the hash set
             allPowersHashSet.Remove(power);
         }
-        
+
         if (FirstSelectedButton == null)
             FirstSelectedButton = backButton.gameObject;
     }
@@ -137,15 +148,15 @@ public class PowerInfoScreen : MonoBehaviour
         if (power == null)
         {
             powerNameText.text = string.Empty;
-            
+
             powerImage.sprite = null;
             powerImage.color = new Color(0, 0, 0, 0);
-            
+
             return;
         }
-        
+
         powerNameText.text = power.PowerName;
-        
+
         powerImage.sprite = power.Icon;
         powerImage.color = Color.white;
     }

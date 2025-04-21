@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.InputSystem;
 
@@ -23,9 +24,7 @@ public class MenuManager : IUsesInput
 
     #region Private Fields
 
-    private readonly CustomStack<GameMenu> _activeMenus = new();
-
-    private readonly HashSet<GameMenu> _managedMenus = new();
+    private readonly CustomStack<IGameMenu> _activeMenus = new();
 
     #endregion
 
@@ -33,7 +32,7 @@ public class MenuManager : IUsesInput
 
     public HashSet<InputData> InputActions { get; } = new();
 
-    public IReadOnlyCollection<GameMenu> ActiveMenus => _activeMenus.ToArray();
+    public IReadOnlyCollection<IGameMenu> ActiveMenus => _activeMenus.ToArray();
 
     public bool IsCursorActiveInMenus => _activeMenus.Any(menu => menu.IsCursorRequired);
 
@@ -42,12 +41,12 @@ public class MenuManager : IUsesInput
     public bool IsGamePausedInMenus => _activeMenus.Any(menu => menu.PausesGame);
     
     public bool IsGameMusicPausedInMenus => _activeMenus.Any(menu => menu.PausesGameMusic);
-    
-    public bool IsMusicMuffledInMenus => _activeMenus.Any(menu => menu.MufflesMusic);
-    
-    public GameMenu ActiveMenu => _activeMenus.Peek();
+
+    public IGameMenu ActiveMenu => _activeMenus.Peek();
 
     #endregion
+    
+    public event Action OnActiveMenuChanged; 
 
     private MenuManager()
     {
@@ -72,31 +71,27 @@ public class MenuManager : IUsesInput
         var activeMenu = _activeMenus.Peek();
 
         // If the active menu is not null
-        if (activeMenu != null)
+        if (activeMenu is not null && (activeMenu as UnityEngine.Object) != null)
             activeMenu.OnBackPressed();
     }
 
-    public void AddActiveMenu(GameMenu menu)
+    public void AddActiveMenu(IGameMenu menu)
     {
         // Return if the menu is already active
         if (_activeMenus.Contains(menu))
             return;
 
         _activeMenus.Push(menu);
+        
+        // Invoke the OnActiveMenuChanged event
+        OnActiveMenuChanged?.Invoke();
     }
 
-    public void RemoveActiveMenu(GameMenu menu)
+    public void RemoveActiveMenu(IGameMenu menu)
     {
         _activeMenus.Remove(menu);
-    }
-
-    public void ManageMenu(GameMenu menu)
-    {
-        _managedMenus.Add(menu);
-    }
-
-    public void UnManageMenu(GameMenu menu)
-    {
-        _managedMenus.Remove(menu);
+        
+        // Invoke the OnActiveMenuChanged event
+        OnActiveMenuChanged?.Invoke();
     }
 }
