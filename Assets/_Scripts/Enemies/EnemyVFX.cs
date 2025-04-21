@@ -56,7 +56,7 @@ public class EnemyVFX : ComponentScript<EnemyInfo>
         Destroy(spawnVfx.gameObject, 5);
     }
 
-    private void PlayVfxOnDamaged(object arg0, HealthChangedEventArgs arg1)
+    private void PlayVfxOnDamaged(object sender, HealthChangedEventArgs args)
     {
         // If there was no damage this frame, return
         // If the damage this frame is less than the minimum damage for the visual effect, return
@@ -67,7 +67,7 @@ public class EnemyVFX : ComponentScript<EnemyInfo>
         if (_hasPlayedHitVFX)
             return;
         
-        PlayVfx(ParentComponent.DamageThisFrame);
+        PlayVfx(ParentComponent.DamageThisFrame, args.Position);
     }
 
 
@@ -104,14 +104,14 @@ public class EnemyVFX : ComponentScript<EnemyInfo>
         Destroy(deathVfx.gameObject, 10f);
     }
 
-    private void PlayVfx(float damage)
+    private void PlayVfx(float damage, Vector3 damagePosition)
     {
         // Return if the visual effect is null
         if (enemyHitEffect == null)
             return;
 
         // Set the visual effect's position to the position of the damage
-        enemyHitEffect.SetVector3("StartPosition", ParentComponent.DamagePosition);
+        enemyHitEffect.SetVector3("StartPosition", damagePosition);
 
         // Calculate the damage percentage based on the amount of damage the enemy took this frame
         var damagePercentage = Mathf.InverseLerp(minVFXRangeDamage, maxVFXRangeDamage, damage);
