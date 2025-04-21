@@ -472,18 +472,6 @@ public class PauseMenuManager : GameMenu
             Resume(pauseMenuPanel.transform.GetChild(0).gameObject);
     }
 
-    public static IEnumerator LoadPauseMenuManager()
-    {
-        // Load the pause menu scene
-        SceneManager.LoadScene(PAUSE_SCENE_NAME, LoadSceneMode.Additive);
-
-        // Wait while the instance is null
-        yield return new WaitUntil(() => Instance != null);
-
-        // // Call the OnPausePerformed method
-        // Instance.OnPausePerformed(obj);
-    }
-
     [Serializable]
     public enum TutorialMenuType : byte
     {

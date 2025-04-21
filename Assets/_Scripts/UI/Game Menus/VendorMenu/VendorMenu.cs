@@ -11,8 +11,6 @@ using UnityEngine.Video;
 
 public class VendorMenu : GameMenu
 {
-    private const string VENDOR_SCENE_NAME = "VendorUIScene";
-
     public static VendorMenu Instance { get; private set; }
 
     #region Serialized Fields
@@ -624,14 +622,5 @@ public class VendorMenu : GameMenu
             EndVendor();
         else if (powerMenu.activeSelf)
             IsolateMenu(initialMenu);
-    }
-
-    public static IEnumerator LoadVendorMenu()
-    {
-        // Load the vendor UI scene
-        SceneManager.LoadScene(VENDOR_SCENE_NAME, LoadSceneMode.Additive);
-
-        // Wait while the instance is null
-        yield return new WaitUntil(() => Instance != null);
     }
 }

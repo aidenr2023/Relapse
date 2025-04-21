@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class RelapseScreen : GameMenu
+public class NewDeathMenu : MonoBehaviour
 {
-    private static RelapseScreen Instance { get; set; }
-
     #region Serialized Fields
 
     [SerializeField] private EventVariable gameOnStart;
@@ -28,6 +25,9 @@ public class RelapseScreen : GameMenu
 
     [SerializeField] private Slider loadingBar;
 
+    [SerializeField] private UnityEvent onDeathEvent;
+    [SerializeField] private UnityEvent deactivateFunction;
+
     #endregion
 
     #region Private Fields
@@ -37,18 +37,10 @@ public class RelapseScreen : GameMenu
 
     #endregion
 
-    protected override void CustomAwake()
+    private void Awake()
     {
-        // Set the instance to this
-        if (Instance != null)
-        {
-            Debug.LogError("There is more than one instance of RelapseScreen in the scene.");
-            Destroy(gameObject);
-            return;
-        }
-
         // Subscribe to the player's death event
-        playerOnDeathEvent += ShowScreenOnDeath;
+        playerOnDeathEvent += InvokeEventOnDeath;
 
         // Subscribe to the game on start event
         gameOnStart += ForceEventSubscription;
@@ -57,66 +49,15 @@ public class RelapseScreen : GameMenu
     private void ForceEventSubscription()
     {
         // Remove the event subscription (just in case)
-        playerOnDeathEvent -= ShowScreenOnDeath;
+        playerOnDeathEvent -= InvokeEventOnDeath;
 
         // Subscribe to the player's death event
-        playerOnDeathEvent += ShowScreenOnDeath;
+        playerOnDeathEvent += InvokeEventOnDeath;
     }
 
-    private void ShowScreenOnDeath(object arg0, HealthChangedEventArgs arg1)
+    private void InvokeEventOnDeath(object sender, HealthChangedEventArgs arg1)
     {
-        Activate();
-    }
-
-    private void OnDisable()
-    {
-        // Deactivate the menu
-        Deactivate();
-    }
-
-    protected override void CustomStart()
-    {
-    }
-
-    protected override void CustomActivate()
-    {
-        // Set the event system's current selected game object to the first selected game object
-        // EventSystem.current.SetSelectedGameObject(firstSelectedButton.gameObject);
-        eventSystem.SetSelectedGameObject(firstSelectedButton.gameObject);
-
-        // Reset the flag
-        _respawnButtonClicked = false;
-    }
-
-    protected override void CustomDeactivate()
-    {
-    }
-
-    protected override void CustomDestroy()
-    {
-        // Unsubscribe from the player's death event
-        playerOnDeathEvent -= ShowScreenOnDeath;
-
-        // If the instance is this, set it to null
-        if (Instance == this)
-            Instance = null;
-    }
-
-    protected override void CustomUpdate()
-    {
-        // Set the loading bar's visibility based on whether the scene is loading
-        loadingBar.gameObject.SetActive(_respawnButtonClicked);
-
-        // If there is no currently selected game object,
-        // set it to the first selected button
-        if (eventSystem.currentSelectedGameObject == null)
-            eventSystem.SetSelectedGameObject(firstSelectedButton.gameObject);
-    }
-
-    public void LoadScene(string sceneName)
-    {
-        // Load the scene
-        SceneManager.LoadScene(sceneName);
+        onDeathEvent?.Invoke();
     }
 
     public void LoadMainMenu()
@@ -125,6 +66,12 @@ public class RelapseScreen : GameMenu
         SceneManager.LoadScene(mainMenuScene);
     }
 
+    public void LoadScene(string sceneName)
+    {
+        // Load the scene
+        SceneManager.LoadScene(sceneName);
+    }
+    
     public void RespawnAtLatestCheckpoint()
     {
         // Check if there is a checkpoint manager
@@ -149,7 +96,7 @@ public class RelapseScreen : GameMenu
 
             // // Disable the game object
             // gameObject.SetActive(false);
-            Deactivate();
+            deactivateFunction.Invoke();
 
             return;
         }
@@ -215,6 +162,8 @@ public class RelapseScreen : GameMenu
         }
     }
 
+    #region Load Functions
+
     private void UpdateProgressBarPercent(float amount)
     {
         loadingBar.value = amount;
@@ -237,11 +186,8 @@ public class RelapseScreen : GameMenu
 
         // // Set the game object to inactive
         // gameObject.SetActive(false);
-        Deactivate();
+        deactivateFunction.Invoke();
     }
 
-    public override void OnBackPressed()
-    {
-        // Do nothing
-    }
+    #endregion
 }

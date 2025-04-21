@@ -7,8 +7,6 @@ using UnityEngine.UI;
 
 public class SettingsMenu : GameMenu
 {
-    private const string SETTINGS_SCENE_NAME = "SettingsUIScene";
-
     public static SettingsMenu Instance { get; set; }
 
     #region Serialized Fields
@@ -204,14 +202,5 @@ public class SettingsMenu : GameMenu
                 selectOnRight = oldLastItemNavigation.selectOnRight,
             };
         }
-    }
-
-    public static IEnumerator LoadSettingsMenu()
-    {
-        // Load the vendor UI scene
-        SceneManager.LoadScene(SETTINGS_SCENE_NAME, LoadSceneMode.Additive);
-
-        // Wait while the instance is null
-        yield return new WaitUntil(() => Instance != null);
     }
 }

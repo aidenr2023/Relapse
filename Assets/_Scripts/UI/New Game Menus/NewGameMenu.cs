@@ -25,7 +25,7 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
     [SerializeField] protected bool usesFade = true;
 
     [field: Header("Misc."), SerializeField]
-    public AnimationCurve OpacityCurve { get; private set; } = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    public AnimationCurve OpacityCurve { get; private set; } = AnimationCurve.EaseInOut(0, 0, .125f, 1);
 
     [field: Header("Events"), SerializeField]
     public UnityEvent<NewGameMenu> OnActivate { get; private set; }
