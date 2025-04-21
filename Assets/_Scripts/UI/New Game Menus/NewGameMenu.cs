@@ -51,9 +51,6 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
 
     private void Awake()
     {
-        // Forcibly set the menu to be deactivated
-        ForceDeactivate();
-
         Debug.Assert(initialPage != null, this);
 
         // Activate the initial page
@@ -62,6 +59,9 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
 
     protected void Start()
     {
+        // Forcibly set the menu to be deactivated
+        ForceDeactivate();
+        
         // If the menu is active on start, activate it
         if (isActiveOnStart)
             Activate();

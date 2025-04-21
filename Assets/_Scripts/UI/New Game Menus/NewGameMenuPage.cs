@@ -92,8 +92,8 @@ public class NewGameMenuPage : MonoBehaviour
 
     private void InitializeSelectedElement(GameObject obj)
     {
-        // Return if there is no first selected element
-        if (firstSelectedElement == null)
+        // Return if there is no object
+        if (obj == null)
             return;
 
         // Select the initial game object

@@ -295,8 +295,8 @@ public class PauseMenuManager : GameMenu
         // SetSelectedButton(settingsFirstSelected);
 
         // Activate the instance of the settings menu
-        if (SettingsMenu.Instance != null)
-            SettingsMenu.Instance.Activate();
+        if (NewSettingsMenu.Instance != null)
+            NewSettingsMenu.Instance.Activate();
     }
 
     public void Tutorials(GameObject textObject)

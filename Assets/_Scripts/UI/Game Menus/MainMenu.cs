@@ -208,7 +208,7 @@ public class MainMenu : GameMenu
         // // Set the event system's selected object to the first button
         // pauseMenuManager.EventSystem.SetSelectedGameObject(pauseMenuManager.SettingsFirstSelected);
 
-        var settingsMenu = SettingsMenu.Instance;
+        var settingsMenu = NewSettingsMenu.Instance;
         
         if (settingsMenu == null)
             return;
