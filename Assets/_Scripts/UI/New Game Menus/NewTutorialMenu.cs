@@ -1,25 +1,27 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine.Video;
-using Object = System.Object;
 
-public class TutorialScreen : GameMenu, IUsesInput
+public class NewTutorialMenu : MonoBehaviour
 {
     private const string TUTORIAL_SCENE_NAME = "TutorialUIScene";
 
-    private static TutorialScreen Instance { get; set; }
+    private static NewTutorialMenu Instance { get; set; }
 
     #region Serialized Fields
 
     [SerializeField] private TutorialArrayVariable allTutorials;
     [SerializeField] private TutorialArrayVariable completedTutorials;
+
+    [SerializeField] private NewGameMenu gameMenu;
 
     [SerializeField, Min(0)] private float slowDownTime = 1;
 
@@ -29,7 +31,6 @@ public class TutorialScreen : GameMenu, IUsesInput
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private TMP_Text pageText;
     [SerializeField] private Button exitButton;
-    [SerializeField] private CanvasGroup exitCanvasGroup;
     [SerializeField] private Button nextButton;
     [SerializeField] private Button prevButton;
 
@@ -55,6 +56,8 @@ public class TutorialScreen : GameMenu, IUsesInput
 
     #region Private Fields
 
+    private DefaultInputActions _inputActions;
+    
     private Tutorial _currentTutorial;
 
     private int _currentTutorialPage;
@@ -65,20 +68,23 @@ public class TutorialScreen : GameMenu, IUsesInput
 
     private float _currentSlowTime;
 
+    private bool _isActive;
+
     #endregion
 
     #region Getters
 
     private Tutorial CurrentTutorial => _currentTutorial;
-    private TutorialPage CurrentTutorialPage => _currentTutorial.TutorialPages[_currentTutorialPage];
 
     #endregion
 
-    protected override void CustomAwake()
+    #region Initialization Methods
+
+    private void Awake()
     {
         // Set the instance to this
         Instance = this;
-
+        
         // Initialize the input
         InitializeInput();
 
@@ -86,17 +92,61 @@ public class TutorialScreen : GameMenu, IUsesInput
         videoPlayer.enabled = false;
     }
 
-    protected override void CustomStart()
+    private void InitializeInput()
     {
+        // Create a new input actions instance
+        _inputActions = new DefaultInputActions();
+        
+        _inputActions.UI.Navigate.performed += OnNavigatePerformed;
+    }
+    
+    private void OnNavigatePerformed(InputAction.CallbackContext obj)
+    {
+        var value = obj.ReadValue<Vector2>();
+
+        const float threshold = 0.5f;
+
+        if (Mathf.Abs(value.x) < threshold)
+        {
+            _navigateNeedsToReset = false;
+            return;
+        }
+
+        // Return if not active
+        if (!_isActive)
+            return;
+
+        // Return if the navigate needs to reset
+        if (_navigateNeedsToReset)
+            return;
+
+        // Set the navigate needs to reset flag to true
+        _navigateNeedsToReset = true;
+
+        if (value.x > threshold)
+            NextPage();
+        else if (value.x < -threshold)
+            PreviousPage();
     }
 
-    protected override void CustomActivate()
+
+    private void OnDestroy()
     {
-        // Register the input
-        InputManager.Instance.Register(this);
+        // Set the instance to null
+        Instance = null;
+    }
+
+    #endregion
+
+    #region Public Methods
+
+    public void CustomActivate()
+    {
+        // // Register the input
+        // InputManager.Instance.Register(this);
 
         // Set the selected game object to the exit button
-        eventSystem.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(null);
 
         // enabled the video
         CoroutineBuilder
@@ -104,19 +154,25 @@ public class TutorialScreen : GameMenu, IUsesInput
             .WaitSecondsRealtime(.125f)
             .Enqueue(() => videoPlayer.enabled = true)
             .Start(this);
+
+        // Activate the menu
+        _isActive = true;
+        
+        // Enable the controls
+        _inputActions.Enable();
     }
 
-    protected override void CustomDeactivate()
+    public void CustomDeactivate()
     {
         // Stop the video
         videoPlayer.Stop();
 
         var routine = CoroutineBuilder
             .Create()
-            .Enqueue(() => videoPlayer.enabled = false)
-            .Enqueue(() => InputManager.Instance.Unregister(this));
+            .Enqueue(() => videoPlayer.enabled = false);
+        // .Enqueue(() => InputManager.Instance.Unregister(this));
 
-        if (IsActive)
+        if (_isActive)
         {
             routine
                 .WaitSecondsRealtime(.125f)
@@ -125,76 +181,56 @@ public class TutorialScreen : GameMenu, IUsesInput
 
         // routine.Start(this);
         routine.Start(Player.Instance);
+
+        // Deactivate the menu
+        _isActive = false;
+        
+        // Disable the controls
+        _inputActions.Disable();
     }
 
-    private IEnumerator ResumeGame(float slowTime)
+    public void NextPage()
     {
-        // Create a new time scale token
-        var timeToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(0, -1, true);
-
-        var startTime = Time.unscaledTime;
-
-        while (slowTime != 0 && Time.unscaledTime - startTime < slowTime)
-        {
-            timeToken.Value = Mathf.Clamp01((Time.unscaledTime - startTime) / slowTime);
-
-            yield return null;
-        }
-
-        // Remove the time token
-        TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(timeToken);
-    }
-
-    protected override void CustomUpdate()
-    {
-        if (CurrentTutorial == null)
+        // If the current tutorial page is the last page, return
+        if (_currentTutorialPage >= _currentTutorial.TutorialPages.Count - 1)
             return;
 
-        // Set the button image to the current tutorial page
-        if (IsActive)
-            SetButtonImage(CurrentTutorial.TutorialPages[_currentTutorialPage].Button);
-
-        // If the exit button is active & the current selected element is null,
-        // set the exit button as the selected game object
-        if (exitButton.gameObject.activeSelf && eventSystem.currentSelectedGameObject != exitButton.gameObject)
-            eventSystem.SetSelectedGameObject(exitButton.gameObject);
+        // Increment the current tutorial page
+        SetTutorialPage(_currentTutorialPage + 1);
     }
 
-    protected override void CustomDestroy()
+    public void PreviousPage()
     {
-        // Set the instance to null
-        Instance = null;
-    }
-
-    public override void OnBackPressed()
-    {
-        // Return if the exit button is not active
-        if (!_hasReachedEnd)
+        // If the current tutorial page is the first page, return
+        if (_currentTutorialPage <= 0)
             return;
 
-        Deactivate();
+        // Decrement the current tutorial page
+        SetTutorialPage(_currentTutorialPage - 1);
     }
 
-    private void ChangeTutorial(Tutorial tutorial)
+    public static void Play(MonoBehaviour script, Tutorial tutorial, bool replay = true)
     {
-        var previousTutorial = _currentTutorial;
-        _currentTutorial = tutorial;
-
-        // If the tutorial is the same as the previous tutorial, return
-        if (_currentTutorial == previousTutorial && IsActive)
-            return;
-
-        // Reset the has reached end flag
-        _hasReachedEnd = false;
-
-        // Reset the current tutorial page
-        SetTutorialPage(0);
+        // Run the coroutine
+        script.StartCoroutine(CreateTutorialSceneAndPlay(tutorial, replay));
     }
+
+    public static void Play(MonoBehaviour script, Tutorial tutorial, float slowTime, bool replay = true)
+    {
+        // Run the coroutine
+        script.StartCoroutine(CreateTutorialSceneAndPlay(tutorial, slowTime, replay));
+    }
+
+    #endregion
+
+    #region Private Methods
+
+    #region UI Methods
 
     private void SetVideoClip(VideoClip videoClip)
     {
         // Return if the video clip is the same as the current video clip
-        if (videoClip == videoPlayer.clip && IsActive)
+        if (videoClip == videoPlayer.clip && _isActive)
             return;
 
         // Set the video clip to the video player
@@ -305,6 +341,52 @@ public class TutorialScreen : GameMenu, IUsesInput
         }
     }
 
+    private void UpdateExitButton()
+    {
+        if (!_hasReachedEnd)
+            exitButton.gameObject.SetActive(false);
+
+        // If the current tutorial page is not the last page, return
+        if (_currentTutorialPage < _currentTutorial.TutorialPages.Count - 1)
+            return;
+
+        // If the flag is already set, return
+        if (_hasReachedEnd)
+            return;
+
+        // Set the flag to true
+        _hasReachedEnd = true;
+
+        // Set the exit button to active
+        exitButton.gameObject.SetActive(true);
+
+        // Select the exit button
+        EventSystem.current.SetSelectedGameObject(exitButton.gameObject);
+    }
+
+    #endregion
+
+    private void PlayTutorial(Tutorial tutorial, bool replay = true)
+    {
+        PlayTutorial(tutorial, slowDownTime, replay);
+    }
+
+    private void PlayTutorial(Tutorial tutorial, float slowTime, bool replay = true)
+    {
+        // Return if the tutorial is null
+        if (tutorial == null)
+            return;
+
+        var isTutorialCompleted = completedTutorials.value.Contains(tutorial);
+
+        // Return if the tutorial has already been completed and we are not replaying it
+        if (isTutorialCompleted && !replay)
+            return;
+
+        // Start the coroutine
+        StartCoroutine(TutorialCoroutine(tutorial, replay, isTutorialCompleted, slowTime));
+    }
+
     private void SetTutorialPage(int index)
     {
         _currentTutorialPage = index;
@@ -331,54 +413,20 @@ public class TutorialScreen : GameMenu, IUsesInput
         UpdateExitButton();
     }
 
-    public void NextPage()
+    private void ChangeTutorial(Tutorial tutorial)
     {
-        // If the current tutorial page is the last page, return
-        if (_currentTutorialPage >= _currentTutorial.TutorialPages.Count - 1)
+        var previousTutorial = _currentTutorial;
+        _currentTutorial = tutorial;
+
+        // If the tutorial is the same as the previous tutorial, return
+        if (_currentTutorial == previousTutorial && _isActive)
             return;
 
-        // Increment the current tutorial page
-        SetTutorialPage(_currentTutorialPage + 1);
-    }
+        // Reset the has reached end flag
+        _hasReachedEnd = false;
 
-    public void PreviousPage()
-    {
-        // If the current tutorial page is the first page, return
-        if (_currentTutorialPage <= 0)
-            return;
-
-        // Decrement the current tutorial page
-        SetTutorialPage(_currentTutorialPage - 1);
-    }
-
-    private void PlayTutorial(Tutorial tutorial, bool replay = true)
-    {
-        PlayTutorial(tutorial, slowDownTime, replay);
-    }
-
-    private void PlayTutorial(Tutorial tutorial, float slowTime, bool replay = true)
-    {
-        // Return if the tutorial is null
-        if (tutorial == null)
-            return;
-
-        var isTutorialCompleted = completedTutorials.value.Contains(tutorial);
-
-        // Return if the tutorial has already been completed and we are not replaying it
-        if (isTutorialCompleted && !replay)
-            return;
-
-        // Start the coroutine
-        StartCoroutine(TutorialCoroutine(tutorial, replay, isTutorialCompleted, slowTime));
-    }
-
-    private IEnumerator SetVideoPlayerEnabled(bool isEnabled)
-    {
-        // Set the video player to enabled
-        videoPlayer.enabled = isEnabled;
-
-        // Wait a frame
-        yield return null;
+        // Reset the current tutorial page
+        SetTutorialPage(0);
     }
 
     private IEnumerator TutorialCoroutine(Tutorial tutorial, bool replay, bool isTutorialCompleted, float slowTime)
@@ -405,7 +453,7 @@ public class TutorialScreen : GameMenu, IUsesInput
         TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(timeToken);
 
         ChangeTutorial(tutorial);
-        Activate();
+        gameMenu.Activate();
 
         // Hacky solution to force the exit button to pop up if the tutorial has already been completed
         if (replay && isTutorialCompleted)
@@ -426,22 +474,22 @@ public class TutorialScreen : GameMenu, IUsesInput
         yield return null;
     }
 
-    public static void Play(MonoBehaviour script, Tutorial tutorial, bool replay = true)
+    private IEnumerator ResumeGame(float slowTime)
     {
-        NewTutorialMenu.Play(script, tutorial, replay);
-        return;
+        // Create a new time scale token
+        var timeToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(0, -1, true);
 
-        // Run the coroutine
-        script.StartCoroutine(CreateTutorialSceneAndPlay(tutorial, replay));
-    }
+        var startTime = Time.unscaledTime;
 
-    public static void Play(MonoBehaviour script, Tutorial tutorial, float slowTime, bool replay = true)
-    {
-        NewTutorialMenu.Play(script, tutorial, slowTime, replay);
-        return;
+        while (slowTime != 0 && Time.unscaledTime - startTime < slowTime)
+        {
+            timeToken.Value = Mathf.Clamp01((Time.unscaledTime - startTime) / slowTime);
 
-        // Run the coroutine
-        script.StartCoroutine(CreateTutorialSceneAndPlay(tutorial, slowTime, replay));
+            yield return null;
+        }
+
+        // Remove the time token
+        TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(timeToken);
     }
 
     private static IEnumerator CreateTutorialSceneAndPlay(Tutorial tutorial, float slowTime, bool replay = true)
@@ -462,11 +510,11 @@ public class TutorialScreen : GameMenu, IUsesInput
         var tutorialScene = SceneManager.GetSceneByName(TUTORIAL_SCENE_NAME);
 
         // Get the tutorial screen instance
-        var tutorialScreen = FindObjectsOfType<TutorialScreen>()
+        var tutorialMenu = FindObjectsOfType<NewTutorialMenu>()
             .FirstOrDefault(n => n.gameObject.scene == tutorialScene);
 
         // Play the tutorial
-        tutorialScreen?.PlayTutorial(tutorial, replay);
+        tutorialMenu?.PlayTutorial(tutorial, replay);
     }
 
     private static IEnumerator CreateTutorialSceneAndPlay(Tutorial tutorial, bool replay = true)
@@ -487,86 +535,11 @@ public class TutorialScreen : GameMenu, IUsesInput
         var tutorialScene = SceneManager.GetSceneByName(TUTORIAL_SCENE_NAME);
 
         // Get the tutorial screen instance
-        var tutorialScreen = FindObjectsOfType<TutorialScreen>()
+        var tutorialMenu = FindObjectsOfType<NewTutorialMenu>()
             .FirstOrDefault(n => n.gameObject.scene == tutorialScene);
 
         // Play the tutorial
-        tutorialScreen?.PlayTutorial(tutorial, replay);
-    }
-
-    private void UpdateExitButton()
-    {
-        if (!_hasReachedEnd)
-            exitButton.gameObject.SetActive(false);
-
-        // If the current tutorial page is not the last page, return
-        if (_currentTutorialPage < _currentTutorial.TutorialPages.Count - 1)
-            return;
-
-        // If the flag is already set, return
-        if (_hasReachedEnd)
-            return;
-
-        // Set the flag to true
-        _hasReachedEnd = true;
-
-        // Set the exit button to active
-        exitButton.gameObject.SetActive(true);
-
-        // Select the exit button
-        eventSystem.SetSelectedGameObject(exitButton.gameObject);
-    }
-
-    #region IUsesInput
-
-    public HashSet<InputData> InputActions { get; } = new();
-
-    public void InitializeInput()
-    {
-        InputActions.Add(
-            new InputData(InputManager.Instance.DefaultInputActions.UI.Navigate, InputType.Performed,
-                OnNavigatePerformed)
-        );
-
-        InputActions.Add(
-            new InputData(InputManager.Instance.DefaultInputActions.UI.Navigate, InputType.Canceled,
-                OnNavigateCanceled)
-        );
-    }
-
-    private void OnNavigatePerformed(InputAction.CallbackContext obj)
-    {
-        var value = obj.ReadValue<Vector2>();
-
-        const float threshold = 0.5f;
-
-        if (Mathf.Abs(value.x) < threshold)
-        {
-            _navigateNeedsToReset = false;
-            return;
-        }
-
-        // Return if not active
-        if (!IsActive)
-            return;
-
-        // Return if the navigate needs to reset
-        if (_navigateNeedsToReset)
-            return;
-
-        // Set the navigate needs to reset flag to true
-        _navigateNeedsToReset = true;
-
-        if (value.x > threshold)
-            NextPage();
-        else if (value.x < -threshold)
-            PreviousPage();
-    }
-
-    private void OnNavigateCanceled(InputAction.CallbackContext obj)
-    {
-        // Set the navigate needs to reset flag to false
-        _navigateNeedsToReset = false;
+        tutorialMenu?.PlayTutorial(tutorial, replay);
     }
 
     #endregion
