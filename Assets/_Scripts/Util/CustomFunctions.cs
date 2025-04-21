@@ -255,5 +255,36 @@ public static class CustomFunctions
             Debug.Log($"Trigger: {trigger.name} - Layer: {LayerMask.LayerToName(trigger.gameObject.layer)}", trigger);
     }
 
+    [MenuItem("Custom Tools/Audio/Find All Audio Sources")]
+    private static void LogAllAudioSources()
+    {
+        // Get all the audio sources in the scene
+        var audioSources = Object
+            .FindObjectsOfType<AudioSource>(true)
+            // Skip objects that are in any of the ignore layers
+            .ToArray();
+
+        Debug.Log($"Found {audioSources.Length} Audio Sources in the scene");
+
+        // Log all the audio sources
+        foreach (var audioSource in audioSources)
+            Debug.Log($"Audio Source: {audioSource.name} - Mixer: {audioSource.outputAudioMixerGroup?.name ?? "No Mixer"}", audioSource);
+    }
+    
+    [MenuItem("Custom Tools/Audio/Find All Audio Sources No Mixer")]
+    private static void FindAllAudioSourcesNoMixer()
+    {
+        // Get all the audio sources in the scene
+        var audioSources = Object
+            .FindObjectsOfType<AudioSource>(true)
+            // Skip objects that are in any of the ignore layers
+            .Where(n => n.outputAudioMixerGroup == null)
+            .ToArray();
+        
+        // Log all the audio sources
+        foreach (var audioSource in audioSources)
+            Debug.Log($"Audio Source: {audioSource.name} - No Mixer", audioSource);
+    }
+
 #endif
 }
