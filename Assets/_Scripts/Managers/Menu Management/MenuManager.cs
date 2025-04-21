@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.InputSystem;
 
@@ -44,6 +45,8 @@ public class MenuManager : IUsesInput
     public IGameMenu ActiveMenu => _activeMenus.Peek();
 
     #endregion
+    
+    public event Action OnActiveMenuChanged; 
 
     private MenuManager()
     {
@@ -79,10 +82,16 @@ public class MenuManager : IUsesInput
             return;
 
         _activeMenus.Push(menu);
+        
+        // Invoke the OnActiveMenuChanged event
+        OnActiveMenuChanged?.Invoke();
     }
 
     public void RemoveActiveMenu(IGameMenu menu)
     {
         _activeMenus.Remove(menu);
+        
+        // Invoke the OnActiveMenuChanged event
+        OnActiveMenuChanged?.Invoke();
     }
 }

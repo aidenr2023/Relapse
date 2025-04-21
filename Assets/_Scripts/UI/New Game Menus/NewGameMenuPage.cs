@@ -38,6 +38,9 @@ public class NewGameMenuPage : MonoBehaviour
         // Update the isActive state
         IsActive = false;
         gameObject.SetActive(false);
+
+        // Ensure the selected element is set on activation
+        OnActivate.AddListener(_ => EnsureSelectedElement());
     }
 
     #region Public Functions
@@ -110,5 +113,15 @@ public class NewGameMenuPage : MonoBehaviour
 
         // Enable / disable this game object
         gameObject.SetActive(isActive);
+    }
+
+    private void EnsureSelectedElement()
+    {
+        // Return if the selected element is already set
+        if (parentMenu.EventSystem.currentSelectedGameObject != null)
+            return;
+
+        // Set the selected game object to the first selected element
+        parentMenu.EventSystem.SetSelectedGameObject(firstSelectedElement);
     }
 }

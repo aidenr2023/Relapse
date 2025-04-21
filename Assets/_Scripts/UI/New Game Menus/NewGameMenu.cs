@@ -39,10 +39,12 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
     private readonly Stack<NewGameMenuPage> _pageStack = new();
     private Coroutine _fadeCoroutine;
 
+    private bool _activatedThisFrame;
+
     public bool IsActive { get; private set; }
 
     public bool IsCursorRequired => true;
-        
+
     #endregion
 
     #region Unity Methods
@@ -51,9 +53,9 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
     {
         // Forcibly set the menu to be deactivated
         ForceDeactivate();
-        
+
         Debug.Assert(initialPage != null, this);
-        
+
         // Activate the initial page
         PushMenuPage(initialPage);
     }
@@ -63,6 +65,27 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
         // If the menu is active on start, activate it
         if (isActiveOnStart)
             Activate();
+    }
+
+    private void OnEnable()
+    {
+        // Connect to the onActiveMenuChanged event
+        MenuManager.Instance.OnActiveMenuChanged += OnActiveMenuChanged;
+    }
+
+    private void OnDisable()
+    {
+        // Connect to the onActiveMenuChanged event
+        MenuManager.Instance.OnActiveMenuChanged += OnActiveMenuChanged;
+
+        // Deactivate
+        Deactivate();
+    }
+
+    private void OnActiveMenuChanged()
+    {
+        // If the active menu is not this, deactivate the event system
+        SetEventSystemActive(ReferenceEquals(MenuManager.Instance.ActiveMenu, this));
     }
 
     #endregion
@@ -75,12 +98,18 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
         // Return if the menu is already active
         if (IsActive)
             return;
-        
+
         // Add this menu to the active menus of the menu manager
         MenuManager.Instance.AddActiveMenu(this);
 
         // Update the isActive state
         ChangeActivationState(true);
+
+        // Set the activate this frame flag
+        _activatedThisFrame = true;
+
+        // Start the coroutine to reset the activated this frame flag
+        StartCoroutine(ResetActivatedThisFrame());
 
         // Start the fade in coroutine
         StartFadeCoroutine(true);
@@ -95,12 +124,8 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
         // Return if the menu is already inactive
         if (!IsActive)
             return;
-        
-        // Remove this menu from the active menus of the menu manager
-        MenuManager.Instance.RemoveActiveMenu(this);
 
-        // Update the isActive state
-        ChangeActivationState(false);
+        Debug.Log($"Deactivating {name}", this);
 
         // Start the fade out coroutine
         StartFadeCoroutine(false);
@@ -111,6 +136,12 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
 
     private void DeactivateLogic()
     {
+        // Remove this menu from the active menus of the menu manager
+        MenuManager.Instance.RemoveActiveMenu(this);
+
+        // Update the isActive state
+        ChangeActivationState(false);
+
         // Invoke the OnDeactivate event
         OnDeactivate?.Invoke(this);
     }
@@ -125,10 +156,6 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
 
     private void ChangeActivationState(bool isActive)
     {
-        // Return if isActive is the same as the current state
-        if (isActive == IsActive)
-            return;
-
         // Update the isActive state
         IsActive = isActive;
 
@@ -137,11 +164,28 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
         canvasGroup.blocksRaycasts = isActive;
 
         // Set the event system's active state
+        SetEventSystemActive(isActive);
+    }
+
+    private void SetEventSystemActive(bool isActive)
+    {
+        // Return if the event system is null
+        if (EventSystem == null)
+            return;
+        
+        // Set the event system's active state
         EventSystem.gameObject.SetActive(isActive);
     }
 
-    public void OnBackPressed() => PreviousPage();
-    
+    public void OnBackPressed()
+    {
+        // If this menu activated this frame, return
+        if (_activatedThisFrame)
+            return;
+
+        PreviousPage();
+    }
+
     #endregion
 
     #region Menu Stack
@@ -172,13 +216,13 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
         // If the stack is currently has 1 or fewer pages, return
         if (_pageStack.Count <= 1)
             return;
-        
+
         // Pop menu at the top of the stack
         var prevMenu = _pageStack.Pop();
-        
+
         // Deactivate the previous menu
         prevMenu.Deactivate();
-        
+
         // If there is a new menu at the top of the stack, activate it
         _pageStack.Peek()?.Activate(reinitializeSelectedElement);
     }
@@ -187,7 +231,7 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
     {
         // Pop
         PopMenuPage(true);
-        
+
         // Push
         PushMenuPage(menuPage);
     }
@@ -200,11 +244,11 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
             PopMenuPage(false);
             return;
         }
-        
+
         // Deactivate this menu
         Deactivate();
     }
-    
+
     #endregion
 
     private void StartFadeCoroutine(bool inOut)
@@ -259,5 +303,14 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
             canvasGroup.alpha = OpacityCurve.Evaluate(finalKey.time);
         else
             canvasGroup.alpha = OpacityCurve.Evaluate(0);
+    }
+
+    private IEnumerator ResetActivatedThisFrame()
+    {
+        // Wait for the next frame
+        yield return null;
+
+        // Reset the activated this frame flag
+        _activatedThisFrame = false;
     }
 }

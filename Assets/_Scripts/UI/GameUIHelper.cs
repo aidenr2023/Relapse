@@ -14,6 +14,9 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
     #region Serialized Fields
 
     [SerializeField] private bool showUI = true;
+
+    [SerializeField] private EventVariable pauseEvent;
+    
     [SerializeField] private FloatReference uiOpacity;
     [SerializeField] private CanvasGroupListVariable uiElements;
 
@@ -95,10 +98,10 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
             new InputData(InputManager.Instance.PControls.Player.Pause, InputType.Performed, OnPausePerformed)
         );
 
-        // Journal input actions
-        InputActions.Add(
-            new InputData(InputManager.Instance.PControls.Player.Journal, InputType.Performed, OnJournalPerformed)
-        );
+        // // Journal input actions
+        // InputActions.Add(
+        //     new InputData(InputManager.Instance.PControls.Player.Journal, InputType.Performed, OnJournalPerformed)
+        // );
     }
 
     private void OnJournalPerformed(InputAction.CallbackContext obj)
@@ -110,9 +113,13 @@ public class GameUIHelper : MonoBehaviour, IUsesInput
 
     private void OnPausePerformed(InputAction.CallbackContext obj)
     {
-        // If the pause menu's instance is NOT null, pause the game
-        if (PauseMenuManager.Instance != null)
-            PauseMenuManager.Instance.OnPausePerformed(obj);
+        // // If the pause menu's instance is NOT null, pause the game
+        // if (PauseMenuManager.Instance != null)
+        //     PauseMenuManager.Instance.OnPausePerformed(obj);
+        
+        // If the pause event is not null, invoke it
+        if (pauseEvent != null)
+            pauseEvent.Invoke();
     }
 
     private void OnEnable()
