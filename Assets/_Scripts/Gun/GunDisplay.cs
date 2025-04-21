@@ -28,6 +28,8 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
 
     private bool _hasOriginalGun = true;
 
+    private Vector3 _currentOffset;
+
     #endregion
 
     #region Getters
@@ -64,7 +66,7 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
         // Return if the gun is not a shotgun
         if (gun is not Shotgun shotgun)
             return;
-        
+
         shotgun.SetDisplayModelObject(true);
     }
 
@@ -73,7 +75,7 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
         // Return if the gun is not a shotgun
         if (gun is not Shotgun shotgun)
             return;
-        
+
         shotgun.SetDisplayModelObject(false);
     }
 
@@ -123,12 +125,15 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
                       (gunHolderTransform.right * popOutAmount.x);
         }
 
+        _currentOffset = Vector3.Lerp(_currentOffset, cOffset, CustomFunctions.FrameAmount(positionLerpAmount, true));
+
         // Calculate the new position and rotation
-        var newPosition = gunHolderTransform.position + cOffset;
+        var newPosition = gunHolderTransform.position + _currentOffset;
         var newRotation = gunHolderTransform.rotation;
 
         // Lerp the position and rotation
-        rb.MovePosition(Vector3.Lerp(rb.position, newPosition, CustomFunctions.FrameAmount(positionLerpAmount, true)));
+        // rb.MovePosition(Vector3.Lerp(rb.position, newPosition, CustomFunctions.FrameAmount(positionLerpAmount, true)));
+        rb.MovePosition(newPosition);
         rb.MoveRotation(
             Quaternion.Lerp(rb.rotation, newRotation, CustomFunctions.FrameAmount(positionLerpAmount, true)));
 
@@ -224,7 +229,7 @@ public class GunDisplay : MonoBehaviour, IGunHolder, IInteractable, ILevelLoader
         // If there is no gun equipped, return
         if (EquippedGun == null)
             return;
-        
+
         // If the player is currently reloading their gun, return
         if (playerInteraction.Player.WeaponManager.EquippedGun is { IsReloading: true })
             return;
