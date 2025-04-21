@@ -157,6 +157,9 @@ public class PlayerEnemySelectUI : MonoBehaviour
         if (!hasEnemy)
             return;
 
+        if (Player.Instance == null)
+            return;
+        
         // Get the distance between the enemy and the player
         var distance = Vector3.Distance(
             Player.Instance.transform.position,

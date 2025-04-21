@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
-public abstract class GameMenu : MonoBehaviour
+public abstract class GameMenu : MonoBehaviour, IGameMenu
 {
     private const float OPACITY_THRESHOLD = 0.001f;
 
@@ -43,20 +43,17 @@ public abstract class GameMenu : MonoBehaviour
     public bool PausesGame => pausesGame;
 
     public bool IsActive => _isActive;
-    
+
     public EventSystem EventSystem => eventSystem;
-    
+
     public bool PausesGameMusic => pausesGameMusic;
-    
+
     public bool MufflesMusic => mufflesMusic;
 
     #endregion
 
     protected void Awake()
     {
-        // Manage this menu
-        MenuManager.Instance.ManageMenu(this);
-
         // Set the desired opacity to the canvas group's alpha
         _desiredOpacity = canvasGroup.alpha;
 
@@ -106,7 +103,12 @@ public abstract class GameMenu : MonoBehaviour
         // UpdateEventSystem();
 
         foreach (var menu in MenuManager.Instance.ActiveMenus)
-            menu.UpdateEventSystem();
+        {
+            if (menu is not GameMenu gameMenu)
+                continue;
+            
+            gameMenu.UpdateEventSystem();
+        }
 
         // Custom Activate
         CustomActivate();
@@ -119,16 +121,21 @@ public abstract class GameMenu : MonoBehaviour
 
         // Set the desired opacity to 0
         _desiredOpacity = 0;
-        
+
         // // Update the event system
         // UpdateEventSystem();
-        
+
         foreach (var menu in MenuManager.Instance.ActiveMenus)
-            menu.UpdateEventSystem();
+        {
+            if (menu is not GameMenu gameMenu)
+                continue;
+            
+            gameMenu.UpdateEventSystem();
+        }
 
         // Custom Deactivate
         CustomDeactivate();
-        
+
         // Set the activate flag to false
         _isActive = false;
     }
@@ -137,9 +144,6 @@ public abstract class GameMenu : MonoBehaviour
     {
         // Deactivate the menu
         Deactivate();
-
-        // Un manage this menu
-        MenuManager.Instance.UnManageMenu(this);
 
         // Custom Destroy
         CustomDestroy();
@@ -182,12 +186,12 @@ public abstract class GameMenu : MonoBehaviour
         // Return if the event system is null
         if (eventSystem == null)
             return;
-        
+
         var active = _isActive && MenuManager.Instance.ActiveMenu == this;
-        
+
         // The event system is enabled if the menu is active
         eventSystem.enabled = active;
-        
+
         // TODO: remove?
         canvasGroup.interactable = active;
     }

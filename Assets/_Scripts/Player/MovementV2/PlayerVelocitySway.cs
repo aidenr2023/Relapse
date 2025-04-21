@@ -38,6 +38,10 @@ public class PlayerVelocitySway : MonoBehaviour
 
     private void Update()
     {
+        // If the player orientation is null, return
+        if (playerOrientation.Value == null)
+            return;
+        
         // Get the normalized right vector of the orientation
         var right = playerOrientation.Value.right.normalized;
 
