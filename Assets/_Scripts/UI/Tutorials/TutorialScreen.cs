@@ -133,7 +133,8 @@ public class TutorialScreen : GameMenu, IUsesInput
                 .Enqueue(ResumeGame(_currentSlowTime));
         }
 
-        routine.Start(this);
+        // routine.Start(this);
+        routine.Start(Player.Instance);
     }
 
     private IEnumerator ResumeGame(float slowTime)

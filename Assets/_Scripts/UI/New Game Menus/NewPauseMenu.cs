@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(NewGameMenu))]
 public class NewPauseMenu : MonoBehaviour
 {
     #region Serialized Fields
@@ -27,9 +28,17 @@ public class NewPauseMenu : MonoBehaviour
 
     #region Private Fields
 
+    private NewGameMenu _menu;
+    
     private PauseMenuManager.TutorialMenuType _tutorialMenuType = PauseMenuManager.TutorialMenuType.General;
 
     #endregion
+
+    private void Awake()
+    {
+        //Get the NewGameMenu component
+        _menu = GetComponent<NewGameMenu>();
+    }
 
     // Load the main menu scene
     public void LoadMainMenu()
@@ -49,6 +58,16 @@ public class NewPauseMenu : MonoBehaviour
             SettingsMenu.Instance.Activate();
     }
 
+    public void PauseButtonPressed()
+    {
+        // If the new game menu is active, deactivate it
+        if (_menu.IsActive && ReferenceEquals(MenuManager.Instance.ActiveMenu, _menu))
+            _menu.Deactivate();
+        
+        else if (MenuManager.Instance.ActiveMenu == null)
+            _menu.Activate();
+    }
+    
     #region Tutorials Screen
 
     private GameObject PopulateTutorialsPanel()
