@@ -172,7 +172,7 @@ public class NewDeathMenu : MonoBehaviour
     private void RespawnOnCompletion()
     {
         // Respawn at the latest checkpoint
-        Player.Instance.PlayerDeathController.Respawn(_currentCheckpoint.position);
+        Player.Instance.PlayerDeathController.Respawn(_currentCheckpoint.position, _currentCheckpoint.rotation);
 
         // Also, if there is a Player Loader Instance, load the data from disk
         if (PlayerLoader.Instance != null)

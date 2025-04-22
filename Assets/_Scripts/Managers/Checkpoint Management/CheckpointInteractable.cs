@@ -142,14 +142,17 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
         // Set the has been collected flag to true
         HasBeenCollected = true;
 
+        // Get the current checkpoint information from the checkpoint manager
+        var currentCheckpointInfo = CheckpointManager.Instance.CurrentCheckpointInfo;
+        
         // Save the information
-        SaveInformation();
+        SaveInformation(currentCheckpointInfo.position, currentCheckpointInfo.rotation);
 
         // Invoke the event
         onInteraction.Invoke();
     }
 
-    public static void SaveInformation()
+    public static void SaveInformation(Vector3 position, Quaternion rotation)
     {
         // Check if there is an instance of the level loader
         if (LevelLoader.Instance != null)
@@ -172,6 +175,14 @@ public class CheckpointInteractable : MonoBehaviour, IInteractable
             PlayerLoader.Instance.SaveDataMemoryToDisk();
 
             Debug.Log("Checkpoint saved the player data to memory and disk.");
+        }
+
+        // Save the scene data to memory
+        if (SceneSaveLoader.Instance != null)
+        {
+            SceneSaveLoader.Instance.SaveSettingsToDisk(position, rotation);
+
+            Debug.Log("Checkpoint saved the scene data to memory and disk.");
         }
     }
 

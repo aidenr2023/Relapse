@@ -11,17 +11,19 @@ public class MainMenu : GameMenu
     #region Serialized Fields
 
     [SerializeField] private EventVariable gameOnStart;
-    
+
     [SerializeField] private ResetableSOArrayVariable variablesToReset;
-    
+
     [SerializeField] private Slider loadingBar;
 
     [SerializeField] private LevelStartupSceneInfo levelStartupSceneInfo;
 
     [SerializeField] private CanvasGroup blackOverlayGroup;
     [SerializeField, Min(0)] private float blackOverlayTransitionTime = .5f;
-    
+
     [SerializeField] private Volume mainMenuVolume;
+
+    [SerializeField] private Button resumeButton;
 
     #endregion
 
@@ -32,7 +34,7 @@ public class MainMenu : GameMenu
     private bool _startedLoading;
 
     private bool _clickedButton;
-    
+
     private bool _showLoadingBar;
 
     #endregion
@@ -41,6 +43,11 @@ public class MainMenu : GameMenu
     {
         // Reset the variables
         variablesToReset.Reset();
+
+        // Check if there are any save files present
+        // If there are no save files, disable the resume button
+        // If there are save files, enable the resume button
+        resumeButton.gameObject.SetActive(SaveFile.GetMostRecentSaveFile() != null);
     }
 
     protected override void CustomStart()
@@ -94,16 +101,84 @@ public class MainMenu : GameMenu
     {
         // Reset the variables
         variablesToReset.Reset();
-        
+
         // Load the scene asynchronously
+        // Start the start game coroutine
         if (!_startedLoading)
-        {
-            // Start the start game coroutine
             StartCoroutine(StartGameCoroutine());
-        }
 
         // Set the flag to true
         _clickedButton = true;
+    }
+
+    public void ResumeButton()
+    {
+        // Reset the variables
+        variablesToReset.Reset();
+
+        // Load the scene asynchronously
+        // Start the start game coroutine
+        if (!_startedLoading)
+            StartCoroutine(ResumeGameCoroutine());
+
+        // Set the flag to true
+        _clickedButton = true;
+    }
+
+    private IEnumerator ResumeGameCoroutine()
+    {
+        // Set the flag to true
+        _startedLoading = true;
+
+        // Fade into the black overlay
+        var startTime = Time.unscaledTime;
+
+        while (Time.unscaledTime - startTime < blackOverlayTransitionTime)
+        {
+            var time = (Time.unscaledTime - startTime) / blackOverlayTransitionTime;
+            blackOverlayGroup.alpha = time;
+
+            yield return null;
+        }
+
+        blackOverlayGroup.alpha = 1;
+
+        // Turn off the post processing volume
+        if (mainMenuVolume != null)
+            mainMenuVolume.weight = 0;
+
+        // Set the show loading bar flag to true
+        _showLoadingBar = true;
+
+        // Create a new action to be called when the scene is loaded
+        var onCompletion = new Action(() =>
+        {
+            // Deactivate the main menu
+            Deactivate();
+
+            var resumeData = SceneSaveLoader.Instance.SceneResumeData;
+
+            // Move the player to the last checkpoint
+            CheckpointManager.Instance.RespawnAt(Player.Instance, resumeData.PlayerPosition, resumeData.PlayerRotation);
+
+            // Also, if there is a Player Loader Instance, load the data from disk
+            if (PlayerLoader.Instance != null)
+            {
+                PlayerLoader.Instance.LoadDataDiskToMemory();
+                PlayerLoader.Instance.LoadDataMemoryToScene(true);
+            }
+        });
+
+        // StartCoroutine(LoadSceneAsync());
+        AsyncSceneManager.Instance.LoadResumeScene(
+            levelStartupSceneInfo, this, UpdateProgressBarPercent,
+            onCompletion
+        );
+
+        yield return null;
+
+        // Invoke the game on start event
+        gameOnStart.Invoke();
     }
 
     private IEnumerator StartGameCoroutine()
@@ -123,11 +198,11 @@ public class MainMenu : GameMenu
         }
 
         blackOverlayGroup.alpha = 1;
-        
+
         // Turn off the post processing volume
         if (mainMenuVolume != null)
             mainMenuVolume.weight = 0;
-        
+
         // Set the show loading bar flag to true
         _showLoadingBar = true;
 
@@ -138,7 +213,7 @@ public class MainMenu : GameMenu
         );
 
         yield return null;
-        
+
         // Invoke the game on start event
         gameOnStart.Invoke();
     }
@@ -209,10 +284,10 @@ public class MainMenu : GameMenu
         // pauseMenuManager.EventSystem.SetSelectedGameObject(pauseMenuManager.SettingsFirstSelected);
 
         var settingsMenu = NewSettingsMenu.Instance;
-        
+
         if (settingsMenu == null)
             return;
-        
+
         // Activate the settings menu
         settingsMenu.Activate();
     }

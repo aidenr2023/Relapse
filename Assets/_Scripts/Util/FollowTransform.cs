@@ -7,8 +7,7 @@ public class FollowTransform : MonoBehaviour
     [SerializeField] private Vector3Reference followOffset;
     [SerializeField] private bool useFixedUpdate = false;
 
-    
-    
+
     private void Update()
     {
         if (!useFixedUpdate)
@@ -26,9 +25,12 @@ public class FollowTransform : MonoBehaviour
         // If the target transform is null, return
         if (targetTransform == null)
             return;
-        
+
         if (followOffset == null)
             followOffset = new Vector3Reference();
+
+        if (targetTransform.Value == null)
+            return;
 
         var targetPosition = targetTransform.Value.position;
 
@@ -41,19 +43,19 @@ public class FollowTransform : MonoBehaviour
     {
         if (targetTransform == null)
             targetTransform = new TransformReference();
-        
+
         // Force the reference to use the constant value
         targetTransform.ForceUseConstant();
 
         // Set the constant value to the new target transform
         targetTransform.Value = newTargetTransform;
     }
-    
+
     public void SetFollowOffset(Vector3 newFollowOffset)
     {
         if (followOffset == null)
             followOffset = new Vector3Reference();
-        
+
         // Force the reference to use the constant value
         followOffset.ForceUseConstant();
 

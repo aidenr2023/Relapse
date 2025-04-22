@@ -9,5 +9,19 @@ public class DataSerializationHelper : MonoBehaviour
         
         // Clear the data from the player
         PlayerLoader.Instance?.ClearData();
+        
+        // Clear the data from the scene save loader
+        SceneSaveLoader.Instance?.ClearData();
+
+        SaveFile.CurrentSaveFile.ClearSaveFile();
+    }
+
+    public void LoadSaveDataFromDisk()
+    {
+        // Load the data from the level loader
+        LevelLoader.Instance?.LoadDataDiskToMemory();
+        
+        // Load the data from the player
+        PlayerLoader.Instance?.LoadDataDiskToMemory();
     }
 }

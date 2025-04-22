@@ -10,4 +10,15 @@ public class LevelStartupSceneInfo : ScriptableObject
     public SceneField PlayerDataScene => playerDataScene;
     public SceneField ActiveScene => activeScene;
     public LevelSectionSceneInfo[] StartupSections => startupSections;
+    
+    public static LevelStartupSceneInfo Create(SceneField playerDataScene, SceneField activeScene, params LevelSectionSceneInfo[] startupSections)
+    {
+        var info = CreateInstance<LevelStartupSceneInfo>();
+
+        info.playerDataScene = playerDataScene;
+        info.activeScene = activeScene;
+        info.startupSections = startupSections;
+
+        return info;
+    }
 }

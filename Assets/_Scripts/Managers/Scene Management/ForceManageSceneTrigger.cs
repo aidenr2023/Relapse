@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ForceManageSceneTrigger : MonoBehaviour
 {
@@ -42,6 +43,14 @@ public class ForceManageSceneTrigger : MonoBehaviour
 
         // Return if the immediate load scenes have already been loaded
         if (_hasLoadedScenes)
+            return;
+
+        // Return if not in-editor
+        if (!Application.isEditor)
+            return;
+
+        // Return if this game object's scene is not the active scene
+        if (SceneManager.GetActiveScene() != gameObject.scene)
             return;
 
         // Load the scenes via the scene manager

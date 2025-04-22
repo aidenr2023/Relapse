@@ -26,10 +26,18 @@ public class CheckpointManager : MonoBehaviour
         Instance = this;
     }
 
-    public void RespawnAt(Rigidbody rb, Vector3 position)
+    public void RespawnAt(Player player, Vector3 position)
     {
         // Set the position of the player to the position of the checkpoint
-        rb.position = position;
+        player.Rigidbody.position = position;
+    }
+    
+    public void RespawnAt(Player player, Vector3 position, Quaternion rotation)
+    {
+        RespawnAt(player, position);
+        
+        // Set the rotation of the player to the rotation of the checkpoint
+        player.PlayerLook.ApplyRotation(rotation);
     }
 
     // When player interacts with a burner phone, save the current checkpoint as the transform of the burner phone
@@ -53,7 +61,7 @@ public class CheckpointManager : MonoBehaviour
             .Map(n => n.RespawnPosition)
             .Check(CustomFunctions.IsNotNull, "interactedObject.RespawnPosition is null!")
             .Map(n => n.position)
-            .Chain(SaveCheckpoint);
+            .Chain(n => SaveCheckpoint(n, Player.Instance.PlayerController.CameraPivot.transform.rotation));
 
         if (result.IsFailure)
             Debug.LogError($"Could not save checkpoint!: {result.ErrorMessage}");
@@ -69,7 +77,21 @@ public class CheckpointManager : MonoBehaviour
         {
             // Get the current level section
             levelSectionSceneInfo = currentSceneInfo,
-            position = position
+            position = position,
+            rotation = Quaternion.identity
+        };
+    }
+
+    public void SaveCheckpoint(Vector3 position, Quaternion rotation)
+    {
+        var currentSceneInfo = AsyncSceneManager.Instance.CurrentSceneInfo;
+
+        CurrentCheckpointInfo = new CheckpointInformation
+        {
+            // Get the current level section
+            levelSectionSceneInfo = currentSceneInfo,
+            position = position,
+            rotation = rotation
         };
     }
 
@@ -85,5 +107,6 @@ public class CheckpointManager : MonoBehaviour
     {
         public LevelSectionSceneInfo levelSectionSceneInfo;
         public Vector3 position;
+        public Quaternion rotation;
     }
 }

@@ -102,8 +102,11 @@ public class LevelInformation : MonoBehaviour
         // Save the starting checkpoint (if necessary)
         checkpointManager.SaveCheckpoint(obj.StartingPosition);
 
-        // Save the checkpoint information
-        CheckpointInteractable.SaveInformation();
+        // // Save the checkpoint information
+        // CheckpointInteractable.SaveInformation();
+
+        // // Save the scene information
+        // SceneSaveLoader.Instance.SaveSettingsToDisk();
     }
 
     private void Awake()

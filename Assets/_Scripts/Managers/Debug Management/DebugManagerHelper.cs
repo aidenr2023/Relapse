@@ -147,7 +147,7 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
         // Only do this if in debug mode
         if (!DebugManager.Instance.IsDebugMode)
             return;
-        
+
         _healthChange = context.ReadValue<float>();
     }
 
@@ -509,8 +509,6 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     public string GetDebugText()
     {
         var sb = new StringBuilder();
-
-        sb.Append($"Current Movement Type: {AsyncSceneManager.Instance._movementType}");
 
         return sb.ToString();
     }

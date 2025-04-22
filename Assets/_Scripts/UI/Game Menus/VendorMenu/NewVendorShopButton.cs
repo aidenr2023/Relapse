@@ -38,7 +38,7 @@ public class NewVendorShopButton : MonoBehaviour
         if (hasPower || !isActive)
         {
             if (hasPower)
-                powerNameText.text = $"{power.PowerName}\n(Sold Out!)";
+                powerNameText.text = $"{power.PowerName}\n(Purchased!)";
             else
                 powerNameText.text = $"{power.PowerName}\n(Unavailable!)";
 

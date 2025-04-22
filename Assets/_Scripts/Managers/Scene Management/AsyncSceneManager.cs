@@ -580,6 +580,45 @@ public class AsyncSceneManager : IDebugged
         );
     }
 
+    public void LoadResumeScene(
+        LevelStartupSceneInfo startupSceneInfo,
+        MonoBehaviour coroutineRunner,
+        Action<float> percentageCallback = null, Action onCompletion = null)
+    {
+        // Return if the coroutine runner is null
+        if (coroutineRunner == null)
+        {
+            Debug.LogError("Coroutine runner is null!");
+            return;
+        }
+
+        // Return if the startup scene info is null
+        if (startupSceneInfo == null)
+        {
+            Debug.LogError("Startup scene info is null!");
+            return;
+        }
+
+        // Load the section scene from disk as well
+        SceneSaveLoader.Instance.LoadSettingsFromDisk();
+        var sceneResumeData = SceneSaveLoader.Instance.SceneResumeData;
+
+        // Create a modified startup scene info
+        var newStartupSceneInfo = LevelStartupSceneInfo.Create(
+            startupSceneInfo.PlayerDataScene,
+            sceneResumeData.SceneInfo.SectionScene,
+            sceneResumeData.SceneInfo
+        );
+
+        // Using the scene resume data, update the checkpoint manager's checkpoint
+        CheckpointManager.Instance.SaveCheckpoint(sceneResumeData.PlayerPosition, sceneResumeData.PlayerRotation);
+
+        // Start the coroutine
+        coroutineRunner.StartCoroutine(
+            LoadMultipleScenes(newStartupSceneInfo, coroutineRunner, percentageCallback, onCompletion)
+        );
+    }
+
     private IEnumerator LoadMultipleScenes(LevelStartupSceneInfo startupSceneInfo, MonoBehaviour coroutineRunner,
         Action<float> percentageCallback, Action onCompletion)
     {
@@ -940,7 +979,7 @@ public class AsyncSceneManager : IDebugged
         var scenesToUnloadInfo = scenesToUnload.Select(scene => LevelSectionSceneInfo.Create(null, scene)).ToArray();
 
         var loadInfo = new LevelSectionSceneInfo[] { };
-        
+
         // Create a new SceneLoaderInformation based on the input
         var sceneLoaderInformation = SceneLoaderInformation.Create(loadInfo, scenesToUnloadInfo);
 
@@ -950,26 +989,21 @@ public class AsyncSceneManager : IDebugged
 
     #endregion
 
-    // TODO: Remove
-    public PlayerMovementType _movementType;
-
     private void SetPlayerMovementType(PlayerMovementType movementType)
     {
-        _movementType = movementType;
-
         // If the player instance is not null
-        if (Player.Instance != null)
-        {
-            // Get the player movement
-            var playerMovement = Player.Instance.PlayerController as PlayerMovementV2;
+        if (Player.Instance == null)
+            return;
 
-            // If the player movement is null, return
-            if (playerMovement == null)
-                return;
+        // Get the player movement
+        var playerMovement = Player.Instance.PlayerController as PlayerMovementV2;
 
-            // Set the movement type
-            playerMovement.ApplyMovementTypeSettings(movementType);
-        }
+        // If the player movement is null, return
+        if (playerMovement == null)
+            return;
+
+        // Set the movement type
+        playerMovement.ApplyMovementTypeSettings(movementType);
     }
 
     public string GetDebugText()

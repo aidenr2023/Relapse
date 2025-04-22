@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 public class SaveFile
 {
@@ -55,6 +56,34 @@ public class SaveFile
         // If there are no save files, return null
         if (saveFiles.Length == 0)
             return null;
+        
+        // Get the directories in the save file directory.
+        // Check if they actually have files in them
+        // If they don't, return null
+        var hasAnyFiles = false;
+        
+        foreach (var saveFile in saveFiles)
+        {
+            var files = System.IO.Directory.GetFiles(saveFile);
+            
+            if (files.Length == 0)
+                continue;
+            
+            var sceneSaveLoaderPath = SceneSaveLoader.GetSceneInfoFilePath(saveFile);
+            
+            if (!files.Contains(sceneSaveLoaderPath))
+            {
+                Debug.LogError($"Save file {saveFile} does not contain a scene save loader file.");
+                continue;
+            }
+            
+            hasAnyFiles = true;
+            break;
+        }
+        
+        // If there are no save files, return null
+        if (!hasAnyFiles)
+            return null;
 
         // Get the most recent save file
         var mostRecentSaveFile = saveFiles[0];
@@ -72,5 +101,19 @@ public class SaveFile
         }
 
         return mostRecentSaveFile;
+    }
+
+    public void ClearSaveFile()
+    {
+        // Delete all files in the save file directory
+        foreach (var file in System.IO.Directory.GetFiles(SaveFileDirectory))
+            System.IO.File.Delete(file);
+
+        // Delete all directories in the save file directory
+        foreach (var directory in System.IO.Directory.GetDirectories(SaveFileDirectory))
+            System.IO.Directory.Delete(directory, true);
+        
+        // // Delete the save file directory
+        // System.IO.Directory.Delete(SaveFileDirectory, true);
     }
 }
