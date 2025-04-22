@@ -92,7 +92,7 @@ public class DamageIncrease : MonoBehaviour, IPower
         var hasData = pToken.TryGetData<DamageIncreaseData>(DAMAGE_INCREASE_KEY, out var data);
 
         // Ensure the player has the damage multiplier token
-        if (!hasData && !powerManager.Player.WeaponManager.DamageMultiplierTokens.HasToken(data.Token))
+        if (!hasData || !powerManager.Player.WeaponManager.DamageMultiplierTokens.HasToken(data.Token))
             CreateEffectToken(powerManager, pToken);
     }
 

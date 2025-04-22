@@ -1,8 +1,9 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
-[RequireComponent(typeof(Canvas))]
+[RequireComponent(typeof(Canvas), typeof(GraphicRaycaster))]
 public class NewGameMenuPage : MonoBehaviour
 {
     #region Serialized Fields
