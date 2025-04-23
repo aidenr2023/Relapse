@@ -38,6 +38,7 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
 
     private readonly Stack<NewGameMenuPage> _pageStack = new();
     private Coroutine _fadeCoroutine;
+    private NewGameMenuPage _reenablePage;
 
     private bool _activatedThisFrame;
 
@@ -98,6 +99,17 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
         // Return if the menu is already active
         if (IsActive)
             return;
+        
+        // reactivate the page that needs to be reactivated
+        if (_reenablePage != null)
+        {
+            _reenablePage.Activate();
+            _reenablePage = null;
+        }
+        
+        // If there is a menu page at the top of the stack, activate it just to make sure its on
+        if (_pageStack.Count >= 1)
+            _pageStack.Peek().Activate();
 
         // Add this menu to the active menus of the menu manager
         MenuManager.Instance.AddActiveMenu(this);
@@ -125,7 +137,7 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
         if (!IsActive)
             return;
 
-        Debug.Log($"Deactivating {name}", this);
+        // Debug.Log($"Deactivating {name}", this);
 
         // Start the fade out coroutine
         StartFadeCoroutine(false);
@@ -134,11 +146,20 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
         DeactivateLogic();
     }
 
-    private void DeactivateLogic()
+    private void DeactivateLogic(bool forcePageOff = false)
     {
         // Remove this menu from the active menus of the menu manager
         MenuManager.Instance.RemoveActiveMenu(this);
 
+        if (forcePageOff)
+        {
+            _reenablePage = _pageStack.Peek();
+            
+            // If fading out, deactivate the current page
+            _reenablePage.Deactivate();
+            // Debug.Log($"Deactivating {_reenablePage.name}", this);
+        }
+        
         // Update the isActive state
         ChangeActivationState(false);
 
@@ -148,7 +169,7 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
 
     private void ForceDeactivate()
     {
-        DeactivateLogic();
+        DeactivateLogic(true);
 
         // Set the alpha to the minimum value
         canvasGroup.alpha = OpacityCurve.Evaluate(0);
@@ -271,6 +292,9 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
     /// <returns></returns>
     private IEnumerator FadeCoroutine(bool inOut)
     {
+        if (!inOut)
+            _reenablePage = _pageStack.Peek();
+        
         var finalKey = OpacityCurve.keys[OpacityCurve.length - 1];
 
         // Get the maximum duration of the fade
@@ -302,7 +326,13 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
         if (inOut)
             canvasGroup.alpha = OpacityCurve.Evaluate(finalKey.time);
         else
+        {
             canvasGroup.alpha = OpacityCurve.Evaluate(0);
+
+            // If fading out, deactivate the current page
+            _reenablePage.Deactivate();
+            // Debug.Log($"Deactivating {_reenablePage.name}", this);
+        }
     }
 
     private IEnumerator ResetActivatedThisFrame()

@@ -2,14 +2,17 @@
 
 public class ScreenSettingsHelper : MonoBehaviour
 {
+    private ScreenSettings _previousScreenSettings;
+    private ScreenSettings _workingScreenSettings;
+
     public void SetFullscreenMode(int mode)
     {
         // If the fullscreen mode is already set to the desired value, do nothing
         if (Screen.fullScreenMode == (FullScreenMode)mode)
             return;
 
-        // Set the fullscreen mode
-        Screen.fullScreenMode = (FullScreenMode)mode;
+        // Set the fullscreen mode of the working screen settings
+        _workingScreenSettings.FullScreenMode = (FullScreenMode)mode;
 
         Debug.Log($"Set fullscreen mode to {(FullScreenMode)mode}");
     }
@@ -17,46 +20,104 @@ public class ScreenSettingsHelper : MonoBehaviour
     public void SetResolution(int width, int height, FullScreenMode fullScreenMode)
     {
         // If the resolution is already set to the desired values, do nothing
-        if (Screen.width == width && Screen.height == height && Screen.fullScreenMode == fullScreenMode)
+        if (_workingScreenSettings.Resolution.Width == width &&
+            _workingScreenSettings.Resolution.Height == height &&
+            Screen.fullScreenMode == fullScreenMode)
             return;
 
-        // Set the resolution and fullscreen mode
-        Screen.SetResolution(width, height, fullScreenMode);
+        // Set the resolution of the working screen settings
+        _workingScreenSettings.Resolution = new ScreenSettings.ResolutionSizeStruct
+        {
+            Width = width,
+            Height = height
+        };
     }
 
     public void SetQualityLevel(int qualityLevel)
     {
-        // If the quality level is already set to the desired value, do nothing
-        if (QualitySettings.GetQualityLevel() == qualityLevel)
-            return;
-
-        // Set the quality level
-        QualitySettings.SetQualityLevel(qualityLevel);
+        // Set the quality level of the working screen settings
+        _workingScreenSettings.QualityLevel = qualityLevel;
     }
 
     public void SetVSync(bool isOn)
     {
-        // If VSync is already in the desired state, do nothing
-        if (QualitySettings.vSyncCount == (isOn ? 1 : 0))
-            return;
-
-        // Set VSync
-        QualitySettings.vSyncCount = isOn ? 1 : 0;
+        // Set the VSync state of the working screen settings
+        _workingScreenSettings.IsVSync = isOn;
     }
 
     public void SetAntiAliasing(int level)
     {
-        // If the anti-aliasing level is already set to the desired value, do nothing
-        if (QualitySettings.antiAliasing == level)
-            return;
-
-        // Set the anti-aliasing level
-        QualitySettings.antiAliasing = level;
+        // Set the anti-aliasing level of the working screen settings
+        _workingScreenSettings.AntiAliasing = level;
+        Debug.Log($"Set anti-aliasing level to {level}");
     }
 
     public void SetRefreshRate(RefreshRate rate)
     {
-        // Set the refresh rate
-        Screen.SetResolution(Screen.width, Screen.height, Screen.fullScreenMode, rate);
+        _workingScreenSettings.RefreshRate = new ScreenSettings.RefreshRateStruct
+        {
+            Numerator = rate.numerator,
+            Denominator = rate.denominator
+        };
+    }
+
+    private ScreenSettings GetCurrentScreenSettings()
+    {
+        var currentRefreshRate = Screen.currentResolution.refreshRateRatio;
+
+        // Create a new ScreenSettings object and populate it with the current settings
+        ScreenSettings settings = new()
+        {
+            FullScreenMode = Screen.fullScreenMode,
+            Resolution = new ScreenSettings.ResolutionSizeStruct
+            {
+                Width = Screen.width,
+                Height = Screen.height
+            },
+            QualityLevel = QualitySettings.GetQualityLevel(),
+            IsVSync = QualitySettings.vSyncCount > 0,
+            AntiAliasing = QualitySettings.antiAliasing,
+            RefreshRate = new ScreenSettings.RefreshRateStruct
+            {
+                Numerator = currentRefreshRate.numerator,
+                Denominator = currentRefreshRate.denominator
+            }
+        };
+
+        // Return the settings
+        return settings;
+    }
+
+    public void ResetWorkingScreenSettings()
+    {
+        // Reset the working screen settings to the current screen settings
+        _workingScreenSettings = GetCurrentScreenSettings();
+
+        // Reset the previous screen settings to the current screen settings
+        _previousScreenSettings = _workingScreenSettings;
+    }
+
+    public void ApplyWorkingSettings()
+    {
+        // Create a refresh rate object from the working screen settings
+        RefreshRate refreshRate = new()
+        {
+            numerator = _workingScreenSettings.RefreshRate.Numerator,
+            denominator = _workingScreenSettings.RefreshRate.Denominator
+        };
+
+        // Apply the working screen settings to the actual screen settings
+        Screen.SetResolution(
+            _workingScreenSettings.Resolution.Width,
+            _workingScreenSettings.Resolution.Height,
+            _workingScreenSettings.FullScreenMode,
+            refreshRate
+        );
+
+        QualitySettings.SetQualityLevel(_workingScreenSettings.QualityLevel);
+        QualitySettings.vSyncCount = _workingScreenSettings.IsVSync ? 1 : 0;
+        QualitySettings.antiAliasing = _workingScreenSettings.AntiAliasing;
+
+        Debug.Log("Applied working screen settings");
     }
 }

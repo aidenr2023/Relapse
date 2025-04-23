@@ -7,6 +7,7 @@ public class SettingsHelper : MonoBehaviour
     [SerializeField] private UserSettingsVariable userSettings;
 
     public event Action<SliderSettingType, float> OnSettingChanged;
+    public event Action<SettingsHelper> OnReset;
 
     // private void Awake()
     // {
@@ -81,7 +82,7 @@ public class SettingsHelper : MonoBehaviour
             case SliderSettingType.Brightness:
                 ChangeBrightness(value);
                 break;
-            
+
             case SliderSettingType.MotionBlur:
                 ChangeMotionBlur(value);
                 break;
@@ -246,7 +247,7 @@ public class SettingsHelper : MonoBehaviour
     private void ChangeMotionBlur(float value)
     {
         settingsMenuSettings.value.SetMotionBlur(value);
-        
+
         OnSettingChanged?.Invoke(SliderSettingType.MotionBlur, value);
     }
 
@@ -258,16 +259,24 @@ public class SettingsHelper : MonoBehaviour
     {
         settingsMenuSettings.value.CopySettingsFrom(userSettings.value);
     }
-    
+
     public void SaveSettings()
     {
         // First, copy the settings from the settingsMenuSettings to the userSettings
         userSettings.value.CopySettingsFrom(settingsMenuSettings.value);
-        
+
         // Then, apply the userSettings
         userSettings.value.ApplySettings();
-        
+
         // Then, save the settings to disk
         SettingsLoader.Instance.SaveSettingsToDisk();
+    }
+
+    public void ResetSettings()
+    {
+        settingsMenuSettings.value.CopySettingsFrom(userSettings.defaultValue);
+        
+        // Invoke the OnReset event
+        OnReset?.Invoke(this);
     }
 }

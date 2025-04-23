@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class NewSettingsSlider : MonoBehaviour
+public class NewSettingsSlider : MonoBehaviour, IResetableSettingElement
 {
     [SerializeField] private UserSettingsVariable settingsMenuSettings;
 
@@ -42,15 +42,29 @@ public class NewSettingsSlider : MonoBehaviour
 
         // Set the slider to the current setting value
         slider.value = SettingsHelper.GetSettingValue(settingType, settingsMenuSettings);
+        
+        // Subscribe to the reset event of the settingsHelper
+        settingsHelper.OnReset += ResetToSettingOnReset;
     }
 
     private void OnDisable()
     {
         settingsHelper.OnSettingChanged -= ForceValueOnSettingChanged;
+        
+        // Unsubscribe to the reset event of the settingsHelper
+        settingsHelper.OnReset -= ResetToSettingOnReset;
     }
 
     private void InvokeOnValueChanged(float value)
     {
         _onValueChanged.Invoke(value, settingType);
     }
+
+    public void ResetToSetting()
+    {
+        // Set the slider to the current setting value
+        slider.value = SettingsHelper.GetSettingValue(settingType, settingsMenuSettings);
+    }
+
+    private void ResetToSettingOnReset(SettingsHelper _) => ResetToSetting();
 }
