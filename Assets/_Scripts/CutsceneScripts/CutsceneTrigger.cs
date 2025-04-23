@@ -12,18 +12,20 @@ public class CutsceneTrigger : MonoBehaviour
 
     private CutsceneHandler cutsceneHandler;
 
-    [SerializeField] private bool isCamChangeNeeded = false;
+    //[SerializeField] private bool isCamChangeNeeded = false;
 
     [SerializeField] private bool isPlayerMovementNeeded = false;
 
     [SerializeField] private bool isCutsceneFirstPerson = false;
+    
+    [SerializeField] private bool isCutsceneInteractable = false;
 
 
     private CutsceneHandler.CutsceneType _cutscenePerspective;
     private BoxCollider _boxCollider;
 
 
-    public bool IsCamChangeNeeded => isCamChangeNeeded;
+    //public bool IsCamChangeNeeded => isCamChangeNeeded;
 
     private bool cutscenePlayed = false;
 
@@ -44,6 +46,9 @@ public class CutsceneTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (isCutsceneInteractable)
+            return;
+        
         if (other.CompareTag("Player") && !cutscenePlayed)
         {
             // Access the singleton instance 
@@ -73,5 +78,24 @@ public class CutsceneTrigger : MonoBehaviour
 
         if (_boxCollider != null)
             _boxCollider.enabled = false;
+    }
+
+    /// <summary>
+    /// Call this to play the named cutscene immediately.
+    /// </summary>
+    public void PlayCutscene()
+    {
+        // Play the cutscene
+        StartCoroutine(PlayCutsceneNextFrame());
+    }
+    private IEnumerator PlayCutsceneNextFrame()
+    {
+        // Wait one frame so all Start() calls and bindings finish
+        yield return null;
+        CutsceneManager.Instance.PlayCutsceneByName(
+            cutsceneName,
+            isPlayerMovementNeeded,
+            _cutscenePerspective
+        );
     }
 }

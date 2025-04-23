@@ -3,7 +3,12 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Events;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine.Animations;
+using Cinemachine;
+using UnityEngine.Rendering.Universal;
+
 
 [RequireComponent(typeof(PlayableDirector))]
 public class CutsceneHandler : MonoBehaviour
@@ -13,6 +18,15 @@ public class CutsceneHandler : MonoBehaviour
 
     private PlayableDirector _director;
     private Animator _playerCutsceneAnimator;
+    
+    
+    //cinemachine brain
+    [SerializeField]private CinemachineBrain _cmBrain;
+    [SerializeField] private Camera _mainCamera;
+    private List<Camera> _overlayCameras;
+    int _baseCameraMask;
+    private List<int> _overlayCameraMasks;
+    
     private bool _isCutsceneActive;
     public bool IsPlayerMovementNeeded { get; set; }
     public bool IsCutsceneFirstPerson { get; set; }
@@ -23,8 +37,27 @@ public class CutsceneHandler : MonoBehaviour
         ThirdPerson
     }
 
+    private void Awake()
+    {
+       
+    }
+
     private void Start()
     {
+        //grab the main camera from cinemachine brain
+        _mainCamera = _cmBrain.OutputCamera;
+        
+        //store the base cam culling mask
+        _baseCameraMask = _mainCamera.cullingMask;
+        
+        //grab the overlay cameras
+        var camera_data = _mainCamera.GetUniversalAdditionalCameraData();
+        _overlayCameras = camera_data.cameraStack;
+        
+        //store each ones culling mask
+        _overlayCameraMasks = _overlayCameras.Select(cam => cam.cullingMask).ToList();
+        
+        
         _director = GetComponent<PlayableDirector>();
         Debug.Log($"CutsceneHandler initialized with director: {_director}");
         InitializePlayerReferences();
@@ -134,6 +167,7 @@ public class CutsceneHandler : MonoBehaviour
         if (!IsCutsceneFirstPerson)
         {
             Debug.Log("Using prebinded third person animator tracks...");
+            BindCinemachineBrain();
         }
         else
         {
@@ -141,6 +175,7 @@ public class CutsceneHandler : MonoBehaviour
         }
     }
 
+    //lowkey obsolete, but needed for Movement2 (Brian Level) cutscene
     private void BindFirstPersonAnimatorTracks()
     {
         foreach (var output in _director.playableAsset.outputs)
@@ -152,10 +187,33 @@ public class CutsceneHandler : MonoBehaviour
             }
         }
     }
+    
+    //funtion to bind cinemachine brain to the cutscene
+    private void BindCinemachineBrain()
+    {
+        foreach (var output in _director.playableAsset.outputs)
+        {
+            if (output.outputTargetType == typeof(CinemachineBrain))
+            {
+                _director.SetGenericBinding(output.sourceObject, _cmBrain);
+                Debug.Log($"Bound Cinemachine Brain to track: {output.streamName}");
+            }
+        }
+    }
+    
+    
 
     private void StartCutscene()
     {
         _isCutsceneActive = true;
+        int hideMask = 1 << LayerMask.NameToLayer("GunHandHolder");    
+        
+        _mainCamera.cullingMask &= ~hideMask;
+        //for each overlay camera, hide the gun hand holder layer
+        for (int i = 0; i < _overlayCameras.Count; i++)
+            _overlayCameras[i].cullingMask &= ~hideMask;
+        
+        //disable player body layer
         _director.stopped += OnCutsceneFinished;
 
 #if !UNITY_EDITOR
@@ -173,11 +231,23 @@ public class CutsceneHandler : MonoBehaviour
         
         // Remove control from the player
         (Player.Instance.PlayerController as PlayerMovementV2)!.DisablePlayerControls(this);
+        
+        
     }
 
     private void OnCutsceneFinished(PlayableDirector director)
     {
         _isCutsceneActive = false;
+        
+        // restore the original culling mask
+        _mainCamera.cullingMask = _baseCameraMask;
+        // foreach overlay camera, restore the original culling mask
+        for (int i = 0; i < _overlayCameras.Count; i++)
+        {
+            _overlayCameras[i].cullingMask = _overlayCameraMasks[i];
+        }
+        
+        
         _director.stopped -= OnCutsceneFinished;
         OnCutsceneEnd?.Invoke();
 
