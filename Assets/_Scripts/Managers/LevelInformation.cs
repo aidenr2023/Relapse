@@ -84,7 +84,7 @@ public class LevelInformation : MonoBehaviour
         if (!obj.addToCheckpointManagerOnLoad)
             return;
         
-        Debug.Log($"Adding {obj.gameObject.name} to the checkpoint manager -> {obj.StartingPosition}", obj);
+        // Debug.Log($"Adding {obj.gameObject.name} to the checkpoint manager -> {obj.StartingPosition}", obj);
 
         obj.StartCoroutine(TryToAddToCheckpointManager(obj));
     }

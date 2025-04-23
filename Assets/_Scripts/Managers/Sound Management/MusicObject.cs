@@ -7,6 +7,7 @@ public class MusicObject : MonoBehaviour
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private MusicType musicType;
     [SerializeField] private GameMenu parentMenu;
+    [SerializeField] private NewGameMenu newParentMenu;
     [SerializeField] private bool restartWhenResuming;
 
     private bool _isPlaying = false;
@@ -34,7 +35,6 @@ public class MusicObject : MonoBehaviour
             {
                 if (gameMusicNeedsToStop)
                     PauseMusic();
-
                 else
                     ResumeMusic();
 
@@ -43,12 +43,24 @@ public class MusicObject : MonoBehaviour
 
             case MusicType.Menu:
             {
-                // If the parent menu is not active, pause the music
-                if (parentMenu != null && !parentMenu.IsActive)
-                    PauseMusic();
+                // If the new parent menu is not active, pause the music
+                if (newParentMenu != null)
+                {
+                    if (!newParentMenu.IsActive)
+                        PauseMusic();
+                    else
+                        ResumeMusic();
+                }
 
-                else
-                    ResumeMusic();
+                // If the parent menu is not active, pause the music
+                else if (parentMenu != null)
+                {
+                    if (!parentMenu.IsActive)
+                        PauseMusic();
+                    else
+                        ResumeMusic();
+                }
+
 
                 break;
             }
