@@ -46,7 +46,7 @@ public class CutsceneObjectList : MonoBehaviour
 
     private void EnableObjects()
     {
-        // Enable each GameObject in the list when the cutscene ends.
+        // Enable each GameObject in the list when the cutscene start.
         foreach (GameObject obj in objectsToToggle)
         {
             if (obj != null)
