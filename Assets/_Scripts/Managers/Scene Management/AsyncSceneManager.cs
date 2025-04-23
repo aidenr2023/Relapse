@@ -518,15 +518,15 @@ public class AsyncSceneManager : IDebugged
         _disabledSceneObjects.Remove(scene.name);
     }
 
-    public void ForceManageScene(SceneField sceneField)
+    private bool ForceManageScene(SceneField sceneField)
     {
         // Return if the scene is not currently open
         if (SceneManager.GetSceneByName(sceneField).name != sceneField.SceneName)
-            return;
+            return false;
 
         // Return if a key already exists for the scene
         if (_asyncSceneRecords.ContainsKey(sceneField.SceneName))
-            return;
+            return false;
 
         // Create a new record for the scene
         var sceneRecord = new AsyncSceneRecord(sceneField, null, AsyncSceneState.Loaded);
@@ -538,6 +538,7 @@ public class AsyncSceneManager : IDebugged
         _asyncSceneRecords.Add(sceneField.SceneName, sceneRecord);
 
         // Debug.Log($"Forced management of scene {sceneField.SceneName}");
+        return true;
     }
 
     public void ForceManageScene(LevelSectionSceneInfo sceneLoaderInformation)
@@ -545,10 +546,10 @@ public class AsyncSceneManager : IDebugged
         // Load the section scene
         if (sceneLoaderInformation.SectionScene != null)
         {
-            ForceManageScene(sceneLoaderInformation.SectionScene);
+            var manageScene = ForceManageScene(sceneLoaderInformation.SectionScene);
 
             // Set the current scene info
-            if (sceneLoaderInformation.SetActiveSceneToSectionScene)
+            if (sceneLoaderInformation.SetActiveSceneToSectionScene && manageScene)
                 CurrentSceneInfo = sceneLoaderInformation;
         }
 
@@ -609,9 +610,13 @@ public class AsyncSceneManager : IDebugged
             sceneResumeData.SceneInfo.SectionScene,
             sceneResumeData.SceneInfo
         );
-
-        // Using the scene resume data, update the checkpoint manager's checkpoint
-        CheckpointManager.Instance.SaveCheckpoint(sceneResumeData.PlayerPosition, sceneResumeData.PlayerRotation);
+        
+        // Load the player at the correct position after done loading the levels
+        onCompletion += () =>
+        {
+            // Using the scene resume data, update the checkpoint manager's checkpoint
+            CheckpointManager.Instance.SaveCheckpoint(sceneResumeData.PlayerPosition, sceneResumeData.PlayerRotation);
+        };
 
         // Start the coroutine
         coroutineRunner.StartCoroutine(

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 
 public class SceneSaveLoader : MonoBehaviour
@@ -10,6 +11,8 @@ public class SceneSaveLoader : MonoBehaviour
     public static SceneSaveLoader Instance { get; private set; }
 
     public SceneResumeData SceneResumeData { get; private set; }
+
+    [SerializeField] private LevelSectionSceneInfoList allSceneInfoList;
 
     private void Awake()
     {
@@ -31,6 +34,12 @@ public class SceneSaveLoader : MonoBehaviour
 
         // Load the settings from disk
         LoadSettingsFromDisk();
+
+        if (SceneResumeData == null)
+        {
+            Debug.LogWarning("SceneResumeData is null. Cannot load settings.");
+            return;
+        }
     }
 
     public void SaveSettingsToDisk(Vector3 position, Quaternion rotation)
@@ -54,7 +63,8 @@ public class SceneSaveLoader : MonoBehaviour
         // Create a new instance of the SceneResumeData class
         var newSceneData = new SceneResumeData
         {
-            SceneInfo = currentSceneInfo,
+            PersistentDataSceneName = currentSceneInfo.SectionPersistentData.SceneName,
+            SectionSceneName = currentSceneInfo.SectionScene.SceneName,
             PlayerPosition = position,
             PlayerRotation = rotation
         };
@@ -91,13 +101,29 @@ public class SceneSaveLoader : MonoBehaviour
         // Create a new sceneResumeData object
         var newSceneResumeData = new SceneResumeData()
         {
-            SceneInfo = ScriptableObject.CreateInstance<LevelSectionSceneInfo>(),
+            PersistentDataSceneName = string.Empty,
+            SectionSceneName = string.Empty,
             PlayerPosition = Vector3.zero,
             PlayerRotation = Quaternion.identity
         };
 
         // Deserialize the json string into the new sceneResumeData object
         JsonUtility.FromJsonOverwrite(jsonString, newSceneResumeData);
+        
+        var sceneInfo = allSceneInfoList.value.FirstOrDefault(info =>
+            string.Equals(info.SectionPersistentData, newSceneResumeData.PersistentDataSceneName) &&
+            string.Equals(info.SectionScene, newSceneResumeData.SectionSceneName)
+        );
+
+        // If the scene info of the new scene resume data is null, log an error and return
+        if (sceneInfo == null)
+        {
+            Debug.LogError($"Scene info is null in {SceneInfoFilePath}. Cannot load settings.");
+            return;
+        }
+        
+        // Set the scene info of the new scene resume data
+        newSceneResumeData.SceneInfo = sceneInfo;
 
         // Set the loaded scene info to the current scene info
         SceneResumeData = newSceneResumeData;

@@ -43,15 +43,17 @@ public class MainMenu : GameMenu
     {
         // Reset the variables
         variablesToReset.Reset();
-
-        // Check if there are any save files present
-        // If there are no save files, disable the resume button
-        // If there are save files, enable the resume button
-        resumeButton.gameObject.SetActive(SaveFile.GetMostRecentSaveFile() != null);
     }
 
     protected override void CustomStart()
     {
+        // var recentSaveFile = SaveFile.GetMostRecentSaveFile();
+        
+        // Check if there are any save files present
+        // If there are no save files, disable the resume button
+        // If there are save files, enable the resume button
+        // resumeButton.gameObject.SetActive(recentSaveFile != null);
+        resumeButton.gameObject.SetActive(SceneSaveLoader.Instance.SceneResumeData != null);
     }
 
     protected override void CustomActivate()

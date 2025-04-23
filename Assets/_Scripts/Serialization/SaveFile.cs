@@ -11,7 +11,7 @@ public class SaveFile
     /// </summary>
     private const string TEMPORARY_SAVE_FILE_NAME = "TemporarySaveFile";
 
-    private static string SaveDirectory => $"{Application.persistentDataPath}/SaveFiles";
+    private static string SaveDirectory => System.IO.Path.Join(Application.persistentDataPath, "SaveFiles");
 
     private static SaveFile _currentSaveFile;
 
@@ -29,7 +29,7 @@ public class SaveFile
 
     public string Name { get; private set; }
 
-    public string SaveFileDirectory => $"{SaveDirectory}/{Name}";
+    public string SaveFileDirectory => System.IO.Path.Join(SaveDirectory, Name); 
 
     public SaveFile(string name)
     {
@@ -39,13 +39,13 @@ public class SaveFile
         if (!System.IO.Directory.Exists(SaveFileDirectory))
             System.IO.Directory.CreateDirectory(SaveFileDirectory);
 
-        // TODO: Turn this off / delete it if we want to keep the temporary save file between sessions.
-        // If this is the temporary save file, delete all files in the directory
-        if (name == TEMPORARY_SAVE_FILE_NAME)
-        {
-            foreach (var file in System.IO.Directory.GetFiles(SaveFileDirectory))
-                System.IO.File.Delete(file);
-        }
+        // // TODO: Turn this off / delete it if we want to keep the temporary save file between sessions.
+        // // If this is the temporary save file, delete all files in the directory
+        // if (name == TEMPORARY_SAVE_FILE_NAME && Application.isEditor)
+        // {
+        //     foreach (var file in System.IO.Directory.GetFiles(SaveFileDirectory))
+        //         System.IO.File.Delete(file);
+        // }
     }
 
     public static string GetMostRecentSaveFile()
