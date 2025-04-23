@@ -319,17 +319,17 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         {
             if (!BasicPlayerMovement.CanSprint)
                 ForceStopSprinting();
-            
+
             if (CurrentStamina <= 0)
                 ForceStopSprinting();
-            
+
             if (MovementInput.magnitude < .125f)
                 ForceStopSprinting();
-            
+
             if (Rigidbody.velocity.magnitude < 1f)
                 ForceStopSprinting();
         }
-        
+
         // Debug.Log($"SPRINTING: {_isSprinting} || {IsSprintToggled}");
 
         // Sprint events
@@ -343,6 +343,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
             OnSprintEnd?.Invoke();
             playerAnimator.SetBool(IsRunningAnimationID, false);
         }
+        else if (playerAnimator.GetBool(IsRunningAnimationID) != IsSprinting)
+            playerAnimator.SetBool(IsRunningAnimationID, IsSprinting);
 
         playerAnimator.SetBool(IsGroundedAnimationID, IsGrounded);
     }
@@ -960,7 +962,7 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
         // Apply the settings
         desiredCapsuleHeightOffset = cSettings.desiredCapsuleHeightOffset;
         sphereCastRadius = cSettings.sphereCastRadius;
-        
+
         // Set the can sprint flag
         BasicPlayerMovement.CanSprint = cSettings.sprintSetting switch
         {
