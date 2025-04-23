@@ -124,7 +124,7 @@ public class FireballProjectile : MonoBehaviour, IPowerProjectile
         // Get the damage based on the elapsed time
         var elapsedTimeDamage = damageOverTimeCurve.Evaluate(elapsedTime);
 
-        Debug.Log($"Added {elapsedTimeDamage} damage due to elapsed time", this);
+        // Debug.Log($"Added {elapsedTimeDamage} damage due to elapsed time", this);
 
         // If the projectile hits something with an IActor component, deal damage
         if (other.TryGetComponentInParent(out IActor actor))

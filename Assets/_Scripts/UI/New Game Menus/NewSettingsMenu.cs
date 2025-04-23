@@ -15,6 +15,7 @@ public class NewSettingsMenu : MonoBehaviour
     private Button backButton;
 
     [SerializeField] private Button saveButton;
+    [SerializeField] private Button resetButton;
 
     [Header("Content Panes"), SerializeField]
     private SettingsMenuContentPane generalSettingsPane;
@@ -117,6 +118,17 @@ public class NewSettingsMenu : MonoBehaviour
             selectOnDown = _currentPaneButton,
             selectOnLeft = oldSaveButtonNavigation.selectOnLeft,
             selectOnRight = oldSaveButtonNavigation.selectOnRight,
+        };
+        
+        // Update the reset button's navigation
+        var oldResetButtonNavigation = resetButton.navigation;
+        resetButton.navigation = new Navigation()
+        {
+            mode = Navigation.Mode.Explicit,
+            selectOnUp = backUpNav,
+            selectOnDown = _currentPaneButton,
+            selectOnLeft = oldResetButtonNavigation.selectOnLeft,
+            selectOnRight = oldResetButtonNavigation.selectOnRight,
         };
 
         // Update the last item's navigation

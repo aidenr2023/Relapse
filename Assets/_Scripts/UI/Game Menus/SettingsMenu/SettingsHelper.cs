@@ -1,12 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SettingsHelper : MonoBehaviour
 {
     [SerializeField] private UserSettingsVariable settingsMenuSettings;
     [SerializeField] private UserSettingsVariable userSettings;
+    [SerializeField] private ScreenSettingsHelper screenSettingsHelper;
 
     public event Action<SliderSettingType, float> OnSettingChanged;
+    public event Action<DropdownSettingType, object> OnSettingChangedDropdown;
     public event Action<SettingsHelper> OnReset;
 
     // private void Awake()
@@ -92,6 +98,28 @@ public class SettingsHelper : MonoBehaviour
         }
     }
 
+    public void SetSettingValue(NewSettingsDropdown dropdown, DropdownSettingType settingType, int value)
+    {
+        switch (settingType)
+        {
+            // Display
+            case DropdownSettingType.FullScreenMode:
+                if (dropdown.TryGetOptionValue(value, out FullScreenMode fullScreenMode))
+                    screenSettingsHelper.SetFullscreenMode(fullScreenMode);
+                break;
+
+            case DropdownSettingType.Resolution:
+                if (dropdown.TryGetOptionValue(value, out Resolution resolution))
+                    screenSettingsHelper.SetResolution(resolution);
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException(nameof(settingType), settingType, null);
+        }
+        
+        Debug.Log($"Changed Value of {settingType} to {value}");
+    }
+
     public static float GetSettingValue(SliderSettingType settingType, UserSettingsVariable settingsMenuSettings)
     {
         return settingType switch
@@ -128,6 +156,8 @@ public class SettingsHelper : MonoBehaviour
     #endregion
 
     #region Actual Settings Functions
+
+    #region Slider Settings
 
     #region Input Settings
 
@@ -255,6 +285,106 @@ public class SettingsHelper : MonoBehaviour
 
     #endregion
 
+    #region Dropdown Settings
+
+    #region Display Settings
+
+    public void ChangeFullscreenMode(FullScreenMode fullScreenMode)
+    {
+        screenSettingsHelper.SetFullscreenMode(fullScreenMode);
+
+        OnSettingChangedDropdown?.Invoke(DropdownSettingType.FullScreenMode, (int)fullScreenMode);
+    }
+
+    public void ChangeResolution(Resolution resolution)
+    {
+        screenSettingsHelper.SetResolution(resolution);
+
+        OnSettingChangedDropdown?.Invoke(DropdownSettingType.Resolution, (int)resolution.width);
+    }
+
+    #endregion
+
+    #endregion
+
+    #endregion
+
+    public void InitializeDropdownOptions(NewSettingsDropdown dropdown)
+    {
+        // Clear the dropdown options
+        dropdown.Dropdown.ClearOptions();
+        var optionsList = new List<TMP_Dropdown.OptionData>();
+
+        switch (dropdown.SettingType)
+        {
+            case DropdownSettingType.FullScreenMode:
+
+                // Create the possible options
+                optionsList.Add(
+                    new CustomOptionData("Fullscreen", FullScreenMode.ExclusiveFullScreen));
+                optionsList.Add(
+                    new CustomOptionData("Borderless", FullScreenMode.FullScreenWindow));
+                optionsList.Add(
+                    new CustomOptionData("Windowed", FullScreenMode.Windowed));
+
+                // Add the options to the dropdown
+                dropdown.Dropdown.AddOptions(optionsList);
+
+                // Get the current fullscreen mode
+                var currentFullscreenMode = Screen.fullScreenMode;
+
+                // Set the dropdown value to the current fullscreen mode
+                dropdown.Dropdown.value = optionsList.FindIndex(option =>
+                    (option as CustomOptionData)!.ValueEquals(currentFullscreenMode));
+
+                break;
+
+            case DropdownSettingType.Resolution:
+
+                // Get the resolutions supported by this screen
+                var resolutions = Screen.resolutions;
+
+                // Create the possible options
+                foreach (var resolution in resolutions)
+                {
+                    // // If the resolution less wide than widescreen, skip it
+                    // if ((float)resolution.width / resolution.height < 15f / 10f)
+                    //     continue;
+                    
+                    // If the resolution is less than 720p, skip it
+                    if (resolution.width < 1280)
+                        continue;
+
+                    var option = new CustomOptionData($"{ResolutionString(resolution)}", resolution);
+                    optionsList.Add(option);
+                }
+
+                // Get the current resolution
+                var currentResolution = Screen.currentResolution;
+
+                // Add the options to the dropdown
+                dropdown.Dropdown.AddOptions(optionsList);
+                
+                // Set the dropdown value to the current resolution
+                dropdown.Dropdown.value = optionsList.FindIndex(option =>
+                    (option as CustomOptionData)!.ValueEquals(currentResolution));
+                
+                // dropdown.Dropdown.value = dropdown.Dropdown.options.Count - 1;
+                
+                break;
+
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        return;
+
+        string ResolutionString(Resolution res)
+        {
+            return $"{res.width}x{res.height} @{res.refreshRateRatio.value:0.00}hz";
+        }
+    }
+
     public void InitializeMenuSettings()
     {
         settingsMenuSettings.value.CopySettingsFrom(userSettings.value);
@@ -268,6 +398,9 @@ public class SettingsHelper : MonoBehaviour
         // Then, apply the userSettings
         userSettings.value.ApplySettings();
 
+        // Then, save the settings to the screen settings
+        screenSettingsHelper.ApplyWorkingSettings();
+        
         // Then, save the settings to disk
         SettingsLoader.Instance.SaveSettingsToDisk();
     }
@@ -275,7 +408,7 @@ public class SettingsHelper : MonoBehaviour
     public void ResetSettings()
     {
         settingsMenuSettings.value.CopySettingsFrom(userSettings.defaultValue);
-        
+
         // Invoke the OnReset event
         OnReset?.Invoke(this);
     }

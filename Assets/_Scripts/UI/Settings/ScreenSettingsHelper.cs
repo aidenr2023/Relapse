@@ -5,24 +5,23 @@ public class ScreenSettingsHelper : MonoBehaviour
     private ScreenSettings _previousScreenSettings;
     private ScreenSettings _workingScreenSettings;
 
-    public void SetFullscreenMode(int mode)
+    public void SetFullscreenMode(FullScreenMode mode)
     {
         // If the fullscreen mode is already set to the desired value, do nothing
-        if (Screen.fullScreenMode == (FullScreenMode)mode)
+        if (Screen.fullScreenMode == mode)
             return;
 
         // Set the fullscreen mode of the working screen settings
-        _workingScreenSettings.FullScreenMode = (FullScreenMode)mode;
+        _workingScreenSettings.FullScreenMode = mode;
 
-        Debug.Log($"Set fullscreen mode to {(FullScreenMode)mode}");
+        Debug.Log($"Set fullscreen mode to {mode}");
     }
 
-    public void SetResolution(int width, int height, FullScreenMode fullScreenMode)
+    private void SetResolution(int width, int height)
     {
         // If the resolution is already set to the desired values, do nothing
         if (_workingScreenSettings.Resolution.Width == width &&
-            _workingScreenSettings.Resolution.Height == height &&
-            Screen.fullScreenMode == fullScreenMode)
+            _workingScreenSettings.Resolution.Height == height)
             return;
 
         // Set the resolution of the working screen settings
@@ -32,6 +31,8 @@ public class ScreenSettingsHelper : MonoBehaviour
             Height = height
         };
     }
+
+    public void SetResolution(Resolution resolution) => SetResolution(resolution.width, resolution.height);
 
     public void SetQualityLevel(int qualityLevel)
     {

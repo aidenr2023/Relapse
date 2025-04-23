@@ -82,7 +82,7 @@ public class PositionSwap : MonoBehaviour, IPower
     {
         var initialWaitTime = startTimeScaleCurve.keys[^1].time;
         var endWaitTime = endTimeScaleCurve.keys[^1].time;
-        
+
         var timeToken = TimeScaleManager.Instance.TimeScaleTokenManager.AddToken(.125f, -1, true);
 
         // Evaluate the time scale curve
@@ -92,27 +92,31 @@ public class PositionSwap : MonoBehaviour, IPower
             timeToken.Value = startTimeScaleCurve.Evaluate(Time.unscaledTime - startTime);
             yield return null;
         }
+
         timeToken.Value = startTimeScaleCurve.keys[^1].value;
 
-        // Get the position of the actor
-        var actorPosition = enemy.GameObject.transform.position;
-        
-        // Get the forward direction of the enemy
-        var enemyForward = shooterPosition - actorPosition;
-        enemyForward = new Vector3(enemyForward.x, 0, enemyForward.z).normalized;
-        
-        // Set the position of the enemy to the shooter's position
-        enemy.NewMovement.SetPosition(shooterPosition);
+        if (enemy != null && enemy.gameObject != null)
+        {
+            // Get the position of the actor
+            var actorPosition = enemy.GameObject.transform.position;
 
-        // Instantiate the old position particle system prefab
-        CreateParticles(actorPosition);
-        CreateParticles(shooterPosition);
-        
-        // Set the position of the actor to the shooter's position
-        powerManager.Player.Rigidbody.MovePosition(actorPosition);
-        
-        // Set the forward direction of the player
-        powerManager.Player.PlayerLook.ApplyRotation(Quaternion.LookRotation(enemyForward));
+            // Get the forward direction of the enemy
+            var enemyForward = shooterPosition - actorPosition;
+            enemyForward = new Vector3(enemyForward.x, 0, enemyForward.z).normalized;
+
+            // Set the position of the enemy to the shooter's position
+            enemy.NewMovement.SetPosition(shooterPosition);
+
+            // Instantiate the old position particle system prefab
+            CreateParticles(actorPosition);
+            CreateParticles(shooterPosition);
+
+            // Set the position of the actor to the shooter's position
+            powerManager.Player.Rigidbody.MovePosition(actorPosition);
+
+            // Set the forward direction of the player
+            powerManager.Player.PlayerLook.ApplyRotation(Quaternion.LookRotation(enemyForward));
+        }
 
         // Evaluate the time scale curve
         startTime = Time.unscaledTime;
@@ -121,14 +125,15 @@ public class PositionSwap : MonoBehaviour, IPower
             timeToken.Value = endTimeScaleCurve.Evaluate(Time.unscaledTime - startTime);
             yield return null;
         }
+
         timeToken.Value = endTimeScaleCurve.keys[^1].value;
-        
+
         // Remove the time token
         TimeScaleManager.Instance.TimeScaleTokenManager.RemoveToken(timeToken);
-        
+
         yield return null;
     }
-    
+
     private void CreateParticles(Vector3 position)
     {
         // Instantiate the explosion particles at the projectile's position
@@ -146,7 +151,7 @@ public class PositionSwap : MonoBehaviour, IPower
 
         // Destroy the explosion particles after the duration of the particles
         Destroy(explosion.gameObject, explosion.main.duration);
-    } 
+    }
 
     #region Active Effects
 
