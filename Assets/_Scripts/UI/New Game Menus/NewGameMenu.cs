@@ -62,7 +62,7 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
     {
         // Forcibly set the menu to be deactivated
         ForceDeactivate();
-        
+
         // If the menu is active on start, activate it
         if (isActiveOnStart)
             Activate();
@@ -99,14 +99,14 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
         // Return if the menu is already active
         if (IsActive)
             return;
-        
+
         // reactivate the page that needs to be reactivated
         if (_reenablePage != null)
         {
             _reenablePage.Activate();
             _reenablePage = null;
         }
-        
+
         // If there is a menu page at the top of the stack, activate it just to make sure its on
         if (_pageStack.Count >= 1)
             _pageStack.Peek().Activate();
@@ -154,12 +154,12 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
         if (forcePageOff)
         {
             _reenablePage = _pageStack.Peek();
-            
+
             // If fading out, deactivate the current page
             _reenablePage.Deactivate();
             // Debug.Log($"Deactivating {_reenablePage.name}", this);
         }
-        
+
         // Update the isActive state
         ChangeActivationState(false);
 
@@ -193,7 +193,7 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
         // Return if the event system is null
         if (EventSystem == null)
             return;
-        
+
         // Set the event system's active state
         EventSystem.gameObject.SetActive(isActive);
     }
@@ -250,8 +250,9 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
 
     public void PopThenPushMenuPage(NewGameMenuPage menuPage)
     {
-        // Pop
-        PopMenuPage(true);
+        // Pop menu at the top of the stack
+        // Deactivate the previous menu
+        _pageStack.Pop().Deactivate();
 
         // Push
         PushMenuPage(menuPage);
@@ -294,7 +295,7 @@ public class NewGameMenu : MonoBehaviour, IGameMenu
     {
         if (!inOut)
             _reenablePage = _pageStack.Peek();
-        
+
         var finalKey = OpacityCurve.keys[OpacityCurve.length - 1];
 
         // Get the maximum duration of the fade
