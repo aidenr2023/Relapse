@@ -14,6 +14,9 @@ public class CutsceneTrigger : MonoBehaviour
 
     //[SerializeField] private bool isCamChangeNeeded = false;
 
+    [SerializeField] private CutsceneObjectList objectList;
+
+
     [SerializeField] private bool isPlayerMovementNeeded = false;
 
     [SerializeField] private bool isCutsceneFirstPerson = false;
@@ -62,13 +65,27 @@ public class CutsceneTrigger : MonoBehaviour
 
     private IEnumerator TriggerCutsceneDelayed()
     {
-        // Wait one frame after the player enters the trigger
-        yield return null;
-        //plays the cutscene by name, checks if player movement is needed,
-        //and if the cutscene is first person
-        CutsceneManager.Instance.PlayCutsceneByName(cutsceneName, isPlayerMovementNeeded, _cutscenePerspective);
+        yield return null;                        // give everything one frame to initialize
+
+        objectList.EnableObjects();               // bring in just this list’s objects
+
+        var handler = CutsceneManager.Instance.CutsceneHandler;
+        UnityEngine.Events.UnityAction onEnd = null;
+        onEnd = () =>
+        {
+            objectList.DisableObjects();          // tear down just this list
+            handler.OnCutsceneEnd.RemoveListener(onEnd);
+        };
+        handler.OnCutsceneEnd.AddListener(onEnd);
+
+        CutsceneManager.Instance.PlayCutsceneByName(
+            cutsceneName,
+            isPlayerMovementNeeded,
+            _cutscenePerspective
+        );
         cutscenePlayed = true;
     }
+
 
 
     //destroy the trigger after seconds 
@@ -92,6 +109,8 @@ public class CutsceneTrigger : MonoBehaviour
     {
         // Wait one frame so all Start() calls and bindings finish
         yield return null;
+        //invoke the cutscene event
+         
         CutsceneManager.Instance.PlayCutsceneByName(
             cutsceneName,
             isPlayerMovementNeeded,

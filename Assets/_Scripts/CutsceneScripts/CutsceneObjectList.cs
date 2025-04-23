@@ -13,8 +13,8 @@ public class CutsceneObjectList : MonoBehaviour
         // Subscribe to cutscene events when the object is enabled.
         if (CutsceneManager.Instance != null && CutsceneManager.Instance.CutsceneHandler != null)
         {
-            CutsceneManager.Instance.CutsceneHandler.OnCutsceneStart.AddListener(EnableObjects);
-            CutsceneManager.Instance.CutsceneHandler.OnCutsceneEnd.AddListener(DisableObjects);
+            //CutsceneManager.Instance.CutsceneHandler.OnCutsceneStart.AddListener(EnableObjects);
+            //CutsceneManager.Instance.CutsceneHandler.OnCutsceneEnd.AddListener(DisableObjects);
         }
     }
 
@@ -23,12 +23,12 @@ public class CutsceneObjectList : MonoBehaviour
         // Unsubscribe from events when the object is disabled.
         if (CutsceneManager.Instance != null && CutsceneManager.Instance.CutsceneHandler != null)
         {
-            CutsceneManager.Instance.CutsceneHandler.OnCutsceneStart.RemoveListener(DisableObjects);
-            CutsceneManager.Instance.CutsceneHandler.OnCutsceneEnd.RemoveListener(EnableObjects);
+            //CutsceneManager.Instance.CutsceneHandler.OnCutsceneStart.RemoveListener(EnableObjects);
+            //CutsceneManager.Instance.CutsceneHandler.OnCutsceneEnd.RemoveListener(DisableObjects);
         }
     }
 
-    private void DisableObjects()
+    public void DisableObjects()
     {
         // Disable and destroy each GameObject in the list
         foreach (GameObject obj in objectsToToggle)
@@ -44,7 +44,7 @@ public class CutsceneObjectList : MonoBehaviour
 
    
 
-    private void EnableObjects()
+    public void EnableObjects()
     {
         // Enable each GameObject in the list when the cutscene start.
         foreach (GameObject obj in objectsToToggle)

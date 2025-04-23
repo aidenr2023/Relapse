@@ -166,8 +166,8 @@ public class CutsceneHandler : MonoBehaviour
 
         if (!IsCutsceneFirstPerson)
         {
-            Debug.Log("Using prebinded third person animator tracks...");
-            BindCinemachineBrain();
+            BindCinemachineBrainAndShots();
+          //  BindCinemachineShots();    // ← new method
         }
         else
         {
@@ -189,19 +189,53 @@ public class CutsceneHandler : MonoBehaviour
     }
     
     //funtion to bind cinemachine brain to the cutscene
-    private void BindCinemachineBrain()
+    private void BindCinemachineBrainAndShots()
     {
         foreach (var output in _director.playableAsset.outputs)
         {
+            // 1) bind the Brain track
             if (output.outputTargetType == typeof(CinemachineBrain))
             {
                 _director.SetGenericBinding(output.sourceObject, _cmBrain);
-                Debug.Log($"Bound Cinemachine Brain to track: {output.streamName}");
+                Debug.Log($"Bound Brain to track: {output.streamName}");
+            }
+            // 2) bind every CinemachineShot → its default VCam
+            else if (output.sourceObject is CinemachineShot shot)
+            {
+                var vcam = shot.VirtualCamera.defaultValue;
+                if (vcam != null)
+                {
+                    _director.SetReferenceValue(
+                        shot.VirtualCamera.exposedName,
+                        vcam
+                    );
+                    Debug.Log($"Bound shot '{output.streamName}' → {vcam.name}");
+                }
+                else
+                {
+                    Debug.LogError($"Shot {output.streamName} had no default VCam!");
+                }
             }
         }
     }
-    
-    
+    /// <summary>
+    /// Bind every CinemachineShot in the Timeline to its assigned VirtualCamera.
+    /// </summary>
+    // private void BindCinemachineShots()
+    // {
+    //     foreach (var output in _director.playableAsset.outputs)
+    //     {
+    //         if (output.sourceObject is Cinemachine.Timeline.CinemachineShot shot)
+    //         {
+    //             // shot.VirtualCamera is an ExposedReference<CinemachineVirtualCameraBase>
+    //             var vcam = shot.VirtualCamera.defaultValue;
+    //             _director.SetReferenceValue(shot.VirtualCamera.exposedName, vcam);
+    //             Debug.Log($"Bound CinemachineShot → {vcam.name}");
+    //         }
+    //     }
+    // }
+    //
+    //
 
     private void StartCutscene()
     {
