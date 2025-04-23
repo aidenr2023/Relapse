@@ -6,5 +6,10 @@
 )]
 public class BoolVariable : GenericVariable<bool>
 {
+    public void SetValue(bool newValue)
+    {
+        value = newValue;
+    }
+
     public static implicit operator bool(BoolVariable variable) => variable.value;
 }

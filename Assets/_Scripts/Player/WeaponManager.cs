@@ -171,6 +171,12 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
 
         // Instantiate the gun, get the IGun component and set it up
         var gunObject = Instantiate(initialGunPrefab);
+
+        yield return null;
+        
+        // Band-aid solution to the gun being destroyed before the coroutine finishes
+        if (gunObject == null)
+            gunObject = Instantiate(initialGunPrefab);
         
         if (!gunObject.TryGetComponent(out IGun gun))
         {
@@ -178,8 +184,10 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
             yield break;
         }
         
-        yield return null;
+        yield return new WaitUntil(() => gun.GameObject != null);
 
+        var gunGameObject = gun.GameObject;
+        
         EquipGun(gun);
         _spawnedInitialGun = true;
     }
