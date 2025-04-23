@@ -6,6 +6,7 @@ public class WorldDialogueTrigger : MonoBehaviour
 {
     [SerializeField] private WorldDialogue worldDialogue;
     [SerializeField] private bool activateOnce;
+    [SerializeField] private bool playOnActivate;
 
     [SerializeField] private UnityEvent onTriggerEnter;
     
@@ -28,5 +29,14 @@ public class WorldDialogueTrigger : MonoBehaviour
         
         // On trigger enter event
         onTriggerEnter.Invoke();
+    }
+    
+    //play dialogue on enable
+    private void OnEnable()
+    {
+        if (worldDialogue != null && playOnActivate)
+        {
+            WorldDialogueUI.StartDialogue(worldDialogue);
+        }
     }
 }
