@@ -13,6 +13,7 @@ public class SceneSaveLoader : MonoBehaviour
     public SceneResumeData SceneResumeData { get; private set; }
 
     [SerializeField] private LevelSectionSceneInfoList allSceneInfoList;
+    [SerializeField] private BoolVariable saveLoadEnabled;
 
     private void Awake()
     {
@@ -44,6 +45,13 @@ public class SceneSaveLoader : MonoBehaviour
 
     public void SaveSettingsToDisk(Vector3 position, Quaternion rotation)
     {
+        // Return if the save load is not enabled
+        if (!saveLoadEnabled.value)
+        {
+            Debug.LogWarning("Save load is not enabled. Cannot save data.");
+            return;
+        }
+        
         var currentSceneInfo = AsyncSceneManager.Instance.CurrentSceneInfo;
 
         // Return if the current scene info is null
@@ -81,6 +89,13 @@ public class SceneSaveLoader : MonoBehaviour
 
     public void LoadSettingsFromDisk()
     {
+        // Return if the save load is not enabled
+        if (!saveLoadEnabled.value)
+        {
+            Debug.LogWarning("Save load is not enabled. Cannot load settings.");
+            return;
+        }
+        
         // Check if the settings file path is valid
         if (!System.IO.File.Exists(SceneInfoFilePath))
         {
@@ -109,7 +124,7 @@ public class SceneSaveLoader : MonoBehaviour
 
         // Deserialize the json string into the new sceneResumeData object
         JsonUtility.FromJsonOverwrite(jsonString, newSceneResumeData);
-        
+
         var sceneInfo = allSceneInfoList.value.FirstOrDefault(info =>
             string.Equals(info.SectionPersistentData, newSceneResumeData.PersistentDataSceneName) &&
             string.Equals(info.SectionScene, newSceneResumeData.SectionSceneName)
@@ -121,7 +136,7 @@ public class SceneSaveLoader : MonoBehaviour
             Debug.LogError($"Scene info is null in {SceneInfoFilePath}. Cannot load settings.");
             return;
         }
-        
+
         // Set the scene info of the new scene resume data
         newSceneResumeData.SceneInfo = sceneInfo;
 

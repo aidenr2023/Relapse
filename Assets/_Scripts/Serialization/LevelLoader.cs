@@ -32,6 +32,8 @@ public class LevelLoader : MonoBehaviour
 
     private static string LevelDataPath => $"{SaveFile.CurrentSaveFile.SaveFileDirectory}/{FILE_NAME}.json";
 
+    [SerializeField] private BoolVariable saveLoadEnabled;
+    
     private void Awake()
     {
         // If there is already an instance, destroy this object and return
@@ -160,6 +162,13 @@ public class LevelLoader : MonoBehaviour
     /// </summary>
     public void LoadDataDiskToMemory(params Scene[] scenes)
     {
+        // Return if the save load is not enabled
+        if (!saveLoadEnabled.value)
+        {
+            Debug.LogWarning("Save load is not enabled. Cannot load data.");
+            return;
+        }
+        
         var saveFileName = LevelDataPath;
 
         if (!System.IO.File.Exists(saveFileName))
@@ -211,6 +220,13 @@ public class LevelLoader : MonoBehaviour
 
     public void LoadDataMemoryToScene(Scene? scene)
     {
+        // Return if the save load is not enabled
+        if (!saveLoadEnabled.value)
+        {
+            Debug.LogWarning("Save load is not enabled. Cannot save data.");
+            return;
+        }
+        
         GameObject[] rootGameObjects;
 
         // Get all the root game objects in the scene
@@ -292,6 +308,13 @@ public class LevelLoader : MonoBehaviour
 
     public void SaveDataSceneToMemory(Scene? scene)
     {
+        // Return if the save load is not enabled
+        if (!saveLoadEnabled.value)
+        {
+            Debug.LogWarning("Save load is not enabled. Cannot save data.");
+            return;
+        }
+        
         GameObject[] rootGameObjects;
 
         // Get all the root game objects in the scene
@@ -323,6 +346,13 @@ public class LevelLoader : MonoBehaviour
 
     public void SaveDataMemoryToDisk()
     {
+        // Return if the save load is not enabled
+        if (!saveLoadEnabled.value)
+        {
+            Debug.LogWarning("Save load is not enabled. Cannot save data.");
+            return;
+        }
+        
         // Create a dictionary of SceneName -> List of JsonDataObjectWrappers
         var sceneData = new Dictionary<string, List<JsonDataObjectWrapper>>();
 
@@ -410,6 +440,13 @@ public class LevelLoader : MonoBehaviour
 
     public void AddDataToMemory(UniqueId id, IDataInfo dataInfo)
     {
+        // Return if the save load is not enabled
+        if (!saveLoadEnabled.value)
+        {
+            Debug.LogWarning("Save load is not enabled. Cannot save data.");
+            return;
+        }
+        
         // Return if the unique id was instantiated at runtime
         if (id.InstantiatedAtRuntime)
             return;

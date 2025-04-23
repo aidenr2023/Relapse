@@ -23,6 +23,8 @@ public class PlayerLoader : MonoBehaviour
 
     private static string PlayerDataPath => $"{SaveFile.CurrentSaveFile.SaveFileDirectory}/{FILE_NAME}.json";
 
+    [SerializeField] private BoolVariable saveLoadEnabled;
+    
     protected void Awake()
     {
         // If there is already an instance, destroy this object and return
@@ -49,6 +51,13 @@ public class PlayerLoader : MonoBehaviour
 
     public void LoadDataDiskToMemory()
     {
+        // If the save load is not enabled, return
+        if (!saveLoadEnabled.value)
+        {
+            Debug.LogWarning("Save load is not enabled. Cannot load from disk.");
+            return;
+        }
+        
         var saveFileName = PlayerDataPath;
 
         if (!System.IO.File.Exists(saveFileName))
@@ -85,6 +94,13 @@ public class PlayerLoader : MonoBehaviour
 
     public void LoadDataMemoryToScene(bool restore = false)
     {
+        // Return if the save load is not enabled
+        if (!saveLoadEnabled.value)
+        {
+            Debug.LogWarning("Save load is not enabled. Cannot save data.");
+            return;
+        }
+        
         // Get all the scripts in the scene that implement the ILevelLoaderInfo interface
         var playerLoaderInfos = FindObjectsOfType<MonoBehaviour>().OfType<IPlayerLoaderInfo>().ToArray();
 
@@ -213,6 +229,13 @@ public class PlayerLoader : MonoBehaviour
 
     public void SaveDataSceneToMemory()
     {
+        // Return if the save load is not enabled
+        if (!saveLoadEnabled.value)
+        {
+            Debug.LogWarning("Save load is not enabled. Cannot save data.");
+            return;
+        }
+        
         // Get all the player loader infos in the scene
         var playerLoaderInfos = FindObjectsOfType<MonoBehaviour>().OfType<IPlayerLoaderInfo>().ToArray();
 
@@ -223,6 +246,13 @@ public class PlayerLoader : MonoBehaviour
 
     public void SaveDataMemoryToDisk()
     {
+        // If the save load is not enabled, return
+        if (!saveLoadEnabled.value)
+        {
+            Debug.LogWarning("Save load is not enabled. Cannot save to disk.");
+            return;
+        }
+        
         // Create a list of json data object wrappers
         var jsonDataObjectWrappers = new List<JsonDataObjectWrapper>();
 
