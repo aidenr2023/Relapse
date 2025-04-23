@@ -4,32 +4,33 @@ using UnityEngine;
 
 public class CheatDebugger : MonoBehaviour
 {
-    float tempPlayerHealth;
-    float tempPlayerMaxHealth;
-    bool godMode = false;
+    private float tempPlayerHealth;
+    private float tempPlayerMaxHealth;
+    private bool godMode = false;
 
-    float playerSpeed;
-    double speedMultiplier = 1;
+    private float playerSpeed;
+    private double speedMultiplier = 1;
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         SaveHealthValues();
         SaveSpeedValues();
 
         Debug.Log("Player Health: " + tempPlayerHealth);
-
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
+        return;
 
         //God Mode Controls
         if (Input.GetKeyDown(KeyCode.G))
         {
             Debug.Log("God Mode Toggled");
-            if (godMode != true) {
+            if (godMode != true)
+            {
                 StartGodMode();
             }
             else
@@ -39,29 +40,28 @@ public class CheatDebugger : MonoBehaviour
         }
 
 
-
-
         //Speed Controls
         if (Input.GetKeyDown(KeyCode.H))
         {
             Debug.Log("Speed Increased");
             IncreaseSpeed();
         }
+
         if (Input.GetKeyDown(KeyCode.J))
         {
             Debug.Log("Speed Decreased");
             DecreaseSpeed();
         }
     }
-    void SaveHealthValues()
+
+    private void SaveHealthValues()
     {
         tempPlayerHealth = Player.Instance.PlayerInfo.CurrentHealth;
         tempPlayerMaxHealth = Player.Instance.PlayerInfo.MaxHealth;
     }
 
-    void StartGodMode()
+    private void StartGodMode()
     {
-
         godMode = true;
 
         //Set player health and max health to high value
@@ -74,7 +74,8 @@ public class CheatDebugger : MonoBehaviour
         //PlayerInfo.player.ChangeHealth(100000);
         //Player.PlayerInfo.ChangeHealth(100000,Player,this,this);
     }
-    void EndGodMode()
+
+    private void EndGodMode()
     {
         godMode = false;
         //Set player health and max health back to original values
@@ -82,17 +83,19 @@ public class CheatDebugger : MonoBehaviour
         //Player.Instance.PlayerInfo.CurrentHealth = tempPlayerHealth;
         //Player.Instance.PlayerInfo.MaxHealth = tempPlayerMaxHealth;
     }
-    
-    void SaveSpeedValues()
+
+    private void SaveSpeedValues()
     {
         //playerSpeed = Player.Instance.PlayerMovementV2.Speed;
     }
-    void IncreaseSpeed()
+
+    private void IncreaseSpeed()
     {
         speedMultiplier += 0.5;
         //Player.Instance.PlayerMovementV2.Speed = playerSpeed*speedMultiplier;
     }
-    void DecreaseSpeed()
+
+    private void DecreaseSpeed()
     {
         speedMultiplier -= 0.5;
         //Player.Instance.PlayerMovementV2.Speed = playerSpeed * speedMultiplier;
