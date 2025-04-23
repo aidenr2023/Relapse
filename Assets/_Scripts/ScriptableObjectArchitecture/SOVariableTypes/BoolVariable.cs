@@ -6,9 +6,15 @@
 )]
 public class BoolVariable : GenericVariable<bool>
 {
-    public void SetValue(bool newValue)
+    public void SetValueInInspector(bool newValue)
     {
         value = newValue;
+    }
+
+    public void DestroyGameObject(GameObject gameObject)
+    {
+        if (gameObject != null)
+            Destroy(gameObject);
     }
 
     public static implicit operator bool(BoolVariable variable) => variable.value;
