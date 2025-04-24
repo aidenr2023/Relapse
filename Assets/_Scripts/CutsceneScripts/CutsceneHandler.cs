@@ -239,6 +239,7 @@ public class CutsceneHandler : MonoBehaviour
 
     private void StartCutscene()
     {
+        
         _isCutsceneActive = true;
         int hideMask = 1 << LayerMask.NameToLayer("GunHandHolder");    
         
