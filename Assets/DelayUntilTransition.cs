@@ -1,25 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class DelayUntilTransition : MonoBehaviour
 {
     [SerializeField] public float delay;
-    [SerializeField] LevelTransitionCheckpoint LevelTransitionCheckpoint;
+    [SerializeField] private LevelTransitionCheckpoint LevelTransitionCheckpoint;
+    [SerializeField] private UnityEvent onDelayComplete;
+
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         StartCoroutine(Delay());
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
     }
 
     private IEnumerator Delay()
     {
         yield return new WaitForSeconds(delay);
+        
+        // Invoke the event
+        onDelayComplete?.Invoke();
+        
+        // Transition to the next scene
         LevelTransitionCheckpoint.ForceTransitionToNextScene();
     }
 }
