@@ -8603,7 +8603,6 @@ GameObject:
   - component: {fileID: 6786839480701899547}
   - component: {fileID: 8186832649319526797}
   - component: {fileID: 7522796460313606878}
-  - component: {fileID: 2615253660609893600}
   - component: {fileID: 6281174626582321564}
   - component: {fileID: 8055355999978108359}
   - component: {fileID: 2100931825933195536}
@@ -8818,8 +8817,8 @@ MonoBehaviour:
   toleranceRelapsePercent: 0
   relapseDuration: 5
   passiveRegenCap: 1
-  passiveRegenRate: 3
-  passiveRegenDelay: 10
+  passiveRegenRate: 5
+  passiveRegenDelay: 5
   hitSound:
     clip: {fileID: 8300000, guid: a07d4a0a361f338429c6b98e1d8a4499, type: 3}
     soundType: 1
@@ -9453,23 +9452,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &2615253660609893600
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3703685084401515452}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b51a41e8598d44344b8b38780c242b73, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cameraManager:
-    useConstant: 0
-    constantValue: {fileID: 0}
-    variable: {fileID: 11400000, guid: be059df3880fbbd4ebb480f96f83335d, type: 2}
-  player: {fileID: 3703685084401515452}
 --- !u!114 &6281174626582321564
 MonoBehaviour:
   m_ObjectHideFlags: 0

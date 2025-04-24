@@ -20,13 +20,14 @@ public class CutsceneTrigger : MonoBehaviour
     [SerializeField] private bool isPlayerMovementNeeded = false;
 
     [SerializeField] private bool isCutsceneFirstPerson = false;
-    
+
     [SerializeField] private bool isCutsceneInteractable = false;
 
 
     private CutsceneHandler.CutsceneType _cutscenePerspective;
     private BoxCollider _boxCollider;
 
+    private object _uiDisabler;
 
     //public bool IsCamChangeNeeded => isCamChangeNeeded;
 
@@ -47,11 +48,17 @@ public class CutsceneTrigger : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        // Re-show the UI elements
+        GameUIHelper.Instance?.RemoveUIHider(this);
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (isCutsceneInteractable)
             return;
-        
+
         if (other.CompareTag("Player") && !cutscenePlayed)
         {
             // Access the singleton instance 
@@ -65,16 +72,19 @@ public class CutsceneTrigger : MonoBehaviour
 
     private IEnumerator TriggerCutsceneDelayed()
     {
-        yield return null;                        // give everything one frame to initialize
+        yield return null; // give everything one frame to initialize
 
-        objectList.EnableObjects();               // bring in just this list’s objects
+        objectList.EnableObjects(); // bring in just this list’s objects
 
         var handler = CutsceneManager.Instance.CutsceneHandler;
         UnityEngine.Events.UnityAction onEnd = null;
         onEnd = () =>
         {
-            objectList.DisableObjects();          // tear down just this list
+            objectList.DisableObjects(); // tear down just this list
             handler.OnCutsceneEnd.RemoveListener(onEnd);
+
+            // Re-show the UI elements
+            GameUIHelper.Instance?.RemoveUIHider(this);
         };
         handler.OnCutsceneEnd.AddListener(onEnd);
 
@@ -84,8 +94,11 @@ public class CutsceneTrigger : MonoBehaviour
             _cutscenePerspective
         );
         cutscenePlayed = true;
-    }
 
+        // If the player instance is not null, add a UI disabler to the player instance
+        // Hide the UI elements
+        GameUIHelper.Instance?.AddUIHider(this);
+    }
 
 
     //destroy the trigger after seconds 
@@ -105,12 +118,13 @@ public class CutsceneTrigger : MonoBehaviour
         // Play the cutscene
         StartCoroutine(PlayCutsceneNextFrame());
     }
+
     private IEnumerator PlayCutsceneNextFrame()
     {
         // Wait one frame so all Start() calls and bindings finish
         yield return null;
         //invoke the cutscene event
-         
+
         CutsceneManager.Instance.PlayCutsceneByName(
             cutsceneName,
             isPlayerMovementNeeded,
