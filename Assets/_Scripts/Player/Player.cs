@@ -164,6 +164,9 @@ public class Player : MonoBehaviour, IPlayerLoaderInfo, IGameReset
 
         // Reset the weapon
         WeaponManager.ResetPlayer();
+        
+        // Bind this to the OnGameReset event
+        OnGameReset += GameResetAction;
     }
 
     #region Saving and Loading

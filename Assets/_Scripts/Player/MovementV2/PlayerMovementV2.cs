@@ -976,6 +976,8 @@ public class PlayerMovementV2 : ComponentScript<Player>, IPlayerController, IDeb
     {
         // Set the vars
         SetVars();
+        
+        Debug.Log($"Reset player vars");
     }
 
     private void SetVars()
