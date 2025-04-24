@@ -138,7 +138,8 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
     private void ToggleDebugMode(InputAction.CallbackContext ctx)
     {
         // Toggle the debug mode
-        DebugManager.Instance.IsDebugMode = !DebugManager.Instance.IsDebugMode;
+        // DebugManager.Instance.IsDebugMode = !DebugManager.Instance.IsDebugMode;
+        DebugManager.Instance.IsDebugMode = false;
     }
 
 
