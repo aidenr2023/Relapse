@@ -259,8 +259,8 @@ public class MainMenu : GameMenu
         // SceneManager.LoadScene(sceneName);
 
         // Load the scene additively
-        // SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
-        ForceChangeScene(sceneName);
+        SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+        // ForceChangeScene(sceneName);
 
         // Deactivate the main menu
         Deactivate();
