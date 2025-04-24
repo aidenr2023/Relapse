@@ -15,11 +15,6 @@ public class DelayUntilTransition : MonoBehaviour
         StartCoroutine(Delay());
     }
 
-    // Update is called once per frame
-    private void Update()
-    {
-    }
-
     private IEnumerator Delay()
     {
         yield return new WaitForSeconds(delay);
@@ -28,6 +23,9 @@ public class DelayUntilTransition : MonoBehaviour
         onDelayComplete?.Invoke();
         
         // Transition to the next scene
+        if (LevelTransitionCheckpoint == null)
+            yield break;
+        
         LevelTransitionCheckpoint.ForceTransitionToNextScene();
     }
 }

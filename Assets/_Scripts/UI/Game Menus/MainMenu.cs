@@ -25,6 +25,8 @@ public class MainMenu : GameMenu
 
     [SerializeField] private Button resumeButton;
 
+    [SerializeField] private SceneField openingCutscene;
+
     #endregion
 
     #region Private Fields
@@ -48,7 +50,7 @@ public class MainMenu : GameMenu
     protected override void CustomStart()
     {
         // var recentSaveFile = SaveFile.GetMostRecentSaveFile();
-        
+
         // Check if there are any save files present
         // If there are no save files, disable the resume button
         // If there are save files, enable the resume button
@@ -107,7 +109,17 @@ public class MainMenu : GameMenu
         // Load the scene asynchronously
         // Start the start game coroutine
         if (!_startedLoading)
-            StartCoroutine(StartGameCoroutine());
+        {
+            // Set the flag to true
+            _startedLoading = true;
+            // StartCoroutine(StartGameCoroutine());
+
+            // Deactivate the main menu
+            Deactivate();
+
+            // Start the cutscene by loading the scene singularly
+            SceneManager.LoadScene(openingCutscene.SceneName, LoadSceneMode.Single);
+        }
 
         // Set the flag to true
         _clickedButton = true;
@@ -121,7 +133,12 @@ public class MainMenu : GameMenu
         // Load the scene asynchronously
         // Start the start game coroutine
         if (!_startedLoading)
+        {
+            // Set the flag to true
+            _startedLoading = true;
+
             StartCoroutine(ResumeGameCoroutine());
+        }
 
         // Set the flag to true
         _clickedButton = true;
@@ -129,9 +146,6 @@ public class MainMenu : GameMenu
 
     private IEnumerator ResumeGameCoroutine()
     {
-        // Set the flag to true
-        _startedLoading = true;
-
         // Fade into the black overlay
         var startTime = Time.unscaledTime;
 
@@ -185,9 +199,6 @@ public class MainMenu : GameMenu
 
     private IEnumerator StartGameCoroutine()
     {
-        // Set the flag to true
-        _startedLoading = true;
-
         // Fade into the black overlay
         var startTime = Time.unscaledTime;
 
@@ -248,7 +259,8 @@ public class MainMenu : GameMenu
         // SceneManager.LoadScene(sceneName);
 
         // Load the scene additively
-        SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+        // SceneManager.LoadScene(sceneName, LoadSceneMode.Additive);
+        ForceChangeScene(sceneName);
 
         // Deactivate the main menu
         Deactivate();
