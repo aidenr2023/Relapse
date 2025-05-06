@@ -53,15 +53,29 @@ public class CutsceneSubscriber : MonoBehaviour
         _weaponManager = GetComponent<WeaponManager>();
         _playerCutsceneAnimator = GetComponent<Animator>();
 
-        if (CutsceneManager.Instance != null)
-        {
-            CutsceneManager.Instance.RegisterPlayer(_playerCutsceneAnimator);
-            _cutsceneHandler = CutsceneManager.Instance.CutsceneHandler;
-        }
-        else
-        {
-            Debug.LogError("CutsceneManager not found");
-        }
+        // if (CutsceneManager.Instance != null)
+        // {
+        //     CutsceneManager.Instance.RegisterPlayer(_playerCutsceneAnimator);
+        //     _cutsceneHandler = CutsceneManager.Instance.CutsceneHandler;
+        // }
+        // else
+        // {
+        //     Debug.LogError("CutsceneManager not found");
+        // }
+        
+        // Start the coroutine to register to the cutscene manager
+        StartCoroutine(TryToRegisterToCutsceneManager());
+    }
+
+    private IEnumerator TryToRegisterToCutsceneManager()
+    {
+        while (CutsceneManager.Instance == null)
+            yield return null;
+
+        CutsceneManager.Instance.RegisterPlayer(_playerCutsceneAnimator);
+        _cutsceneHandler = CutsceneManager.Instance.CutsceneHandler;
+        
+        Debug.Log($"Registered player to cutscene manager");
     }
 
     private void SetupCutsceneListeners()

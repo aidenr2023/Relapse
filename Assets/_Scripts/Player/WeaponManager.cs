@@ -169,6 +169,9 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         if (initialGunPrefab == null || _spawnedInitialGun)
             yield break;
 
+        // Wait a frame
+        yield return null;
+        
         // Instantiate the gun, get the IGun component and set it up
         var gunObject = Instantiate(initialGunPrefab);
 
@@ -186,7 +189,11 @@ public class WeaponManager : MonoBehaviour, IUsesInput, IDebugged, IGunHolder, I
         
         yield return new WaitUntil(() => gun.GameObject != null);
 
-        var gunGameObject = gun.GameObject;
+        if (gun == null || gun.GameObject == null)
+        {
+            Debug.LogError("Gun prefab does not have a GameObject.");
+            yield break;
+        }
         
         EquipGun(gun);
         _spawnedInitialGun = true;

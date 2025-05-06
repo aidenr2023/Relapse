@@ -9,15 +9,6 @@ public class CutsceneManager : MonoBehaviour
 
     public static CutsceneManager Instance { get; private set; }
 
-    //public PlayerMovementV2 PlayerController { get; private set; }
-
-    //public GameObject PlayerGameObject { get; private set; }
-
-    //public Animator PlayerAnimator { get; private set; }
-
-    //get the player animator from cutscene subscriber
-    public Animator PlayerCutsceneAnimator { get; private set; }
-
     #endregion
 
     #region Serialized Fields
@@ -36,6 +27,9 @@ public class CutsceneManager : MonoBehaviour
 
     #endregion
 
+    //get the player animator from cutscene subscriber
+    public Animator PlayerCutsceneAnimator { get; private set; }
+    
     public CutsceneHandler CutsceneHandler => cutsceneHandler;
 
     #region Lifecycle
@@ -43,28 +37,50 @@ public class CutsceneManager : MonoBehaviour
     public void RegisterPlayer(Animator playerAnimator)
     {
         PlayerCutsceneAnimator = playerAnimator;
-        Debug.Log($"Player registered: {playerAnimator.name} " +
-                  $"| Animator: {playerAnimator} != null");
-        //player.GetComponent<Animator>();
+        Debug.Log($"Player registered: {playerAnimator.name} | Animator: {playerAnimator} != null");
     }
 
     private void Awake()
     {
-        InitializeSingleton();
         InitializeDictionary();
         CacheActiveDirector();
+
+        InitializeSingleton();
     }
 
     private void InitializeSingleton()
     {
         if (Instance != null && Instance != this)
         {
+            // Transfer all the information on this cutscene handler to the existing instance
+            CopyToOtherInstance(Instance);
+            
+            // Destroy this instance
             Destroy(gameObject);
             return;
         }
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+    }
+    
+    private void CopyToOtherInstance(CutsceneManager otherInstance)
+    {
+        Debug.Log($"Copying CutsceneManager to other instance: {otherInstance.name}", this);
+        
+        // Register the player animator if it exists
+        if (PlayerCutsceneAnimator != null)
+            otherInstance.RegisterPlayer(PlayerCutsceneAnimator);
+            
+        // Copy over the cutscene mappings
+        otherInstance.cutsceneMappings = cutsceneMappings;
+
+        // Copy over the cutscene dictionary
+        otherInstance._cutsceneDictionary = _cutsceneDictionary;
+        
+        // Reinitialize the cutscene handler
+        otherInstance.cutsceneHandler._cmBrain = cutsceneHandler._cmBrain;
+        otherInstance.cutsceneHandler.Initialize();
     }
 
     private void InitializeDictionary()
@@ -131,8 +147,7 @@ public class CutsceneManager : MonoBehaviour
     {
         try
         {
-            cutsceneHandler.PlayCutscene(asset, cutsceneHandler.IsPlayerMovementNeeded,
-                perspective);
+            cutsceneHandler.PlayCutscene(asset, cutsceneHandler.IsPlayerMovementNeeded, perspective);
         }
         catch (Exception e)
         {

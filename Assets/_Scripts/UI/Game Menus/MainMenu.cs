@@ -55,7 +55,12 @@ public class MainMenu : GameMenu
         // If there are no save files, disable the resume button
         // If there are save files, enable the resume button
         // resumeButton.gameObject.SetActive(recentSaveFile != null);
+        
+        // Uncomment this line to enable the resume button
         resumeButton.gameObject.SetActive(SceneSaveLoader.Instance.SceneResumeData != null);
+
+        // // Completely disable the resume button
+        // resumeButton.gameObject.SetActive(false);
     }
 
     protected override void CustomActivate()

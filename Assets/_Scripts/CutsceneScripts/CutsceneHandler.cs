@@ -18,18 +18,19 @@ public class CutsceneHandler : MonoBehaviour
 
     private PlayableDirector _director;
     private Animator _playerCutsceneAnimator;
-    
-    
-    //cinemachine brain
-    [SerializeField]private CinemachineBrain _cmBrain;
-    [SerializeField] private Camera _mainCamera;
+
+
+    // cinemachine brain
+    [SerializeField] public CinemachineBrain _cmBrain;
     private List<Camera> _overlayCameras;
     int _baseCameraMask;
     private List<int> _overlayCameraMasks;
-    
+
     private bool _isCutsceneActive;
     public bool IsPlayerMovementNeeded { get; set; }
     public bool IsCutsceneFirstPerson { get; set; }
+
+    private Camera MainCamera => _cmBrain.OutputCamera;
 
     public enum CutsceneType
     {
@@ -37,27 +38,32 @@ public class CutsceneHandler : MonoBehaviour
         ThirdPerson
     }
 
-    private void Awake()
-    {
-       
-    }
-
     private void Start()
     {
-        //grab the main camera from cinemachine brain
-        _mainCamera = _cmBrain.OutputCamera;
+        Initialize();
+    }
+
+    public void Initialize()
+    {
+        // Try to initialize the cutscene handler
+        StartCoroutine(TryToInitialize());
+    }
+
+    private IEnumerator TryToInitialize()
+    {
+        while (_cmBrain == null || MainCamera == null)
+            yield return null;
         
-        //store the base cam culling mask
-        _baseCameraMask = _mainCamera.cullingMask;
-        
-        //grab the overlay cameras
-        var camera_data = _mainCamera.GetUniversalAdditionalCameraData();
-        _overlayCameras = camera_data.cameraStack;
-        
-        //store each ones culling mask
+        // store the base cam culling mask
+        _baseCameraMask = MainCamera.cullingMask;
+
+        // grab the overlay cameras
+        var cameraData = MainCamera.GetUniversalAdditionalCameraData();
+        _overlayCameras = cameraData.cameraStack;
+
+        // store each one's culling mask
         _overlayCameraMasks = _overlayCameras.Select(cam => cam.cullingMask).ToList();
-        
-        
+
         _director = GetComponent<PlayableDirector>();
         Debug.Log($"CutsceneHandler initialized with director: {_director}");
         InitializePlayerReferences();
@@ -164,15 +170,11 @@ public class CutsceneHandler : MonoBehaviour
 
         _director.playableAsset = timelineAsset;
 
+        //  BindCinemachineShots();    // ← new method
         if (!IsCutsceneFirstPerson)
-        {
             BindCinemachineBrainAndShots();
-          //  BindCinemachineShots();    // ← new method
-        }
         else
-        {
             BindFirstPersonAnimatorTracks();
-        }
     }
 
     //lowkey obsolete, but needed for Movement2 (Brian Level) cutscene
@@ -187,7 +189,7 @@ public class CutsceneHandler : MonoBehaviour
             }
         }
     }
-    
+
     //funtion to bind cinemachine brain to the cutscene
     private void BindCinemachineBrainAndShots()
     {
@@ -202,22 +204,19 @@ public class CutsceneHandler : MonoBehaviour
             // 2) bind every CinemachineShot → its default VCam
             else if (output.sourceObject is CinemachineShot shot)
             {
-                var vcam = shot.VirtualCamera.defaultValue;
-                if (vcam != null)
+                var vCam = shot.VirtualCamera.defaultValue;
+
+                if (vCam != null)
                 {
-                    _director.SetReferenceValue(
-                        shot.VirtualCamera.exposedName,
-                        vcam
-                    );
-                    Debug.Log($"Bound shot '{output.streamName}' → {vcam.name}");
+                    _director.SetReferenceValue(shot.VirtualCamera.exposedName, vCam);
+                    Debug.Log($"Bound shot '{output.streamName}' → {vCam.name}");
                 }
                 else
-                {
                     Debug.LogError($"Shot {output.streamName} had no default VCam!");
-                }
             }
         }
     }
+
     /// <summary>
     /// Bind every CinemachineShot in the Timeline to its assigned VirtualCamera.
     /// </summary>
@@ -236,18 +235,16 @@ public class CutsceneHandler : MonoBehaviour
     // }
     //
     //
-
     private void StartCutscene()
     {
-        
         _isCutsceneActive = true;
-        int hideMask = 1 << LayerMask.NameToLayer("GunHandHolder");    
-        
-        _mainCamera.cullingMask &= ~hideMask;
+        var hideMask = 1 << LayerMask.NameToLayer("GunHandHolder");
+
+        MainCamera.cullingMask &= ~hideMask;
         //for each overlay camera, hide the gun hand holder layer
-        for (int i = 0; i < _overlayCameras.Count; i++)
+        for (var i = 0; i < _overlayCameras.Count; i++)
             _overlayCameras[i].cullingMask &= ~hideMask;
-        
+
         //disable player body layer
         _director.stopped += OnCutsceneFinished;
 
@@ -256,44 +253,42 @@ public class CutsceneHandler : MonoBehaviour
 #endif
 
         OnCutsceneStart?.Invoke();
-        
+
         // log the start of the cutscene
         Debug.Log("Cutscene started Event invoked");
         _director.Play();
-        
+
         // Hide the UI elements
         GameUIHelper.Instance?.AddUIHider(this);
-        
+
         // Remove control from the player
         (Player.Instance.PlayerController as PlayerMovementV2)!.DisablePlayerControls(this);
-        
-        
     }
 
     private void OnCutsceneFinished(PlayableDirector director)
     {
         _isCutsceneActive = false;
-        
+
         // restore the original culling mask
-        _mainCamera.cullingMask = _baseCameraMask;
+        MainCamera.cullingMask = _baseCameraMask;
+
         // foreach overlay camera, restore the original culling mask
-        for (int i = 0; i < _overlayCameras.Count; i++)
+        for (var i = 0; i < _overlayCameras.Count; i++)
         {
             _overlayCameras[i].cullingMask = _overlayCameraMasks[i];
         }
-        
-        
+
         _director.stopped -= OnCutsceneFinished;
         OnCutsceneEnd?.Invoke();
 
         // Optional: Reset timeline bindings
         _director.playableAsset = null;
-        
+
         Debug.Log("Cutscene finished Event invoked");
-        
+
         // Remove this as a UI hider
         GameUIHelper.Instance?.RemoveUIHider(this);
-        
+
         // Give control back to the player
         (Player.Instance.PlayerController as PlayerMovementV2)!.EnablePlayerControls(this);
     }
