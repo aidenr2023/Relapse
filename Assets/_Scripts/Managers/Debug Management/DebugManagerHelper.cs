@@ -137,9 +137,15 @@ public class DebugManagerHelper : MonoBehaviour, IDamager, IUsesInput, IDebugged
 
     private void ToggleDebugMode(InputAction.CallbackContext ctx)
     {
+        // If the debug mode is currently off
+        // And the rest of the buttons aren't held, return
+        if (!DebugManager.Instance.IsDebugMode &&
+            (!Input.GetKey(KeyCode.F2) || !Input.GetKey(KeyCode.F3) || !Input.GetKey(KeyCode.F4)))
+            return;
+        
         // Toggle the debug mode
-        // DebugManager.Instance.IsDebugMode = !DebugManager.Instance.IsDebugMode;
-        DebugManager.Instance.IsDebugMode = false;
+        DebugManager.Instance.IsDebugMode = !DebugManager.Instance.IsDebugMode;
+        // DebugManager.Instance.IsDebugMode = false;
     }
 
 
